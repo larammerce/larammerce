@@ -36,7 +36,7 @@ class ComparisonService
     }
 
     /**
-     * @throws ProductStructureMismatchException
+     * @throws PStructureMismatchException
      * @throws InitialProductNotFoundException
      */
     public static function addProduct(Product $product)
@@ -49,7 +49,7 @@ class ComparisonService
                 $products[$product->id] = $product;
                 session()->put(self::$COMPARING_PRODUCTS, $products);
             } else
-                throw new ProductStructureMismatchException();
+                throw new PStructureMismatchException();
         } else
             throw new InitialProductNotFoundException();
     }

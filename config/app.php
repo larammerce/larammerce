@@ -99,7 +99,7 @@ return [
    |
    */
 
-    'locale' => env('SITE_DEFAULT_LANGUAGE', 'fa'),
+    'locale' => env('APP_DEFAULT_LOCALE', 'fa'),
 
     /*
     |--------------------------------------------------------------------------
@@ -112,7 +112,7 @@ return [
     |
     */
 
-    'fallback_locale' => 'en',
+    'fallback_locale' => env('APP_DEFAULT_LOCALE', 'fa'),
 
     /*
     |--------------------------------------------------------------------------
@@ -202,6 +202,12 @@ return [
         Stevebauman\Location\LocationServiceProvider::class,
         Jenssegers\Mongodb\MongodbServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
+
+        /*
+         * Larammerce
+         */
+        \App\Utils\Migrator\GeneratorsServiceProvider::class,
+        \App\Utils\Translation\TranslationServiceProvider::class
     ],
 
     /*

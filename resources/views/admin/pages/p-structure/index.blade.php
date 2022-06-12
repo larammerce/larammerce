@@ -22,17 +22,17 @@
             </ul>
             <ul class="has-divider-left">
                 @foreach(LayoutService::getLayoutMethods() as $layout_method)
-                    <li href="{{route('admin.null')}}?layout_model=ProductStructure&layout_method={{$layout_method["method"]}}"
+                    <li href="{{route('admin.null')}}?layout_model=PStructure&layout_method={{$layout_method["method"]}}"
                         act="link"
-                        @if($layout_method["method"] == LayoutService::getRecord("ProductStructure")->getMethod()) class="active" @endif>
+                        @if($layout_method["method"] == LayoutService::getRecord("PStructure")->getMethod()) class="active" @endif>
                         <i class="fa {{$layout_method["icon"]}}"></i>
                     </li>
                 @endforeach
             </ul>
             <ul>
-                @foreach(SortService::getSortableFields('ProductStructure') as $sortable_field)
+                @foreach(SortService::getSortableFields('PStructure') as $sortable_field)
                     <li class="btn btn-default {{$sortable_field->is_active ? "active" : ""}}"
-                        href="{{route('admin.null')}}?sort_model=ProductStructure&sort_field={{$sortable_field->field}}&sort_method={{$sortable_field->method}}"
+                        href="{{route('admin.null')}}?sort_model=PStructure&sort_field={{$sortable_field->field}}&sort_method={{$sortable_field->method}}"
                         act="link">
                         @if($sortable_field->is_active)
                             <i class="fa {{$sortable_field->method == SortMethod::ASCENDING ? "fa-long-arrow-up" : "fa-long-arrow-down"}}"></i>
@@ -44,7 +44,7 @@
         </div>
         <div class="inner-container has-toolbar has-pagination">
             <div class="view-port">
-                @include('admin.pages.p-structure.layout.'.LayoutService::getRecord("ProductStructure")->getMethod())
+                @include('admin.pages.p-structure.layout.'.LayoutService::getRecord("PStructure")->getMethod())
             </div>
             <div class="fab-container">
                 <div class="fab green">
@@ -55,7 +55,7 @@
             </div>
         </div>
         @include('admin.templates.pagination', [
-            "modelName" => "ProductStructure",
+            "modelName" => "PStructure",
             "lastPage" => $p_structures->lastPage(),
             "total" => $p_structures->total(),
             "count" => $p_structures->perPage(),

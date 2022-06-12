@@ -9,28 +9,17 @@
 namespace App\Utils\Reflection;
 
 
+use JetBrains\PhpStorm\ArrayShape;
 use ReflectionException;
 use ReflectionMethod;
 
 class ReflectiveMethod extends ReflectiveAbstraction
 {
-    /**
-     * @var string
-     */
-    private $class_name;
-    /**
-     * @var string
-     */
-    private $method_name;
-    /**
-     * @var ReflectionMethod
-     */
-    private $reflection_method;
+    private string $class_name;
+    private string $method_name;
+    private ReflectionMethod $reflection_method;
 
     /**
-     * ReflectiveMethod constructor.
-     * @param string $class_name
-     * @param string $method_name
      * @throws AnnotationBadKeyException
      * @throws AnnotationBadScopeException
      * @throws AnnotationSyntaxException
@@ -44,64 +33,42 @@ class ReflectiveMethod extends ReflectiveAbstraction
         parent::__construct();
     }
 
-    /**
-     * @return string
-     */
     public function getComment(): string
     {
         return $this->reflection_method->getDocComment();
     }
 
-    /**
-     * @return string
-     */
     public function getClassName(): string
     {
         return $this->class_name;
     }
 
-    /**
-     * @param string $class_name
-     */
     public function setClassName(string $class_name)
     {
         $this->class_name = $class_name;
     }
 
-    /**
-     * @return string
-     */
     public function getMethodName(): string
     {
         return $this->method_name;
     }
 
-    /**
-     * @param string $method_name
-     */
     public function setMethodName(string $method_name)
     {
         $this->method_name = $method_name;
     }
 
-    /**
-     * @return ReflectionMethod
-     */
     public function getReflectionMethod(): ReflectionMethod
     {
         return $this->reflection_method;
     }
 
-    /**
-     * @param ReflectionMethod $reflection_method
-     */
     public function setReflectionMethod(ReflectionMethod $reflection_method)
     {
         $this->reflection_method = $reflection_method;
     }
 
     /**
-     * @return Action
      * @throws AnnotationBadKeyException
      * @throws AnnotationBadScopeException
      * @throws AnnotationSyntaxException
@@ -113,12 +80,12 @@ class ReflectiveMethod extends ReflectiveAbstraction
     }
 
     /**
-     * @return array
      * @throws AnnotationBadKeyException
      * @throws AnnotationBadScopeException
      * @throws AnnotationSyntaxException
      * @throws ReflectionException
      */
+    #[ArrayShape(['action' => "string", 'annotations' => "array[]"])]
     public function toArray(): array
     {
         return [

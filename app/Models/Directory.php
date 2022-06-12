@@ -9,6 +9,7 @@ use App\Models\Interfaces\ImageContract;
 use App\Models\Traits\Badgeable;
 use App\Models\Traits\Fileable;
 use App\Utils\Common\ImageService;
+use App\Utils\Translation\Traits\Translatable;
 use Exception;
 use Faker\Provider\DateTime;
 use Illuminate\Database\Eloquent\Builder;
@@ -72,7 +73,7 @@ use Throwable;
  */
 class Directory extends BaseModel implements ImageContract, HashContract, FileContract
 {
-    use Fileable, Badgeable;
+    use Fileable, Badgeable, Translatable;
 
     protected static array $SORTABLE_FIELDS = ['id', 'priority', 'title', 'created_at'];
     protected static array $SEARCHABLE_FIELDS = ['title', 'url_part'];
@@ -88,6 +89,12 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
 
     protected $casts = [
         "force_show_landing" => "bool"
+    ];
+
+    protected static array $TRANSLATABLE_FIELDS = [
+        'title' => ['string', 'input:text'],
+        'notice' => ['string', 'input:text'],
+        'description' => ['text', 'textarea:rich']
     ];
 
     public function getContentTypeTitleAttribute(): string

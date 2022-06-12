@@ -10,7 +10,7 @@ namespace App\Console\Commands;
 
 
 use App\Models\Product;
-use App\Models\ProductAttribute;
+use App\Models\PAttr;
 use Illuminate\Console\Command;
 use Illuminate\Database\QueryException;
 

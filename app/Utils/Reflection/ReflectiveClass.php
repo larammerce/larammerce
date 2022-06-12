@@ -9,25 +9,16 @@
 namespace App\Utils\Reflection;
 
 
+use JetBrains\PhpStorm\ArrayShape;
 use ReflectionClass;
 use ReflectionException;
-use ReflectionMethod;
-use ReflectionProperty;
 
 class ReflectiveClass extends ReflectiveAbstraction
 {
-    /**
-     * @var string
-     */
-    private $class_name;
-    /**
-     * @var ReflectionClass
-     */
-    private $reflection_class;
+    private string $class_name;
+    private ReflectionClass $reflection_class;
 
     /**
-     * ReflectiveClass constructor.
-     * @param string $class_name
      * @throws AnnotationBadKeyException
      * @throws AnnotationBadScopeException
      * @throws AnnotationSyntaxException
@@ -40,57 +31,36 @@ class ReflectiveClass extends ReflectiveAbstraction
         parent::__construct();
     }
 
-    /**
-     * @return string
-     */
     public function getComment(): string
     {
         return $this->reflection_class->getDocComment();
     }
 
-    /**
-     * @return string
-     */
     public function getClassName(): string
     {
         return $this->class_name;
     }
 
-    /**
-     * @param string $class_name
-     */
     public function setClassName(string $class_name)
     {
         $this->class_name = $class_name;
     }
 
-    /**
-     * @return ReflectionClass
-     */
     public function getReflectionClass(): ReflectionClass
     {
         return $this->reflection_class;
     }
 
-    /**
-     * @param ReflectionClass $reflection_class
-     */
     public function setReflectionClass(ReflectionClass $reflection_class)
     {
         $this->reflection_class = $reflection_class;
     }
 
-    /**
-     * @return ReflectionMethod[]
-     */
     private function reflectionMethods(): array
     {
         return $this->reflection_class->getMethods();
     }
 
-    /**
-     * @return ReflectionProperty[]
-     */
     private function reflectionProperties(): array
     {
         return $this->reflection_class->getProperties();
@@ -98,7 +68,6 @@ class ReflectiveClass extends ReflectiveAbstraction
 
 
     /**
-     * @return ReflectiveMethod[]
      * @throws AnnotationBadKeyException
      * @throws AnnotationBadScopeException
      * @throws AnnotationSyntaxException
@@ -116,7 +85,6 @@ class ReflectiveClass extends ReflectiveAbstraction
 
 
     /**
-     * @return ReflectiveProperty[]
      * @throws AnnotationBadKeyException
      * @throws AnnotationBadScopeException
      * @throws AnnotationSyntaxException
@@ -132,9 +100,6 @@ class ReflectiveClass extends ReflectiveAbstraction
         return $properties;
     }
 
-    /**
-     * @return string[]
-     */
     public function getMethodNames(): array
     {
         $method_names = [];
@@ -144,9 +109,6 @@ class ReflectiveClass extends ReflectiveAbstraction
         return $method_names;
     }
 
-    /**
-     * @return string[]
-     */
     public function getPropertyNames(): array
     {
         $property_names = [];
@@ -157,12 +119,12 @@ class ReflectiveClass extends ReflectiveAbstraction
     }
 
     /**
-     * @return array
      * @throws AnnotationBadKeyException
      * @throws AnnotationBadScopeException
      * @throws AnnotationSyntaxException
      * @throws ReflectionException
      */
+    #[ArrayShape(['className' => "string", 'annotations' => "array[]", 'methods' => "array", 'properties' => "array"])]
     function toArray(): array
     {
         $methods = [];
@@ -180,5 +142,10 @@ class ReflectiveClass extends ReflectiveAbstraction
             'methods' => $methods,
             'properties' => $properties
         ];
+    }
+
+    public function usesTrait(string $trait_name): bool
+    {
+        return in_array($trait_name, $this->reflection_class->getTraitNames());
     }
 }

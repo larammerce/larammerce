@@ -48,7 +48,15 @@ return [
                     "icon" => "icon-modal",
                     "route" => "admin.modal.index"
                 ]
-            ]
+            ],
+            [
+                "properties" => [
+                    "id" => "language",
+                    "name" => "general.setting.language",
+                    "icon" => "icon-language",
+                    "route" => "admin.setting.language.edit"
+                ]
+            ],
         ],
         "explore_appliances" => []
     ],

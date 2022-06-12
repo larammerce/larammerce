@@ -48,6 +48,9 @@ Route::group(
 
                 Route::get("sms-driver", ["as" => "sms-driver.edit", "uses" => "SMSDriverController@edit"]);
                 Route::put("sms-driver", ["as" => "sms-driver.update", "uses" => "SMSDriverController@update"]);
+
+                Route::get("language", ["as" => "language.edit", "uses" => "LanguageSettingController@edit"]);
+                Route::put("language", ["as" => "language.update", "uses" => "LanguageSettingController@update"]);
             });
         Route::resource("setting", "SettingController", ["as" => "admin"]);
 
@@ -237,16 +240,16 @@ Route::group(
         //PStructureAttrKey
         Route::group(["prefix" => "p-structure-attr-key", "as" => "admin.p-structure-attr-key."],
             function () {
-                Route::any("query", ["as" => "query", "uses" => "ProductStructureAttributeKeyController@query"]);
+                Route::any("query", ["as" => "query", "uses" => "PStructureAttrKeyController@query"]);
             });
-        Route::resource("p-structure-attr-key", "ProductStructureAttributeKeyController", ["as" => "admin"]);
+        Route::resource("p-structure-attr-key", "PStructureAttrKeyController", ["as" => "admin"]);
 
         //PStructureAttrValue
         Route::group(["prefix" => "p-structure-attr-value", "as" => "admin.p-structure-attr-value."],
             function () {
-                Route::any("{p_structure_attr_value}/remove-image", ["as" => "remove-image", "uses" => "ProductStructureAttributeValueController@removeImage"]);
+                Route::any("{p_structure_attr_value}/remove-image", ["as" => "remove-image", "uses" => "PStructureAttrValueController@removeImage"]);
             });
-        Route::resource("p-structure-attr-value", "ProductStructureAttributeValueController", ["as" => "admin"]);
+        Route::resource("p-structure-attr-value", "PStructureAttrValueController", ["as" => "admin"]);
 
         //Product
         Route::group(["prefix" => "product", "as" => "admin.product."],
@@ -294,11 +297,11 @@ Route::group(
         Route::group(["prefix" => "p-structure", "as" => "admin.p-structure."],
             function () {
                 Route::post("{p_structure}/attach-attribute-key",
-                    ["as" => "attach-attribute-key", "uses" => "ProductStructureController@attachAttributeKey"]);
+                    ["as" => "attach-attribute-key", "uses" => "PStructureController@attachAttributeKey"]);
                 Route::post("{p_structure}/detach-attribute-key",
-                    ["as" => "detach-attribute-key", "uses" => "ProductStructureController@detachAttributeKey"]);
+                    ["as" => "detach-attribute-key", "uses" => "PStructureController@detachAttributeKey"]);
             });
-        Route::resource("p-structure", "ProductStructureController", ["as" => "admin"]);
+        Route::resource("p-structure", "PStructureController", ["as" => "admin"]);
 
         //ProductQuery
         Route::group(["prefix" => "product-query", "as" => "admin.product-query."],
@@ -372,6 +375,12 @@ Route::group(
             });
         Route::resource("action-log", "ActionLogController", ["as" => "admin"]);
 
+        //Translate
+        Route::group(["prefix" => "model-translation", "as" => "admin.model-translation."], function () {
+            Route::post("edit", ["as" => "edit", "uses" => "ModelTranslationController@edit"]);
+            Route::put("update", ["as" => "update", "uses" => "ModelTranslationController@update"]);
+        });
+
         //Null
         Route::any("null", ["as" => "admin.null", "uses" => "AdminController@nullMethod"]);
 
@@ -430,6 +439,7 @@ Route::group(
         //ModalRoute
         Route::resource("modal-route", "ModalRouteController", ["as" => "admin"]);
     });
+
 
 //Customer auth routes
 Route::group(
@@ -585,3 +595,4 @@ Route::get("/product/{product}/{any}", "HomeController@showProduct")->where("any
 Route::get("/blog/{article}", ["as" => "public.view-blog", "uses" => "HomeController@showBlog"]);
 Route::get("/blog/{article}/{any}", "HomeController@showBlog")->where("any", ".*");
 Route::get("/{any}", "HomeController@main")->where("any", ".*");
+

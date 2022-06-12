@@ -14,10 +14,14 @@ use App\Models\Traits\Fileable;
 use App\Models\Traits\Rateable;
 use App\Models\Traits\Seoable;
 use App\Utils\Common\ImageService;
+use App\Utils\Translation\Traits\Translatable;
 use DateTime;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
  * @property integer id
@@ -49,7 +53,7 @@ class Article extends BaseModel implements
     FileAbstractionContract, ShareContract, PublishScheduleContract, ImageContract,
     RateableContract, SeoableContract, HashContract
 {
-    use Rateable, Seoable, Fileable;
+    use Rateable, Seoable, Fileable, Translatable;
 
     protected $table = 'articles';
     public $timestamps = true;
@@ -65,72 +69,51 @@ class Article extends BaseModel implements
     static protected array $SORTABLE_FIELDS = ['id', 'title', 'created_at'];
     static protected array $SEARCHABLE_FIELDS = ['seo_keywords', 'title', 'short_content'];
     static protected int $FRONT_PAGINATION_COUNT = 12;
+    protected static array $TRANSLATABLE_FIELDS = [
+        "title" => ["string", "input:text"],
+        "short_content" => ["text", "textarea:normal"],
+        "source" => ["string", "input:text"],
+        "seo_keywords" => ["text", "textarea:normal"],
+        "seo_description" => ["text", "textarea:normal"],
+        "full_text" => ["mediumText", "textarea:rich"],
+    ];
 
     /*
      * Relation Methods
      */
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function directory()
+    public function directory(): BelongsTo
     {
-        return $this->belongsTo('\\App\\Models\\Directory', 'directory_id');
+        return $this->belongsTo(Directory::class, 'directory_id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function directories()
+    public function directories(): BelongsToMany
     {
-        return $this->belongsToMany('\\App\\Models\\Directory', 'article_directory',
+        return $this->belongsToMany(Directory::class, 'article_directory',
             'article_id', 'directory_id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
-     */
-    public function tags()
+    public function tags(): MorphToMany
     {
-        return $this->morphToMany('\\App\\Models\\Tag', 'taggable');
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function author()
+    public function author(): BelongsTo
     {
-        return $this->belongsTo('\\App\\Models\\SystemUser', 'system_user_id');
+        return $this->belongsTo(SystemUser::class, 'system_user_id');
     }
 
-    /*
-     * Scope Methods
-     */
-    /**
-     * @param Builder $query
-     * @return Builder
-     */
-    public function scopeLatest(Builder $query)
+    public function scopeLatest(Builder $query): Builder
     {
         return $query->orderBy('id', 'DESC');
     }
 
-    /**
-     * @param Builder $query
-     * @param integer $id
-     * @return Builder
-     */
-    public function scopeExcept(Builder $query, $id)
+    public function scopeExcept(Builder $query, int $id): Builder
     {
         return $query->where('id', '!=', $id);
     }
 
-    /**
-     * @param Builder $query
-     * @param string $type
-     * @return Builder
-     */
-    public function scopeFrom(Builder $query, $type)
+    public function scopeFrom(Builder $query, $type): Builder
     {
         $contentType = 0;
         foreach (get_article_types() as $key => $value)
@@ -139,19 +122,12 @@ class Article extends BaseModel implements
         return $query->where('content_type', $contentType);
     }
 
-    /**
-     * @param Builder $query
-     * @return Builder
-     */
-    public function scopeSuggested(Builder $query)
+    public function scopeSuggested(Builder $query): Builder
     {
         return $query->where('is_suggested', true);
     }
 
-    /*
-     * OverWritten Methods
-     */
-    public function delete()
+    public function delete(): ?bool
     {
         $this->rates()->delete();
         $this->tags()->detach();
@@ -160,17 +136,12 @@ class Article extends BaseModel implements
         return parent::delete();
     }
 
-
-    /*
-     * Image Methods
-     */
-
-    public function hasImage()
+    public function hasImage(): bool
     {
         return $this->image_path != null;
     }
 
-    public function getImagePath()
+    public function getImagePath(): string
     {
         return $this->image_path;
     }
@@ -188,94 +159,75 @@ class Article extends BaseModel implements
         $this->save();
     }
 
-    public function getDefaultImagePath()
+    public function getDefaultImagePath(): string
     {
         return '/admin_dashboard/images/No_image.jpg.png';
     }
 
-    public function getImageCategoryName()
+    public function getImageCategoryName(): string
     {
         return 'blog';
     }
 
-    /**
-     * @return int
-     */
-    public static function getFrontPaginationCount()
+    public static function getFrontPaginationCount(): int
     {
         return self::$FRONT_PAGINATION_COUNT;
     }
 
-    /*
-     * Helper Methods
-     */
-    public function parentField()
+    public function parentField(): string
     {
         return 'directory_id';
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->title;
     }
 
-    public function getAdminUrl()
+    public function getAdminUrl(): string
     {
         return route('admin.article.show', $this);
     }
 
-    public function getFrontUrl()
+    public function getFrontUrl(): string
     {
         return route('public.view-blog', $this) . '/' . url_encode($this->title);
     }
 
-    /**
-     * @return string
-     */
     public function getSearchUrl(): string
     {
         return '';
     }
 
-    /**
-     * @return string
-     */
     public function getTitle(): string
     {
         return $this->title;
     }
 
-    public function getSeoTitle()
+    public function getSeoTitle(): string
     {
         return $this->getTitle() . ' - ' . $this->directory->title;
     }
 
 
-    public function getSeoDescription()
+    public function getSeoDescription(): string
     {
         return $this->seo_description;
     }
 
-    public function getSeoKeywords()
+    public function getSeoKeywords(): string
     {
         return $this->seo_keywords;
     }
 
-    /**
-     * @param Directory|null $dest
-     */
     public function attachFileTo($dest)
     {
-        $this->directory_id = $dest != null ? $dest->id : null;
+        $this->directory_id = $dest?->id;
         $this->save();
-        if ($dest != null)
-            $dest->attachLeafFiles($this->id);
+        $dest?->attachLeafFiles($this->id);
     }
 
     /**
-     * fill $dest param to detach more efficiently.
-     * @param Directory|null $dest
-     * @return mixed
      * @throws Exception
      */
     public function detachFile($dest = null)
@@ -302,9 +254,6 @@ class Article extends BaseModel implements
         }
     }
 
-    /**
-     * @return Model|FileContract
-     */
     public function cloneFile()
     {
         $newArticle = $this->replicate();
@@ -313,17 +262,13 @@ class Article extends BaseModel implements
         return $newArticle;
     }
 
-    /**
-     * @param $dest
-     * @return void
-     */
     public function generateNewUrls($dest)
     {
         // TODO: Implement generateNewUrls() method.
         $this->save();
     }
 
-    public function getHash()
+    public function getHash(): string
     {
         return md5(
             $this->system_user_id . "#",
@@ -340,7 +285,7 @@ class Article extends BaseModel implements
         );
     }
 
-    public function isImageLocal()
+    public function isImageLocal(): bool
     {
         return true;
     }

@@ -39,6 +39,7 @@ return [
         "payment_driver" => 'درگاه های پرداخت',
         "financial_driver" => 'حسابداری و انبارداری',
         "sms_driver" => 'ارسال پیامک',
+        "language" => 'زبان ها',
         "color_management" => "مدیریت رنگ‌ها"
     ],
     "shop" => [

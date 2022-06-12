@@ -7,7 +7,7 @@ use App\Models\Directory;
 use App\Models\Enums\DirectoryType;
 use App\Models\ModifiedUrl;
 use App\Models\Product;
-use App\Models\ProductAttribute;
+use App\Models\PAttr;
 use App\Models\ShortLink;
 use App\Utils\CMS\ProductService;
 use Exception;
@@ -97,7 +97,7 @@ class HomeController extends Controller
     public function showProduct(Product $product): Factory|Application|View
     {
         if ($product->is_visible or (get_user() != false and get_user()->is_system_user)) {
-            $attributes = ProductAttribute::getProductAttributes($product);
+            $attributes = PAttr::getProductAttributes($product);
             $blade_name = $product->productStructure->blade_name ?: 'product-single';
 
             return h_view("public.{$blade_name}", [

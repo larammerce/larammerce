@@ -46,10 +46,12 @@ abstract class AbstractSettingService
     {
         if (static::validateName($name)) {
             $result = null;
-            if (static::$SETTING_TYPE == SettingType::LOCAL_SETTING)
+            if (static::$SETTING_TYPE == SettingType::LOCAL_SETTING){
                 $result = SettingService::getLocal(static::getKey($name, $parent_id), static::$DRIVER);
-            else if (static::$SETTING_TYPE == SettingType::GLOBAL_SETTING)
+            }
+            else if (static::$SETTING_TYPE == SettingType::GLOBAL_SETTING){
                 $result = SettingService::getGlobal(static::getKey($name, $parent_id), static::$DRIVER);
+            }
 
             if ($result == null or $result->data == null) {
                 return static::defaultRecord($name);

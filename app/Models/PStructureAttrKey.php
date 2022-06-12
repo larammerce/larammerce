@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Jobs\UpdateProductsStructureSortScore;
 use App\Models\Interfaces\TagContract as TaggableContract;
 use App\Models\Traits\Taggable;
+use App\Utils\Translation\Traits\Translatable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -16,18 +17,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property boolean is_model_option
  * @property boolean is_sortable
  *
- * @property ProductStructure[] productStructures
- * @property ProductStructureAttributeValue[] values
- * @property ProductAttribute[] attributes
+ * @property PStructure[] productStructures
+ * @property PStructureAttrValue[] values
+ * @property PAttr[] attributes
  * @property Product[] products
  *
  *
- * Class ProductStructureAttributeKey
+ * Class PStructureAttrKey
  * @package App\Models
  */
-class ProductStructureAttributeKey extends BaseModel implements TaggableContract
+class PStructureAttrKey extends BaseModel implements TaggableContract
 {
-    use Taggable;
+    use Taggable, Translatable;
 
     protected $table = 'p_structure_attr_keys';
 
@@ -39,19 +40,22 @@ class ProductStructureAttributeKey extends BaseModel implements TaggableContract
 
     protected static array $SORTABLE_FIELDS = ['id', 'title', 'priority'];
 
+    protected static array $TRANSLATABLE_FIELDS = [
+        'title' => ['string', 'input:text']
+    ];
 
     /*
      * Relations Methods
      */
     public function productStructures(): BelongsToMany
     {
-        return $this->belongsToMany(ProductStructure::class, 'p_structure_attrs',
+        return $this->belongsToMany(PStructure::class, 'p_structure_attrs',
             'p_structure_attr_key_id', 'p_structure_id');
     }
 
     public function values(): HasMany
     {
-        return $this->hasMany(ProductStructureAttributeValue::class, 'p_structure_attr_key_id');
+        return $this->hasMany(PStructureAttrValue::class, 'p_structure_attr_key_id');
     }
 
     public function products(): BelongsToMany
@@ -62,7 +66,7 @@ class ProductStructureAttributeKey extends BaseModel implements TaggableContract
 
     public function attributes(): HasMany
     {
-        return $this->hasMany(ProductAttribute::class, 'p_structure_attr_key_id');
+        return $this->hasMany(PAttr::class, 'p_structure_attr_key_id');
     }
 
 
@@ -95,7 +99,7 @@ class ProductStructureAttributeKey extends BaseModel implements TaggableContract
 
     public static function getFilterBladeKeys($productsIds)
     {
-        return ProductStructureAttributeKey::whereHas('attributes', function ($query) use ($productsIds) {
+        return PStructureAttrKey::whereHas('attributes', function ($query) use ($productsIds) {
             // to filter keys that are used in selected products
             $query->whereIn('product_id', $productsIds);
         }, '>=', count($productsIds))->with(['values' => function ($query) use ($productsIds) {

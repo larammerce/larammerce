@@ -19,7 +19,6 @@ class ProvinceCitiesTableSeeder extends Seeder
         $contents = json_decode(file_get_contents(public_path() . '/primary_data/province-cities.json'));
         $province_id = 1;
         $important_cities = ["تهران"];
-        $current_country = env('SITE_CURRENT_COUNTRY', 'iran');
 
         foreach ($contents[0]->iran as $content) {
             DB::table('states')->insert([

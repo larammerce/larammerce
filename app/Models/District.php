@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Interfaces\TagContract as TagContract;
 use App\Models\Traits\Taggable;
+use App\Utils\Translation\Traits\Translatable;
 
 /**
  * @property integer id
@@ -18,7 +19,7 @@ use App\Models\Traits\Taggable;
  */
 class District extends BaseModel implements TagContract
 {
-    use Taggable;
+    use Taggable, Translatable;
 
     protected $table = 'districts';
     protected $fillable = [
@@ -28,6 +29,9 @@ class District extends BaseModel implements TagContract
     protected static array $SORTABLE_FIELDS = ['id', 'name'];
     protected static array $SEARCHABLE_FIELDS = ['name'];
 
+    protected static array $TRANSLATABLE_FIELDS = [
+        'name' => ['string', 'input:text']
+    ];
 
     /*
      * Relations Methods

@@ -41,7 +41,7 @@ $factory->define(App\Models\Product::class, function (Faker $faker) {
     ];
 });
 
-$factory->define(App\Models\ProductStructure::class, function (Faker $faker) {
+$factory->define(App\Models\PStructure::class, function (Faker $faker) {
     return [
         'title' => $faker->unique()->title,
     ];

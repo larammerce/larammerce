@@ -16,13 +16,13 @@ use stdClass;
  * @property integer p_structure_attr_value_id
  *
  * @property Product product
- * @property ProductStructureAttributeKey key
- * @property ProductStructureAttributeValue value
+ * @property PStructureAttrKey key
+ * @property PStructureAttrValue value
  *
  * Class ProductAttribute
  * @package App\Models
  */
-class ProductAttribute extends BaseModel
+class PAttr extends BaseModel
 {
     protected $table = 'p_attr_assignments';
 
@@ -42,7 +42,7 @@ class ProductAttribute extends BaseModel
      */
     public function product()
     {
-        return $this->belongsTo('\\App\\Models\\Product', 'product_id');
+        return $this->belongsTo(Product::class, 'product_id');
     }
 
     /**
@@ -50,7 +50,7 @@ class ProductAttribute extends BaseModel
      */
     public function value()
     {
-        return $this->belongsTo('\\App\\Models\\ProductStructureAttributeValue', 'p_structure_attr_value_id');
+        return $this->belongsTo(PStructureAttrValue::class, 'p_structure_attr_value_id');
     }
 
     /**
@@ -58,7 +58,7 @@ class ProductAttribute extends BaseModel
      */
     public function key()
     {
-        return $this->belongsTo('\\App\\Models\\ProductStructureAttributeKey', 'p_structure_attr_key_id');
+        return $this->belongsTo(PStructureAttrKey::class, 'p_structure_attr_key_id');
     }
 
     /*
@@ -90,19 +90,19 @@ class ProductAttribute extends BaseModel
      */
     public static function clean($products, $keyId)
     {
-        try{
+        try {
             foreach ($products as $product) {
                 foreach ($product->attributeValues as $attributeValue) {
                     if ($attributeValue->p_structure_attr_key_id == $keyId)
                         $attributeValue->delete();
                 }
                 if (isset($product) and $product != null)
-                    ProductAttribute::where('product_id', '=', $product->id)
+                    PAttr::where('product_id', '=', $product->id)
                         ->where('p_structure_attr_key_id', '=', $keyId)
                         ->delete();
             }
-        }catch (\Exception $exception){
-            Log::error('productAttribute detach key failed : '.$exception->getMessage());
+        } catch (\Exception $exception) {
+            Log::error('productAttribute detach key failed : ' . $exception->getMessage());
         }
     }
 
@@ -115,15 +115,15 @@ class ProductAttribute extends BaseModel
         $modelOptions = new stdClass();
         $modelOptions->title = "";
         $modelOptions->items = [];
-        $optionKeys = [];
+        $option_keys = [];
 
         if (config('cms.general.site.model_options')) {
             $productModelIds = Product::models($product, false)
                 ->orderBy('id', 'DESC')->where('color_code', '=', $product->color_code)
                 ->pluck('id')->toArray();
 
-            if(count($productModelIds) > 1){
-                $pAttributesTmp = DB::table(DB::raw('p_attr_assignments as paa1'))
+            if (count($productModelIds) > 1) {
+                $tmp_p_attributes = DB::table(DB::raw('p_attr_assignments as paa1'))
                     ->select(DB::raw("*, count(paa1.p_structure_attr_value_id) as paavc1"))
                     ->whereIn('paa1.product_id', $productModelIds)
                     ->join('p_structure_attr_keys as psak1', 'paa1.p_structure_attr_key_id', '=', 'psak1.id')
@@ -132,54 +132,50 @@ class ProductAttribute extends BaseModel
                     ->having('paavc1', '=', 1)
                     ->join('p_structure_attr_values as psav1', 'paa1.p_structure_attr_value_id', '=', 'psav1.id')->get();
 
-                $pAttributesCounts = [];
-                foreach ($pAttributesTmp as $pAttribute) {
-                    if (!isset($pAttributesCounts[$pAttribute->p_structure_attr_key_id]))
-                        $pAttributesCounts[$pAttribute->p_structure_attr_key_id] = 1;
+                $p_attributes_counts = [];
+                foreach ($tmp_p_attributes as $tmp_p_attribute) {
+                    if (!isset($p_attributes_counts[$tmp_p_attribute->p_structure_attr_key_id]))
+                        $p_attributes_counts[$tmp_p_attribute->p_structure_attr_key_id] = 1;
                     else
-                        $pAttributesCounts[$pAttribute->p_structure_attr_key_id] += 1;
+                        $p_attributes_counts[$tmp_p_attribute->p_structure_attr_key_id] += 1;
 
-                    if (!isset($modelOptions->items[$pAttribute->product_id])) {
-                        $modelOptions->items[$pAttribute->product_id] = $pAttribute;
-                        $modelOptions->items[$pAttribute->product_id]->name = [$pAttribute->name];
+                    if (!isset($modelOptions->items[$tmp_p_attribute->product_id])) {
+                        $modelOptions->items[$tmp_p_attribute->product_id] = $tmp_p_attribute;
+                        $modelOptions->items[$tmp_p_attribute->product_id]->name = [$tmp_p_attribute->name];
                     } else {
-                        $modelOptions->items[$pAttribute->product_id]->name[] = $pAttribute->name;
+                        $modelOptions->items[$tmp_p_attribute->product_id]->name[] = $tmp_p_attribute->name;
                     }
                 }
 
-                foreach ($pAttributesCounts as $key => $count) {
+                foreach ($p_attributes_counts as $key => $count) {
                     if ($count != count($productModelIds)) {
-                        unset($pAttributesCounts[$key]);
+                        unset($p_attributes_counts[$key]);
                     }
                 }
 
-                $optionKeys = array_keys($pAttributesCounts);
-                $modelOptions->title = count($optionKeys) == 1 ? $pAttributesTmp[0]->title :
+                $option_keys = array_keys($p_attributes_counts);
+                $modelOptions->title = count($option_keys) == 1 ? $tmp_p_attributes[0]->title :
                     Lang::get("ecommerce.product.other_models");
             }
         }
 
-        $pAttributesTmp = DB::table(DB::raw('p_attr_assignments as paa1'))->select("*")
-            ->where('paa1.product_id', '=', $product->id)
-            ->whereNotIn('paa1.p_structure_attr_key_id', $optionKeys)
-            ->join('p_structure_attr_keys as psak1', 'paa1.p_structure_attr_key_id', '=', 'psak1.id')
-            ->join('p_structure_attr_values as psav1', 'paa1.p_structure_attr_value_id', '=', 'psav1.id')
-            ->orderBy('paa1.p_structure_attr_key_id', 'ASC')
+        $tmp_p_attributes = static::where('product_id', '=', $product->id)
+            ->whereNotIn('p_structure_attr_key_id', $option_keys)
+            ->orderBy('p_structure_attr_key_id', 'ASC')
+            ->with(["key", "value"])
             ->get();
 
         $attributes = [];
-        foreach ($pAttributesTmp as $pAttr){
-            if(isset($attributes[$pAttr->p_structure_attr_key_id])){
-                $attributes[$pAttr->p_structure_attr_key_id]->values[] = $pAttr;
-            }else{
-                $attributes[$pAttr->p_structure_attr_key_id] = $pAttr;
-                $attributes[$pAttr->p_structure_attr_key_id]->values = [$pAttr];
+        foreach ($tmp_p_attributes as $p_attr) {
+            if (isset($attributes[$p_attr->p_structure_attr_key_id])) {
+                $attributes[$p_attr->p_structure_attr_key_id]->values[] = $p_attr->value;
+            } else {
+                $attributes[$p_attr->p_structure_attr_key_id] = new stdClass();
+                $attributes[$p_attr->p_structure_attr_key_id]->key = $p_attr->key;
+                $attributes[$p_attr->p_structure_attr_key_id]->values = [$p_attr->value];
             }
         }
 
-        return [
-            "modelOptions" => $modelOptions,
-            "attributes" => $attributes
-        ];
+        return compact("attributes", "modelOptions");
     }
 }

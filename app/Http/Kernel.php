@@ -14,17 +14,18 @@ use App\Http\Middleware\JsonMiddleware;
 use App\Http\Middleware\MobileAuthMiddleware;
 use App\Http\Middleware\PermissionMiddleware;
 use App\Http\Middleware\RobotTxtLockMiddleware;
-use App\Http\Middleware\RoleMiddleware;
 use App\Http\Middleware\RuleMiddleware;
+use App\Http\Middleware\Translate;
 use App\Http\Middleware\VerifyCsrfToken;
 use App\Utils\CMS\AdminRequestService;
+use App\Utils\CMS\Setting\Language\LanguageSettingService;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Arr;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Symfony\Component\HttpFoundation\Response;
 
 class Kernel extends HttpKernel
 {
@@ -54,8 +55,9 @@ class Kernel extends HttpKernel
             AddQueuedCookiesToResponse::class,
             StartSession::class,
             ShareErrorsFromSession::class,
+            Translate::class,
             VerifyCsrfToken::class,
-            SubstituteBindings::class
+            SubstituteBindings::class,
         ],
 
         'api' => [
@@ -94,13 +96,22 @@ class Kernel extends HttpKernel
         'global' => GlobalMiddleware::class
     ];
 
-    /**
-     * @param \Illuminate\Http\Request $request
-     * @return Response|RedirectResponse
-     */
-    protected function sendRequestThroughRouter($request)
+    protected function sendRequestThroughRouter($request): Response
     {
-        AdminRequestService::setInAdminArea($request);
-        return parent::sendRequestThroughRouter($request);
+        $new_request = $request;
+        AdminRequestService::setInAdminArea($new_request);
+        $enabled_locales = LanguageSettingService::getEnabledLocalesFromEnvFile();
+        if ($request->getMethod() == "GET" and !AdminRequestService::IsInAdminArea($request) and count($enabled_locales) > 1) {
+            $request_segments = $request->segments();
+            $locale = Arr::pull($request_segments, 0, "");
+            if (in_array($locale, $enabled_locales)) {
+                $new_request = $request->duplicate();
+                $new_request->merge(["locale" => $locale]);
+                $new_request->server->set("REQUEST_URI", implode("/", $request_segments));
+            } else {
+                $new_request->merge(["locale_fallback" => true]);
+            }
+        }
+        return parent::sendRequestThroughRouter($new_request);
     }
 }

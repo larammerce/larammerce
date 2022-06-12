@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Directory;
 use App\Models\Product;
-use App\Models\ProductAttribute;
+use App\Models\PAttr;
 use App\Models\ProductFilter;
-use App\Models\ProductStructure;
-use App\Models\ProductStructureAttributeKey;
+use App\Models\PStructure;
+use App\Models\PStructureAttrKey;
 use App\Utils\CMS\File\ExploreService;
 use App\Utils\CMS\FormService;
 use App\Utils\CMS\SiteMap\Provider as SiteMapProvider;
@@ -79,7 +79,7 @@ class ProductController extends BaseController
             }
         }
         $directory = Directory::find($directoryId);
-        $productStructures = ProductStructure::all();
+        $productStructures = PStructure::all();
         return view('admin.pages.product.create', compact('productStructures', 'directory'));
     }
 
@@ -161,9 +161,9 @@ class ProductController extends BaseController
      * @rules(id="required|exists:p_structure_attr_values,id")
      */
 
-    public function attachAttribute(Request $request, Product $product, ProductStructureAttributeKey $key): JsonResponse|RedirectResponse
+    public function attachAttribute(Request $request, Product $product, PStructureAttrKey $key): JsonResponse|RedirectResponse
     {
-        ProductAttribute::create([
+        PAttr::create([
             "product_id" => $product->id,
             "p_structure_attr_key_id" => $key->id,
             "p_structure_attr_value_id" => $request->get('id'),
@@ -188,7 +188,7 @@ class ProductController extends BaseController
      * @role(super_user, cms_manager, acc_manager)
      * @rules(id="required|exists:p_structure_attr_values,id")
      */
-    public function detachAttribute(Request $request, Product $product, ProductStructureAttributeKey $key): JsonResponse|RedirectResponse
+    public function detachAttribute(Request $request, Product $product, PStructureAttrKey $key): JsonResponse|RedirectResponse
     {
         $product->pAttributes()
             ->where('p_structure_attr_key_id', '=', $key->id)

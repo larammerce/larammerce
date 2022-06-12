@@ -6,6 +6,7 @@ use App\Models\Interfaces\ImageContract;
 use App\Models\Interfaces\TagContract as TaggableContract;
 use App\Models\Traits\Taggable;
 use App\Utils\Common\ImageService;
+use App\Utils\Translation\Traits\Translatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -16,16 +17,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string image_alias
  * @property integer priority
  *
- * @property ProductStructureAttributeKey key
- * @property ProductAttribute[] attributes
+ * @property PStructureAttrKey key
+ * @property PAttr[] attributes
  * @property Product[] products
  *
- * Class ProductStructureAttributeValue
+ * Class PStructureAttrValue
  * @package App\Models
  */
-class ProductStructureAttributeValue extends BaseModel implements TaggableContract, ImageContract
+class PStructureAttrValue extends BaseModel implements TaggableContract, ImageContract
 {
-    use Taggable;
+    use Taggable, Translatable;
 
     protected $table = 'p_structure_attr_values';
 
@@ -37,6 +38,9 @@ class ProductStructureAttributeValue extends BaseModel implements TaggableContra
 
     protected static array $SORTABLE_FIELDS = ['id', 'name'];
 
+    protected static array $TRANSLATABLE_FIELDS = [
+        'name' => ['string', 'input:text']
+    ];
 
     /*
      * Relations Methods
@@ -47,7 +51,7 @@ class ProductStructureAttributeValue extends BaseModel implements TaggableContra
      */
     public function key()
     {
-        return $this->belongsTo('\\App\\Models\\ProductStructureAttributeKey', 'p_structure_attr_key_id');
+        return $this->belongsTo('\\App\\Models\\PStructureAttrKey', 'p_structure_attr_key_id');
     }
 
     /**
@@ -61,7 +65,7 @@ class ProductStructureAttributeValue extends BaseModel implements TaggableContra
 
     public function attributes(): HasMany
     {
-        return $this->hasMany(ProductAttribute::class, 'p_structure_attr_value_id');
+        return $this->hasMany(PAttr::class, 'p_structure_attr_value_id');
     }
 
     public function getText(): string

@@ -26,8 +26,8 @@ class ConfigProvider
     {
         if (count(self::$CACHED_DATA) == 0 or !array_key_exists($driver_id, self::$CACHED_DATA))
         {
-            $payment_driver_setting_record = SMSDriverService::getRecord($driver_id);
-            self::$CACHED_DATA[$driver_id] = unserialize($payment_driver_setting_record->getConfigModel());
+            $sms_driver_setting_record = SMSDriverService::getRecord($driver_id);
+            self::$CACHED_DATA[$driver_id] = unserialize($sms_driver_setting_record->getConfigModel());
         }
         return self::$CACHED_DATA[$driver_id];
     }

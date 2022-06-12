@@ -13,10 +13,10 @@
 @endsection
 
 @section('form_body')
-    <input class="form-control input-sm" type="hidden" name="p_structure_attr_key_id" value="{{$key->id}}">
+    <input class="form-control input-sm" type="hidden" name="p_structure_attr_key_id" value="{{$p_structure_attr_key->id}}">
     <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
         <span class="label">نام کلید</span>
-        <input class="form-control input-sm" type="text" value="{{$key->title}}" disabled>
+        <input class="form-control input-sm" type="text" value="{{$p_structure_attr_key->title}}" disabled>
     </div>
     <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
         <span class="label">نام</span>
