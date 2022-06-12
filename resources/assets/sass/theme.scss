@@ -1,0 +1,104 @@
+*::-webkit-scrollbar {
+  display: none;
+}
+
+h1, h2, h3, h4, h5, h6, p, a, body {
+  font-family: $font-main;
+}
+
+a, a:hover, a:focus {
+  text-decoration: none;
+}
+
+.modal-backdrop.in {
+  opacity: 0.8;
+}
+
+.text-editor {
+  padding: 0;
+}
+
+.fab {
+  button {
+    color: rgb(255, 255, 255);
+    background-color: rgb(255, 82, 82);
+
+    &:hover {
+      background-color: rgb(213, 0, 0);
+    }
+  }
+
+  &.green {
+    button {
+      color: rgb(255, 255, 255);
+      background-color: rgb(154, 206, 90);
+
+      &:hover {
+        background-color: rgb(123, 165, 73);
+      }
+    }
+  }
+
+  &.red {
+    button {
+      color: rgb(255, 255, 255);
+      background-color: rgb(255, 82, 82);
+
+      &:hover {
+        background-color: rgb(213, 0, 0);
+      }
+    }
+  }
+
+  &.orange {
+    button {
+      color: rgb(255, 255, 255);
+      background-color: rgb(255, 150, 85);
+
+      &:hover {
+        background-color: rgb(213, 86, 0);
+      }
+    }
+  }
+
+  &.gray {
+    button {
+      color: rgb(255, 255, 255);
+      background-color: rgb(142, 142, 143);
+
+      &:hover {
+        background-color: rgb(83, 83, 83);
+      }
+    }
+  }
+
+  &.purple {
+    button {
+      color: rgb(255, 255, 255);
+      background-color: rgb(187, 82, 255);
+
+      &:hover {
+        background-color: rgb(213, 0, 198);
+      }
+    }
+  }
+
+  &.blue {
+    button {
+      color: rgb(255, 255, 255);
+      background-color: rgb(80, 167, 255);
+
+      &:hover {
+        background-color: rgb(1, 91, 213);
+      }
+    }
+  }
+}
+
+a,.btn, button {
+  outline: none !important;
+}
+
+.no-padding {
+  padding: 0 !important;
+}

@@ -1,0 +1,14 @@
+[
+    {
+        "level": "SEVERE",
+        "message": "https:\/\/cdn.yektanet.com\/rg_woebegone\/scripts_v3\/SF9ZIY6s\/rg.complete.js?v=202201026020 7:13236 \"This script won't run on localhost\"",
+        "source": "console-api",
+        "timestamp": 1645894100496
+    },
+    {
+        "level": "SEVERE",
+        "message": "http:\/\/localhost:8080\/HCMS-assets\/js\/lib\/jquery.ba-hashchange.min.js 8:686 Uncaught TypeError: Cannot read properties of undefined (reading 'msie')",
+        "source": "javascript",
+        "timestamp": 1645894100716
+    }
+]

@@ -1,0 +1,29 @@
+#customer-meta-category-edit {
+  .dynamic-form-container {
+    margin: 0;
+
+    .input-group.group-sm {
+      float: right;
+      padding-left: 15px;
+    }
+
+    .actions-container {
+      white-space: nowrap;
+      position: relative;
+      display: block;
+      text-align: center;
+      margin-top: 4px;
+
+      a.btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 15px;
+
+        i {
+          margin-right: -1px;
+          display: inline-block;
+        }
+      }
+    }
+  }
+}

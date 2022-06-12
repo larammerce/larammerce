@@ -1,0 +1,67 @@
+version: "3"
+services:
+  php-fpm:
+    build: ./runtimes/php-fpm
+    restart: always
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+
+  php-cli:
+    build: ./runtimes/php-cli
+    working_dir: /app
+    volumes:
+      - ./:/app
+
+  nginx:
+    depends_on:
+      - mysql
+      - php-fpm
+      - php-cli
+    image: nginx:1.12-alpine
+    restart: always
+    working_dir: /var/www
+    volumes:
+      - ./runtimes/nginx/conf.d:/etc/nginx/conf.d
+      - ./:/var/www
+    ports:
+      - 80:80
+
+  mysql:
+    image: mysql:5.7
+    restart: always
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: MySql@123!
+      MYSQL_DATABASE: larammerce
+      MYSQL_USER: larammerce
+      MYSQL_PASSWORD: MySql@123!
+    networks:
+      - larammerce
+
+  phpmyadmin:
+    depends_on:
+      - mysql
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: MySql@123!
+    networks:
+      - larammerce
+
+  redis:
+    image: redis:3-alpine
+    volumes:
+      - db_data:/data
+    networks:
+      - larammerce
+
+volumes:
+  db_data:
+
+networks:
+  larammerce:

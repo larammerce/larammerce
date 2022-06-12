@@ -1,0 +1,46 @@
+@font-face {
+  font-family: 'persiansans';
+  font-style: normal;
+  font-weight: normal;
+  src: url('/admin_dashboard/fonts/sans/iransans.eot');
+  src: url('/admin_dashboard/fonts/sans/iransans.eot?#') format('embedded-opentype'),
+  url('/admin_dashboard/fonts/sans/iransans.ttf') format('truetype'),
+  url('/admin_dashboard/fonts/sans/iransans.woff2') format('woff2'),
+  url('/admin_dashboard/fonts/sans/iransans.woff') format('woff');
+  unicode-range: U+02B0-02FF, U+0600-06FF, U+2000-206F;
+}
+
+@font-face {
+  font-family: 'persiansans';
+  font-style: normal;
+  font-weight: 300;
+  src: url('/admin_dashboard/fonts/sans/iransans_light.eot');
+  src: url('/admin_dashboard/fonts/sans/iransans_light.eot?#iefix') format('embedded-opentype'),
+  url('/admin_dashboard/fonts/sans/iransans_light.ttf') format('truetype'),
+  url('/admin_dashboard/fonts/sans/iransans_light.woff2') format('woff2'),
+  url('/admin_dashboard/fonts/sans/iransans_light.woff') format('woff');
+  unicode-range: U+02B0-02FF, U+0600-06FF, U+2000-206F;
+}
+
+@font-face {
+  font-family: 'persiansans';
+  font-style: normal;
+  font-weight: bold;
+  src: url('/admin_dashboard/fonts/sans/iransans_bold.eot');
+  src: url('/admin_dashboard/fonts/sans/iransans_bold.eot?#') format('embedded-opentype'),
+  url('/admin_dashboard/fonts/sans/iransans_bold.ttf') format('truetype'),
+  url('/admin_dashboard/fonts/sans/iransans_bold.woff2') format('woff2'),
+  url('/admin_dashboard/fonts/sans/iransans_bold.woff') format('woff');
+  unicode-range: U+02B0-02FF, U+0600-06FF, U+2000-206F;
+}
+
+@font-face {
+  font-family: 'byekan';
+  src: url('/admin_dashboard/fonts/yekan/byekan.svg');
+  src: url('/admin_dashboard/fonts/yekan/byekan.eot') format('embedded-opentype'),
+  url('/admin_dashboard/fonts/yekan/byekan.woff') format('woff'),
+  url('/admin_dashboard/fonts/yekan/byekan.ttf') format('truetype'),
+  url('/admin_dashboard/fonts/yekan/byekan.svg') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}

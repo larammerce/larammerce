@@ -1,0 +1,67 @@
+.main-content {
+  .explore-view-container {
+    .appliance-container {
+      float: right;
+      position: relative;
+      min-height: 150px;
+      max-height: 200px;
+      a.appliance-content {
+        color: $color-apps-nav-back;
+        text-decoration: none;
+
+        .appliance-detail {
+          h3 {
+            font-size: 12px;
+            margin: 0;
+            text-align: center;
+            direction: rtl;
+            background: $color-toolbar-back;
+            padding: 5px;
+            @include border-radius(5px);
+          }
+        }
+      }
+    }
+
+    .view-port {
+      .appliance-container {
+        .h-icon {
+          position: relative;
+          text-align: center;
+          &:before {
+            content: "\f013";
+            font: normal normal normal 20px FontAwesome;
+            text-rendering: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            width: 30px;
+            height: 30px;
+            padding: 5px;
+            @include border-radius(50%);
+          }
+        }
+
+        &:hover {
+          .h-icon:before {
+            background: $color-apps-nav-back;
+            color: $color-toolbar-back;
+          }
+        }
+      }
+      &.setting-page {
+        .h-icon:before {
+          content: "\f013";
+        }
+      }
+
+      &.explore-page {
+        .h-icon:before {
+          content: "\f067";
+        }
+      }
+    }
+  }
+}

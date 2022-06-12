@@ -1,0 +1,10 @@
+.jq-toast-single {
+    font-size: 14px;
+    font-family: 'persiansans', sans-serif;
+    text-align: right !important;
+    direction: rtl;
+
+    &.jq-has-icon {
+        padding: 20px 20px 20px 50px;
+    }
+}

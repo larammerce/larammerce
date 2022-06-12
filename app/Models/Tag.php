@@ -1,0 +1,82 @@
+<?php
+
+namespace App\Models;
+
+use App\Models\Interfaces\TagContract as TaggableContract;
+use App\Models\Traits\Taggable;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+
+/**
+ * @property integer id
+ * @property string name
+ *
+ * @property Article[] articles
+ * @property Product[] products
+ * @property WebPage[] webPages
+ *
+ * Class Tag
+ * @package App\Models
+ */
+class Tag extends BaseModel implements TaggableContract
+{
+    use Taggable;
+
+    protected $table = 'tags';
+
+    protected $fillable = [
+        'name'
+    ];
+
+    public $timestamps = false;
+
+    protected static array $SORTABLE_FIELDS = ['id', 'name'];
+
+    protected static array $SEARCHABLE_FIELDS = ['name'];
+
+
+    /*
+     * Relation Methods
+     */
+
+    /**
+     * @return MorphToMany
+     */
+    public function articles(): MorphToMany
+    {
+        return $this->morphedByMany(Article::class, 'taggable');
+    }
+
+    /**
+     * @return MorphToMany
+     */
+    public function products(): MorphToMany
+    {
+        return $this->morphedByMany(Product::class, 'taggable');
+    }
+
+    /**
+     * @return MorphToMany
+     */
+    public function webPages(): MorphToMany
+    {
+        return $this->morphedByMany(WebPage::class, 'taggable');
+    }
+
+    public function getText(): string
+    {
+        return $this->name;
+    }
+
+    public function getValue(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSearchUrl(): string
+    {
+        return '';
+    }
+}

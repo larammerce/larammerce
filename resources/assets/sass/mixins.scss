@@ -1,0 +1,55 @@
+@mixin border-radius ($radius){
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  -ms-border-radius: $radius;
+  border-radius: $radius;
+}
+
+@mixin border-radius-top ($radius){
+  -webkit-border-top-left-radius: $radius;
+  -webkit-border-top-right-radius: $radius;
+  -moz-border-radius-topleft: $radius;
+  -moz-border-radius-topright: $radius;
+  -ms-border-radius-top-right : $radius;
+  -ms-border-radius-top-left : $radius;
+  -ms-border-radius-topright : $radius;
+  -ms-border-radius-topleft : $radius;
+  border-top-right-radius: $radius;
+  border-top-left-radius: $radius;
+}
+
+@mixin border-radius-bottom ($radius){
+  -webkit-border-bottom-left-radius: $radius;
+  -webkit-border-bottom-right-radius: $radius;
+  -moz-border-radius-bottomleft: $radius;
+  -moz-border-radius-bottomright: $radius;
+  -ms-border-radius-bottom-right : $radius;
+  -ms-border-radius-bottom-left : $radius;
+  -ms-border-radius-bottomright : $radius;
+  -ms-border-radius-bottomleft : $radius;
+  border-bottom-right-radius: $radius;
+  border-bottom-left-radius: $radius;
+}
+
+@mixin box-shadow ($x, $y, $z) {
+  -ms-box-shadow: $x $y $z rgba(217,217,217,.75);
+  -o-box-shadow: $x $y $z rgba(217,217,217,.75);
+  box-shadow: $x $y $z rgba(217,217,217,.75);
+}
+
+@mixin hide-scroll (){
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@mixin main-scroll-content (){
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
