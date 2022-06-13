@@ -179,8 +179,9 @@ class InvoiceController extends BaseController
         $invoice->is_legal = $request->get("is_legal");
         $invoice->shipment_method = $request->get("shipment_method");
 
-        if (LogisticService::isEnabled()) {
-            LogisticService::selectDeliveryTableCell($request->get("delivery_period"), $invoice);
+        if (LogisticService::isEnabled() and $request->has("logistics_enabled") and $request->get("logistics_enabled") == 1) {
+            if (!LogisticService::selectDeliveryTableCell($request->get("delivery_period"), $invoice))
+                return redirect()->back();
         }
 
         InvoiceService::setNew($invoice);
