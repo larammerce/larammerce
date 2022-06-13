@@ -64,7 +64,7 @@ class LogisticService extends AbstractSettingService
 
         $cell = $cells[$row][$col];
         //return false;
-        if ($row === 0 && Carbon::now()->greaterThan(Carbon::parse($date . ' ' . $finish_time))) {
+        if ($row === 0 && Carbon::now()->greaterThan(Carbon::parse($formatted_date . ' ' . $finish_time))) {
             //so that the user can not cheat with fake time input
             return false;
         } elseif ($row === null || $col === null || !$cell['is_enabled']) {
