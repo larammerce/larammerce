@@ -161,7 +161,7 @@ class InvoiceController extends BaseController
     /**
      * @rules(customer_address_id="required|exists:customer_addresses,id", is_legal="required|boolean",
      *     shipment_method="required|in:".\App\Models\Enums\ShipmentMethod::stringValues(),
-     *     delivery_period=config("cms.logistics.enabled") ? "required|delivery_period" : "delivery_period" )
+     *     delivery_period=config("cms.logistics.enabled") ? "required_if:logistics_enabled,1|delivery_period" : "delivery_period" )
      * @param Request $request
      * @description(comment="this method is for adding customer address and shipment method and paper need selection for each invoice")
      * @return RedirectResponse
