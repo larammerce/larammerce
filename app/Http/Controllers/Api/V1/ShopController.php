@@ -14,9 +14,6 @@ use App\Models\Product;
 use App\Models\Rate;
 use App\Utils\CMS\ProductService;
 use App\Utils\Common\MessageFactory;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
 /**
