@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Utils\CMS\Setting\Logistic\LogisticService;
 use App\Utils\Common\History;
+use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -22,7 +23,11 @@ class LogisticController extends BaseController
      */
     public function edit(): Factory|View|Application
     {
-        LogisticService::update();
+        try {
+            LogisticService::update();
+        } catch (Exception $e) {
+
+        }
         $record = LogisticService::getRecord();
         $delivery_days = $record->getDeliveryDays();
         $delivery_hours = $record->getDeliveryHours();
