@@ -294,6 +294,8 @@ class Driver extends AbstractDriver
                 "InvoiceUID" => $payment_data->tref,
             ])->post();
             $stdResult = simplexml_load_string($xmlResult);
+
+
             $payment_data->result = strtolower((string)$stdResult->result);
             $payment_data->amount = intval((string)$stdResult->amount);
             $payment_data->traceNumber = (string)$stdResult->traceNumber;

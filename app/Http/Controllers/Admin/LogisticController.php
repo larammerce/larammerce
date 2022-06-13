@@ -22,6 +22,7 @@ class LogisticController extends BaseController
      */
     public function edit(): Factory|View|Application
     {
+        LogisticService::update();
         $record = LogisticService::getRecord();
         $delivery_days = $record->getDeliveryDays();
         $delivery_hours = $record->getDeliveryHours();
