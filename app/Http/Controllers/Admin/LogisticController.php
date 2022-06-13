@@ -23,11 +23,6 @@ class LogisticController extends BaseController
      */
     public function edit(): Factory|View|Application
     {
-        try {
-            LogisticService::update();
-        } catch (Exception $e) {
-
-        }
         $record = LogisticService::getRecord();
         $delivery_days = $record->getDeliveryDays();
         $delivery_hours = $record->getDeliveryHours();
@@ -37,6 +32,7 @@ class LogisticController extends BaseController
         $rows_offset = $record->getRowsOffset();
         $rows_available = $record->getRowsAvailable();
         $columns_count = count($delivery_hours);
+        LogisticService::update();
 
         return view("admin.pages.logistic.edit")->with([
             //"logistic" => $record,

@@ -98,6 +98,8 @@ class LogisticService extends AbstractSettingService
                 $rows_offset = $old_record->getRowsOffset();
                 $max_items_count = $old_record->getMaxItemsCount();
                 $max_total_price = $old_record->getMaxTotalPrice();
+            } else {
+                return;
             }
 
             $columns_count = count($hours);
