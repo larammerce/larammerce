@@ -13,16 +13,16 @@
     <link rel="stylesheet" href="/admin_dashboard/vendor/jquery-toast/jquery.toast.min.css">
     <link rel="stylesheet" type="text/css" href="/admin_dashboard/css/app-22-03-02.css"/>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/admin_dashboard/favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/admin_dashboard/favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/admin_dashboard/favicon/favicon-16x16.png">
-    <link rel="manifest" href="/admin_dashboard/favicon/site.webmanifest">
-    <link rel="mask-icon" href="/admin_dashboard/favicon/safari-pinned-tab.svg" color="#ff2e20">
-    <link rel="shortcut icon" href="/admin_dashboard/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/admin_dashboard/{{get_identity()["fav"]}}/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/admin_dashboard/{{get_identity()["fav"]}}/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/admin_dashboard/{{get_identity()["fav"]}}/favicon-16x16.png">
+    <link rel="manifest" href="/admin_dashboard/{{get_identity()["fav"]}}/site.webmanifest">
+    <link rel="mask-icon" href="/admin_dashboard/{{get_identity()["fav"]}}/safari-pinned-tab.svg" color="#ff2e20">
+    <link rel="shortcut icon" href="/admin_dashboard/{{get_identity()["fav"]}}/favicon.ico">
     <meta name="apple-mobile-web-app-title" content="Larammerce">
     <meta name="application-name" content="Larammerce">
     <meta name="msapplication-TileColor" content="#ff2e20">
-    <meta name="msapplication-config" content="/admin_dashboard/favicon/browserconfig.xml">
+    <meta name="msapplication-config" content="/admin_dashboard/{{get_identity()["fav"]}}/browserconfig.xml">
     <meta name="theme-color" content="#ffffff">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
