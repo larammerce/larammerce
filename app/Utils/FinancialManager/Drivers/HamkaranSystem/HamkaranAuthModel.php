@@ -9,10 +9,10 @@ use Carbon\Carbon;
 
 class HamkaranAuthModel extends AbstractSettingModel
 {
-    private $id;
-    private $m;
-    private $e;
-    private string $c;
+    private string $id;
+    private string $m;
+    private string $e;
+    private array $c;
     private Carbon $created_at;
 
     public function __construct($id, $m, $e, $c = [])
@@ -24,42 +24,42 @@ class HamkaranAuthModel extends AbstractSettingModel
         $this->c = $c;
     }
 
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
 
-    public function setId($id): void
+    public function setId(string $id): void
     {
         $this->id = $id;
     }
 
-    public function getModulus()
+    public function getModulus(): string
     {
         return $this->m;
     }
 
-    public function setModulus($m): void
+    public function setModulus(string $m): void
     {
         $this->m = $m;
     }
 
-    public function getExponent()
+    public function getExponent(): string
     {
         return $this->e;
     }
 
-    public function setExponent($e): void
+    public function setExponent(string $e): void
     {
         $this->e = $e;
     }
 
-    public function getCookies()
+    public function getCookies(): array
     {
         return $this->c;
     }
 
-    public function setCookies($c): void
+    public function setCookies(array $c): void
     {
         $this->c = $c;
     }
