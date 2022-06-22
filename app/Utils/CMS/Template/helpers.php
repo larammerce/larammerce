@@ -343,6 +343,9 @@ if (!function_exists('only_footer_directories')) {
 }
 
 if (!function_exists('directory_url')) {
+    /**
+     * @deprecated
+     */
     function directory_url(Directory $directory, bool $forMenu = false): string
     {
         if ($forMenu and
@@ -406,12 +409,19 @@ if (!function_exists('directory_make_children_groups')) {
 }
 
 if (!function_exists('get_product_root')) {
+    /**
+     * @deprecated
+     */
     function get_product_root()
     {
         return Directory::roots()->from(DirectoryType::PRODUCT)->first();
     }
 }
+
 if (!function_exists('get_products_root_list_with_type')) {
+    /**
+     * @deprecated
+     */
     function get_products_root_list_with_type($data_type = null)
     {
         return Directory::roots()->from($data_type)->orderBy('priority', 'ASC')->get();
@@ -660,6 +670,9 @@ if (!function_exists('get_state')) {
 }
 
 if (!function_exists('get_state_json_by_id')) {
+    /**
+     * @deprecated
+     */
     function get_state_json_by_id($id)
     {
         $state = State::find($id);
@@ -668,6 +681,9 @@ if (!function_exists('get_state_json_by_id')) {
 }
 
 if (!function_exists('get_city_json_by_id')) {
+    /**
+     * @deprecated
+     */
     function get_city_json_by_id($id)
     {
         $city = City::find($id);
@@ -676,6 +692,9 @@ if (!function_exists('get_city_json_by_id')) {
 }
 
 if (!function_exists('get_district_json_by_id')) {
+    /**
+     * @deprecated
+     */
     function get_district_json_by_id($id)
     {
         $district = District::find($id);
@@ -733,7 +752,6 @@ if (!function_exists('get_system_messages')) {
     function get_system_messages()
     {
         try {
-
             $messages = SystemMessageService::getMessages();
             SystemMessageService::flushMessages();
             return $messages;
@@ -823,6 +841,9 @@ if (!function_exists('get_disabled_setting_appliances')) {
 }
 
 if (!function_exists('is_selected')) {
+    /**
+     * @deprecated
+     */
     function is_selected(Directory $directory): bool
     {
         return Request::segment(1) == $directory->url_part;
@@ -1061,7 +1082,9 @@ if (!function_exists('get_product_attributes')) {
 }
 
 if (!function_exists('get_product_most_privileged_key_attributes')) {
-
+    /**
+     * @deprecated
+     */
     function get_product_most_privileged_key_attributes(int $count = 9): array
     {
         $id = ProductStructureAttributeKey::orderBy('priority', 'DESC')->pluck('id')->first();
@@ -1072,8 +1095,8 @@ if (!function_exists('get_product_most_privileged_key_attributes')) {
     }
 }
 
-if (!function_exists('get_product_By_id')) {
-    function get_product_By_id($id): ?Product
+if (!function_exists('get_product_by_id')) {
+    function get_product_by_id($id): ?Product
     {
         return ($id != null) ? Product::find($id) : null;
     }
@@ -1098,8 +1121,7 @@ if (!function_exists('get_article_related_articles')) {
 
 if (!function_exists('get_experts')) {
     /**
-     * @param int $count
-     * @return mixed
+     * @deprecated
      */
     function get_experts(int $count = 4)
     {
@@ -1108,12 +1130,9 @@ if (!function_exists('get_experts')) {
 }
 
 if (!function_exists('recaptcha_enabled')) {
-    /**
-     * @return bool
-     */
     function recaptcha_enabled(): bool
     {
-        return strpos(env("TEMPORARILY_DISABLED_RULES", ""), "g-recaptcha-response") === false;
+        return !str_contains(env("TEMPORARILY_DISABLED_RULES", ""), "g-recaptcha-response");
     }
 }
 
@@ -1173,9 +1192,6 @@ if (!function_exists('get_cart_information')) {
 }
 
 if (!function_exists('get_cart')) {
-    /**
-     * @return \Illuminate\Database\Eloquent\Collection|CartRow[]
-     */
     function get_cart(): \Illuminate\Database\Eloquent\Collection|array
     {
         $customer = get_customer_user();
@@ -1189,6 +1205,9 @@ if (!function_exists('get_cart')) {
 }
 
 if (!function_exists('get_breadcrumb')) {
+    /**
+     * @deprecated
+     */
     function get_breadcrumb(Directory $directory): string
     {
         if (!(isset($directory->parentDirectory)))
@@ -1219,6 +1238,9 @@ if (!function_exists('product_disable_on_min')) {
 }
 
 if (!function_exists('get_state_deactivate_product')) {
+    /**
+     * @deprecated
+     */
     function get_state_deactivate_product($product)
     {
         return $product->inaccessibility_type;
@@ -1226,6 +1248,9 @@ if (!function_exists('get_state_deactivate_product')) {
 }
 
 if (!function_exists('get_inquiry_call_number')) {
+    /**
+     * @deprecated
+     */
     function get_inquiry_call_number(): string
     {
         try {
