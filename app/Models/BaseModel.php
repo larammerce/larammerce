@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Schema;
  *
  * @method static Builder search(string $term)
  * @method static static find(int | string $id)
+ * @method static static findOrFail(int | string $id)
  * @method static static create(array $attributes)
  *
  * Class BaseModel

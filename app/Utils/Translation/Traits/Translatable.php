@@ -136,26 +136,27 @@ trait Translatable
 
     public function fill(array $attributes)
     {
-        foreach ($attributes as $key => $values) {
-            if (
-                $this->getLocalesHelper()->has($key)
-                && is_array($values)
-            ) {
-                $this->getTranslationOrNew($key)->fill($values);
-                unset($attributes[$key]);
-            } else {
-                [$attribute, $locale] = $this->getAttributeAndLocale($key);
-
+        if (count(config("translation.locales")) > 1) {
+            foreach ($attributes as $key => $values) {
                 if (
-                    $this->getLocalesHelper()->has($locale)
-                    && $this->isTranslationAttribute($attribute)
+                    $this->getLocalesHelper()->has($key)
+                    && is_array($values)
                 ) {
-                    $this->getTranslationOrNew($locale)->fill([$attribute => $values]);
+                    $this->getTranslationOrNew($key)->fill($values);
                     unset($attributes[$key]);
+                } else {
+                    [$attribute, $locale] = $this->getAttributeAndLocale($key);
+
+                    if (
+                        $this->getLocalesHelper()->has($locale)
+                        && $this->isTranslationAttribute($attribute)
+                    ) {
+                        $this->getTranslationOrNew($locale)->fill([$attribute => $values]);
+                        unset($attributes[$key]);
+                    }
                 }
             }
         }
-
         return parent::fill($attributes);
     }
 
@@ -304,10 +305,12 @@ trait Translatable
 
     public function setAttribute($key, $value)
     {
-        [$attribute, $locale] = $this->getAttributeAndLocale($key);
-        if ($this->isTranslationAttribute($attribute)) {
-            $this->getTranslationOrNew($locale)->$attribute = $value;
-            return $this;
+        if (count(config("translation.locales")) > 1) {
+            [$attribute, $locale] = $this->getAttributeAndLocale($key);
+            if ($this->isTranslationAttribute($attribute)) {
+                $this->getTranslationOrNew($locale)->$attribute = $value;
+                return $this;
+            }
         }
         return parent::setAttribute($key, $value);
     }

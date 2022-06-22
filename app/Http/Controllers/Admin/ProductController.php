@@ -79,8 +79,8 @@ class ProductController extends BaseController
             }
         }
         $directory = Directory::find($directoryId);
-        $productStructures = PStructure::all();
-        return view('admin.pages.product.create', compact('productStructures', 'directory'));
+        $p_structures = PStructure::all();
+        return view('admin.pages.product.create', compact('p_structures', 'directory'));
     }
 
     /**
@@ -115,16 +115,17 @@ class ProductController extends BaseController
      */
     public function edit(Product $product): Factory|View|Application
     {
-        //dd($product->badges);
         $relations = ['directory', 'productStructure', 'images', 'pAttributes', 'tags'];
         if ($product->is_package)
-            array_push($relations, 'productPackage');
+            $relations[] = 'productPackage';
         $product->load($relations);
-        return view('admin.pages.product.edit')->with(['product' => $product]);
+        $p_structures = PStructure::all();
+        return view('admin.pages.product.edit')->with(compact("p_structures", "product"));
     }
 
     /**
      * @rules(title="required",
+     *     p_structure_id="required|exists:p_structures,id",
      *     code="required|unique:products,code,".request('id'))
      * @role(super_user, stock_manager, seo_master, cms_manager, acc_manager)
      */

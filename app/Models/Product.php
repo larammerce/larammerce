@@ -255,6 +255,18 @@ class Product extends BaseModel implements
         }
     }
 
+    public function setPStructureIdAttribute(int $p_structure_id): void
+    {
+        try {
+            $p_structure = PStructure::findOrFail($p_structure_id);
+            $this->pAttributes()->whereNotIn("p_structure_attr_key_id",
+                $p_structure->attributeKeys()->pluck("p_structure_attr_key_id")->toArray())->delete();
+            $this->attributes["p_structure_id"] = $p_structure_id;
+        } catch (Exception $e) {
+            return;
+        }
+    }
+
     public function getMainPhotoAttribute(): string
     {
         return ImageService::getImage($this, "preview");
@@ -638,7 +650,7 @@ class Product extends BaseModel implements
         try {
             return parent::update($attributes, $options);
         } catch (QueryException $e) {
-            if (strpos($e->getMessage(), "products_code_unique") !== false) {
+            if (str_contains($e->getMessage(), "products_code_unique")) {
                 $this->code = "dup_" . $this->code;
                 return parent::update($attributes, $options);
             }

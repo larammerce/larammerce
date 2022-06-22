@@ -4,6 +4,8 @@ namespace App\Models;
 
 
 use App\Utils\Translation\Traits\Translatable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  *
@@ -36,30 +38,17 @@ class PStructure extends BaseModel
         'title' => ['string', 'input:text']
     ];
 
-    /*
-     * Relations Methods
-     */
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function products()
+    public function products(): HasMany
     {
-        return $this->hasMany('\\App\\Models\\Product', 'p_structure_id');
+        return $this->hasMany(Product::class, 'p_structure_id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function attributeKeys()
+    public function attributeKeys(): BelongsToMany
     {
-        return $this->belongsToMany('\\App\\Models\\PStructureAttrKey', 'p_structure_attrs',
+        return $this->belongsToMany(PStructureAttrKey::class, 'p_structure_attrs',
             'p_structure_id', 'p_structure_attr_key_id');
     }
 
-    /**
-     * @return PStructureAttrKey|null
-     */
     public function getSortableKey(): ?PStructureAttrKey
     {
         $sortable_attribute_key = null;
@@ -71,9 +60,6 @@ class PStructure extends BaseModel
         return $sortable_attribute_key;
     }
 
-    /**
-     * @return string
-     */
     public function getSearchUrl(): string
     {
         return '';

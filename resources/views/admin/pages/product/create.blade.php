@@ -6,9 +6,13 @@
 
 @endsection
 
-@section('form_title')اضافه کردن محصول@endsection
+@section('form_title')
+    اضافه کردن محصول
+@endsection
 
-@section('form_attributes') action="{{route('admin.product.store')}}" method="POST"  @endsection
+@section('form_attributes')
+    action="{{route('admin.product.store')}}" method="POST"
+@endsection
 
 @section('form_body')
 
@@ -21,10 +25,10 @@
     <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
         <span class="label">نام قالب محصول</span>
         <select class="form-control input-sm" name="p_structure_id">
-            @foreach($productStructures as $productStructure)
-                <option value="{{ $productStructure->id }}"
-                        @if(old('p_structure_id') == $productStructure->id) selected @endif>
-                    {{ $productStructure->title }}
+            @foreach($p_structures as $p_structure)
+                <option value="{{ $p_structure->id }}"
+                        @if(old('p_structure_id') == $p_structure->id) selected @endif>
+                    {{ $p_structure->title }}
                 </option>
             @endforeach
         </select>
