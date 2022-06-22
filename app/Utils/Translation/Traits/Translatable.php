@@ -95,9 +95,9 @@ trait Translatable
     {
         $attributes = parent::attributesToArray();
 
-        if (
-            (!$this->relationLoaded('translations') && !$this->toArrayAlwaysLoadsTranslations() && is_null(self::$autoloadTranslations))
-            || self::$autoloadTranslations === false
+        if (count(config("translation.locales")) === 1
+            or (!$this->relationLoaded('translations') && !$this->toArrayAlwaysLoadsTranslations() && is_null(self::$autoloadTranslations))
+            or self::$autoloadTranslations === false
         ) {
             return $attributes;
         }
@@ -161,7 +161,8 @@ trait Translatable
 
     public function getAttribute($key)
     {
-        if ($this->getLocalesHelper()->current() !== config("translation.fallback_locale")) {
+        if (count(config("translation.locales")) > 1 and
+            $this->getLocalesHelper()->current() !== config("translation.fallback_locale")) {
             [$attribute, $locale] = $this->getAttributeAndLocale($key);
 
             if ($this->isTranslationAttribute($attribute)) {

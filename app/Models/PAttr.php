@@ -159,22 +159,25 @@ class PAttr extends BaseModel
             }
         }
 
-        $tmp_p_attributes = static::where('product_id', '=', $product->id)
-            ->whereNotIn('p_structure_attr_key_id', $option_keys)
-            ->orderBy('p_structure_attr_key_id', 'ASC')
-            ->with(["key", "value"])
+        $tmp_p_attributes = DB::table(DB::raw('p_attr_assignments as paa1'))->select("*")
+            ->where('paa1.product_id', '=', $product->id)
+            ->whereNotIn('paa1.p_structure_attr_key_id', $option_keys)
+            ->join('p_structure_attr_keys as psak1', 'paa1.p_structure_attr_key_id', '=', 'psak1.id')
+            ->join('p_structure_attr_values as psav1', 'paa1.p_structure_attr_value_id', '=', 'psav1.id')
+            ->orderBy('paa1.p_structure_attr_key_id', 'ASC')
             ->get();
+
 
         $attributes = [];
         foreach ($tmp_p_attributes as $p_attr) {
             if (isset($attributes[$p_attr->p_structure_attr_key_id])) {
-                $attributes[$p_attr->p_structure_attr_key_id]->values[] = $p_attr->value;
+                $attributes[$p_attr->p_structure_attr_key_id]->values[] = $p_attr;
             } else {
-                $attributes[$p_attr->p_structure_attr_key_id] = new stdClass();
-                $attributes[$p_attr->p_structure_attr_key_id]->key = $p_attr->key;
-                $attributes[$p_attr->p_structure_attr_key_id]->values = [$p_attr->value];
+                $attributes[$p_attr->p_structure_attr_key_id] = $p_attr;
+                $attributes[$p_attr->p_structure_attr_key_id]->values = [$p_attr];
             }
         }
+
 
         return compact("attributes", "modelOptions");
     }
