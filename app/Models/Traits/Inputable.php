@@ -1,15 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: arash
- * Date: 7/28/18
- * Time: 12:26 PM
- */
 
 namespace App\Models\Traits;
 
+use App\Utils\Reflection\AnnotationBadKeyException;
+use App\Utils\Reflection\AnnotationBadScopeException;
+use App\Utils\Reflection\AnnotationNotFoundException;
+use App\Utils\Reflection\AnnotationSyntaxException;
 use App\Utils\Reflection\ReflectiveProperty;
 use Illuminate\Support\Str;
+use ReflectionException;
 
 /**
  * Trait Inputable
@@ -18,11 +17,11 @@ use Illuminate\Support\Str;
 trait Inputable
 {
     /**
-     * @throws \App\Utils\Reflection\AnnotationSyntaxException
-     * @throws \App\Utils\Reflection\AnnotationBadScopeException
-     * @throws \App\Utils\Reflection\AnnotationBadKeyException
-     * @throws \ReflectionException
-     * @throws \App\Utils\Reflection\AnnotationNotFoundException
+     * @throws AnnotationSyntaxException
+     * @throws AnnotationBadScopeException
+     * @throws AnnotationBadKeyException
+     * @throws ReflectionException
+     * @throws AnnotationNotFoundException
      */
     public function __get(string $name)
     {
@@ -34,11 +33,11 @@ trait Inputable
     }
 
     /**
-     * @throws \App\Utils\Reflection\AnnotationSyntaxException
-     * @throws \App\Utils\Reflection\AnnotationNotFoundException
-     * @throws \App\Utils\Reflection\AnnotationBadKeyException
-     * @throws \App\Utils\Reflection\AnnotationBadScopeException
-     * @throws \ReflectionException
+     * @throws AnnotationSyntaxException
+     * @throws AnnotationNotFoundException
+     * @throws AnnotationBadKeyException
+     * @throws AnnotationBadScopeException
+     * @throws ReflectionException
      */
     public function getInputType($name){
         $property = new ReflectiveProperty($this::class, $name);
@@ -52,11 +51,11 @@ trait Inputable
     }
 
     /**
-     * @throws \App\Utils\Reflection\AnnotationSyntaxException
-     * @throws \App\Utils\Reflection\AnnotationNotFoundException
-     * @throws \App\Utils\Reflection\AnnotationBadKeyException
-     * @throws \App\Utils\Reflection\AnnotationBadScopeException
-     * @throws \ReflectionException
+     * @throws AnnotationSyntaxException
+     * @throws AnnotationNotFoundException
+     * @throws AnnotationBadKeyException
+     * @throws AnnotationBadScopeException
+     * @throws ReflectionException
      */
     public function getInputData(): array
     {
@@ -72,11 +71,11 @@ trait Inputable
     }
 
     /**
-     * @throws \App\Utils\Reflection\AnnotationSyntaxException
-     * @throws \App\Utils\Reflection\AnnotationNotFoundException
-     * @throws \App\Utils\Reflection\AnnotationBadKeyException
-     * @throws \App\Utils\Reflection\AnnotationBadScopeException
-     * @throws \ReflectionException
+     * @throws AnnotationSyntaxException
+     * @throws AnnotationNotFoundException
+     * @throws AnnotationBadKeyException
+     * @throws AnnotationBadScopeException
+     * @throws ReflectionException
      */
     public function getInputRule($name){
         $property = new ReflectiveProperty($this::class, $name);

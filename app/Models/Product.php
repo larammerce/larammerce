@@ -45,6 +45,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Routing\Exceptions\UrlGenerationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Utils\Translation\Traits\Translatable;
 use Psy\Util\Json;
 use stdClass;
 use Throwable;
@@ -101,13 +102,13 @@ use Throwable;
  *
  * @property Directory directory
  * @property Directory[] directories
- * @property ProductStructure productStructure
+ * @property PStructure productStructure
  * @property Color[] colors
  * @property ProductPrice[] prices
  * @property ProductImage[] images
- * @property ProductStructureAttributeKey[] attributeKeys
- * @property ProductStructureAttributeValue[] attributeValues
- * @property ProductAttribute[] pAttributes
+ * @property PStructureAttrKey[] attributeKeys
+ * @property PStructureAttrValue[] attributeValues
+ * @property PAttr[] pAttributes
  * @property Invoice[] invoices
  * @property CustomerUser[] wishLists
  * @property CustomerUser[] needLists
@@ -131,7 +132,7 @@ class Product extends BaseModel implements
     FileAbstractionContract, ShareContract, PublishScheduleContract, ImageContract,
     RateableContract, SeoableContract, HashContract
 {
-    use Rateable, Seoable, Fileable, FullTextSearch, Badgeable;
+    use Rateable, Seoable, Fileable, FullTextSearch, Badgeable, Translatable;
 
     public $timestamps = true;
     protected $appends = ["is_liked", "is_needed", "main_photo", "secondary_photo", "fin_man_price",
@@ -207,6 +208,13 @@ class Product extends BaseModel implements
         "code" => "required|string",
         "latest_price" => "required|int",
         "count" => "required|int"
+    ];
+
+    protected static array $TRANSLATABLE_FIELDS = [
+        "title" => ["string", "input:text"],
+        "seo_keywords" => ["text", "textarea:normal"],
+        "seo_description" => ["text", "textarea:normal"],
+        "description" => ["text", "textarea:rich"]
     ];
 
     public function getIsLikedAttribute(): bool
@@ -364,7 +372,7 @@ class Product extends BaseModel implements
 
     public function productStructure(): BelongsTo
     {
-        return $this->belongsTo(ProductStructure::class, "p_structure_id", "id");
+        return $this->belongsTo(PStructure::class, "p_structure_id", "id");
     }
 
     public function colors(): BelongsToMany
@@ -389,13 +397,13 @@ class Product extends BaseModel implements
 
     public function attributeKeys(): BelongsToMany
     {
-        return $this->belongsToMany(ProductStructureAttributeKey::class, "p_attr_assignments",
+        return $this->belongsToMany(PStructureAttrKey::class, "p_attr_assignments",
             "product_id", "p_structure_attr_key_id")->distinct("id");
     }
 
     public function attributeValues(): BelongsToMany
     {
-        return $this->belongsToMany(ProductStructureAttributeValue::class, "p_attr_assignments",
+        return $this->belongsToMany(PStructureAttrValue::class, "p_attr_assignments",
             "product_id", "p_structure_attr_value_id");
     }
 
@@ -427,7 +435,7 @@ class Product extends BaseModel implements
 
     public function pAttributes(): HasMany
     {
-        return $this->hasMany(ProductAttribute::class, "product_id", "id");
+        return $this->hasMany(PAttr::class, "product_id", "id");
     }
 
     public function invoiceRows(): HasMany
@@ -552,7 +560,7 @@ class Product extends BaseModel implements
 
     public function scopeVisible(Builder $query): Builder
     {
-        $customer_location = CustomerLocationService::getRecord();
+        /*$customer_location = CustomerLocationService::getRecord();
         if ($customer_location != null) {
             $query = $query->join("directories", function ($join) use ($customer_location) {
                 $join->on("products.directory_id", "=", "directories.id")
@@ -561,7 +569,7 @@ class Product extends BaseModel implements
                         "(directory_location.city_id is null or directory_location.city_id = {$customer_location->getCity()->id})" .
                         " and directory_location.state_id = {$customer_location->getState()->id} )"));
             });
-        }
+        }*/
         return $query->where("is_visible", true);
     }
 
@@ -689,7 +697,7 @@ class Product extends BaseModel implements
         }
     }
 
-    public function buildStructureSortScore(ProductStructureAttributeKey $key): bool
+    public function buildStructureSortScore(PStructureAttrKey $key): bool
     {
         $p_attr = DB::table(DB::raw('p_attr_assignments as paa1'))
             ->where('paa1.p_structure_attr_key_id', $key->id)
@@ -767,7 +775,7 @@ class Product extends BaseModel implements
         if (count(is_countable($stockManagers) ? $stockManagers : []) > 0) {
             $productTitle = $this->title;
             $productDirectoryTitle = $this->directory->title;
-            $adminUrl = $this->directory->getAdminUrl(); //TODO : change to $this->getAdminUrl by adding view page
+            $adminUrl = $this->directory->getAdminUrl();
             foreach ($stockManagers as $stockManager) {
                 if ($stockManager->user != null and $stockManager->user->email != null
                     and $adminUrl != null and $productTitle != null and $productDirectoryTitle != null) {

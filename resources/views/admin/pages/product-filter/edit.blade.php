@@ -5,9 +5,13 @@
     <li class="active"><a href="{{route('admin.product-filter.create')}}">ویرایش فیلتر</a></li>
 @endsection
 
-@section('form_title')ویرایش فیلتر سفارشی محصولات@endsection
+@section('form_title')
+    ویرایش فیلتر سفارشی محصولات
+@endsection
 
-@section('form_attributes') action="{{route('admin.product-filter.update', $product_filter)}}" method="POST" form-with-hidden-checkboxes @endsection
+@section('form_attributes')
+    action="{{route('admin.product-filter.update', $product_filter)}}" method="POST" form-with-hidden-checkboxes
+@endsection
 
 @section('form_body')
     <script>window.PAGE_ID = "admin.pages.product-filter.edit"</script>
@@ -16,21 +20,21 @@
     <div class="row">
         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
             <div
-                class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12" @roleinput($product_filter, "identifier")>
+                    class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12" @roleinput($product_filter, "identifier")>
                 <span class="label">کد معرف</span>
                 <input class="form-control input-sm" value="{{$product_filter->identifier}}" disabled>
             </div>
         </div>
         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
             <div
-                class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12" @roleinput($product_filter, "title")>
+                    class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12" @roleinput($product_filter, "title")>
                 <span class="label">عنوان گروه محصول</span>
                 <input class="form-control input-sm" name="title" value="{{$product_filter->title}}">
             </div>
         </div>
         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
             <div
-                class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12" @roleinput($product_filter, "title")>
+                    class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12" @roleinput($product_filter, "title")>
                 <span class="label">جستار مرتبط</span>
                 <select class="form-control input-sm" name="product_query_id">
                     <option @if($product_filter->product_query_id == null) selected @endif value disabled>
@@ -56,7 +60,7 @@
         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12" id="filters-section">
             <h4>لیست فیلترها</h4>
             @include("admin.pages.product-filter.filters-section",
-                ["attribute_keys" => App\Models\ProductStructureAttributeKey::orderBy("title", "ASC")->get()])
+                ["attribute_keys" => App\Models\PStructureAttrKey::orderBy("title", "ASC")->get()])
         </div>
         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12" id="selected-tags-section">
             <h4>فیلترهای انتخاب شده</h4>

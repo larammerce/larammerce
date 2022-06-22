@@ -60,7 +60,7 @@
                         <a href="" type="button" data-toggle="modal" data-target="#classic-search-modal">
                             <i class="fa fa-search"></i>
                             <span class="hidden-xs hidden-sm hidden-md">
-                                    جستجوی پیشرفته {{trans("structures.classes.".get_model_entity_name(request()->related_model?:$related_model))}}
+                                    جستجوی پیشرفته {{trans("structures.classes.".get_model_entity_name(request()->related_model??$related_model))}}
                                 </span>
                         </a>
                     @endif

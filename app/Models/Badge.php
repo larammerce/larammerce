@@ -6,6 +6,7 @@ use App\Models\Interfaces\ImageContract;
 use App\Models\Interfaces\TagContract as TaggableContract;
 use App\Models\Traits\Taggable;
 use App\Utils\Common\ImageService;
+use App\Utils\Translation\Traits\Translatable;
 use DateTime;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
@@ -24,7 +25,7 @@ use function PHPUnit\Framework\isFalse;
  */
 class Badge extends BaseModel implements ImageContract, TaggableContract
 {
-    use Taggable;
+    use Taggable, Translatable;
 
     protected $table = 'badges';
     protected $fillable = [
@@ -38,6 +39,10 @@ class Badge extends BaseModel implements ImageContract, TaggableContract
     protected static array $ROLE_PROPERTY_ACCESS = [
         "super_user" => ["*"],
         "cms_manager" => ["*"]
+    ];
+
+    protected static array $TRANSLATABLE_FIELDS = [
+        'title' => ['string', 'input:text']
     ];
 
     public function products(): MorphToMany

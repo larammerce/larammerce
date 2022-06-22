@@ -128,7 +128,7 @@ class ProductFilter extends BaseModel
 
     public function getPSValues()
     {
-        return ProductStructureAttributeValue::whereIn("id", $this->getPSValueIdsPlain());
+        return PStructureAttrValue::whereIn("id", $this->getPSValueIdsPlain());
     }
 
     public function getQuery()

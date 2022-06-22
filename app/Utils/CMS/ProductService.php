@@ -12,7 +12,7 @@ namespace App\Utils\CMS;
 use App\Models\Color;
 use App\Models\Directory;
 use App\Models\Product;
-use App\Models\ProductStructureAttributeKey;
+use App\Models\PStructureAttrKey;
 use App\Models\Setting;
 use App\Utils\CMS\Enums\CMSSettingKey;
 use Exception;
@@ -161,7 +161,7 @@ class ProductService
             $priceRange["min"] = Product::whereIn('id', $productsIds)->min('latest_price');
             $priceRange["max"] = Product::whereIn('id', $productsIds)->max('latest_price');
 
-            $keys = ProductStructureAttributeKey::getFilterBladeKeys($productsIds);
+            $keys = PStructureAttrKey::getFilterBladeKeys($productsIds);
             $directories = static::buildDirectoryGraph(Directory::join("directory_product", function ($join) use ($productsIds) {
                 $join->on("directories.id", "=", "directory_product.directory_id")
                     ->whereIn("product_id", $productsIds);

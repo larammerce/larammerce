@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Interfaces\TagContract as TaggableContract;
 use App\Models\Traits\Taggable;
+use App\Utils\Translation\Traits\Translatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -21,7 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class City extends BaseModel implements TaggableContract
 {
-    use Taggable;
+    use Taggable, Translatable;
 
     protected $table = 'cities';
 
@@ -35,6 +36,9 @@ class City extends BaseModel implements TaggableContract
 
     protected static array $SEARCHABLE_FIELDS = ['name'];
 
+    protected static array $TRANSLATABLE_FIELDS = [
+        'name' => ['string', 'input:text']
+    ];
 
     /*
      * Relations Methods
@@ -43,7 +47,8 @@ class City extends BaseModel implements TaggableContract
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function state(){
+    public function state()
+    {
         return $this->belongsTo('\\App\\Models\\State', 'state_id');
     }
 
@@ -51,7 +56,8 @@ class City extends BaseModel implements TaggableContract
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function districts(){
+    public function districts()
+    {
         return $this->hasMany('App\\Models\\District', 'city_id');
     }
 
@@ -59,7 +65,8 @@ class City extends BaseModel implements TaggableContract
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function customerAddresses(){
+    public function customerAddresses()
+    {
         return $this->hasMany('App\\Models\\CustomerAddress', 'city_id');
     }
 

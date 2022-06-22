@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Interfaces\ImageContract;
 use App\Utils\Common\ImageService;
+use App\Utils\Translation\Traits\Translatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\View;
@@ -11,6 +12,8 @@ use Illuminate\Support\Facades\View;
 
 class Modal extends BaseModel implements ImageContract
 {
+    use Translatable;
+
     protected $table = 'modals';
 
     protected $fillable = [
@@ -23,6 +26,11 @@ class Modal extends BaseModel implements ImageContract
         "cms_manager" => ["*"]
     ];
     private array $cached_attributes = [];
+
+    protected static array $TRANSLATABLE_FIELDS = [
+        'title' => ['string', 'input:text'],
+        'text' => ['longText', 'textarea:rich']
+    ];
 
     public function getDecodedButtons()
     {

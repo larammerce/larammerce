@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Interfaces\TagContract as TaggableContract;
 use App\Models\Traits\Taggable;
+use App\Utils\Translation\Traits\Translatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -18,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class State extends BaseModel implements TaggableContract
 {
-    use Taggable;
+    use Taggable, Translatable;
 
     protected $table = 'states';
 
@@ -32,6 +33,9 @@ class State extends BaseModel implements TaggableContract
 
     protected static array $SEARCHABLE_FIELDS = ['name'];
 
+    protected static array $TRANSLATABLE_FIELDS = [
+        'name' => ['string', 'input:text']
+    ];
 
     /*
      * Relations Methods

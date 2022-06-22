@@ -6,16 +6,20 @@
 
 @endsection
 
-@section('form_title')اضافه کردن محصول به صورت حساب@endsection
+@section('form_title')
+    اضافه کردن محصول به صورت حساب
+@endsection
 
-@section('form_attributes') action="{{route('admin.invoice-row.store')}}" method="POST" @endsection
+@section('form_attributes')
+    action="{{route('admin.invoice-row.store')}}" method="POST"
+@endsection
 
 @section('form_body')
     <input name="invoice_id" type="hidden" value="{{ $invoice->id }}">
     <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
         <span class="label">محصول</span>
         <select class="form-control input-sm" name="product_id">
-            @foreach(\App\Models\ProductStructure::all() as $productStructure)
+            @foreach(\App\Models\PStructure::all() as $productStructure)
                 <optgroup label="{{ $productStructure->title }}">
                     @foreach($productStructure->products as $product)
                         <option value="{{$product->id}}">{{ $product->title }}</option>

@@ -23,17 +23,17 @@
             </ul>
             <ul class="has-divider-left">
                 @foreach(LayoutService::getLayoutMethods() as $layout_method)
-                    <li href="{{route('admin.null')}}?layout_model=ProductStructureAttributeKey&layout_method={{$layout_method["method"]}}"
+                    <li href="{{route('admin.null')}}?layout_model=PStructureAttrKey&layout_method={{$layout_method["method"]}}"
                         act="link"
-                        @if($layout_method["method"] == LayoutService::getRecord("ProductStructureAttributeKey")->getMethod()) class="active" @endif>
+                        @if($layout_method["method"] == LayoutService::getRecord("PStructureAttrKey")->getMethod()) class="active" @endif>
                         <i class="fa {{$layout_method["icon"]}}"></i>
                     </li>
                 @endforeach
             </ul>
             <ul>
-                @foreach(SortService::getSortableFields('ProductStructureAttributeKey') as $sortable_field)
+                @foreach(SortService::getSortableFields('PStructureAttrKey') as $sortable_field)
                     <li class="btn btn-default {{$sortable_field->is_active ? "active" : ""}}"
-                        href="{{route('admin.null')}}?sort_model=ProductStructureAttributeKey&sort_field={{$sortable_field->field}}&sort_method={{$sortable_field->method}}"
+                        href="{{route('admin.null')}}?sort_model=PStructureAttrKey&sort_field={{$sortable_field->field}}&sort_method={{$sortable_field->method}}"
                         act="link">
                         @if($sortable_field->is_active)
                             <i class="fa {{$sortable_field->method == SortMethod::ASCENDING ? "fa-long-arrow-up" : "fa-long-arrow-down"}}"></i>
@@ -45,7 +45,7 @@
         </div>
         <div class="inner-container has-toolbar has-pagination">
             <div class="view-port">
-                @include('admin.pages.p-structure-attr-key.layout.'.LayoutService::getRecord("ProductStructureAttributeKey")->getMethod())
+                @include('admin.pages.p-structure-attr-key.layout.'.LayoutService::getRecord("PStructureAttrKey")->getMethod())
             </div>
             <div class="fab-container">
                 <div class="fab green">
@@ -56,10 +56,10 @@
             </div>
         </div>
         @include('admin.templates.pagination', [
-            "modelName" => "ProductStructureAttributeKey",
-            "lastPage" => $attribute_keys->lastPage(),
-            "total" => $attribute_keys->total(),
-            "count" => $attribute_keys->perPage(),
+            "modelName" => "PStructureAttrKey",
+            "lastPage" => $p_structure_attr_keys->lastPage(),
+            "total" => $p_structure_attr_keys->total(),
+            "count" => $p_structure_attr_keys->perPage(),
             "parentId" => $scope ?? null
         ])
     </div>

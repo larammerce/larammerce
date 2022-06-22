@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 
 
 use Illuminate\Console\Command;
-use App\Models\ProductStructure;
+use App\Models\PStructure;
 
 class ProductFullExport extends Command
 {
@@ -31,8 +31,8 @@ class ProductFullExport extends Command
     public function handle()
     {
         $result = [];
-        foreach (ProductStructure::all() as $product_structure) {
-            foreach ($product_structure->products as $product) {
+        foreach (PStructure::all() as $p_structure) {
+            foreach ($p_structure->products as $product) {
                 $tmp_product = [];
                 $tmp_product["title"] = $product->title;
                 $tmp_product["latest_price"] = $product->latest_price;

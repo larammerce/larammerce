@@ -6,6 +6,7 @@
             <div class="top-bar">
                 <div class="button-container">
                     <div class="btn btn-exit" act="link" href="{{history_back()}}"></div>
+                    @include("admin.form_layout.language_select")
                 </div>
                 <div class="title-container"><h1>@yield('form_title')</h1></div>
             </div>

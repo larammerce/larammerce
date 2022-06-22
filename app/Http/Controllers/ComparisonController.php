@@ -6,7 +6,7 @@ use App\Models\Product;
 use App\Utils\CMS\SystemMessageService;
 use App\Utils\Comparison\ComparisonService;
 use App\Utils\Comparison\InitialProductNotFoundException;
-use App\Utils\Comparison\ProductStructureMismatchException;
+use App\Utils\Comparison\PStructureMismatchException;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
@@ -42,8 +42,8 @@ class ComparisonController extends Controller
             ComparisonService::addProduct($product);
         } catch (InitialProductNotFoundException $e) {
             SystemMessageService::addErrorMessage("system_messages.comparison.initial_product_not_found");
-        } catch (ProductStructureMismatchException $e) {
-            SystemMessageService::addErrorMessage("system_messages.comparison.product_structure_mismatch");
+        } catch (PStructureMismatchException $e) {
+            SystemMessageService::addErrorMessage("system_messages.comparison.p_structure_mismatch");
         }
         return redirect()->route("comparison.show");
     }
@@ -54,8 +54,6 @@ class ComparisonController extends Controller
             ComparisonService::removeProduct($product);
         } catch (InitialProductNotFoundException $e) {
             SystemMessageService::addErrorMessage("system_messages.comparison.initial_product_not_found");
-        } catch (ProductStructureMismatchException $e) {
-            SystemMessageService::addErrorMessage("system_messages.comparison.product_structure_mismatch");
         }
         return redirect()->route("comparison.show");
     }

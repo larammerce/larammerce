@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateProductStructureAttrValuesTable extends Migration
+class CreatePStructureAttrValuesTable extends Migration
 {
     /**
      * Run the migrations.

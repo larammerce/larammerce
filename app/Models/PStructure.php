@@ -3,6 +3,8 @@
 namespace App\Models;
 
 
+use App\Utils\Translation\Traits\Translatable;
+
 /**
  *
  * @property integer id
@@ -11,13 +13,15 @@ namespace App\Models;
  * @property boolean is_shippable
  *
  * @property Product[] products
- * @property ProductStructureAttributeKey[] attributeKeys;
+ * @property PStructureAttrKey[] attributeKeys;
  *
- * Class ProductStructure
+ * Class PStructure
  * @package App\Models
  */
-class ProductStructure extends BaseModel
+class PStructure extends BaseModel
 {
+    use Translatable;
+
     protected $table = 'p_structures';
 
     protected $fillable = [
@@ -28,6 +32,9 @@ class ProductStructure extends BaseModel
 
     protected static array $SORTABLE_FIELDS = ['id', 'title'];
 
+    protected static array $TRANSLATABLE_FIELDS = [
+        'title' => ['string', 'input:text']
+    ];
 
     /*
      * Relations Methods
@@ -46,18 +53,18 @@ class ProductStructure extends BaseModel
      */
     public function attributeKeys()
     {
-        return $this->belongsToMany('\\App\\Models\\ProductStructureAttributeKey', 'p_structure_attrs',
+        return $this->belongsToMany('\\App\\Models\\PStructureAttrKey', 'p_structure_attrs',
             'p_structure_id', 'p_structure_attr_key_id');
     }
 
     /**
-     * @return ProductStructureAttributeKey|null
+     * @return PStructureAttrKey|null
      */
-    public function getSortableKey(): ?ProductStructureAttributeKey
+    public function getSortableKey(): ?PStructureAttrKey
     {
         $sortable_attribute_key = null;
         foreach ($this->attributeKeys as $attributeKey)
-            if ($attributeKey->is_sortable){
+            if ($attributeKey->is_sortable) {
                 $sortable_attribute_key = $attributeKey;
                 break;
             }

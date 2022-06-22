@@ -33,10 +33,12 @@ class SettingService
         if ($driver == DataSourceDriver::DATABASE) {
             $setting = self::getGlobal($key);
             $value = serialize($value);
-            if ($setting)
+            if ($setting){
                 $setting->update(compact('value'));
-            else
+            }
+            else{
                 self::create($key, $value);
+            }
         } else if ($driver == DataSourceDriver::SESSION) {
             die('session can not be global ! :) go read more about sessions :D');
         }

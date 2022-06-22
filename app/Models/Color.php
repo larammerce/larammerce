@@ -6,6 +6,7 @@ use App\Models\Interfaces\ImageContract;
 use App\Models\Interfaces\TagContract as TaggableContract;
 use App\Models\Traits\Taggable;
 use App\Utils\Common\ImageService;
+use App\Utils\Translation\Traits\Translatable;
 
 /**
  *
@@ -21,7 +22,7 @@ use App\Utils\Common\ImageService;
  */
 class Color extends BaseModel implements TaggableContract, ImageContract
 {
-    use Taggable;
+    use Taggable, Translatable;
 
     protected $table = 'colors';
 
@@ -31,6 +32,10 @@ class Color extends BaseModel implements TaggableContract, ImageContract
 
     static protected array $SORTABLE_FIELDS = ['id', 'name', 'hex_code'];
 
+    protected static array $TRANSLATABLE_FIELDS = [
+        'name' => ['string', 'input:text'],
+        'caption' => ['string', 'input:text']
+    ];
 
     /*
      * Relation Methods

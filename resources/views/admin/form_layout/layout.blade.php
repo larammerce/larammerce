@@ -4,7 +4,6 @@
 @stop
 
 @section('main_content')
-
     <div class="form-layout-container">
         <form @yield('form_attributes') act="main-form">
             {{ csrf_field() }}

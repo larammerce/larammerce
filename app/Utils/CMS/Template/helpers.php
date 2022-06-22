@@ -23,11 +23,11 @@ use App\Models\Gallery;
 use App\Models\GalleryItem;
 use App\Models\Invoice;
 use App\Models\Product;
-use App\Models\ProductAttribute;
+use App\Models\PAttr;
 use App\Models\ProductFilter;
 use App\Models\ProductQuery;
-use App\Models\ProductStructureAttributeKey;
-use App\Models\ProductStructureAttributeValue;
+use App\Models\PStructureAttrKey;
+use App\Models\PStructureAttrValue;
 use App\Models\Setting;
 use App\Models\State;
 use App\Models\SystemUser;
@@ -1029,9 +1029,9 @@ if (!function_exists('get_product_similar_products')) {
 
         $products = [];
         if ($key_id !== 0) {
-            $product_structure = $product->productStructure;
-            if ($product_structure != null) {
-                $products = $product_structure->products()->where('directory_id',
+            $p_structure = $product->productStructure;
+            if ($p_structure != null) {
+                $products = $p_structure->products()->where('directory_id',
                     $product->directory_id)->mainModels()->visible()->except($product->id)
                     ->whereHas('pAttributes', function ($q1) use ($key_id, $product_key_values) {
                         $q1->where('p_structure_attr_key_id', $key_id)
@@ -1073,7 +1073,7 @@ if (!function_exists('get_product_attributes')) {
     function get_product_attributes(Product $product = null)
     {
         if ($product != null) {
-            $attributes = ProductAttribute::getProductAttributes($product);
+            $attributes = PAttr::getProductAttributes($product);
             return $attributes['attributes'];
         } else {
             return null;
@@ -1087,8 +1087,8 @@ if (!function_exists('get_product_most_privileged_key_attributes')) {
      */
     function get_product_most_privileged_key_attributes(int $count = 9): array
     {
-        $id = ProductStructureAttributeKey::orderBy('priority', 'DESC')->pluck('id')->first();
-        $attributeValues = ProductStructureAttributeValue::with('key')->where('p_structure_attr_key_id', $id)
+        $id = PStructureAttrKey::orderBy('priority', 'DESC')->pluck('id')->first();
+        $attributeValues = PStructureAttrValue::with('key')->where('p_structure_attr_key_id', $id)
             ->inRandomOrder()
             ->paginate($count);
         return $attributeValues->items();
@@ -1422,7 +1422,7 @@ if (!function_exists("clean_cart_cookie")) {
 
 if (!function_exists("get_structure_sort_title")) {
     /**
-     * @param ProductStructureAttributeKey[] $keys
+     * @param PStructureAttrKey[] $keys
      */
     function get_structure_sort_title($keys)
     {

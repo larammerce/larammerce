@@ -11,7 +11,7 @@ namespace App\Utils\Comparison;
 
 use Exception;
 
-class ProductStructureMismatchException extends Exception
+class PStructureMismatchException extends Exception
 {
 
 }

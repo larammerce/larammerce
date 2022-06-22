@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Interfaces\ImageContract;
+use App\Utils\Translation\Traits\Translatable;
 
 /**
  *
@@ -23,6 +24,8 @@ use App\Models\Interfaces\ImageContract;
  */
 class ProductImage extends BaseModel implements ImageContract
 {
+    use Translatable;
+
     protected $table = 'product_images';
 
     protected $fillable = [
@@ -32,6 +35,9 @@ class ProductImage extends BaseModel implements ImageContract
 
     public $timestamps = false;
 
+    protected static array $TRANSLATABLE_FIELDS = [
+        'caption' => ['string', 'input:text']
+    ];
 
     /*
      * Relations Methods

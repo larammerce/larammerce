@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\ProductStructureAttributeKey;
-use App\Models\ProductStructureAttributeValue;
+use App\Models\PStructureAttrKey;
+use App\Models\PStructureAttrValue;
 use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
  * @package App\Http\Controllers\Admin
  * @role(enabled=true)
  */
-class ProductStructureAttributeValueController extends BaseController
+class PStructureAttrValueController extends BaseController
 {
     /**
      * @rules(p_structure_attr_key_id="exists:p_structure_attr_keys,id")
@@ -24,17 +24,16 @@ class ProductStructureAttributeValueController extends BaseController
     public function index(): Factory|View|Application
     {
         if (request()->has('p_structure_attr_key_id')) {
-            $key = ProductStructureAttributeKey::find(request()->get('p_structure_attr_key_id'));
-            parent::setPageAttribute($key->id);
-            $attribute_values = $key->values()->with('key')
-                ->paginate(ProductStructureAttributeValue::getPaginationCount());
+            $p_structure_attr_key = PStructureAttrKey::find(request()->get('p_structure_attr_key_id'));
+            parent::setPageAttribute($p_structure_attr_key->id);
+            $p_structure_attr_values = $p_structure_attr_key->values()->with('key')
+                ->paginate(PStructureAttrValue::getPaginationCount());
         } else {
             parent::setPageAttribute();
-            $attribute_values = ProductStructureAttributeValue::with('key')
-                ->paginate(ProductStructureAttributeValue::getPaginationCount());
+            $p_structure_attr_values = PStructureAttrValue::with('key')
+                ->paginate(PStructureAttrValue::getPaginationCount());
         }
-
-        return view('admin.pages.p-structure-attr-value.index', compact('attribute_values'));
+        return view('admin.pages.p-structure-attr-value.index', compact('p_structure_attr_values'));
     }
 
     /**
@@ -43,8 +42,8 @@ class ProductStructureAttributeValueController extends BaseController
      */
     public function create(): Factory|View|Application
     {
-        $key = ProductStructureAttributeKey::find(request()->get('id'));
-        return view('admin.pages.p-structure-attr-value.create', compact('key'));
+        $p_structure_attr_key = PStructureAttrKey::find(request()->get('id'));
+        return view('admin.pages.p-structure-attr-value.create', compact('p_structure_attr_key'));
     }
 
     /**
@@ -54,29 +53,31 @@ class ProductStructureAttributeValueController extends BaseController
      */
     public function store(Request $request): RedirectResponse
     {
-        $attribute_value = ProductStructureAttributeValue::create($request->all());
+        $p_structure_attr_value = PStructureAttrValue::create($request->all());
 
         if ($request->hasFile('image'))
-            $attribute_value->setImagePath();
+            $p_structure_attr_value->setImagePath();
 
-        $p_structure_attr_key = ProductStructureAttributeKey::find($request->get('p_structure_attr_key_id'));
-        return redirect()->route('admin.p-structure-attr-key.edit', compact('p_structure_attr_key'));
+        $p_structure_attr_key = PStructureAttrKey::find($request->get('p_structure_attr_key_id'));
+        return redirect()->route('admin.p-structure-attr-key.edit',
+            compact('p_structure_attr_key'));
     }
 
     /**
      * @role(super_user, cms_manager)
      */
-    public function edit(ProductStructureAttributeValue $p_structure_attr_value): Factory|View|Application
+    public function edit(PStructureAttrValue $p_structure_attr_value): Factory|View|Application
     {
         $p_structure_attr_value->load('key');
-        return view('admin.pages.p-structure-attr-value.edit')->with(['attribute_value' => $p_structure_attr_value]);
+        return view('admin.pages.p-structure-attr-value.edit')->with([
+            'p_structure_attr_value' => $p_structure_attr_value]);
     }
 
     /**
      * @role(super_user, cms_manager)
      * @rules(name="required", image="image|max:2048")
      */
-    public function update(Request $request, ProductStructureAttributeValue $p_structure_attr_value): RedirectResponse
+    public function update(Request $request, PStructureAttrValue $p_structure_attr_value): RedirectResponse
     {
         $p_structure_attr_value->update($request->all());
         if ($request->hasFile('image'))
@@ -87,17 +88,18 @@ class ProductStructureAttributeValueController extends BaseController
     /**
      * @role(super_user, cms_manager)
      */
-    public function destroy(ProductStructureAttributeValue $p_structure_attr_value): RedirectResponse
+    public function destroy(PStructureAttrValue $p_structure_attr_value): RedirectResponse
     {
         $p_structure_attr_key = $p_structure_attr_value->key;
         $p_structure_attr_value->delete();
-        return redirect()->route('admin.p-structure-attr-key.edit', compact('p_structure_attr_key'));
+        return redirect()->route('admin.p-structure-attr-key.edit',
+            compact('p_structure_attr_key'));
     }
 
     /**
      * @role(super_user, seo_master, cms_manager)
      */
-    public function removeImage(ProductStructureAttributeValue $p_structure_attr_value): RedirectResponse
+    public function removeImage(PStructureAttrValue $p_structure_attr_value): RedirectResponse
     {
         $p_structure_attr_value->removeImage();
         return back();
@@ -106,6 +108,6 @@ class ProductStructureAttributeValueController extends BaseController
 
     public function getModel(): ?string
     {
-        return ProductStructureAttributeValue::class;
+        return PStructureAttrValue::class;
     }
 }

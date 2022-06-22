@@ -12,7 +12,6 @@ use App\Utils\SMSManager\Exceptions\SMSDriverInvalidConfigurationException;
 use App\Utils\SMSManager\Exceptions\SMSDriverNotConfiguredException;
 
 /**
-
  * @method static SMSDriverModel getRecord(string $name = "", ?string $parent_id = null)
  */
 class SMSDriverService extends AbstractSettingService

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Interfaces\TagContract as TaggableContract;
 use App\Models\Traits\Taggable;
+use App\Utils\Translation\Traits\Translatable;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
@@ -19,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  */
 class Tag extends BaseModel implements TaggableContract
 {
-    use Taggable;
+    use Taggable, Translatable;
 
     protected $table = 'tags';
 
@@ -33,7 +34,9 @@ class Tag extends BaseModel implements TaggableContract
 
     protected static array $SEARCHABLE_FIELDS = ['name'];
 
-
+    protected static array $TRANSLATABLE_FIELDS = [
+        'name' => ['string', 'input:text']
+    ];
     /*
      * Relation Methods
      */

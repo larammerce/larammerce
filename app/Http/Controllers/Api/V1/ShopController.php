@@ -58,8 +58,8 @@ class ShopController extends BaseController
         if (request()->has("product_ids"))
             $products = $products->whereIn("id", request("product_ids"));
 
-        if (request()->has("product_structure_id"))
-            $products = $products->where("p_structure_id", request("product_structure_id"));
+        if (request()->has("p_structure_id"))
+            $products = $products->where("p_structure_id", request("p_structure_id"));
 
         $products = $products->mainModels()->visible();
 
