@@ -14,19 +14,38 @@
     <link rel="stylesheet" href="/admin_dashboard/vendor/bootstrap-switch-rtl.css"/>
     <link rel="stylesheet" type="text/css" href="/admin_dashboard/css/app-22-03-02.css"/>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/admin_dashboard/favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/admin_dashboard/favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/admin_dashboard/favicon/favicon-16x16.png">
-    <link rel="manifest" href="/admin_dashboard/favicon/site.webmanifest">
-    <link rel="mask-icon" href="/admin_dashboard/favicon/safari-pinned-tab.svg" color="#ff2e20">
-    <link rel="shortcut icon" href="/admin_dashboard/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/admin_dashboard/{{get_identity()["fav"]}}/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/admin_dashboard/{{get_identity()["fav"]}}/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/admin_dashboard/{{get_identity()["fav"]}}/favicon-16x16.png">
+    <link rel="manifest" href="/admin_dashboard/{{get_identity()["fav"]}}/site.webmanifest">
+    <link rel="mask-icon" href="/admin_dashboard/{{get_identity()["fav"]}}/safari-pinned-tab.svg" color="#ff2e20">
+    <link rel="shortcut icon" href="/admin_dashboard/{{get_identity()["fav"]}}/favicon.ico">
     <meta name="apple-mobile-web-app-title" content="Larammerce">
     <meta name="application-name" content="Larammerce">
     <meta name="msapplication-TileColor" content="#ff2e20">
-    <meta name="msapplication-config" content="/admin_dashboard/favicon/browserconfig.xml">
+    <meta name="msapplication-config" content="/admin_dashboard/{{get_identity()["fav"]}}/browserconfig.xml">
     <meta name="theme-color" content="#ffffff">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <style>
+        .login-page form .btn:hover {
+            border: 1px solid{{get_identity()["color"]}};
+            color: {{get_identity()["color"]}};
+        }
+
+        .login-page form .btn {
+            background: {{get_identity()["color"]}};
+        }
+
+        .login-page .page-title:after {
+            border-top: 2px solid{{get_identity()["color"]}};
+        }
+
+        .login-page .website-link {
+            color: {{get_identity()["color"]}};
+        }
+    </style>
 </head>
 <body class="login-page">
 
@@ -46,7 +65,7 @@
                     class="hero-static rtl-menu-login col-md-6 col-xl-4 d-flex align-items-center js-appear-enabled animated fadeInRight"
                     data-toggle="appear" data-class="animated fadeInRight">
                     <div class="content content-full">
-                        <a class="link-effect" href="https://larammerce.com/">
+                        <a class="link-effect" href="{{get_identity()["url"]}}">
                             <div class="img-logo">
                                 <img alt="Logo" src="{{get_identity()["logo"]}}.svg">
                             </div>
@@ -83,7 +102,7 @@
 @include('admin.templates.underscore_needle')
 @include('admin.templates.modals.confirm_modal')
 
-<script data-main="/admin_dashboard/js/all-22-03-02" src="/node_modules/requirejs/require.js"></script>
+<script data-main="/admin_dashboard/js/all-22-03-02" src="/admin_dashboard/vendor/requirejs/require.js"></script>
 
 </body>
 </html>

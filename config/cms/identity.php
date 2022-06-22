@@ -11,6 +11,7 @@ return [
         "website" => "larammerce.com",
         "url" => "https://larammerce.com",
         "color" => "#ff2e20",
+        "fav" => "favicon"
     ],
     "hinza" => [
         "logo" => "/admin_dashboard/images/logos/hinza",
@@ -19,6 +20,7 @@ return [
         "motto" => "سیستــــم مدیریـت محتوای هینــــــزا",
         "website" => "www.hinzaco.com",
         "url" => "https://hinzaco.com",
-        "color" => "#ff2e20",
+        "color" => "#69ff47",
+        "fav" => "favicon/hinza"
     ]
 ];
