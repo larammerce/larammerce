@@ -197,8 +197,16 @@ class Invoice extends BaseModel
             $this->is_warned = false;
             $this->save();
             return true;
+        } else {
+            $this->try_count += 1;
+            if ($this->try_count > 3) {
+                $this->delete();
+                return true;
+            } else {
+                $this->save();
+                return false;
+            }
         }
-        return false;
     }
 
     public function hasDiscountCard(): bool
