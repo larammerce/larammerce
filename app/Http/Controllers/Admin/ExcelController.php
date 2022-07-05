@@ -24,6 +24,7 @@ class ExcelController extends BaseController
     public function export(Request $request): BinaryFileResponse|RedirectResponse
     {
         ini_set("memory_limit", -1);
+        ini_set("max_execution_time", -1);
         $fields = json_decode($request->get('exporting_fields'), true);
         $relations = json_decode($request->get('exporting_relations'), true);
         if (count($fields) > 0 || count($relations) > 0) {
