@@ -44,7 +44,8 @@ class HomeController extends Controller
                 $needs_landing = true;
                 $url_paths[] = Str::replaceLast("/landing", "", $url_path);
             }
-            $directory = Directory::whereIn("url_full", $url_paths)->orderBy("updated_at", "desc")->first();
+            $directory = Directory::whereIn("url_full", $url_paths)->orderBy("has_web_page", "DESC")
+                ->orderBy("updated_at", "desc")->first();
             $cart_rows = get_cart();
             if ($directory != null) {
                 if (!$directory->is_anonymously_accessible && auth()->guest())
