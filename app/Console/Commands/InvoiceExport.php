@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Invoice;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class InvoiceExport extends Command
 {
@@ -47,7 +48,7 @@ class InvoiceExport extends Command
         if ($shipmentStatus != null)
             $result->where('shipment_status', $shipmentStatus);
         if ($timeDiff != null)
-            $result->whereRaw("timestampdiff(minute,updated_at, now()) > {$timeDiff}");
+            $result->whereRaw(DB::raw("timestampdiff(minute,updated_at, now()) > {$timeDiff}"));
 
         $this->output->write($result->get()->toJson());
 
