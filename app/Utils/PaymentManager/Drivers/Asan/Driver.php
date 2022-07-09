@@ -182,7 +182,7 @@ class Driver extends AbstractDriver
     {
         try {
             $payment_data = json_decode($payment_data);
-            $pay_gate_tran_id = isset($payment_data->PayGateTranID) ? $payment_data->payGateTranID : "";
+            $pay_gate_tran_id = $payment_data->PayGateTranID ?? "";
 
             $config = ConfigProvider::getConfig(self::DRIVER_ID);
             $result = $this->createCurl("/v1/Verify")->withData([
