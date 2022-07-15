@@ -60,7 +60,7 @@
         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12" id="filters-section">
             <h4>لیست فیلترها</h4>
             @include("admin.pages.product-filter.filters-section",
-                ["attribute_keys" => App\Models\PStructureAttrKey::orderBy("title", "ASC")->get()])
+                ["p_structure_attr_keys" => App\Models\PStructureAttrKey::orderBy("title", "ASC")->get()])
         </div>
         <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12" id="selected-tags-section">
             <h4>فیلترهای انتخاب شده</h4>
