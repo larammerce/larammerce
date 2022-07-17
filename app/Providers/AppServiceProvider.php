@@ -50,9 +50,6 @@ class AppServiceProvider extends ServiceProvider
         Validator::extend('user_alphabet_rule', ValidationRule::class . '@alpha');
         Validator::extend('mobile_number', ValidationRule::class . '@mobileNumber');
         Validator::extend('delivery_period', LogisticService::class . "@validateDeliveryPeriod");
-
-        // Set the app locale according to the URL
-        app()->setLocale(request()->segment(1));
     }
 
     /**
