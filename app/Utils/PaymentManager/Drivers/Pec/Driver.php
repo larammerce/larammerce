@@ -131,12 +131,12 @@ class Driver extends AbstractDriver
      * @param array $extra_data
      * @throws PaymentConnectionException
      */
-    public function initiatePayment($amount, $payment_id, $extra_data=[]): string
+    public function initiatePayment($amount, $payment_id, $extra_data = []): string
     {
         try {
             $client = new SoapClient($this->getRequestURL("/NewIPGServices/Sale/SaleService.asmx", true));
             $config = ConfigProvider::getConfig(self::DRIVER_ID);
-            $result = $client->__call("SalePaymentRequest", [
+            $result = $client->SalePaymentRequest(
                 [
                     "requestData" => [
                         "LoginAccount" => $config->pin,
@@ -145,14 +145,7 @@ class Driver extends AbstractDriver
                         "CallBackUrl" => $this->getCallbackUrl(),
                     ]
                 ]
-            ]);
-            Log::info("----request_date: ".json_encode(["requestData" => [
-                "LoginAccount" => $config->pin,
-                "OrderId" => $payment_id,
-                "Amount" => $this->fixAmount($amount),
-                "CallBackUrl" => $this->getCallbackUrl(),
-            ]]));
-            Log::info("----response_data: ".json_encode($result));
+            );
             if (!isset($result->SalePaymentRequestResult) or
                 !isset($result->SalePaymentRequestResult->Status) or
                 !isset($result->SalePaymentRequestResult->Token) or
@@ -188,14 +181,14 @@ class Driver extends AbstractDriver
             $client = new SoapClient($this->getRequestURL("/NewIPGServices/Confirm/ConfirmService.asmx",
                 true));
             $config = ConfigProvider::getConfig(self::DRIVER_ID);
-            $result = $client->__call("ConfirmPayment", [
+            $result = $client->ConfirmPayment(
                 [
                     "requestData" => [
                         "LoginAccount" => $config->pin,
                         "Token" => $payment_data->Token
                     ]
                 ]
-            ]);
+            );
             if (!isset($result->ConfirmPaymentResult) or
                 !isset($result->ConfirmPaymentResult->Status) or
                 $result->ConfirmPaymentResult->Status !== 0) {
@@ -220,24 +213,24 @@ class Driver extends AbstractDriver
     {
         try {
             $payment_data = json_decode($payment_data);
-            $client = new SoapClient($this->getRequestURL("/‫‪NewIPGServices/Reverse/ReversalService.asmx‬‬",
+            $client = new SoapClient($this->getRequestURL("/NewIPGServices/Reverse/ReversalService.asmx",
                 true));
             $config = ConfigProvider::getConfig(self::DRIVER_ID);
-            $result = $client->__call("‫‪ReversalRequest‬‬", [
+            $result = $client->ReversalRequest(
                 [
                     "requestData" => [
                         "LoginAccount" => $config->pin,
                         "Token" => $payment_data->token
                     ]
                 ]
-            ]);
-            if (!isset($result->‫‪ReversalRequest‬‬Result) or
-                !isset($result->‫‪ReversalRequest‬‬Result->Status) or
-                $result->‫‪ReversalRequest‬‬Result->Status !== 0) {
+            );
+            if (!isset($result->ReversalRequestResult) or
+                !isset($result->ReversalRequestResult->Status) or
+                $result->ReversalRequestResult->Status !== 0) {
                 throw new PaymentConnectionException("There was a problem defining at reversal. " .
-                    json_encode($result->‫‪ReversalRequest‬‬Result));
+                    json_encode($result->ReversalRequestResult));
             }
-            $payment_data->reject = $result->‫‪ReversalRequest‬‬Result;
+            $payment_data->reject = $result->ReversalRequestResult;
             return json_encode($payment_data);
         } catch (Exception $e) {
             throw new PaymentConnectionException("There was unknown error with message '{$e->getMessage()}' " .
