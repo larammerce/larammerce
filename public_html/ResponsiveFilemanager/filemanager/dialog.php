@@ -265,7 +265,7 @@ $get_params['fldr'] = '';
 $get_params = http_build_query($get_params);
 ?>
 <!DOCTYPE html>
-<html xmlns="https://www.w3.org/1999/xhtml">
+<html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -614,22 +614,26 @@ $get_params = http_build_query($get_params);
 
     function filenameSort($x, $y)
     {
-        return $x['file_lcase'] < $y['file_lcase'];
+        return $x['file_lcase'] < $y['file_lcase'] ? -1 :
+            ($x['file_lcase'] == $y['file_lcase'] ? 0 : 1);
     }
 
     function dateSort($x, $y)
     {
-        return $x['date'] < $y['date'];
+        return $x['date'] < $y['date'] ? -1 :
+            ($x['date'] == $y['date'] ? 0 : 1);
     }
 
     function sizeSort($x, $y)
     {
-        return $x['size'] < $y['size'];
+        return $x['size'] < $y['size'] ? -1 :
+            ($x['size'] == $y['size'] ? 0 : 1);
     }
 
     function extensionSort($x, $y)
     {
-        return $x['extension'] < $y['extension'];
+        return $x['extension'] < $y['extension'] ? -1 :
+            ($x['extension'] == $y['extension'] ? 0 : 1);
     }
 
     switch ($sort_by) {
