@@ -19,6 +19,8 @@
         "ext-xml": "*",
         "ext-redis": "*",
         "ext-mongodb": "*",
+        "ext-gd": "*",
+        "ext-mbstring": "*",
         "albertcht/invisible-recaptcha": "^1.8",
         "barryvdh/laravel-debugbar": "^3.2",
         "bordoni/phpass": "dev-main",
