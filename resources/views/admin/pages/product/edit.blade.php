@@ -366,7 +366,7 @@
         </div>
 
     @endforeach
-    <div id="sortable" class="col-lg-12 col-md-12 col-sm-12 col-xs-12 extra-properties ui-sortable"
+    <div id="sortable" class="filled col-lg-12 col-md-12 col-sm-12 col-xs-12 extra-properties ui-sortable"
          @roleinput($product, "extra_properties")>
     <h1 class="title">ویژگی های اضافه</h1>
     <ul act="extra-properties-data" class="hidden">
