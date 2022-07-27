@@ -13,6 +13,7 @@ return [
             'average_rating' => 'امتیاز میانگین',
             'rates_count' => 'تعداد امتیازها',
             'seo_keywords' => 'کلمات کلیدی سئو',
+            'seo_title' => 'عنوان سئو',
             'seo_description' => 'توضیحات سئو',
             'content_type' => 'نوع محتوا',
             'is_suggested' => 'پیشنهاد شده',

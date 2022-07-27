@@ -39,6 +39,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @property int content_type
  * @property mixed seo_description
  * @property mixed seo_keywords
+ * @property mixed seo_title
  * @property boolean is_suggested
  *
  * @property Directory directory
@@ -60,19 +61,20 @@ class Article extends BaseModel implements
 
     protected $fillable = [
         'directory_id', 'system_user_id', 'title', 'short_content', 'full_text', 'source', 'average_rating',
-        'rates_count', 'seo_keywords', 'seo_description', 'content_type', 'is_suggested',
+        'rates_count', 'seo_keywords','seo_title', 'seo_description', 'content_type', 'is_suggested',
 
         //these are not table fields, these are form sections that role permission system works with
         'tags', 'main_image',
     ];
 
     static protected array $SORTABLE_FIELDS = ['id', 'title', 'created_at'];
-    static protected array $SEARCHABLE_FIELDS = ['seo_keywords', 'title', 'short_content'];
+    static protected array $SEARCHABLE_FIELDS = ['seo_keywords','seo_title', 'title', 'short_content'];
     static protected int $FRONT_PAGINATION_COUNT = 12;
     protected static array $TRANSLATABLE_FIELDS = [
         "title" => ["string", "input:text"],
         "short_content" => ["text", "textarea:normal"],
         "source" => ["string", "input:text"],
+        "seo_title" => ["text", "textarea:normal"],
         "seo_keywords" => ["text", "textarea:normal"],
         "seo_description" => ["text", "textarea:normal"],
         "full_text" => ["mediumText", "textarea:rich"],
@@ -206,7 +208,7 @@ class Article extends BaseModel implements
 
     public function getSeoTitle(): string
     {
-        return $this->getTitle() . ' - ' . $this->directory->title;
+        return $this->seo_title . ' - ' . $this->directory->title;
     }
 
 

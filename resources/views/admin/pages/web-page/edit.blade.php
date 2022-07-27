@@ -56,6 +56,10 @@
             <input class="form-control input-sm" name="seo_keywords" value="{{ $webPage->seo_keywords }}">
         </div>
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+            <span class="label">عنوان سئو</span>
+            <input class="form-control input-sm" name="seo_title" value="{{ $webPage->seo_title }}">
+        </div>
+        <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
             <span class="label">توضیحات سئو</span>
             <textarea class="form-control input-sm" name="seo_description">{{ $webPage->seo_description }}</textarea>
         </div>

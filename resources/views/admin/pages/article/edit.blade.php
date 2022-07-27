@@ -73,6 +73,10 @@
             <span class="label">تگ‌های سئو</span>
             <input class="form-control input-sm" name="seo_keywords" value="{{ $article->seo_keywords }}">
         </div>
+        <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12" @roleinput($article, 'seo_title')>
+            <span class="label">عنوان سئو</span>
+             <input class="form-control input-sm" name="seo_title" value="{{ $article->seo_title }}">
+          </div>
         <div
             class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12" @roleinput($article, 'seo_description')>
             <span class="label">توضیحات سئو</span>
