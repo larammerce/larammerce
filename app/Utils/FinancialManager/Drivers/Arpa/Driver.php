@@ -315,10 +315,8 @@ class Driver implements BaseDriver
         if ($warehouse_permission_data == null)
             return false;
         $config = ConfigProvider::getConfig(self::DRIVER_ID);
-        $curl_result = ConnectionFactory::create('/serv/api/GetLinkedInfo', $config)
-            ->withData([
-                "TransactionId" => $warehouse_permission_data->transactionId,
-            ])->asJson()
+        $curl_result = ConnectionFactory::create("/serv/api/GetLinkedInfo?TransactionId={$warehouse_permission_data->transactionId}", $config)
+            ->asJson()
             ->get();
         try {
             return isset($curl_result->data) and
