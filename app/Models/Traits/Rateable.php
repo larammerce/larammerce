@@ -83,9 +83,12 @@ trait Rateable
      * @param string $comment
      * @return boolean
      */
-    public function submitRating(int $value, string $comment): bool
+    public function submitRating(?int $value, ?string $comment): bool
     {
         $rate = $this->rates()->authCustomer()->first();
+
+        $value = $value ?? 0;
+        $comment = $comment ?? "";
 
         if ($rate == null) {
             return $this->addRating($value, $comment);
