@@ -80,6 +80,7 @@ use Throwable;
  * @property integer max_purchase_count
  * @property integer min_purchase_count
  * @property integer inaccessibility_type
+ * @property string seo_title
  * @property string seo_keywords
  * @property string seo_description
  * @property bool isLiked
@@ -148,7 +149,7 @@ class Product extends BaseModel implements
         "title", "latest_price", "latest_special_price", "extra_properties", "directory_id", "p_structure_id",
         "description", "code", "average_rating", "rates_count", "is_active",
         "min_allowed_count", "max_purchase_count", "min_purchase_count",
-        "is_important", "seo_keywords", "seo_description", "model_id",
+        "is_important", "seo_title","seo_keywords", "seo_description", "model_id",
         "has_discount", "previous_price", "is_accessory", "is_visible", "attributes_content", "inaccessibility_type",
         "cmc_id", "notice", "discount_group_id", "priority", "is_discountable", "structure_sort_score", "package_id", "accessory_for",
         //these are not table fields, these are form sections that role permission system works with
@@ -180,7 +181,7 @@ class Product extends BaseModel implements
     protected static ?bool $DISABLE_ON_MIN = null; //TODO: move this to admin layer setting.
     protected static array $SORTABLE_FIELDS = ["id", "created_at", "is_active", "is_accessory"];
     protected static int $FILTER_PAGINATION_COUNT = 20;
-    protected static array $SEARCHABLE_FIELDS = ["seo_keywords", "title", "code", "description"];
+    protected static array $SEARCHABLE_FIELDS = ["seo_title","seo_keywords","title", "code", "description"];
     protected static ?string $EXACT_SEARCH_FIELD = "title";
     protected static ?string $EXACT_SEARCH_ORDER_FIELD = "is_active";
     protected static array $ROLE_PROPERTY_ACCESS = [
@@ -196,11 +197,11 @@ class Product extends BaseModel implements
         ],
         "cms_manager" => [
             "title", "description", "code", "is_active", "extra_properties", "gallery", "colors", "attributes", "tags",
-            "is_important", "seo_keywords", "seo_description", "model_id", "has_discount", "is_accessory", "notice",
+            "is_important", "seo_title" ,"seo_keywords", "seo_description", "model_id", "has_discount", "is_accessory", "notice",
             "priority", "is_discountable", "badges", "accessory_for"
         ],
         "seo_master" => [
-            "tags", "description", "seo_keywords", "seo_description"
+            "tags", "description", "seo_title", "seo_keywords", "seo_description"
         ]
     ];
 
@@ -212,6 +213,7 @@ class Product extends BaseModel implements
 
     protected static array $TRANSLATABLE_FIELDS = [
         "title" => ["string", "input:text"],
+        "seo_title" => ["text", "textarea:normal"],
         "seo_keywords" => ["text", "textarea:normal"],
         "seo_description" => ["text", "textarea:normal"],
         "description" => ["text", "textarea:rich"]
@@ -1002,7 +1004,7 @@ class Product extends BaseModel implements
 
     public function getSeoTitle()
     {
-        return $this->getTitle() . " - " . $this->directory->title;
+        return $this->seo_title . " - " . $this->directory->title;
     }
 
 
@@ -1105,6 +1107,7 @@ class Product extends BaseModel implements
             ($this->rates_count != null ? $this->rates_count : 0) . "#" .
             ($this->is_active != null ? $this->is_active : 0) . "#" .
             ($this->is_important != null ? $this->is_important : 0) . "#" .
+            $this->seo_title . "#" .
             $this->seo_keywords . "#" .
             $this->seo_description . "#" .
             ($this->has_discount != null ? $this->has_discount : 0) . "#" .
