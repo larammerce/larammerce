@@ -14,10 +14,11 @@ use App\Models\Directory;
 use App\Models\Product;
 use App\Utils\CMS\SiteMap\BaseDriver;
 use DateTime;
+use Exception;
 
 class Xml extends BaseDriver
 {
-    protected $targetFile = "sitemap.xml";
+    protected string $targetFile = "sitemap.xml";
 
     protected function formatResult($result)
     {
@@ -36,6 +37,9 @@ class Xml extends BaseDriver
         return "{$title}{$content}";
     }
 
+    /**
+     * @throws Exception
+     */
     protected function getDirectoryTitle(Directory $directory)
     {
         $loc = htmlspecialchars($directory->getFrontUrl());
@@ -46,6 +50,9 @@ class Xml extends BaseDriver
         return $this->formatData($loc, $lastMod, $changeFreq, $priority);
     }
 
+    /**
+     * @throws Exception
+     */
     protected function getProductSection(Product $product)
     {
         $loc = htmlspecialchars($product->getFrontUrl());

@@ -16,7 +16,7 @@ use App\Utils\CMS\SiteMap\BaseDriver;
 
 class Html extends BaseDriver
 {
-    protected $targetFile = "sitemap.html";
+    protected string $targetFile = "sitemap.html";
 
     protected function formatResult($result)
     {

@@ -16,7 +16,13 @@ use App\Models\Product;
 
 abstract class BaseDriver
 {
-    protected $targetFile = "sitemap.xxx";
+    protected string $targetFile = "sitemap.xxx";
+    protected array $urls;
+
+    public function __construct()
+    {
+        $this->urls = [];
+    }
 
     public final function save()
     {
@@ -27,17 +33,25 @@ abstract class BaseDriver
     public final function generate()
     {
         $result = "";
-        foreach (Directory::roots()->with('directories')->orderBy('priority')->get() as $directory)
+        $tree = build_directories_tree();
+
+        foreach ($tree as $directory)
             $result .= $this->getDirectorySection($directory);
         return $this->formatResult($result);
     }
 
-    protected function getDirectorySection(Directory $directory)
+    protected function getDirectorySection(Directory $directory): string
     {
+        if (in_array($directory->getFrontUrl(), $this->urls)) {
+            return "";
+        } else {
+            $this->urls[] = $directory->getFrontUrl();
+        }
+
         $title = $this->getDirectoryTitle($directory);
         $content = "";
         $sub_directories = $directory->directories;
-        if (count(is_countable($sub_directories)?$sub_directories :[]) > 0) {
+        if (count(is_countable($sub_directories) ? $sub_directories : []) > 0) {
             foreach ($sub_directories as $subDirectory)
                 $content .= $this->getDirectorySection($subDirectory);
         } else if ($directory->content_type == DirectoryType::PRODUCT) {
