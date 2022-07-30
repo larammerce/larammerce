@@ -106,7 +106,9 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
 
     public function getSeoTitle()
     {
-        return $this->seo_title . " - " . $this->directory->title;
+        if ($this->seo_title !== null and strlen($this->seo_title) > 0)
+            return $this->seo_title;
+        return $this->directory->title;
     }
 
 

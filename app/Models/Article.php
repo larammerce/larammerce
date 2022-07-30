@@ -208,7 +208,9 @@ class Article extends BaseModel implements
 
     public function getSeoTitle(): string
     {
-        return $this->seo_title . ' - ' . $this->directory->title;
+        if ($this->seo_title !== null and strlen($this->seo_title) > 0)
+            return $this->seo_title;
+        return $this->title . " - " . $this->directory->title;
     }
 
 
