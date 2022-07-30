@@ -31,6 +31,7 @@ use Yangqi\Htmldom\Htmldom;
  * @property string image_path
  * @property string seo_description
  * @property string seo_keywords
+ * @property string seo_title
  * @property DateTime created_at
  * @property DateTime updated_at
  *
@@ -46,7 +47,7 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
 
     protected $table = 'web_pages';
     protected $fillable = [
-        'directory_id', 'blade_name', 'data', 'seo_keywords', 'seo_description',
+        'directory_id', 'blade_name', 'data', 'seo_title', 'seo_keywords', 'seo_description',
     ];
 
     protected static array $SORTABLE_FIELDS = ['id', 'blade_name', 'created_at'];
@@ -105,7 +106,7 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
 
     public function getSeoTitle()
     {
-        return $this->directory->title;
+        return $this->seo_title . " - " . $this->directory->title;
     }
 
 
@@ -400,6 +401,7 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
     {
         return $this->seo_keywords;
     }
+
 
     public function isImageLocal()
     {
