@@ -68,7 +68,7 @@ class Article extends BaseModel implements
     ];
 
     static protected array $SORTABLE_FIELDS = ['id', 'title', 'created_at'];
-    static protected array $SEARCHABLE_FIELDS = ['seo_keywords','seo_title', 'title', 'short_content'];
+    static protected array $SEARCHABLE_FIELDS = ['seo_keywords', 'title', 'short_content'];
     static protected int $FRONT_PAGINATION_COUNT = 12;
     protected static array $TRANSLATABLE_FIELDS = [
         "title" => ["string", "input:text"],
