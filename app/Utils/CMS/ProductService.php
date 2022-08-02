@@ -122,37 +122,37 @@ class ProductService
     }
 
     /**
-     * @param integer[] $productsIds
+     * @param integer[] $product_ids
      * @return array
      */
-    public static function getFilterData($productsIds)
+    public static function getFilterData($product_ids)
     {
-        $priceRange = [];
-        if (count(is_countable($productsIds) ? $productsIds : []) == 0) {
-            $priceRange["min"] = 0;
-            $priceRange["max"] = 0;
+        $price_range = [];
+        if (count(is_countable($product_ids) ? $product_ids : []) == 0) {
+            $price_range["min"] = 0;
+            $price_range["max"] = 0;
             $keys = [];
             $colors = [];
             $directories = [];
         } else {
-            $priceRange["min"] = Product::whereIn('id', $productsIds)->min('latest_price');
-            $priceRange["max"] = Product::whereIn('id', $productsIds)->max('latest_price');
+            $price_range["min"] = Product::whereIn('id', $product_ids)->min('latest_price');
+            $price_range["max"] = Product::whereIn('id', $product_ids)->max('latest_price');
 
-            $keys = PStructureAttrKey::getFilterBladeKeys($productsIds);
-            $directories = static::buildDirectoryGraph(Directory::join("directory_product", function ($join) use ($productsIds) {
+            $keys = PStructureAttrKey::getFilterBladeKeys($product_ids);
+            $directories = static::buildDirectoryGraph(Directory::join("directory_product", function ($join) use ($product_ids) {
                 $join->on("directories.id", "=", "directory_product.directory_id")
-                    ->whereIn("product_id", $productsIds);
-            })->groupBy("id")->orderBy("priority", "ASC")->get());
+                    ->whereIn("product_id", $product_ids);
+            })->orderBy("priority", "ASC")->get());
 
-            $colors = Color::whereHas('products', function ($query) use ($productsIds) {
-                $query->whereIn('product_id', $productsIds);
+            $colors = Color::whereHas('products', function ($query) use ($product_ids) {
+                $query->whereIn('product_id', $product_ids);
             })->get();
         }
 
-        if ($priceRange["min"] == $priceRange["max"])
-            $priceRange["max"] += 10000;
+        if ($price_range["min"] == $price_range["max"])
+            $price_range["max"] += 10000;
         return [
-            "priceRange" => $priceRange,
+            "priceRange" => $price_range,
             "keys" => $keys,
             "colors" => $colors,
             "directories" => $directories
