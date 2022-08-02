@@ -114,34 +114,11 @@ class ProductService
 
     private static function buildDirectoryGraph($directories, $parent_id = 0): array
     {
-        $directories_count = count($directories);
-        if ($directories_count == 0)
-            return [];
-
-        if ($parent_id === 0) {
-            $roots = [];
-            $root_ids = [];
-            for ($i = 0; $i < count($directories) and !in_array($directories->get($i)->directory_id, $root_ids); $i++) {
-                $root_directory = $directories->get($i);
-                $root_directory->child_nodes = static::buildDirectoryGraph($directories, $root_directory->id);
-                $roots[] = $root_directory;
-                $root_ids[] = $root_directory->id;
-            }
-
-            return $roots;
-        } else {
-            $children = [];
-
-            for ($i = 0; $i < count($directories); $i++) {
-                $directory = $directories->get($i);
-                if ($directory->directory_id === $parent_id) {
-                    $directory->child_nodes = static::buildDirectoryGraph($directories, $directory->id);
-                    $children[] = $directory;
-                }
-            }
-
-            return $children;
+        $result = [];
+        foreach ($directories as $directory) {
+            $result[] = build_directories_tree($directory);
         }
+        return $result;
     }
 
     /**
@@ -165,8 +142,7 @@ class ProductService
             $directories = static::buildDirectoryGraph(Directory::join("directory_product", function ($join) use ($productsIds) {
                 $join->on("directories.id", "=", "directory_product.directory_id")
                     ->whereIn("product_id", $productsIds);
-            })->groupBy("id")->orderBy("repeat_count", "DESC")
-                ->selectRaw(DB::raw("directories.*, count(id) as repeat_count"))->get());
+            })->groupBy("id")->orderBy("priority", "ASC")->get());
 
             $colors = Color::whereHas('products', function ($query) use ($productsIds) {
                 $query->whereIn('product_id', $productsIds);
