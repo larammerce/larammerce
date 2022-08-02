@@ -165,7 +165,8 @@ class ProductService
             $directories = static::buildDirectoryGraph(Directory::join("directory_product", function ($join) use ($productsIds) {
                 $join->on("directories.id", "=", "directory_product.directory_id")
                     ->whereIn("product_id", $productsIds);
-            })->groupBy("id")->orderBy("priority", "ASC")->get());
+            })->groupBy("id")->orderBy("repeat_count", "DESC")
+                ->selectRaw(DB::raw("directories.*, count(id) as repeat_count"))->get());
 
             $colors = Color::whereHas('products', function ($query) use ($productsIds) {
                 $query->whereIn('product_id', $productsIds);
