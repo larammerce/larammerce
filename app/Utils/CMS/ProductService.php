@@ -112,15 +112,6 @@ class ProductService
         return doubleval(env('SITE_PRICE_RATIO', '1.0'));
     }
 
-    private static function buildDirectoryGraph($directories, $parent_id = 0): array
-    {
-        $result = [];
-        foreach ($directories as $directory) {
-            $result[] = build_directories_tree($directory);
-        }
-        return $result;
-    }
-
     /**
      * @param integer[] $product_ids
      * @return array
@@ -139,10 +130,10 @@ class ProductService
             $price_range["max"] = Product::whereIn('id', $product_ids)->max('latest_price');
 
             $keys = PStructureAttrKey::getFilterBladeKeys($product_ids);
-            $directories = static::buildDirectoryGraph(Directory::join("directory_product", function ($join) use ($product_ids) {
+            $directories = Directory::join("directory_product", function ($join) use ($product_ids) {
                 $join->on("directories.id", "=", "directory_product.directory_id")
                     ->whereIn("product_id", $product_ids);
-            })->orderBy("priority", "ASC")->get());
+            })->orderBy("priority", "ASC")->get();
 
             $colors = Color::whereHas('products', function ($query) use ($product_ids) {
                 $query->whereIn('product_id', $product_ids);
