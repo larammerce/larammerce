@@ -112,38 +112,70 @@ class ProductService
         return doubleval(env('SITE_PRICE_RATIO', '1.0'));
     }
 
+    private static function buildDirectoryGraph($directories, $parent_id = 0): array
+    {
+        $directories_count = count($directories);
+        if ($directories_count == 0)
+            return [];
+
+        if ($parent_id === 0) {
+            $roots = [];
+            $root_ids = [];
+            for ($i = 0; $i < count($directories) and !in_array($directories->get($i)->directory_id, $root_ids); $i++) {
+                $root_directory = $directories->get($i);
+                $root_directory->child_nodes = static::buildDirectoryGraph($directories, $root_directory->id);
+                $roots[] = $root_directory;
+                $root_ids[] = $root_directory->id;
+            }
+
+            return $roots;
+        } else {
+            $children = [];
+
+            for ($i = 0; $i < count($directories); $i++) {
+                $directory = $directories->get($i);
+                if ($directory->directory_id === $parent_id) {
+                    $directory->child_nodes = static::buildDirectoryGraph($directories, $directory->id);
+                    $children[] = $directory;
+                }
+            }
+
+            return $children;
+        }
+    }
+
     /**
-     * @param integer[] $product_ids
+     * @param integer[] $productsIds
      * @return array
      */
-    public static function getFilterData($product_ids)
+    public static function getFilterData($productsIds)
     {
-        $price_range = [];
-        if (count(is_countable($product_ids) ? $product_ids : []) == 0) {
-            $price_range["min"] = 0;
-            $price_range["max"] = 0;
+        $priceRange = [];
+        if (count(is_countable($productsIds) ? $productsIds : []) == 0) {
+            $priceRange["min"] = 0;
+            $priceRange["max"] = 0;
             $keys = [];
             $colors = [];
             $directories = [];
         } else {
-            $price_range["min"] = Product::whereIn('id', $product_ids)->min('latest_price');
-            $price_range["max"] = Product::whereIn('id', $product_ids)->max('latest_price');
+            $priceRange["min"] = Product::whereIn('id', $productsIds)->min('latest_price');
+            $priceRange["max"] = Product::whereIn('id', $productsIds)->max('latest_price');
 
-            $keys = PStructureAttrKey::getFilterBladeKeys($product_ids);
-            $directories = Directory::join("directory_product", function ($join) use ($product_ids) {
+            $keys = PStructureAttrKey::getFilterBladeKeys($productsIds);
+            $directories = static::buildDirectoryGraph(Directory::join("directory_product", function ($join) use ($productsIds) {
                 $join->on("directories.id", "=", "directory_product.directory_id")
-                    ->whereIn("product_id", $product_ids);
-            })->orderBy("priority", "ASC")->get();
+                    ->whereIn("product_id", $productsIds);
+            })->groupBy("id")->orderBy("priority", "ASC")->get());
 
-            $colors = Color::whereHas('products', function ($query) use ($product_ids) {
-                $query->whereIn('product_id', $product_ids);
+            $colors = Color::whereHas('products', function ($query) use ($productsIds) {
+                $query->whereIn('product_id', $productsIds);
             })->get();
         }
 
-        if ($price_range["min"] == $price_range["max"])
-            $price_range["max"] += 10000;
+        if ($priceRange["min"] == $priceRange["max"])
+            $priceRange["max"] += 10000;
         return [
-            "priceRange" => $price_range,
+            "priceRange" => $priceRange,
             "keys" => $keys,
             "colors" => $colors,
             "directories" => $directories
