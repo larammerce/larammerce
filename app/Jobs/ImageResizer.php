@@ -46,8 +46,7 @@ class ImageResizer extends Job implements ShouldQueue
      */
     public function handle()
     {
-        echo "resizing started on [" . $this->imageType . "] : " . $this->mainImagePath . "\n";
-        ini_set('memory_limit','-1');
+        ini_set('memory_limit', '-1');
         ini_set('max_execution_time', 300);
 
         if (file_exists($this->mainImagePath)) {
@@ -69,7 +68,7 @@ class ImageResizer extends Job implements ShouldQueue
             Log::error("The image '{$this->mainImagePath}' was not found!\n");
         }
 
-        ini_set('memory_limit','128M');
+        ini_set('memory_limit', '128M');
         ini_set('max_execution_time', 30);
     }
 }
