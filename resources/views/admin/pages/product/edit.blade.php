@@ -94,7 +94,7 @@
             {{-- @name : real name of the file --}}
             {{-- @size : size of file on bytes --}}
             {{-- @url : the url of uploaded file on server --}}
-            @foreach($product->images as $image)
+            @foreach($product->images()->orderBy("priority", "ASC")->get() as $image)
                 <li class="existing-file"
                     file-id="{{ $image->id }}"
                     file-name="{{ $image->real_name }}"
@@ -102,6 +102,7 @@
                     file-url="{{ ImageService::getImage($image) }}"
                     file-caption="{{ $image->caption }}"
                     file-link="{{ $image->link }}"
+                    file-priority="{{ $image->priority }}"
                     @if($image->is_main) is-main @endif
                     @if($image->is_secondary) is-secondary @endif></li>
             @endforeach

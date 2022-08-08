@@ -2,6 +2,7 @@ define('my_dropzone', ['jquery', 'template', 'dropzone', 'bootstrap'], function 
     var captionModal = jQuery('#add-caption-to-file-modal');
     captionModal.inputEl = captionModal.find('#file-caption-text');
     captionModal.inputLinkEl = captionModal.find('#file-link-text');
+    captionModal.inputPriorityEl = captionModal.find('#file-priority-text');
     captionModal.form = captionModal.find('form');
 
     function dzAddCaption(file) {
@@ -11,11 +12,13 @@ define('my_dropzone', ['jquery', 'template', 'dropzone', 'bootstrap'], function 
         var dzId = dzParent.attr('dz-id');
         var fileCaptionInput = jQuery('input[name="' + createFileCaptionInputName(dzId, fileId) + '"]');
         var fileLinkInput = jQuery('input[name="' + createFileLinkInputName(dzId, fileId) + '"]');
+        var filePriorityInput = jQuery('input[name="' + createFilePriorityInputName(dzId, fileId) + '"]');
         var captionStoreAction = dzParent.attr('dz-caption') || '#';
         captionStoreAction = captionStoreAction.replace('-1', fileId);
 
         captionModal.inputEl.val(fileCaptionInput.val());
         captionModal.inputLinkEl.val(fileLinkInput.val());
+        captionModal.inputPriorityEl.val(filePriorityInput.val());
         captionModal.modal('show');
 
         captionModal.form.unbind();
@@ -33,7 +36,8 @@ define('my_dropzone', ['jquery', 'template', 'dropzone', 'bootstrap'], function 
                     _method: 'PUT',
                     _token: window.csrf_token,
                     caption: captionModal.inputEl.val(),
-                    link: captionModal.inputLinkEl.val()
+                    link: captionModal.inputLinkEl.val(),
+                    priority: captionModal.inputPriorityEl.val()
                 }
             }).success(function (result) {
                 dzParent.trigger('message:success', result.transmission.messages[0]);
@@ -122,6 +126,10 @@ define('my_dropzone', ['jquery', 'template', 'dropzone', 'bootstrap'], function 
         return dzId + '__file-link__' + fileId;
     }
 
+    function createFilePriorityInputName(dzId, fileId) {
+        return dzId + '__file-priority__' + fileId;
+    }
+
     Dropzone.setMainFile = dzSetMainFile;
     Dropzone.setSecondaryFile = dsSetSecondaryFile;
     Dropzone.addCaptionToFile = dzAddCaption;
@@ -141,6 +149,7 @@ define('my_dropzone', ['jquery', 'template', 'dropzone', 'bootstrap'], function 
                 jQuery('input[name="' + createFileInputName(thisId, fileId) + '"]').remove();
                 jQuery('input[name="' + createFileCaptionInputName(thisId, fileId) + '"]').remove();
                 jQuery('input[name="' + createFileLinkInputName(thisId, fileId) + '"]').remove();
+                jQuery('input[name="' + createFilePriorityInputName(thisId, fileId) + '"]').remove();
                 dzRemove(file, thisEl);
             });
             window.dzElements[thisId].on('success', function (file, serverResponse) {
@@ -166,6 +175,10 @@ define('my_dropzone', ['jquery', 'template', 'dropzone', 'bootstrap'], function 
                     thisEl.append(template.formInputTemplate({
                         inputName: createFileLinkInputName(thisId, fileId),
                         inputValue: (_.has(serverResponse, 'mockFile') ? serverResponse.mockFile.link : '')
+                    }));
+                    thisEl.append(template.formInputTemplate({
+                        inputName: createFilePriorityInputName(thisId, fileId),
+                        inputValue: (_.has(serverResponse, 'mockFile') ? serverResponse.mockFile.priority : '')
                     }));
 
                     if (_.has(serverResponse, 'mockFile') && serverResponse.mockFile.isMain) {
@@ -197,6 +210,7 @@ define('my_dropzone', ['jquery', 'template', 'dropzone', 'bootstrap'], function 
                         url: existingFileEl.attr('file-url'),
                         caption: existingFileEl.attr('file-caption'),
                         link: existingFileEl.attr('file-link'),
+                        priority: existingFileEl.attr('file-priority'),
                         isMain: (existingFileEl.attr('is-main') !== undefined),
                         isSecondary: (existingFileEl.attr('is-secondary') !== undefined)
                     }

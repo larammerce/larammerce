@@ -16,6 +16,7 @@ use App\Utils\Translation\Traits\Translatable;
  * @property string real_name
  * @property string extension
  * @property string link
+ * @property integer priority
  *
  * @property Product product
  *
@@ -26,17 +27,17 @@ class ProductImage extends BaseModel implements ImageContract
 {
     use Translatable;
 
-    protected $table = 'product_images';
+    protected $table = "product_images";
 
     protected $fillable = [
-        'product_id', 'is_main', 'caption', 'path', 'real_name',
-        'is_secondary', 'extension', 'link'
+        "product_id", "is_main", "caption", "path", "real_name",
+        "is_secondary", "extension", "link", "priority"
     ];
 
     public $timestamps = false;
 
     protected static array $TRANSLATABLE_FIELDS = [
-        'caption' => ['string', 'input:text']
+        "caption" => ["string", "input:text"]
     ];
 
     /*
@@ -48,7 +49,7 @@ class ProductImage extends BaseModel implements ImageContract
      */
     public function product()
     {
-        return $this->belongsTo('\\App\\Models\\Product', 'product_id');
+        return $this->belongsTo("\\App\\Models\\Product", "product_id");
     }
 
 
@@ -77,9 +78,9 @@ class ProductImage extends BaseModel implements ImageContract
         if (!is_array($extensions))
             $extensions = [$extensions];
         if (sizeof($except) > 0)
-            return $query->whereIn('extension', $extensions)
-                ->whereNotIn('extension', $except);
-        return $query->whereIn('extension', $extensions);
+            return $query->whereIn("extension", $extensions)
+                ->whereNotIn("extension", $except);
+        return $query->whereIn("extension", $extensions);
     }
 
     /**
@@ -91,7 +92,7 @@ class ProductImage extends BaseModel implements ImageContract
     {
         if (!is_array($extensions))
             $extensions = [$extensions];
-        return $query->whereNotIn('extension', $extensions);
+        return $query->whereNotIn("extension", $extensions);
     }
 
 
@@ -108,7 +109,7 @@ class ProductImage extends BaseModel implements ImageContract
 
     public function getImagePath()
     {
-        return $this->path . '/' . $this->real_name;
+        return $this->path . "/" . $this->real_name;
     }
 
     public function setImagePath()
@@ -123,12 +124,12 @@ class ProductImage extends BaseModel implements ImageContract
 
     public function getDefaultImagePath()
     {
-        return '/admin_dashboard/images/No_image.jpg.png';
+        return "/admin_dashboard/images/No_image.jpg.png";
     }
 
     public function getImageCategoryName()
     {
-        return 'product';
+        return "product";
     }
 
     /**
@@ -136,7 +137,7 @@ class ProductImage extends BaseModel implements ImageContract
      */
     public function getSearchUrl(): string
     {
-        return '';
+        return "";
     }
 
     public function isImageLocal()

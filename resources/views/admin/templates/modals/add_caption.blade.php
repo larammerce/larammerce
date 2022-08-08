@@ -13,7 +13,14 @@
                     <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
                         <span class="label">توضیحات</span>
                         <textarea class="form-control" id="file-caption-text"></textarea>
-                        <input class="form-control input-sm" id="file-link-text" name="link" value="" placeholder="لینک">
+                    </div>
+                    <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                        <span class="label">لینک</span>
+                        <input class="form-control input-sm" id="file-link-text" name="link" value="">
+                    </div>
+                    <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                        <span class="label">اولویت</span>
+                        <input class="form-control input-sm" id="file-priority-text" name="priority" value="">
                     </div>
                 </div>
                 <div class="modal-footer">
