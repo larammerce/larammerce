@@ -24,6 +24,7 @@ class SystemUserController extends BaseController
      */
     public function index(): Factory|View|Application
     {
+        parent::setPageAttribute();
         $system_users = SystemUser::with('user', 'roles')
             ->paginate(SystemUser::getPaginationCount());
         return view('admin.pages.system-user.index', compact('system_users'));
