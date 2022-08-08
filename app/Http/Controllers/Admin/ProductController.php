@@ -97,7 +97,7 @@ class ProductController extends BaseController
         $product->attachFileTo($directory);
         $product->createReview();
         if ($request->has("is_package") and $request->get("is_package") == 1)
-            $product->createPackage();
+            $product->productPackage()->create([]);
         SiteMapProvider::save();
         return redirect()->route('admin.product.edit', $product);
     }

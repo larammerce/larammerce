@@ -40,6 +40,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\QueryException;
 use Illuminate\Routing\Exceptions\UrlGenerationException;
@@ -138,7 +139,7 @@ class Product extends BaseModel implements
     public $timestamps = true;
     protected $appends = ["is_liked", "is_needed", "main_photo", "secondary_photo", "fin_man_price",
         "status", "url", "is_main_model", "minimum_allowed_purchase_count", "maximum_allowed_purchase_count",
-        "is_new", "is_important", "is_package"];
+        "is_new", "is_important"];
     protected $hidden = ["count", "min_allowed_count", "max_purchase_count"];
     protected $table = "products";
     protected $attributes = [
@@ -153,12 +154,13 @@ class Product extends BaseModel implements
         "has_discount", "previous_price", "is_accessory", "is_visible", "attributes_content", "inaccessibility_type",
         "cmc_id", "notice", "discount_group_id", "priority", "is_discountable", "structure_sort_score", "package_id", "accessory_for",
         //these are not table fields, these are form sections that role permission system works with
-        "tags", "attributes", "gallery", "colors", "badges"
+        "tags", "attributes", "gallery", "colors", "badges", "is_package"
     ];
 
     protected $casts = [
         "important_at" => "timestamp",
-        "is_accessory" => "bool"
+        "is_accessory" => "bool",
+        "is_package" => "bool"
     ];
 
     protected $with = [
@@ -358,15 +360,10 @@ class Product extends BaseModel implements
                 $this->attributes["latest_special_price"] : $this->attributes["latest_price"];
     }
 
-    public function getIsPackageAttribute(): bool
-    {
-        return $this->package_id != null;
-    }
-
     public function getCountAttribute(): int
     {
-        return $this->is_package ? $this->productPackage->getCount() :
-            $this->attributes["count"] ?? 0;
+        return $this->is_package ? ($this->productPackage?->getCount() ?? 0) :
+            ($this->attributes["count"] ?? 0);
     }
 
     public function setModelIdAttribute($value)
@@ -471,9 +468,9 @@ class Product extends BaseModel implements
             });
     }
 
-    public function productPackage(): BelongsTo
+    public function productPackage(): HasOne
     {
-        return $this->belongsTo(ProductPackage::class, 'package_id');
+        return $this->hasOne(ProductPackage::class, 'product_id');
     }
 
     public function productPackages(): BelongsToMany
@@ -495,13 +492,6 @@ class Product extends BaseModel implements
     public function accessoryFor(): Builder
     {
         return static::where("is_accessory", false)->where("model_id", $this->accessory_for);
-    }
-
-    public function createPackage()
-    {
-        $productPackage = ProductPackage::create([]);
-        $this->package_id = $productPackage->id;
-        $this->save();
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Exceptions\ProductPackageItemNotFoundException;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -11,6 +12,7 @@ use stdClass;
 
 /**
  * @property integer id
+ * @property integer product_id
  * @property Product product
  * @property Product[] products
  *
@@ -30,15 +32,15 @@ class ProductPackage extends BaseModel
      * Relations Methods
      */
 
-    public function product(): HasOne
+    public function product(): BelongsTo
     {
-        return $this->hasOne(Product::class, 'package_id');
+        return $this->belongsTo(Product::class, 'product_id');
     }
 
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, "product_package_items",
-             "package_id", "product_id");
+            "package_id", "product_id");
     }
 
     public function productPackageItems(): HasMany
@@ -84,7 +86,7 @@ class ProductPackage extends BaseModel
     public function setProductUsageCount(int $count, int $product_id)
     {
         $item = $this->productPackageItems()->where("product_id", $product_id)->first();
-        if($item == null)
+        if ($item == null)
             throw new ProductPackageItemNotFoundException();
         $item->usage_count = $count;
         $item->save();
@@ -96,8 +98,8 @@ class ProductPackage extends BaseModel
     //    count_total = min(count/usage_count, ..)
     public function getCount(): int
     {
-        $min = DB::table(DB::raw("(select case when ppi.usage_count = 0 then 0 else (pr.count / ppi.usage_count) end as calc_count ".
-            "from product_package_items as ppi inner join products as pr on ppi.product_id = pr.id ".
+        $min = DB::table(DB::raw("(select case when ppi.usage_count = 0 then 0 else (pr.count / ppi.usage_count) end as calc_count " .
+            "from product_package_items as ppi inner join products as pr on ppi.product_id = pr.id " .
             "where ppi.package_id = {$this->id}) as package_counts"))->min("calc_count");
         if ($min != null)
             return $min;
@@ -110,8 +112,8 @@ class ProductPackage extends BaseModel
     //    price = sigma (count*latest_price)
     public function getLatestPrice(): int
     {
-        return DB::table(DB::raw("(select (pr.latest_price * ppi.usage_count) as calc_price ".
-            "from product_package_items as ppi inner join products as pr on ppi.product_id = pr.id ".
+        return DB::table(DB::raw("(select (pr.latest_price * ppi.usage_count) as calc_price " .
+            "from product_package_items as ppi inner join products as pr on ppi.product_id = pr.id " .
             "where ppi.package_id = {$this->id}) as package_prices"))->sum("calc_price");
     }
 
@@ -121,8 +123,8 @@ class ProductPackage extends BaseModel
     //    price = sigma (count*latest_price)
     public function getPreviousPrice(): int
     {
-        return DB::table(DB::raw("(select (pr.previous_price * ppi.usage_count) as calc_pre_price ".
-            "from product_package_items as ppi inner join products as pr on ppi.product_id = pr.id ".
+        return DB::table(DB::raw("(select (pr.previous_price * ppi.usage_count) as calc_pre_price " .
+            "from product_package_items as ppi inner join products as pr on ppi.product_id = pr.id " .
             "where ppi.package_id = {$this->id}) as package_prices"))->sum("calc_pre_price");
     }
 
@@ -132,8 +134,8 @@ class ProductPackage extends BaseModel
     //    price = sigma (count*latest_price)
     public function getLatestSpecialPrice(): int
     {
-        return DB::table(DB::raw("(select (pr.latest_special_price * ppi.usage_count) as calc_spec_price ".
-            "from product_package_items as ppi inner join products as pr on ppi.product_id = pr.id ".
+        return DB::table(DB::raw("(select (pr.latest_special_price * ppi.usage_count) as calc_spec_price " .
+            "from product_package_items as ppi inner join products as pr on ppi.product_id = pr.id " .
             "where ppi.package_id = {$this->id}) as package_prices"))->sum("calc_spec_price");
     }
 
