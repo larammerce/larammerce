@@ -2,6 +2,7 @@ if (window.PAGE_ID === "admin.pages.product-package.edit") {
     require(["jquery", "template"], function (jQuery, template) {
         const rowsContainer = jQuery("#product-package-container");
         const rowsData = rowsContainer.data("rows");
+        const mainForm = rowsContainer.closest("form");
         let counter = 0;
 
         jQuery.fn.removeConfigRowButton = function () {
@@ -59,6 +60,10 @@ if (window.PAGE_ID === "admin.pages.product-package.edit") {
         });
 
         addNewRow();
+
+        mainForm.submit(function (submitEvent) {
+            rowsContainer.find("div.row").last().remove();
+        });
 
     });
 }
