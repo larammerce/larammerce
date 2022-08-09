@@ -9,6 +9,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @package App\Http\Controllers\Admin
@@ -22,7 +23,7 @@ class RateController extends BaseController
     public function index(): Factory|View|Application
     {
         parent::setPageAttribute();
-        $rates = Rate::with('object')
+        $rates = Rate::with('object')->whereRaw(DB::raw("CHAR_LENGTH(comment) > 0"))
             ->paginate(Rate::getPaginationCount());
         return view('admin.pages.rate.index', compact('rates'));
     }
