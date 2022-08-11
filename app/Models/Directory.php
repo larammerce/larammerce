@@ -322,11 +322,17 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
         return DirectoryType::toMap();
     }
 
-    public function getFrontUrl($force_landing = false): string
+    public function getFrontUrl(): string
     {
         if ($this->is_internal_link)
             return $this->url_part ?: "#";
-        return env('APP_URL') . (($this->force_show_landing or $force_landing) ? $this->url_landing : $this->url_full);
+        return env('APP_URL') . ($this->force_show_landing ? $this->url_landing : $this->url_full);
+    }
+
+    public function getLandingUrl(): string
+    {
+        $front_url = $this->getFrontUrl();
+        return str_ends_with($front_url, "/landing") ? $front_url : $front_url . "/landing";
     }
 
     public function getParentDirectories()
