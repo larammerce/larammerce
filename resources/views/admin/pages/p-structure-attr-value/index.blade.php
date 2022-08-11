@@ -41,9 +41,9 @@
         </div>
         @include('admin.templates.pagination', [
             "modelName" => "PStructureAttrValue",
-            "lastPage" => $attribute_values->lastPage(),
-            "total" => $attribute_values->total(),
-            "count" => $attribute_values->perPage(),
+            "lastPage" => $p_structure_attr_values->lastPage(),
+            "total" => $p_structure_attr_values->total(),
+            "count" => $p_structure_attr_values->perPage(),
             "parentId" => (request()->has("p_structure_attr_key_id") ? request()->get('p_structure_attr_key_id') : $scope ?? null)
         ])
     </div>
