@@ -8,6 +8,8 @@ use App\Models\Traits\Taggable;
 use App\Utils\Translation\Traits\Translatable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @property integer id
@@ -97,17 +99,45 @@ class PStructureAttrKey extends BaseModel implements TaggableContract
         }
     }
 
-    public static function getFilterBladeKeys($productsIds)
+    /**
+     * @param array $product_ids
+     * @return Collection|PStructureAttrValue[]
+     */
+    private static function getFilterBladeValues(array $product_ids): Collection|array
     {
-        return PStructureAttrKey::whereHas('attributes', function ($query) use ($productsIds) {
-            // to filter keys that are used in selected products
-            $query->whereIn('product_id', $productsIds);
-        }, '>=', count($productsIds))->with(['values' => function ($query) use ($productsIds) {
-            // to filter values that are only used in selected products
-            $query->whereHas('attributes', function ($query) use ($productsIds) {
-                $query->whereIn('product_id', $productsIds);
-            });
-        }])->get();
+        return PStructureAttrValue::join("p_attr_assignments", function ($join) use ($product_ids) {
+            $join->on("p_attr_assignments.p_structure_attr_value_id", "=", "p_structure_attr_values.id")
+                ->whereIn("p_attr_assignments.product_id", $product_ids);
+        })
+            ->orderBy("priority", "ASC")->groupBy("p_structure_attr_values.id")
+            ->selectRaw(DB::raw("p_structure_attr_values.*"))->get();
+    }
+
+    public static function getFilterBladeKeys($product_ids)
+    {
+        $keys = [];
+        PAttr::whereIn("product_id", $product_ids)->with("value");
+
+        foreach (static::getFilterBladeValues($product_ids) as $value) {
+            if (!isset($keys[$value->p_structure_attr_key_id])) {
+                $keys[$value->p_structure_attr_key_id] = PStructureAttrKey::find($value->p_structure_attr_key_id);
+            }
+
+            if (!$keys[$value->p_structure_attr_key_id]->relationLoaded("values")) {
+                $keys[$value->p_structure_attr_key_id]->setRelation("values", new Collection());
+            }
+            $keys[$value->p_structure_attr_key_id]->values->push($value);
+        }
+
+        usort($keys, function ($a, $b) {
+            if ($a->priority == $b->priority)
+                return 0;
+            if ($a->priority < $b->priority)
+                return -1;
+            return 1;
+        });
+
+        return $keys;
     }
 
     /**
