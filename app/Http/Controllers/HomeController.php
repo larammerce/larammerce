@@ -59,7 +59,7 @@ class HomeController extends Controller
                     return $this->showWebPage($directory, $cart_rows);
             } else {
                 $modified_url = ModifiedUrl::where("url_old", $url_path)->first();
-                if (!is_null($modified_url) and isset($modified_url->url_new) and sizeof($modified_url->url_new) > 0) {
+                if (!is_null($modified_url) and isset($modified_url->url_new) and strlen($modified_url->url_new) > 0) {
                     $new_url = $modified_url->url_new;
                     return response()->redirectTo($new_url, 301);
                 }
