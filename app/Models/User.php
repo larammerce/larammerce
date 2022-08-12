@@ -39,6 +39,8 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
  * @property DateTime updated_at
  * @property DateTime birthday
  * @property boolean is_email_confirmed
+ * @property string representative_username
+ * @property string representative_type
  *
  * @property SystemUser systemUser
  * @property CustomerUser customerUser
@@ -66,7 +68,7 @@ class User extends BaseModel implements
 
     protected $fillable = [
         'name', 'family', 'username', 'email', 'password', 'is_system_user', 'is_customer_user', 'created_at',
-        'updated_at', 'gender', 'birthday', 'birthday_str', 'is_email_confirmed'
+        'updated_at', 'gender', 'birthday', 'birthday_str', 'is_email_confirmed', 'representative_username', 'representative_type'
     ];
 
     protected $hidden = [
@@ -80,7 +82,9 @@ class User extends BaseModel implements
         'name',
         'family',
         'email',
-        'username'
+        'username',
+        'representative_username',
+        'representative_type'
     ];
 
     protected $casts = [

@@ -5,6 +5,7 @@ namespace App\Utils\CMS\CustomerAuth;
 
 
 use App\Jobs\SendEmail;
+use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
 use App\Models\{
     CustomerUser,
     User
@@ -123,6 +124,7 @@ class Provider
      * @return CustomerUser
      * @throws CustomerActivationException
      * @throws VerificationException
+     * @throws FinancialDriverInvalidConfigurationException
      */
     public static function register($type, $value, $data)
     {
@@ -135,6 +137,8 @@ class Provider
             'family' => $data["family"],
             'username' => $data["main_phone"],
             'email' => $data["email"],
+            "representative_username" => $data["representative_username"],
+            "representative_type" => $data["representative_type"],
             'is_email_confirmed' => ($type == AuthType::EMAIL),
             'is_system_user' => false,
             'is_customer_user' => true,

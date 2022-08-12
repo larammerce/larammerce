@@ -20,6 +20,7 @@ define('template', ['jquery', 'underscore'], function (jQuery, _) {
         shipmentCostCustomStateRow: _.template(jQuery("#shipment-cost-custom-state-row").html()),
         productPackageRow: _.template(jQuery("#product-package-row").html()),
         discountStepRow: _.template(jQuery("#discount-step-row").html()),
-        modalButtonRow: _.template(jQuery("#modal-button-row").html())
+        modalButtonRow: _.template(jQuery("#modal-button-row").html()),
+        representativeOptionRow: _.template(jQuery("#representative-option-row").html())
     }
 });

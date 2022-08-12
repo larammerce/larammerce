@@ -1485,3 +1485,24 @@ if (!function_exists("get_max_transaction_amount")) {
         return \App\Utils\PaymentManager\ConfigProvider::MAX_TRANSACTION;
     }
 }
+
+if (!function_exists("representative_get_options")) {
+    function representative_get_options(): array
+    {
+        return \App\Utils\CMS\Setting\Representative\RepresentativeSettingService::getOptions();
+    }
+}
+
+if (!function_exists("representative_is_enabled")) {
+    function representative_is_enabled(): bool
+    {
+        return \App\Utils\CMS\Setting\Representative\RepresentativeSettingService::isEnabled();
+    }
+}
+
+if (!function_exists("representative_is_customer_representative_enabled")) {
+    function representative_is_customer_representative_enabled(): bool
+    {
+        return \App\Utils\CMS\Setting\Representative\RepresentativeSettingService::isCustomerRepresentativeEnabled();
+    }
+}

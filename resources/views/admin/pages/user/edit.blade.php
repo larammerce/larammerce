@@ -6,9 +6,13 @@
 
 @endsection
 
-@section('form_title')اضافه کردن کاربر@endsection
+@section('form_title')
+    اضافه کردن کاربر
+@endsection
 
-@section('form_attributes') action="{{route('admin.user.update', $user)}}" method="POST" form-with-hidden-checkboxes @endsection
+@section('form_attributes')
+    action="{{route('admin.user.update', $user)}}" method="POST" form-with-hidden-checkboxes
+@endsection
 
 @section('form_body')
     {{ method_field('PUT')}}
@@ -40,6 +44,16 @@
     <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
         <span class="label">تکرار کلمه عبور</span>
         <input class="form-control input-sm" name="password_confirmation" type="password">
+    </div>
+    <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+        <span class="label">نوع معرف</span>
+        <input class="form-control input-sm" name="representative_type" type="text"
+               value="@if($errors->any()){{  old('representative_type') }}@else{{ $user->representative_type }}@endif">
+    </div>
+    <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+        <span class="label">نام کاربری معرف</span>
+        <input class="form-control input-sm" name="representative_username" type="text"
+               value="@if($errors->any()){{  old('representative_username') }}@else{{ $user->representative_username }}@endif">
     </div>
     <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
         <span class="material-switch pull-right">کاربر سیستمی &nbsp

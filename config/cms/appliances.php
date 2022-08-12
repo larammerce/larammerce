@@ -166,6 +166,14 @@ return [
             ],
             [
                 "properties" => [
+                    "id" => "representative",
+                    "name" => "general.setting.representative",
+                    "icon" => "icon-representative",
+                    "route" => "admin.setting.representative.edit"
+                ]
+            ],
+            [
+                "properties" => [
                     "id" => "customer_meta_category_management",
                     "name" => "general.setting.customer_meta_category_management",
                     "icon" => "icon-customer-meta-category",

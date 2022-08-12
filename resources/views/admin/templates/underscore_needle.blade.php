@@ -435,3 +435,24 @@
         </div>
     </div>
 </script>
+
+<script type="text/template" id="representative-option-row">
+    <div class="row" data-row-id="<%- index %>">
+        <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+            <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                <span class="label">عنوان</span>
+                <input class="form-control input-sm" name="options[<%- index %>]" value="<%- title %>">
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <div class="actions-container">
+                <a class="btn btn-sm btn-success">
+                    <i class="fa fa-plus"></i>
+                </a>
+                <a class="btn btn-sm btn-danger">
+                    <i class="fa fa-trash"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</script>

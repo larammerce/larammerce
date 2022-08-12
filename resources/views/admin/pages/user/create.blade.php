@@ -37,6 +37,14 @@
         <input class="form-control input-sm" name="password_confirmation" type="password">
     </div>
     <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+        <span class="label">نوع معرف</span>
+        <input class="form-control input-sm" name="representative_type" type="text">
+    </div>
+    <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+        <span class="label">نام کاربری معرف</span>
+        <input class="form-control input-sm" name="representative_username" type="text">
+    </div>
+    <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
         <span class="material-switch pull-right">کاربر سیستمی
             <input id="is_system_user" name="is_system_user" type="checkbox" value="1"
                    @if(old('is_system_user')) checked @endif/>

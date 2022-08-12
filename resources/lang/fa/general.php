@@ -40,7 +40,8 @@ return [
         "financial_driver" => 'حسابداری و انبارداری',
         "sms_driver" => 'ارسال پیامک',
         "language" => 'زبان ها',
-        "color_management" => "مدیریت رنگ‌ها"
+        "color_management" => "مدیریت رنگ‌ها",
+        "representative" => "مدیریت معرفین",
     ],
     "shop" => [
         "products" => "محصولات",

@@ -206,13 +206,15 @@ class AuthController extends Controller
     /**
      * @rules(name="required|user_alphabet_rule|min:2", family="required|user_alphabet_rule|min:2",
      *     email="email|unique:users", main_phone="required|mobile_number|unique:customer_users",
-     *     national_code="required|national_code")
+     *     national_code="required|national_code",
+     *     representative_username=strlen(request("representative_username") ?? "") > 0 ? "exists:users,username" : "",
+     *     representative_type=strlen(request("representative_type") ?? "") > 0 ? "in:".implode(",", representative_get_options()) : "")
      */
     public function doRegister(Request $request, $type, $value): RedirectResponse
     {
         $type = CustomerAuthType::fix($type);
         $value = email_decode($value);
-        $data = $request->only(["name", "family", "main_phone", "email", "national_code"]);
+        $data = $request->only(["name", "family", "main_phone", "email", "national_code", "representative_username", "representative_type"]);
         try {
             $customerUser = CustomerAuthProvider::register($type, $value, $data);
             if ($customerUser != null) {

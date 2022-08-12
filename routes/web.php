@@ -51,6 +51,9 @@ Route::group(
 
                 Route::get("language", ["as" => "language.edit", "uses" => "LanguageSettingController@edit"]);
                 Route::put("language", ["as" => "language.update", "uses" => "LanguageSettingController@update"]);
+
+                Route::get("representative", ["as" => "representative.edit", "uses" => "RepresentativeSettingController@edit"]);
+                Route::put("representative", ["as" => "representative.update", "uses" => "RepresentativeSettingController@update"]);
             });
         Route::resource("setting", "SettingController", ["as" => "admin"]);
 
