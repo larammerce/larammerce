@@ -112,20 +112,20 @@ class PAttr extends BaseModel
      */
     public static function getProductAttributes($product)
     {
-        $modelOptions = new stdClass();
-        $modelOptions->title = "";
-        $modelOptions->items = [];
+        $model_options = new stdClass();
+        $model_options->title = "";
+        $model_options->items = [];
         $option_keys = [];
 
         if (config('cms.general.site.model_options')) {
-            $productModelIds = Product::models($product, false)
+            $product_model_ids = Product::models($product, false)
                 ->orderBy('id', 'DESC')->where('color_code', '=', $product->color_code)
                 ->pluck('id')->toArray();
 
-            if (count($productModelIds) > 1) {
+            if (count($product_model_ids) > 1) {
                 $tmp_p_attributes = DB::table(DB::raw('p_attr_assignments as paa1'))
                     ->select(DB::raw("*, count(paa1.p_structure_attr_value_id) as paavc1"))
-                    ->whereIn('paa1.product_id', $productModelIds)
+                    ->whereIn('paa1.product_id', $product_model_ids)
                     ->join('p_structure_attr_keys as psak1', 'paa1.p_structure_attr_key_id', '=', 'psak1.id')
                     ->where('psak1.is_model_option', '=', true)
                     ->groupBy('paa1.p_structure_attr_value_id')
@@ -139,22 +139,22 @@ class PAttr extends BaseModel
                     else
                         $p_attributes_counts[$tmp_p_attribute->p_structure_attr_key_id] += 1;
 
-                    if (!isset($modelOptions->items[$tmp_p_attribute->product_id])) {
-                        $modelOptions->items[$tmp_p_attribute->product_id] = $tmp_p_attribute;
-                        $modelOptions->items[$tmp_p_attribute->product_id]->name = [$tmp_p_attribute->name];
+                    if (!isset($model_options->items[$tmp_p_attribute->product_id])) {
+                        $model_options->items[$tmp_p_attribute->product_id] = $tmp_p_attribute;
+                        $model_options->items[$tmp_p_attribute->product_id]->name = [$tmp_p_attribute->name];
                     } else {
-                        $modelOptions->items[$tmp_p_attribute->product_id]->name[] = $tmp_p_attribute->name;
+                        $model_options->items[$tmp_p_attribute->product_id]->name[] = $tmp_p_attribute->name;
                     }
                 }
 
                 foreach ($p_attributes_counts as $key => $count) {
-                    if ($count != count($productModelIds)) {
+                    if ($count != count($product_model_ids)) {
                         unset($p_attributes_counts[$key]);
                     }
                 }
 
                 $option_keys = array_keys($p_attributes_counts);
-                $modelOptions->title = count($option_keys) == 1 ? $tmp_p_attributes[0]->title :
+                $model_options->title = count($option_keys) == 1 ? $tmp_p_attributes[0]->title :
                     Lang::get("ecommerce.product.other_models");
             }
         }
@@ -179,6 +179,6 @@ class PAttr extends BaseModel
         }
 
 
-        return compact("attributes", "modelOptions");
+        return compact("attributes", "model_options");
     }
 }

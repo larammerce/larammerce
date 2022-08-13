@@ -140,7 +140,7 @@ class TranslationService
 
         $schema = [];
         foreach ($migration_data["columns"] as $name => $type) {
-            $schema[] = $name . ":" . $type;
+            $schema[] = $name . ":" . $type . ":nullable";
         }
         $schema = implode(", ", $schema);
 

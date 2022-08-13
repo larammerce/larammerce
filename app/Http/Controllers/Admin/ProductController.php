@@ -132,8 +132,6 @@ class ProductController extends BaseController
     public function update(Request $request, Product $product): RedirectResponse
     {
         $product->update($request->all());
-        $product->extra_properties = FormService::getEncodedFormProperties($request);
-        $product->save();
         $product->updateReview();
         return History::redirectBack();
     }

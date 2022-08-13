@@ -218,8 +218,11 @@ class Product extends BaseModel implements
         "seo_title" => ["text", "textarea:normal"],
         "seo_keywords" => ["text", "textarea:normal"],
         "seo_description" => ["text", "textarea:normal"],
-        "description" => ["text", "textarea:rich"]
+        "description" => ["text", "textarea:rich"],
+        "extra_properties" => ["text", "json"]
     ];
+
+    protected static string $TRANSLATION_EDIT_FORM = "admin.pages.product.translate";
 
     public function getIsLikedAttribute(): bool
     {
@@ -369,6 +372,19 @@ class Product extends BaseModel implements
     public function setModelIdAttribute($value)
     {
         $this->attributes["model_id"] = $value ?: $this->id;
+    }
+
+    public function setExtraPropertiesAttribute(?array $extra_properties)
+    {
+        $this->attributes["extra_properties"] = json_encode(array_filter($extra_properties,
+                function ($iter_property) {
+                    return $iter_property["key"] !== null;
+                }) ?? []);
+    }
+
+    public function getExtraProperties()
+    {
+        return json_decode($this->extra_properties);
     }
 
     public function directory(): BelongsTo
@@ -900,11 +916,6 @@ class Product extends BaseModel implements
         return $this->pAttributes->contains(function ($v, $k) use ($value) {
             return $v->p_structure_attr_value_id == $value->id;
         });
-    }
-
-    public function getExtraProperties()
-    {
-        return json_decode($this->extra_properties);
     }
 
     public static function getFilterPaginationCount(): int

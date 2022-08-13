@@ -7,7 +7,6 @@ use App\Http\Middleware\AdminRequestMiddleware;
 use App\Http\Middleware\CustomerGuestMiddleware;
 use App\Http\Middleware\CustomerInitMiddleware;
 use App\Http\Middleware\CustomerMiddleware;
-use App\Http\Middleware\DeveloperMiddleware;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\GlobalMiddleware;
 use App\Http\Middleware\JsonMiddleware;
@@ -63,6 +62,7 @@ class Kernel extends HttpKernel
         'api' => [
             'throttle:1000,1',
             'bindings',
+            Translate::class,
         ],
     ];
 
@@ -90,7 +90,6 @@ class Kernel extends HttpKernel
         'admin-request' => AdminRequestMiddleware::class,
         'json' => JsonMiddleware::class,
         'permission-system' => PermissionMiddleware::class,
-        'developer' => DeveloperMiddleware::class,
         'mobile-auth' => MobileAuthMiddleware::class,
         'robot-txt-lock' => RobotTxtLockMiddleware::class,
         'global' => GlobalMiddleware::class

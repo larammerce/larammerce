@@ -28,7 +28,7 @@
 
 <script type="text/template" id="extra-property-template">
     <div class="row extra-property ui-state-default" row-id="<%- rowId %>">
-        <input type="hidden" class="form-control input-sm" name="property-priority-<%- rowId %>"
+        <input type="hidden" class="form-control input-sm" name="extra_properties[<%- rowId %>][priority]"
                value="">
         <div class="col-lg-2 col-md-12 col-sm-12 col-xs-12">
             <span class="btn btn-block btn-default">
@@ -37,14 +37,14 @@
         </div>
         <div class="input-group group-sm col-lg-3 col-md-2 col-sm-6 col-xs-12">
             <span class="label">عنوان</span>
-            <input class="form-control input-sm" name="property-key-<%- rowId %>" value="<%- title %>">
+            <input class="form-control input-sm" name="extra_properties[<%- rowId %>][key]" value="<%- title %>">
         </div>
         <div class="input-group group-sm col-lg-3 col-md-3 col-sm-6 col-xs-12">
             <span class="label">مقدار</span>
-            <input class="form-control input-sm" name="property-value-<%- rowId %>" value="<%- value %>">
+            <input class="form-control input-sm" name="extra_properties[<%- rowId %>][value]" value="<%- value %>">
         </div>
         <div class="input-group group-sm col-lg-3 col-md-5 col-sm-6 col-xs-9">
-            <select name="property-type-<%- rowId %>" class="form-control input-sm">
+            <select name="extra_properties[<%- rowId %>][type]" class="form-control input-sm">
                 @foreach(\App\Models\Enums\PExtraPropertyShowType::values() as $value)
                     <% if(type === {{$value}}){ %>
                     <option selected value="{{$value}}">@lang('general.p_extra_property_show_type.'.$value)</option>

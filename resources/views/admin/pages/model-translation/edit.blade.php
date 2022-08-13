@@ -46,11 +46,7 @@
                 </div>
                 <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
                     <span class="label">@lang("structures.attributes.".$name) (@lang('language.id.'.$lang_id))</span>
-                    <textarea class="form-control input-sm" name="{{$name}}">@if($errors->count() > 0)
-                            {{ old($name) }}
-                        @elseif($translatable_object->translate($lang_id) != null)
-                            {{ $translatable_object->translate($lang_id)->$name }}
-                        @endif</textarea>
+                    <textarea class="form-control input-sm" name="{{$name}}">@if($errors->count() > 0){{ old($name) }}@elseif($translatable_object->translate($lang_id) != null){{ $translatable_object->translate($lang_id)->$name }}@endif</textarea>
                 </div>
             @elseif($type == "textarea:rich")
                 <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
@@ -63,15 +59,12 @@
                         <label for="{{$name}}">@lang("structures.attributes.".$name) (@lang('language.id.'.$lang_id)
                             )</label>
                         <textarea class="tinymce"
-                                  name="{{$name}}">@if($errors->count() > 0)
-                                {!! old($name) !!}
-                            @elseif($translatable_object->translate($lang_id) != null)
-                                {!! $translatable_object->translate($lang_id)->$name !!}
-                            @endif</textarea>
+                                  name="{{$name}}">@if($errors->count() > 0){!! old($name) !!}@elseif($translatable_object->translate($lang_id) != null){!! $translatable_object->translate($lang_id)->$name !!}@endif</textarea>
                     </div>
                 </div>
             @endif
         @endforeach
+        @yield("extra_fields")
     </div>
 @endsection
 

@@ -22,11 +22,9 @@ trait Translatable
 {
     use Scopes, Relationship;
 
-    protected static $autoloadTranslations = null;
-
-    protected static $deleteTranslationsCascade = false;
-
-    protected $defaultLocale;
+    protected static ?bool $AUTOLOAD_TRANSLATIONS = null;
+    protected static ?bool $DELETE_TRANSLATIONS_CASCADE = false;
+    protected ?string $default_locale;
 
     public static function getTranslatableFields(bool $with_input_type = false, bool $with_column_type = false): array
     {
@@ -51,6 +49,11 @@ trait Translatable
         return array_keys(static::$TRANSLATABLE_FIELDS);
     }
 
+    public static function getTranslationEditForm(): string
+    {
+        return static::$TRANSLATION_EDIT_FORM ?? 'admin.pages.model-translation.edit';
+    }
+
     public static function bootTranslatable(): void
     {
         static::saved(function (Model $model) {
@@ -60,7 +63,7 @@ trait Translatable
 
         static::deleting(function (Model $model) {
             /* @var Translatable $model */
-            if (self::$deleteTranslationsCascade === true) {
+            if (self::$DELETE_TRANSLATIONS_CASCADE === true) {
                 return $model->deleteTranslations();
             }
         });
@@ -68,27 +71,27 @@ trait Translatable
 
     public static function defaultAutoloadTranslations(): void
     {
-        self::$autoloadTranslations = null;
+        self::$AUTOLOAD_TRANSLATIONS = null;
     }
 
     public static function disableAutoloadTranslations(): void
     {
-        self::$autoloadTranslations = false;
+        self::$AUTOLOAD_TRANSLATIONS = false;
     }
 
     public static function enableAutoloadTranslations(): void
     {
-        self::$autoloadTranslations = true;
+        self::$AUTOLOAD_TRANSLATIONS = true;
     }
 
     public static function disableDeleteTranslationsCascade(): void
     {
-        self::$deleteTranslationsCascade = false;
+        self::$DELETE_TRANSLATIONS_CASCADE = false;
     }
 
     public static function enableDeleteTranslationsCascade(): void
     {
-        self::$deleteTranslationsCascade = true;
+        self::$DELETE_TRANSLATIONS_CASCADE = true;
     }
 
     public function attributesToArray()
@@ -96,8 +99,9 @@ trait Translatable
         $attributes = parent::attributesToArray();
 
         if (count(config("translation.locales")) === 1
-            or (!$this->relationLoaded('translations') && !$this->toArrayAlwaysLoadsTranslations() && is_null(self::$autoloadTranslations))
-            or self::$autoloadTranslations === false
+            or app()->getLocale() == config("translation.fallback_locale")
+            or (!$this->relationLoaded('translations') && !$this->toArrayAlwaysLoadsTranslations() && is_null(self::$AUTOLOAD_TRANSLATIONS))
+            or self::$AUTOLOAD_TRANSLATIONS === false
         ) {
             return $attributes;
         }
@@ -134,32 +138,6 @@ trait Translatable
         $this->load('translations');
     }
 
-    public function fill(array $attributes)
-    {
-        if (count(config("translation.locales")) > 1) {
-            foreach ($attributes as $key => $values) {
-                if (
-                    $this->getLocalesHelper()->has($key)
-                    && is_array($values)
-                ) {
-                    $this->getTranslationOrNew($key)->fill($values);
-                    unset($attributes[$key]);
-                } else {
-                    [$attribute, $locale] = $this->getAttributeAndLocale($key);
-
-                    if (
-                        $this->getLocalesHelper()->has($locale)
-                        && $this->isTranslationAttribute($attribute)
-                    ) {
-                        $this->getTranslationOrNew($locale)->fill([$attribute => $values]);
-                        unset($attributes[$key]);
-                    }
-                }
-            }
-        }
-        return parent::fill($attributes);
-    }
-
     public function getAttribute($key)
     {
         if (count(config("translation.locales")) > 1 and
@@ -186,7 +164,7 @@ trait Translatable
 
     public function getDefaultLocale(): ?string
     {
-        return $this->defaultLocale;
+        return $this->default_locale;
     }
 
     /**
@@ -303,21 +281,9 @@ trait Translatable
         return $newInstance;
     }
 
-    public function setAttribute($key, $value)
-    {
-        if (count(config("translation.locales")) > 1) {
-            [$attribute, $locale] = $this->getAttributeAndLocale($key);
-            if ($this->isTranslationAttribute($attribute)) {
-                $this->getTranslationOrNew($locale)->$attribute = $value;
-                return $this;
-            }
-        }
-        return parent::setAttribute($key, $value);
-    }
-
     public function setDefaultLocale(?string $locale)
     {
-        $this->defaultLocale = $locale;
+        $this->default_locale = $locale;
         return $this;
     }
 
