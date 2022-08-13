@@ -25,6 +25,19 @@ trait Translatable
     protected static ?bool $AUTOLOAD_TRANSLATIONS = null;
     protected static ?bool $DELETE_TRANSLATIONS_CASCADE = false;
     protected ?string $default_locale;
+    protected ?string $tmp_locale;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->tmp_locale = null;
+        $this->default_locale = null;
+    }
+
+    public function setTmpLocale($tmp_locale): void
+    {
+        $this->tmp_locale = $tmp_locale;
+    }
 
     public static function getTranslatableFields(bool $with_input_type = false, bool $with_column_type = false): array
     {
@@ -140,9 +153,9 @@ trait Translatable
 
     public function getAttribute($key)
     {
+        [$attribute, $locale] = $this->getAttributeAndLocale($key);
         if (count(config("translation.locales")) > 1 and
-            $this->getLocalesHelper()->current() !== config("translation.fallback_locale")) {
-            [$attribute, $locale] = $this->getAttributeAndLocale($key);
+            $locale !== config("translation.fallback_locale")) {
 
             if ($this->isTranslationAttribute($attribute)) {
                 if ($this->getTranslation($locale) === null) {
@@ -326,6 +339,8 @@ trait Translatable
 
     protected function locale(): string
     {
+        if ($this->tmp_locale !== null)
+            return $this->tmp_locale;
         $default_locale = $this->getDefaultLocale();
         if ($default_locale != null) {
             return $default_locale;

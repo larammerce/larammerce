@@ -25,6 +25,7 @@
     <input name="lang_id" type="hidden" value="{{ $lang_id }}">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         {{ method_field('PUT') }}
+        @yield("translation_form_header")
         @foreach($translatable_fields as $name => $type)
             @if(str_starts_with($type, "input"))
                 <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
@@ -64,7 +65,7 @@
                 </div>
             @endif
         @endforeach
-        @yield("extra_fields")
+        @yield("translation_form_footer")
     </div>
 @endsection
 

@@ -1,4 +1,4 @@
-@foreach($webPage->getContents() as $content)
+@foreach($web_page->getContents() as $content)
     <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 web-page-content">
         <h1 class="title">{{$content->getTitle()}}</h1>
         @if($content->getType() === ContentTypes::TEXT)

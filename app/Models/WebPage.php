@@ -18,6 +18,7 @@ use App\Utils\CMS\Template\RelativeBladeType;
 use App\Utils\CMS\Template\TemplateService;
 use App\Utils\Common\ImageService;
 use App\Utils\Common\RequestService;
+use App\Utils\Translation\Traits\Translatable;
 use DateTime;
 use Exception;
 use Illuminate\Support\Str;
@@ -43,7 +44,7 @@ use Yangqi\Htmldom\Htmldom;
  */
 class WebPage extends BaseModel implements ImageContract, SeoableContract
 {
-    use Seoable;
+    use Seoable, Translatable;
 
     protected $table = 'web_pages';
     protected $fillable = [
@@ -52,7 +53,13 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
 
     protected static array $SORTABLE_FIELDS = ['id', 'blade_name', 'created_at'];
     protected static array $SEARCHABLE_FIELDS = ['blade_name', 'data'];
-
+    protected static array $TRANSLATABLE_FIELDS = [
+        "seo_title" => ["text", "textarea:normal"],
+        "seo_keywords" => ["text", "textarea:normal"],
+        "seo_description" => ["text", "textarea:normal"],
+        "data" => ["text", "json"]
+    ];
+    protected static string $TRANSLATION_EDIT_FORM = "admin.pages.web-page.translate";
 
     private $contents;
 
