@@ -54,6 +54,71 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 
+if (!function_exists("unparse_url")) {
+    function unparse_url(array $parsed_url, array $ommit = []): string
+    {
+        $url = '';
+
+        $p = array();
+
+        $p['scheme'] = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+
+        $p['host'] = $parsed_url['host'] ?? '';
+
+        $p['port'] = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+
+        $p['user'] = $parsed_url['user'] ?? '';
+
+        $p['pass'] = isset($parsed_url['pass']) ? ':' . $parsed_url['pass'] : '';
+
+        $p['pass'] = ($p['user'] || $p['pass']) ? $p['pass'] . "@" : '';
+
+        $p['path'] = $parsed_url['path'] ?? '';
+
+        $p['query'] = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+
+        $p['fragment'] = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
+
+        if ($ommit) {
+            foreach ($ommit as $key) {
+                if (isset($p[$key])) {
+                    $p[$key] = '';
+                }
+            }
+        }
+
+        return $p['scheme'] . $p['user'] . $p['pass'] . $p['host'] . $p['port'] . $p['path'] . $p['query'] . $p['fragment'];
+    }
+}
+
+if (!function_exists("locale_url")) {
+    function locale_url(string $normal_url): string
+    {
+        if (count(config("translation.locales")) <= 1)
+            return $normal_url;
+
+        $parsed_url = parse_url($normal_url);
+        $parsed_url["path"] = "/" . app()->getLocale() . ($parsed_url["path"] ?? "");
+        return unparse_url($parsed_url);
+    }
+}
+
+if (!function_exists("lm_route")) {
+    function lm_route($name, $parameters = [], $absolute = true): string
+    {
+        $route_result = route($name, $parameters, $absolute);
+        return locale_url($route_result);
+    }
+}
+
+if (!function_exists("lm_url")) {
+    function lm_url($path = null, $parameters = [], $secure = null): string
+    {
+        $url_result = url($path, $parameters, $secure);
+        return locale_url($url_result);
+    }
+}
+
 if (!function_exists("get_identity")) {
     function get_identity(): array
     {

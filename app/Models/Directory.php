@@ -326,7 +326,7 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
     {
         if ($this->is_internal_link)
             return $this->url_part ?: "#";
-        return env('APP_URL') . ($this->force_show_landing ? $this->url_landing : $this->url_full);
+        return lm_url(($this->force_show_landing ? $this->url_landing : $this->url_full));
     }
 
     public function getLandingUrl(): string

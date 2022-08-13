@@ -37,7 +37,7 @@ class PStructureAttrValue extends BaseModel implements TaggableContract, ImageCo
     public $timestamps = false;
 
     protected static array $SORTABLE_FIELDS = ['id', 'name'];
-
+    protected static array $SEARCHABLE_FIELDS = ["id", "name"];
     protected static array $TRANSLATABLE_FIELDS = [
         'name' => ['string', 'input:text']
     ];

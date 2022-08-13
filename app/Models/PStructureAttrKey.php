@@ -41,7 +41,7 @@ class PStructureAttrKey extends BaseModel implements TaggableContract
     public $timestamps = false;
 
     protected static array $SORTABLE_FIELDS = ['id', 'title', 'priority'];
-
+    protected static array $SEARCHABLE_FIELDS = ["id", "title"];
     protected static array $TRANSLATABLE_FIELDS = [
         'title' => ['string', 'input:text']
     ];

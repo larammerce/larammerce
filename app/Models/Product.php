@@ -917,7 +917,7 @@ class Product extends BaseModel implements
     public function getFrontUrl(): string
     {
         try {
-            return route("public.view-product", $this) . "/" . url_encode($this->title);
+            return lm_route("public.view-product", $this) . "/" . url_encode($this->title);
         } catch (UrlGenerationException $e) {
             return '';
         }

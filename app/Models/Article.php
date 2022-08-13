@@ -193,7 +193,7 @@ class Article extends BaseModel implements
 
     public function getFrontUrl(): string
     {
-        return route('public.view-blog', $this) . '/' . url_encode($this->title);
+        return lm_route('public.view-blog', $this) . '/' . url_encode($this->title);
     }
 
     public function getSearchUrl(): string

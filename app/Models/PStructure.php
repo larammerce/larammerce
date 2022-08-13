@@ -33,7 +33,7 @@ class PStructure extends BaseModel
     public $timestamps = false;
 
     protected static array $SORTABLE_FIELDS = ['id', 'title'];
-
+    protected static array $SEARCHABLE_FIELDS = ["id", "title", "blade_name"];
     protected static array $TRANSLATABLE_FIELDS = [
         'title' => ['string', 'input:text']
     ];
