@@ -49,7 +49,7 @@ class Provider
                 break;
             case AuthType::EMAIL:
                 dispatch(new SendEmail(
-                    compact('oneTimeCode'),
+                    compact("oneTimeCode"),
                     "public.mail-auth-code",
                     $value,
                     null,
@@ -133,16 +133,16 @@ class Provider
         }
 
         $newUser = User::create([
-            'name' => $data["name"],
-            'family' => $data["family"],
-            'username' => $data["main_phone"],
-            'email' => $data["email"],
+            "name" => $data["name"],
+            "family" => $data["family"],
+            "username" => $data["main_phone"],
+            "email" => $data["email"],
             "representative_username" => $data["representative_username"],
             "representative_type" => $data["representative_type"],
-            'is_email_confirmed' => ($type == AuthType::EMAIL),
-            'is_system_user' => false,
-            'is_customer_user' => true,
-            'gender' => 2,
+            "is_email_confirmed" => ($type == AuthType::EMAIL),
+            "is_system_user" => false,
+            "is_customer_user" => true,
+            "gender" => 2,
         ]);
 
         $customerUser = CustomerUser::create([
@@ -174,9 +174,9 @@ class Provider
         $type = AuthType::fix($type);
         $customerUser = null;
         if ($type == AuthType::MOBILE)
-            $customerUser = CustomerUser::where('main_phone', $value)->first();
+            $customerUser = CustomerUser::where("main_phone", $value)->first();
         else if ($type == "email")
-            $customerUser = CustomerUser::whereHas('user', function ($q) use ($value) {
+            $customerUser = CustomerUser::whereHas("user", function ($q) use ($value) {
                 $q->where("email", $value);
             })->first();
         return $customerUser;
