@@ -31,7 +31,6 @@ use Throwable;
  * @property string url_landing
  * @property boolean is_internal_link
  * @property boolean is_anonymously_accessible
- * @property boolean has_discount
  * @property boolean has_web_page
  * @property integer priority
  * @property integer content_type
@@ -49,6 +48,7 @@ use Throwable;
  * @property boolean force_show_landing
  * @property integer inaccessibility_type
  * @property string notice
+ * @property string metadata
  *
  * @property Directory parentDirectory
  * @property Directory[] directories
@@ -61,7 +61,6 @@ use Throwable;
  * @property Tag[] tags
  * @property Badge[] badges
  * @property CustomerMetaCategory customerMetaCategory
- * @property DiscountGroup discountGroup
  *
  * @method static Directory find(integer $id)
  * @method static Builder roots()
@@ -75,16 +74,16 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
 {
     use Fileable, Badgeable, Translatable;
 
-    protected static array $SORTABLE_FIELDS = ['id', 'priority', 'title', 'created_at'];
-    protected static array $SEARCHABLE_FIELDS = ['title', 'url_part'];
+    protected static array $SORTABLE_FIELDS = ["id", "priority", "title", "created_at"];
+    protected static array $SEARCHABLE_FIELDS = ["title", "url_part"];
 
-    protected $table = 'directories';
+    protected $table = "directories";
     public $timestamps = true;
     protected $fillable = [
-        'title', 'url_part', 'url_full', 'is_internal_link', 'is_anonymously_accessible', 'has_web_page', 'priority',
-        'content_type', 'directory_id', 'show_in_navbar', 'show_in_footer', 'cover_image_path', 'description',
-        'data_type', 'show_in_app_navbar', 'has_discount', 'is_location_limited', "cmc_id", "discount_group_id",
-        'badges', 'force_show_landing', 'inaccessibility_type', 'notice'
+        "title", "url_part", "url_full", "is_internal_link", "is_anonymously_accessible", "has_web_page", "priority",
+        "content_type", "directory_id", "show_in_navbar", "show_in_footer", "cover_image_path", "description",
+        "data_type", "show_in_app_navbar", "is_location_limited", "cmc_id",
+        "badges", "force_show_landing", "inaccessibility_type", "notice", "metadata"
     ];
 
     protected $casts = [
@@ -92,9 +91,9 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
     ];
 
     protected static array $TRANSLATABLE_FIELDS = [
-        'title' => ['string', 'input:text'],
-        'notice' => ['string', 'input:text'],
-        'description' => ['text', 'textarea:rich']
+        "title" => ["string", "input:text"],
+        "notice" => ["string", "input:text"],
+        "description" => ["text", "textarea:rich"]
     ];
 
     public function getContentTypeTitleAttribute(): string
@@ -122,22 +121,22 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
 
     public function parentDirectory(): BelongsTo
     {
-        return $this->belongsTo(Directory::class, 'directory_id');
+        return $this->belongsTo(Directory::class, "directory_id");
     }
 
     public function directories(): HasMany
     {
-        return $this->hasMany(Directory::class, 'directory_id');
+        return $this->hasMany(Directory::class, "directory_id");
     }
 
     public function leafProducts(): BelongsToMany
     {
-        return $this->belongsToMany(Product::class, 'directory_product', 'directory_id', 'product_id');
+        return $this->belongsToMany(Product::class, "directory_product", "directory_id", "product_id");
     }
 
     public function products(): HasMany
     {
-        return $this->hasMany(Product::class, 'directory_id');
+        return $this->hasMany(Product::class, "directory_id");
     }
 
     public function discounts(): BelongsToMany
@@ -147,27 +146,27 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
 
     public function leafArticles(): BelongsToMany
     {
-        return $this->belongsToMany(Article::class, 'article_directory', 'directory_id', 'article_id');
+        return $this->belongsToMany(Article::class, "article_directory", "directory_id", "article_id");
     }
 
     public function articles(): HasMany
     {
-        return $this->hasMany(Article::class, 'directory_id');
+        return $this->hasMany(Article::class, "directory_id");
     }
 
     public function systemRoles(): BelongsToMany
     {
-        return $this->belongsToMany(SystemRole::class, 'directory_system_role', 'directory_id', 'system_role_id');
+        return $this->belongsToMany(SystemRole::class, "directory_system_role", "directory_id", "system_role_id");
     }
 
     public function webPage(): HasOne
     {
-        return $this->hasOne(WebPage::class, 'directory_id');
+        return $this->hasOne(WebPage::class, "directory_id");
     }
 
     public function tags(): MorphToMany
     {
-        return $this->morphToMany(Tag::class, 'taggable');
+        return $this->morphToMany(Tag::class, "taggable");
     }
 
     public function directoryLocations(): HasMany
@@ -180,19 +179,14 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
         return $this->belongsTo(CustomerMetaCategory::class, "cmc_id", "id");
     }
 
-    public function discountGroup(): BelongsTo
-    {
-        return $this->belongsTo(DiscountGroup::class, "discount_group_id", "id");
-    }
-
     public function scopeRoots(Builder $query): Builder
     {
-        return $query->whereNull('directory_id');
+        return $query->whereNull("directory_id");
     }
 
     public function scopeFrom(Builder $query, string $type): Builder
     {
-        return $query->where('content_type', $type);
+        return $query->where("content_type", $type);
     }
 
     public function scopePermitted(Builder $builder): Builder
@@ -281,9 +275,9 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
                 if ($directory->id !== $self_id) {
                     $leaf_ids = [];
                     if ($this->content_type == DirectoryType::PRODUCT)
-                        $leaf_ids = $directory->leafProducts()->pluck('id')->toArray();
+                        $leaf_ids = $directory->leafProducts()->pluck("id")->toArray();
                     elseif ($this->content_type == DirectoryType::BLOG)
-                        $leaf_ids = $directory->leafArticles()->pluck('id')->toArray();
+                        $leaf_ids = $directory->leafArticles()->pluck("id")->toArray();
 
                     foreach ($leaf_ids as $leaf_id)
                         if (!in_array($leaf_id, $leaf_overlap_ids) and in_array($leaf_id, $detachable_ids))
@@ -304,7 +298,7 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
 
     public function parentField(): string
     {
-        return 'directory_id';
+        return "directory_id";
     }
 
     public function getName(): string
@@ -314,7 +308,7 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
 
     public function getAdminUrl(): string
     {
-        return route('admin.directory.show', $this);
+        return route("admin.directory.show", $this);
     }
 
     static public function getContentTypes(): array
@@ -337,14 +331,14 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
 
     public function getParentDirectories()
     {
-        $url_parts = explode('/', substr($this->url_full, 1));
+        $url_parts = explode("/", substr($this->url_full, 1));
         $directories_url_full = [];
         $directory_url_full = "";
         foreach ($url_parts as $url_part) {
-            $directory_url_full .= '/' . $url_part;
+            $directory_url_full .= "/" . $url_part;
             $directories_url_full[] = $directory_url_full;
         }
-        return self::whereIn('url_full', $directories_url_full)->orderBy('id', 'ASC')->get();
+        return self::whereIn("url_full", $directories_url_full)->orderBy("id", "ASC")->get();
     }
 
     public function getParentDirectoriesRecursive(): array
@@ -361,12 +355,12 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
 
     public function getPaginatedBlog()
     {
-        return $this->leafArticles()->with('directory')->latest()->paginate(Article::getFrontPaginationCount());
+        return $this->leafArticles()->with("directory")->latest()->paginate(Article::getFrontPaginationCount());
     }
 
     public function getSearchUrl(): string
     {
-        return route('admin.directory.show', $this);
+        return route("admin.directory.show", $this);
     }
 
     public function hasImage(): bool
@@ -382,7 +376,7 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
     public function setImagePath(): void
     {
         $tmp_image = ImageService::saveImage($this->getImageCategoryName());
-        $this->cover_image_path = $tmp_image->destinationPath . '/' . $tmp_image->name;
+        $this->cover_image_path = $tmp_image->destinationPath . "/" . $tmp_image->name;
         $this->save();
     }
 
@@ -394,12 +388,12 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
 
     public function getDefaultImagePath(): string
     {
-        return '/admin_dashboard/images/No_image.jpg.png';
+        return "/admin_dashboard/images/No_image.jpg.png";
     }
 
     public function getImageCategoryName(): string
     {
-        return 'directory';
+        return "directory";
     }
 
     public function isImageLocal(): bool
@@ -410,7 +404,7 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
     public function setUrlFull()
     {
         $this->url_full = (($this->directory_id != null and $this->parentDirectory != null) ?
-                $this->parentDirectory->url_full : '') . "/" . $this->url_part;
+                $this->parentDirectory->url_full : "") . "/" . $this->url_part;
         $this->save();
     }
 
@@ -419,7 +413,7 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
         $this->directory_id = $dest != null ? $dest->id : null;
         $this->save();
         if ($this->linkedLeaves != null)
-            $this->attachLeafFiles($this->linkedLeaves->pluck('id')->toArray());
+            $this->attachLeafFiles($this->linkedLeaves->pluck("id")->toArray());
     }
 
     public function detachFile($dest = null)
@@ -441,10 +435,10 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
                     $destParentDirectory = $destParentDirectory->parentDirectory;
                 }
             }
-            $dest_parent_directory_ids = $destParentDirectories->pluck('id')->toArray();
+            $dest_parent_directory_ids = $destParentDirectories->pluck("id")->toArray();
         }
         if ($this->linkedLeaves != null and count($this->linkedLeaves) > 0 and $parentDirectory != null)
-            $parentDirectory->detachLeafFiles($this->linkedLeaves->pluck('id')->toArray(), $this->id, $dest_parent_directory_ids);
+            $parentDirectory->detachLeafFiles($this->linkedLeaves->pluck("id")->toArray(), $this->id, $dest_parent_directory_ids);
     }
 
     public function cloneFile()
@@ -464,7 +458,7 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
     {
         $oldUrlFull = $this->url_full;
         $this->url_full = ($dest != null and strlen($dest->url_full) > 0) ?
-            $dest->url_full . '/' . $this->url_part : $this->url_part;
+            $dest->url_full . "/" . $this->url_part : $this->url_part;
         $this->save();
         $newUrlFull = $this->url_full;
         if ($oldUrlFull != $newUrlFull) {
