@@ -4,24 +4,24 @@
         @if($content->getType() === ContentTypes::TEXT)
             <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
                 <span class="label">محتوا</span>
-                <input class="form-control input-sm" type="text" name="data__text__content__{{$content->getId()}}"
+                <input class="form-control input-sm" type="text" name="data[text][{{$content->getId()}}][content]"
                        value="{{ $content->getContent() }}">
             </div>
         @elseif($content->getType() === ContentTypes::LINK)
             <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
                 <span class="label">آدرس لینک</span>
-                <input class="form-control input-sm" type="text" name="data__link__href__{{$content->getId()}}"
+                <input class="form-control input-sm" type="text" name="data[link][{{$content->getId()}}][href]"
                        value="{{ $content->getHref() }}">
             </div>
             <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
                 <span class="label">متن لینک</span>
-                <input class="form-control input-sm" type="text" name="data__text__content__{{$content->getId()}}"
+                <input class="form-control input-sm" type="text" name="data[link][{{$content->getId()}}][content]"
                        value="{{ $content->getContent() }}">
             </div>
         @elseif($content->getType() === ContentTypes::RICH_TEXT)
             <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
                 <span class="label">محتوا</span>
-                <textarea class="tinymce" name="data__rich_text__content__{{$content->getId()}}"
+                <textarea class="tinymce" name="data[rich_text][{{$content->getId()}}][content]"
                 >{{$content->getContent()}}</textarea>
             </div>
         @elseif($content->getType() === ContentTypes::IMAGE)
@@ -34,11 +34,11 @@
                 @endif
                 [حداقل کیفیت: {{ get_image_min_height('web_page') }}*{{ get_image_min_width('web_page') }}
                 و نسبت: {{ get_image_ratio('web_page') }}]
-                <input class="form-control" name="data__image__src__{{$content->getId()}}" type="file" multiple="true">
+                <input class="form-control" name="data[image][{{$content->getId()}}][src]" type="file" multiple="true">
             </div>
             <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
                 <span class="label">توضیحات تصویر</span>
-                <input class="form-control input-sm" type="text" name="data__image__alt__{{$content->getId()}}"
+                <input class="form-control input-sm" type="text" name="data[image][{{$content->getId()}}][alt]"
                        value="{{ $content->getAlt() }}">
             </div>
         @elseif($content->getType() === ContentTypes::FILE)
@@ -55,7 +55,7 @@
                 <br>
                 <label>فایل mp3</label>
                 ( حداکثر حجم {{ get_file_max_size('web_page') }} مگابایت)
-                <input class="form-control" name="data__audio__src__{{$content->getId()}}" type="file" multiple="true">
+                <input class="form-control" name="data[audio][{{$content->getId()}}][src]" type="file" multiple="true">
             </div>
         @elseif($content->getType() === ContentTypes::VIDEO)
             <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
@@ -72,35 +72,35 @@
                 </video>
                 <br>
                 <span class="material-switch pull-right">&nbsp; کنترل های پخش &nbsp;&nbsp;
-                    <input id="data__video__controls__{{$content->getId()}}"
-                           name="data__video__controls__{{$content->getId()}}"
+                    <input id="data[video][{{$content->getId()}}][controls]"
+                           name="data[video][{{$content->getId()}}][controls]"
                            type="checkbox" value="1"
                            @if($content->hasControls()) checked @endif/>
-                    <label for="data__video__controls__{{$content->getId()}}"></label>
-                    <input id="data__video__controls__{{$content->getId()}}_hidden"
-                           name="data__video__controls__{{$content->getId()}}"
+                    <label for="data[video][{{$content->getId()}}][controls]"></label>
+                    <input id="data[video][{{$content->getId()}}][controls]_hidden"
+                           name="data[video][{{$content->getId()}}][controls]"
                            type="hidden" value="0"/>
                 </span>
 
                 <span class="material-switch pull-right">&nbsp; پخش خودکار &nbsp;
-                    <input id="data__video__autoPlay__{{$content->getId()}}"
-                           name="data__video__autoPlay__{{$content->getId()}}"
+                    <input id="data[video][{{$content->getId()}}][auto_play]"
+                           name="data[video][{{$content->getId()}}][auto_play]"
                            type="checkbox" value="1"
                            @if($content->hasAutoPlay()) checked @endif/>
-                    <label for="data__video__autoPlay__{{$content->getId()}}"></label>
-                    <input id="data__video__autoPlay__{{$content->getId()}}_hidden"
-                           name="data__video__autoPlay__{{$content->getId()}}"
+                    <label for="data[video][{{$content->getId()}}][auto_play]"></label>
+                    <input id="data[video][{{$content->getId()}}][auto_play]_hidden"
+                           name="data[video][{{$content->getId()}}][auto_play]"
                            type="hidden" value="0"/>
                 </span>
 
                 <span class="material-switch pull-right">&nbsp; تکرار پخش &nbsp;
-                    <input id="data__video__loop__{{$content->getId()}}"
-                           name="data__video__loop__{{$content->getId()}}"
+                    <input id="data[video][{{$content->getId()}}][loop]"
+                           name="data[video][{{$content->getId()}}][loop]"
                            type="checkbox" value="1"
                            @if($content->hasLoop()) checked @endif/>
-                    <label for="data__video__loop__{{$content->getId()}}"></label>
-                    <input id="data__video__loop__{{$content->getId()}}_hidden"
-                           name="data__video__loop__{{$content->getId()}}"
+                    <label for="data[video][{{$content->getId()}}][loop]"></label>
+                    <input id="data[video][{{$content->getId()}}][loop]_hidden"
+                           name="data[video][{{$content->getId()}}][loop]"
                            type="hidden" value="0"/>
                 </span>
 
@@ -109,13 +109,13 @@
                 <label>پستر‌ ویدئو</label>
                 [حداقل کیفیت: {{ get_image_min_height('web_page') }}*{{ get_image_min_width('web_page') }}
                 و نسبت: {{ get_image_ratio('web_page') }}]
-                <input class="form-control" name="data__video__poster__{{$content->getId()}}"
+                <input class="form-control" name="data[video][{{$content->getId()}}][poster]"
                        type="file" multiple="true">
             </div>
             <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
                 <label>فایل mp4</label>
                 ( حداکثر حجم {{ get_file_max_size('web_page') }} مگابایت)
-                <input class="form-control" name="data__video__src__{{$content->getId()}}"
+                <input class="form-control" name="data[video][{{$content->getId()}}][src]"
                        type="file" multiple="true">
             </div>
         @endif

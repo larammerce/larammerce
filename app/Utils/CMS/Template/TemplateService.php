@@ -141,6 +141,11 @@ class TemplateService
         return resource_path(static::$TEMPLATE_VIEWS_DIR . "/${blade_name}");
     }
 
+    public static function copyBlade($from_blade_name, $to_blade_name){
+        $from_blade_content = static::getBladeContent($from_blade_name);
+        static::setBladeContent($to_blade_name, $from_blade_content);
+    }
+
     /**
      * this method returns the path for template blade,
      * placed in the directory /resources/hc-template

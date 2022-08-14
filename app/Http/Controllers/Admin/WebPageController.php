@@ -28,8 +28,8 @@ class WebPageController extends BaseController
     public function index(): Factory|View|Application
     {
         parent::setPageAttribute();
-        $webPages = WebPage::with('directory', 'tags')->paginate(WebPage::getPaginationCount());
-        return view('admin.pages.web-page.index', compact('webPages'));
+        $web_pages = WebPage::with('directory', 'tags')->paginate(WebPage::getPaginationCount());
+        return view('admin.pages.web-page.index', compact('web_pages'));
     }
 
     /**

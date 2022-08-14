@@ -26,7 +26,7 @@ class ModelTranslationController extends BaseController
             $related_model = $request->get('related_model');
             $related_object_id = $request->get('related_object_id');
             $translatable_object = $related_model::findOrFail($related_object_id);
-            $translatable_object->setTmpLocale($lang_id);
+            $translatable_object->setDefaultLocale($lang_id);
             $translatable_fields = $related_model::getTranslatableFields(with_input_type: true);
             $translation_edit_form = $related_model::getTranslationEditForm();
 

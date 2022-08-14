@@ -21,6 +21,7 @@ use App\Utils\Common\RequestService;
 use App\Utils\Translation\Traits\Translatable;
 use DateTime;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Yangqi\Htmldom\Htmldom;
 
@@ -57,7 +58,7 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
         "seo_title" => ["text", "textarea:normal"],
         "seo_keywords" => ["text", "textarea:normal"],
         "seo_description" => ["text", "textarea:normal"],
-        "data" => ["text", "json"]
+        "data" => ["text", "custom"]
     ];
     protected static string $TRANSLATION_EDIT_FORM = "admin.pages.web-page.translate";
 
@@ -67,6 +68,26 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
     {
         $this->contents = [];
         parent::__construct($attributes);
+    }
+
+    public function getBladeNameAttribute()
+    {
+        $locale = $this->getDefaultLocale();
+        $blade_name = $this->attributes["blade_name"];
+        $blade_path = TemplateService::getBladePath($blade_name);
+        if ($locale !== null) {
+            $tmp_blade_name = $blade_name . ".{$locale}";
+            $tmp_blade_path = TemplateService::getBladePath($tmp_blade_name);
+            if (!file_exists($tmp_blade_path))
+                TemplateService::copyBlade($blade_path, $tmp_blade_path);
+            return $tmp_blade_name;
+        }
+        return $blade_name;
+    }
+
+    public function setDataAttribute($data): void
+    {
+        dd($data);
     }
 
     /*
@@ -158,10 +179,16 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
 
     public function save(array $options = [])
     {
+        $this->fillData(request());
+        return parent::save($options);
+    }
+
+    public function fillData(Request $request)
+    {
         if (isset($this->id) and $this->id != null) {
             $this->loadContents();
-            foreach (request()->all() as $attrName => $attrValue) {
-                if (strpos($attrName, "data__") !== false) {
+            foreach ($request->all() as $attrName => $attrValue) {
+                if (str_contains($attrName, "data__")) {
                     $attrNameParts = explode("__", $attrName);
                     $contentId = $attrNameParts[3];
                     if (key_exists($contentId, $this->contents)) {
@@ -179,7 +206,6 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
             $this->data = serialize($this->contents);
             $this->saveBladeContents();
         }
-        return parent::save($options);
     }
 
 
@@ -279,7 +305,7 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
 
                     } else if ($contentType === ContentTypes::VIDEO) {
                         $newVideo = new Video($contentId, $contentTitle, $contentTag->src, $contentTag->format,
-                            $contentTag->poster, $contentTag->controls, $contentTag->autoPlay, $contentTag->loop);
+                            $contentTag->poster, $contentTag->controls, $contentTag->auto_play, $contentTag->loop);
                         $this->contents[$contentId] = $newVideo;
                     }
                 } else {
@@ -289,54 +315,53 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
         }
     }
 
-    private function setContentTags($contentTags)
+    private function setContentTags($content_tags)
     {
-        foreach ($contentTags as $contentTag) {
-            $contentType = $contentTag->attr[Directives::CONTENT_TYPE];
-            $contentId = $contentTag->attr[Directives::CONTENT];
-            $contentTitle = $contentTag->attr[Directives::TITLE];
-            if ($contentType != null and strlen($contentType) != 0
-                and $contentId != null and strlen($contentId) != 0
-                and $contentTitle != null and strlen($contentTitle) != 0
-                and key_exists($contentId, $this->contents)
-                and (isset($contentTag->attr[Directives::UNSHARED])
-                    and $contentTag->attr[Directives::UNSHARED] == "true") == false) {
-                if ($contentType === ContentTypes::TEXT) {
+        foreach ($content_tags as $content_tag) {
+            $content_type = $content_tag->attr[Directives::CONTENT_TYPE];
+            $content_id = $content_tag->attr[Directives::CONTENT];
+            $content_title = $content_tag->attr[Directives::TITLE];
+            if ($content_type != null and strlen($content_type) != 0
+                and $content_id != null and strlen($content_id) != 0
+                and $content_title != null and strlen($content_title) != 0
+                and key_exists($content_id, $this->contents)
+                and !(isset($content_tag->attr[Directives::UNSHARED])
+                    and $content_tag->attr[Directives::UNSHARED] == "true")) {
+                if ($content_type === ContentTypes::TEXT) {
 
-                    $contentTag->innertext = $this->contents[$contentId]->getContent();
+                    $content_tag->innertext = $this->contents[$content_id]->getContent();
 
-                } else if ($contentType === ContentTypes::RICH_TEXT) {
+                } else if ($content_type === ContentTypes::RICH_TEXT) {
 
-                    $contentTag->innertext = $this->contents[$contentId]->getContent();
+                    $content_tag->innertext = $this->contents[$content_id]->getContent();
 
-                } else if ($contentType === ContentTypes::LINK) {
+                } else if ($content_type === ContentTypes::LINK) {
 
-                    $contentTag->href = $this->contents[$contentId]->getHref();
-                    $contentTag->innertext = $this->contents[$contentId]->getContent();
+                    $content_tag->href = $this->contents[$content_id]->getHref();
+                    $content_tag->innertext = $this->contents[$content_id]->getContent();
 
-                } else if ($contentType === ContentTypes::FILE) {
+                } else if ($content_type === ContentTypes::FILE) {
 
-                    $contentTag->innertext = $this->contents[$contentId]->getName();
-                    $contentTag->href = $this->contents[$contentId]->getHref();
+                    $content_tag->innertext = $this->contents[$content_id]->getName();
+                    $content_tag->href = $this->contents[$content_id]->getHref();
 
-                } else if ($contentType === ContentTypes::IMAGE) {
+                } else if ($content_type === ContentTypes::IMAGE) {
 
-                    $contentTag->alt = $this->contents[$contentId]->getAlt();
-                    $contentTag->src = $this->contents[$contentId]->getSrc();
+                    $content_tag->alt = $this->contents[$content_id]->getAlt();
+                    $content_tag->src = $this->contents[$content_id]->getSrc();
 
-                } else if ($contentType === ContentTypes::AUDIO) {
+                } else if ($content_type === ContentTypes::AUDIO) {
 
-                    $contentTag->src = $this->contents[$contentId]->getSrc();
-                    $contentTag->format = $this->contents[$contentId]->getFormat();
+                    $content_tag->src = $this->contents[$content_id]->getSrc();
+                    $content_tag->format = $this->contents[$content_id]->getFormat();
 
-                } else if ($contentType === ContentTypes::VIDEO) {
-
-                    $contentTag->src = $this->contents[$contentId]->getSrc();
-                    $contentTag->format = $this->contents[$contentId]->getFormat();
-                    $contentTag->poster = $this->contents[$contentId]->getPoster();
-                    $contentTag->controls = $this->contents[$contentId]->hasControls();
-                    $contentTag->autoPlay = $this->contents[$contentId]->hasAutoPlay();
-                    $contentTag->loop = $this->contents[$contentId]->hasLoop();
+                } else if ($content_type === ContentTypes::VIDEO) {
+                    $content_tag->src = $this->contents[$content_id]->getSrc();
+                    $content_tag->format = $this->contents[$content_id]->getFormat();
+                    $content_tag->poster = $this->contents[$content_id]->getPoster();
+                    $content_tag->controls = $this->contents[$content_id]->hasControls();
+                    $content_tag->auto_play = $this->contents[$content_id]->isAutoPlay();
+                    $content_tag->loop = $this->contents[$content_id]->hasLoop();
                 }
             }
         }
@@ -346,9 +371,9 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
     {
         if ($this->blade_name != null and strlen($this->blade_name) > 0) {
             $this->updateBladeContent(TemplateService::getBladePath($this->blade_name));
-            foreach (RelativeBladeType::values() as $relativeBladePostfix) {
-                $relativeBladePath = TemplateService::getBladePath($this->blade_name . $relativeBladePostfix);
-                $this->updateBladeContent($relativeBladePath, $relativeBladePostfix);
+            foreach (RelativeBladeType::values() as $relative_blade_postfix) {
+                $relative_blade_path = TemplateService::getBladePath($this->blade_name . $relative_blade_postfix);
+                $this->updateBladeContent($relative_blade_path, $relative_blade_postfix);
             }
         }
     }
