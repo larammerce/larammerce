@@ -15,7 +15,7 @@
 @endsection
 
 @section('form_attributes')
-    action="{{route('admin.model-translation.update')}}" method="POST"
+    action="{{route('admin.model-translation.update')}}" method="POST" enctype="multipart/form-data" form-with-hidden-checkboxes
 @endsection
 
 @section('form_body')

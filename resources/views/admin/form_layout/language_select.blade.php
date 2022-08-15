@@ -4,7 +4,7 @@
         $entity_name = $entity_name ?? get_model_entity_name($class->getClassName());
         $lang_id = $lang_id ?? config("translation.fallback_locale");
     @endphp
-    @if(\App\Utils\Translation\TranslationService::isTranslatable($class) and count(config("translation.locales")) > 1)
+    @if(\App\Utils\Translation\TranslationService::isTranslatable($class) and \App\Utils\CMS\Setting\Language\LanguageSettingService::isMultiLangSystem())
         <div class="language-container btn-group btn-group-sm">
             <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"
                     aria-haspopup="true" aria-expanded="false">

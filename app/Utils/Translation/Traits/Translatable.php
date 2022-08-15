@@ -2,6 +2,7 @@
 
 namespace App\Utils\Translation\Traits;
 
+use App\Utils\CMS\Setting\Language\LanguageSettingService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -141,7 +142,7 @@ trait Translatable
     public function getAttribute($key)
     {
         [$attribute, $locale] = $this->getAttributeAndLocale($key);
-        if (count(config("translation.locales")) > 1 and
+        if (LanguageSettingService::isMultiLangSystem() and
             $locale !== config("translation.fallback_locale") and
             $this->isTranslationAttribute($attribute)) {
             if ($this->getTranslation($locale) === null) {
