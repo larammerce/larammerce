@@ -11,7 +11,9 @@ namespace App\Models;
 use DateTime;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use stdClass;
 
 /**
  * Properties
@@ -117,8 +119,16 @@ class DiscountGroup extends BaseModel
 
     public function getStepsDataObjectAttribute()
     {
-        if (!isset($this->extra_attributes["steps_data_object"]))
-            $this->extra_attributes["steps_data_object"] = json_decode($this->steps_data);
+        if (!isset($this->extra_attributes["steps_data_object"])) {
+            $tmp_result = json_decode($this->steps_data);
+            if (!is_array($tmp_result))
+                $tmp_result = [];
+            $this->extra_attributes["steps_data_object"] = $tmp_result;
+            $first_step = new stdClass();
+            $first_step->amount = "0";
+            $first_step->value = "{$this->value}";
+            $this->extra_attributes["steps_data_object"] = Arr::prepend($this->extra_attributes["steps_data_object"], $first_step);
+        }
         return $this->extra_attributes["steps_data_object"];
     }
 
