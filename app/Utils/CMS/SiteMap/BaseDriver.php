@@ -42,7 +42,7 @@ abstract class BaseDriver
 
     protected function getDirectorySection(Directory $directory): string
     {
-        if (in_array($directory->getFrontUrl(), $this->urls)) {
+        if ($directory->is_internal_link or in_array($directory->getFrontUrl(), $this->urls)) {
             return "";
         } else {
             $this->urls[] = $directory->getFrontUrl();
