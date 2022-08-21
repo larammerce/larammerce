@@ -386,6 +386,14 @@ return [
         'analytic_appliances' => [
             [
                 "properties" => [
+                    "id" => "live_reports",
+                    "name" => "general.analytic.live_reports",
+                    "icon" => "icon-live-reports",
+                    "route" => "admin.live-reports.index"
+                ]
+            ],
+            [
+                "properties" => [
                     "id" => "review_management",
                     "name" => "general.analytic.review_management",
                     "icon" => "icon-review",

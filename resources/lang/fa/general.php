@@ -63,7 +63,8 @@ return [
         "rate_comment" => "نظر مخاطبان",
         "web_form_message" => "پیام ها",
         "edit_robots_txt" => "متن فایل ربات",
-        "action_logs" => "لاگ های عملیات"
+        "action_logs" => "لاگ های عملیات",
+        "live_reports" => "گزارش زنده سیستم"
     ],
     "directory" => [
         "type" => [

@@ -15,7 +15,8 @@ require.config({
         chartJs: '/admin_dashboard/vendor/chart-js/chart',
         iconPicker: '/admin_dashboard/vendor/fontIconPicker/dist/js/jquery.fonticonpicker',
         spectrum: '/admin_dashboard/vendor/spectrum/spectrum',
-        toast: '/admin_dashboard/vendor/jquery-toast/jquery.toast.min'
+        toast: '/admin_dashboard/vendor/jquery-toast/jquery.toast.min',
+        chartjs: '/admin_dashboard/vendor/chartjs/chart.min'
 
     },
     shim: {

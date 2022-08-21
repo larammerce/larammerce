@@ -384,6 +384,11 @@ Route::group(
             Route::put("update", ["as" => "update", "uses" => "ModelTranslationController@update"]);
         });
 
+        //LiveReports
+        Route::group(["prefix" => "live-reports", "as" => "admin.live-reports."], function () {
+            Route::get("/", ["as" => "index", "uses" => "LiveReportsController@index"]);
+        });
+
         //Null
         Route::any("null", ["as" => "admin.null", "uses" => "AdminController@nullMethod"]);
 
@@ -400,6 +405,8 @@ Route::group(
             Route::post("/clip-board/cut", ["as" => "clip-board.cut", "uses" => "ClipBoardController@doCut"]);
             Route::post("/clip-board/copy", ["as" => "clip-board.copy", "uses" => "ClipBoardController@doCopy"]);
             Route::post("/clip-board/paste", ["as" => "clip-board.paste", "uses" => "ClipBoardController@doPaste"]);
+
+
         });
 
         //ShortLink
