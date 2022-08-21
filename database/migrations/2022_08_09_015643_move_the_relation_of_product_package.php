@@ -13,6 +13,8 @@ class MoveTheRelationOfProductPackage extends Migration
      */
     public function up()
     {
+        \Illuminate\Support\Facades\DB::delete(\Illuminate\Support\Facades\DB::raw("delete from product_packages"));
+
         Schema::table("products", function (Blueprint $table) {
             $table->boolean("is_package")->default(false);
             $table->dropForeign("products_package_id_foreign");
@@ -21,7 +23,7 @@ class MoveTheRelationOfProductPackage extends Migration
 
         Schema::table("product_packages", function (Blueprint $table) {
             $table->unsignedInteger("product_id");
-            $table->foreign("product_id")->references("id")->on("products")
+            $table->foreign("product_id", "product_packages_pid")->references("id")->on("products")
                 ->onDelete("cascade");
         });
     }

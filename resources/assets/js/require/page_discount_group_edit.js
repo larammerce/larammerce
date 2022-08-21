@@ -1,5 +1,5 @@
 if (window.PAGE_ID === "admin.pages.discount-group.edit") {
-    require(["jquery", "template", "price_control"], function (jQuery, template) {
+    require(["jquery", "template", "price_control", "form_control"], function (jQuery, template) {
         const rowsContainer = jQuery("#discount-steps-container");
         const rowsData = rowsContainer.data("rows");
         let counter = 0;
@@ -52,6 +52,7 @@ if (window.PAGE_ID === "admin.pages.discount-group.edit") {
                 newRow.find(".actions-container .btn-success").addConfigRowButton().hide();
             }
             newRow.find(".fast-select").fastselect();
+            newRow.find(".form-control").formControl();
             rowsContainer.append(newRow);
 
             counter += 1;

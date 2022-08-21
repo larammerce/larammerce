@@ -1,5 +1,5 @@
 if (window.PAGE_ID === "admin.pages.product-package.edit") {
-    require(["jquery", "template"], function (jQuery, template) {
+    require(["jquery", "template", "form_control"], function (jQuery, template) {
         const rowsContainer = jQuery("#product-package-container");
         const rowsData = rowsContainer.data("rows");
         const mainForm = rowsContainer.closest("form");
@@ -47,6 +47,7 @@ if (window.PAGE_ID === "admin.pages.product-package.edit") {
                 newRow.find(".actions-container .btn-success").addConfigRowButton().hide();
             }
             newRow.find(".fast-select").fastselect();
+            newRow.find(".form-control").formControl();
             rowsContainer.append(newRow);
 
             counter += 1;

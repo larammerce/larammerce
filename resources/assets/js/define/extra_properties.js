@@ -1,4 +1,4 @@
-define('extra_properties', ['jquery', 'template'], function (jQuery, template) {
+define('extra_properties', ['jquery', 'template', "form_control"], function (jQuery, template) {
     (function (jQuery) {
         jQuery.fn.extraProperties = function () {
             this.each(function (index) {
@@ -22,6 +22,8 @@ define('extra_properties', ['jquery', 'template'], function (jQuery, template) {
                     newProperty.find('.remove-btn').on('click', function () {
                         newProperty.remove();
                     });
+
+                    newProperty.find(".form-control").formControl();
 
                     thisContainer.append(newProperty);
                 };
