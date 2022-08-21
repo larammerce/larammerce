@@ -24,19 +24,24 @@ class ProductService
     public static function getTollPercentage()
     {
         try {
-            return Setting::getCMSRecord(CMSSettingKey::TOLL_PERCENTAGE)->value;
+            return floatval(Setting::getCMSRecord(CMSSettingKey::TOLL_PERCENTAGE)->value);
         } catch (Exception $e) {
-            return 3;
+            return 3.0;
         }
     }
 
     public static function getTaxPercentage()
     {
         try {
-            return Setting::getCMSRecord(CMSSettingKey::TAX_PERCENTAGE)->value;
+            return floatval(Setting::getCMSRecord(CMSSettingKey::TAX_PERCENTAGE)->value);
         } catch (Exception $e) {
-            return 6;
+            return 6.0;
         }
+    }
+
+    public static function getAllExtrasPercentage()
+    {
+        return static::getTaxPercentage() + static::getTollPercentage();
     }
 
     /**

@@ -74,16 +74,7 @@ class DiscountGroupController extends BaseController
      */
     public function update(Request $request, DiscountGroup $discount_group)
     {
-        $steps_data = $request->get("steps_data");
-        if (is_array($steps_data)) {
-            foreach ($steps_data as $index => $step_data) {
-                if (!isset($step_data["value"]) or !isset($step_data["amount"]) or
-                    $step_data["value"] == 0 or $step_data["amount"] == 0)
-                    unset($steps_data[$index]);
-            }
-        }
-        $steps_data = json_encode($steps_data);
-        $discount_group->update(array_merge($request->all(), compact("steps_data")));
+        $discount_group->update($request->all());
         return History::redirectBack();
     }
 

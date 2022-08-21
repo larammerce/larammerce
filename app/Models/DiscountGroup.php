@@ -33,6 +33,7 @@ use stdClass;
  * @property boolean is_multi
  * @property boolean has_expiration
  * @property string steps_data
+ * @property string steps_data_object
  * @property ProductFilter[] filters
  *
  * Timestamp
@@ -89,9 +90,33 @@ class DiscountGroup extends BaseModel
         return $this->belongsToMany(ProductFilter::class, "discount_group_product_filter", "discount_group_id", "product_filter_id");
     }
 
+
     public function setStepsDataAttribute($value)
     {
-        $this->attributes["steps_data"] = $value ?: "[]";
+        $this->extra_attributes["steps_data_object"] = array_filter(array_map(function ($iter_step) {
+            return [
+                "amount" => intval($iter_step["amount"]),
+                "value" => intval($iter_step["value"])
+            ];
+        }, ($value ?? [])), function ($iter_step) {
+            return $iter_step["value"] != 0 or $iter_step["amount"] != 0;
+        });
+        $this->attributes["steps_data"] = json_encode($this->extra_attributes["steps_data_object"]);
+    }
+
+    public function getStepsDataObjectAttribute()
+    {
+        if (!isset($this->extra_attributes["steps_data_object"])) {
+            $tmp_result = json_decode($this->steps_data);
+            if (!is_array($tmp_result))
+                $tmp_result = [];
+            $this->extra_attributes["steps_data_object"] = $tmp_result;
+            $first_step = new stdClass();
+            $first_step->amount = "0";
+            $first_step->value = "{$this->value}";
+            $this->extra_attributes["steps_data_object"] = Arr::prepend($this->extra_attributes["steps_data_object"], $first_step);
+        }
+        return $this->extra_attributes["steps_data_object"];
     }
 
     /**
@@ -115,26 +140,5 @@ class DiscountGroup extends BaseModel
         }
 
         return $value;
-    }
-
-    public function getStepsDataObjectAttribute()
-    {
-        if (!isset($this->extra_attributes["steps_data_object"])) {
-            $tmp_result = json_decode($this->steps_data);
-            if (!is_array($tmp_result))
-                $tmp_result = [];
-            $this->extra_attributes["steps_data_object"] = $tmp_result;
-            $first_step = new stdClass();
-            $first_step->amount = "0";
-            $first_step->value = "{$this->value}";
-            $this->extra_attributes["steps_data_object"] = Arr::prepend($this->extra_attributes["steps_data_object"], $first_step);
-        }
-        return $this->extra_attributes["steps_data_object"];
-    }
-
-    public function setStepsDataObjectAttribute($value)
-    {
-        $this->extra_attributes["steps_data_object"] = $value;
-        $this->steps_data = json_encode($value);
     }
 }

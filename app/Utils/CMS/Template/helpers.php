@@ -91,6 +91,13 @@ if (!function_exists("unparse_url")) {
     }
 }
 
+if (!function_exists("get_all_extras_percentage")) {
+    function get_product_all_extras_percentage()
+    {
+        return \App\Utils\CMS\ProductService::getAllExtrasPercentage();
+    }
+}
+
 if (!function_exists("locale_url")) {
     function locale_url(string $normal_url): string
     {
