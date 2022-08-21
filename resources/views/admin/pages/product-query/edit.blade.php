@@ -45,6 +45,7 @@
                 <li data-id="condition" data-title="شرط" data-has-value="true">
                     <ul class="options">
                         <li data-id="eq" data-title="برابر با" data-comment="مقدار مورد نظر خود را وارد کنید."></li>
+                        <li data-id="neq" data-title="مخالف" data-comment="مقدار مورد نظر خود را وارد کنید."></li>
                         <li data-id="gt" data-title="بزرگتر از" data-comment="مقدار مورد نظر خود را وارد کنید."></li>
                         <li data-id="lt" data-title="کوچکتر از" data-comment="مقدار مورد نظر خود را وارد کنید."></li>
                         <li data-id="in" data-title="موجود در لیست"
@@ -62,7 +63,7 @@
                 <li data-id="average_rating" data-title="میانگین امتیاز"></li>
                 <li data-id="count" data-title="موجودی"></li>
                 <li data-id="has_discount" data-title="تخفیف دارد"></li>
-                <li data-id="is_important" data-title="محصول مهم"></li>
+                <li data-id="important_at" data-title="محصول مهم"></li>
                 <li data-id="priority" data-title="اولویت"></li>
             </ul>
             <ul class="hidden initial-data">

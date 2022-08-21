@@ -114,6 +114,9 @@ class ProductQuery extends BaseModel
                         case "eq" :
                             $products_query = $products_query->whereRaw(DB::raw("products.{$scope->field} = {$scope->value}"));
                             break;
+                        case "neq" :
+                            $products_query = $products_query->whereRaw(DB::raw("products.{$scope->field} != {$scope->value}"));
+                            break;
                         case "gt" :
                             $products_query = $products_query->whereRaw(DB::raw("products.{$scope->field} > {$scope->value}"));
                             break;
