@@ -34,7 +34,7 @@
 <div class="container numeric-reports">
     <div class="row">
         <div class="col-md-3">
-            <div class="numeric-report-container">
+            <div class="numeric-report-container" id="daily-sales-amount">
                 <div class="loader-layer"><i class="fa fa-4x fa-refresh fa-spin"></i></div>
                 <div class="livenow">
                     <div></div>
@@ -43,13 +43,14 @@
                 </div>
                 <h1>فروش امروز</h1>
                 <p>
-                    <span id="report-daily-amount">۱۰۰۰۰۰</span>
+                    <span class="price-data"></span>
                     <span>ریال</span>
                 </p>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="numeric-report-container">
+            <div class="numeric-report-container" id="monthly-sales-amount">
+                <div class="loader-layer"><i class="fa fa-4x fa-refresh fa-spin"></i></div>
                 <div class="livenow">
                     <div></div>
                     <div></div>
@@ -57,13 +58,14 @@
                 </div>
                 <h1>فروش ماه جاری</h1>
                 <p>
-                    <span id="report-daily-amount">۱۰۰۰۰۰</span>
+                    <span class="price-data"></span>
                     <span>ریال</span>
                 </p>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="numeric-report-container">
+            <div class="numeric-report-container" id="yearly-sales-amount">
+                <div class="loader-layer"><i class="fa fa-4x fa-refresh fa-spin"></i></div>
                 <div class="livenow">
                     <div></div>
                     <div></div>
@@ -71,16 +73,17 @@
                 </div>
                 <h1>فروش سال جاری</h1>
                 <p>
-                    <span id="report-daily-amount">۱۰۰۰۰۰</span>
+                    <span class="price-data"></span>
                     <span>ریال</span>
                 </p>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="numeric-report-container">
+            <div class="numeric-report-container" id="previous-year-sales-amount">
+                <div class="loader-layer"><i class="fa fa-4x fa-refresh fa-spin"></i></div>
                 <h1>فروش سال گذشته</h1>
                 <p>
-                    <span id="report-daily-amount">۱۰۰۰۰۰</span>
+                    <span class="price-data"></span>
                     <span>ریال</span>
                 </p>
             </div>
@@ -91,7 +94,8 @@
 <div class="container-fluid data-reports">
     <div class="row">
         <div class="col-md-12">
-            <div class="report-box">
+            <div class="report-box" id="overall-bar-chart-container">
+                <div class="loader-layer"><i class="fa fa-4x fa-refresh fa-spin"></i></div>
                 <canvas id="overall-bar-chart" height="250"></canvas>
             </div>
         </div>

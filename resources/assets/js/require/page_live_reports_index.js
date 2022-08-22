@@ -1,61 +1,102 @@
 if (window.PAGE_ID === "admin.pages.live-reports.index") {
-    require(["jquery", "chartJs"], function (jQuery, ChartJS) {
-        jQuery.ajax({
-            url: "/api/v1/live-reports/"
-        })
+    require(["jquery", "chartJs", "price_data"], function (jQuery, ChartJS) {
 
+        intervals();
+        setInterval(function () {
+            intervals();
+        }, 30000);
 
-        const labels = [
-            'January',
-            'February',
-            'March',
-            'April',
-            'May',
-            'June',
-        ];
-        const data = {
-            labels: labels,
-            datasets: [{
-                label: 'My First Dataset',
-                data: [65, 59, 80, 81, 56, 55, 40],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(255, 159, 64, 0.2)',
-                    'rgba(255, 205, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(201, 203, 207, 0.2)'
-                ],
-                borderColor: [
-                    'rgb(255, 99, 132)',
-                    'rgb(255, 159, 64)',
-                    'rgb(255, 205, 86)',
-                    'rgb(75, 192, 192)',
-                    'rgb(54, 162, 235)',
-                    'rgb(153, 102, 255)',
-                    'rgb(201, 203, 207)'
-                ],
-                borderWidth: 1
-            }]
-        };
+        fetchLiveData("#previous-year-sales-amount", "/admin/api/v1/live-reports/previous-year-sales-amount");
+        fetchOverallBarChartData();
 
-        const config = {
-            type: 'bar',
-            data: data,
-            options: {
-                aspectRatio: 5,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            },
-        };
+        function fetchLiveData(containerQuery, apiUrl) {
+            const dailySalesAmountContainer = jQuery(containerQuery);
+            if (dailySalesAmountContainer.length === 0)
+                return;
+            const loaderLayer = dailySalesAmountContainer.find(".loader-layer");
+            const priceContainer = dailySalesAmountContainer.find(".price-data");
+            loaderLayer.fadeIn();
+            jQuery.ajax({
+                url: apiUrl,
+                method: "GET"
+            }).done(function (result) {
+                priceContainer.text(result.data.amount);
+                priceContainer.formatPrice();
+                loaderLayer.fadeOut();
+            }).fail(function (error) {
 
-        const myChart = new ChartJS(
-            document.getElementById('overall-bar-chart'),
-            config
-        );
+            });
+        }
+
+        function intervals() {
+            fetchLiveData("#daily-sales-amount", "/admin/api/v1/live-reports/daily-sales-amount");
+            fetchLiveData("#monthly-sales-amount", "/admin/api/v1/live-reports/monthly-sales-amount");
+            fetchLiveData("#yearly-sales-amount", "/admin/api/v1/live-reports/yearly-sales-amount");
+        }
+
+        function fetchOverallBarChartData() {
+            const overallBarChartContainer = jQuery("#overall-bar-chart-container");
+            if (overallBarChartContainer.length === 0)
+                return;
+            const loaderLayer = overallBarChartContainer.find(".loader-layer");
+            loaderLayer.fadeIn();
+            jQuery.ajax({
+                url: "/admin/api/v1/live-reports/overall-bar-chart-data",
+                method: "GET"
+            }).done(function (result) {
+                const labels = result.data.labels;
+                const data = {
+                    labels: labels,
+                    datasets: result.data.datasets
+                };
+
+                const config = {
+                    type: 'bar',
+                    data: data,
+                    options: {
+                        aspectRatio: 5,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    // This more specific font property overrides the global property
+                                    font: {
+                                        size: 12,
+                                        family: "persiansans, sans-serif"
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            yAxes: [{
+                                pointLabels: {
+                                    font: {
+                                        family: "persiansans, sans-serif"
+                                    }
+                                }
+                            }],
+                            xAxes: [{
+                                font: {
+                                    family: "persiansans, sans-serif"
+                                }
+                            }],
+                        }
+                    },
+                };
+
+                const myChart = new ChartJS(
+                    document.getElementById('overall-bar-chart'),
+                    config
+                );
+
+                loaderLayer.fadeOut();
+            }).fail(function (error) {
+
+            });
+        }
+
+        function fetchTablesData(){
+
+        }
+
     });
 }
