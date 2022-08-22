@@ -29,7 +29,7 @@
         </div>
         <div class="col-lg-2 col-md-3 col-sm-6 col-xs-3 col">
             <div class="label">تاریخ استفاده</div>
-            <div>@if($discount_card->invoices()->count() > 0) {{jDate::forge($discount_card->invoices()->first()->created_at)->format("Y/m/d H:i:s")}} @else
+            <div>@if($discount_card->invoices()->count() > 0) {{JDate::forge($discount_card->invoices()->first()->created_at)->format("Y/m/d H:i:s")}} @else
                     - @endif</div>
         </div>
         <div class="col-lg-2 col-md-3 col-sm-6 col-xs-3 col">

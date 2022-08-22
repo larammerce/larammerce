@@ -19,7 +19,7 @@
         </div>
         <div class="col-lg-3 col-md-3 col-sm-6 col-xs-3 col">
             <div class="label">انقضا</div>
-            <div>{{$discount_group->has_expiration ? jDate::forge($discount_group->expiration_date)->format("Y/m/d") : "-"}}</div>
+            <div>{{$discount_group->has_expiration ? JDate::forge($discount_group->expiration_date)->format("Y/m/d") : "-"}}</div>
         </div>
         <div class="col-lg-2 col-md-9 col-sm-6 col-xs-12 col">
             <div class="label">عملیات</div>

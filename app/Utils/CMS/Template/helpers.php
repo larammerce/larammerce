@@ -43,7 +43,7 @@ use App\Utils\CMS\Platform\DetectService;
 use App\Utils\CMS\Setting\Logistic\LogisticService;
 use App\Utils\CMS\Setting\ShipmentCost\ShipmentCostService;
 use App\Utils\CMS\SystemMessageService;
-use App\Utils\Jalali\jDateTime;
+use App\Utils\Jalali\JDateTime;
 use App\Utils\PaymentManager\Provider;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\View\Factory;
@@ -864,7 +864,7 @@ if (!function_exists('get_years')) {
     function get_years(): array
     {
         $start_year = 1300;
-        $end_year = jDateTime::date('Y', time(), false);
+        $end_year = JDateTime::date('Y', time(), false);
         return range($start_year, $end_year);
     }
 }
@@ -1533,7 +1533,7 @@ if (!function_exists("get_logistics_schedule")) {
 if (!function_exists("day_of_week")) {
     function day_of_week(int $diff)
     {
-        return \App\Utils\Jalali\jDate::forge(\Illuminate\Support\Carbon::now()->addDay($diff))->format("%A");
+        return \App\Utils\Jalali\JDate::forge(\Illuminate\Support\Carbon::now()->addDay($diff))->format("%A");
     }
 }
 

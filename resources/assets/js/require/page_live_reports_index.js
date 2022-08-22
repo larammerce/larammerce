@@ -1,5 +1,10 @@
 if (window.PAGE_ID === "admin.pages.live-reports.index") {
-    require(["chartjs"], function (ChartJS) {
+    require(["jquery", "chartJs"], function (jQuery, ChartJS) {
+        jQuery.ajax({
+            url: "/api/v1/live-reports/"
+        })
+
+
         const labels = [
             'January',
             'February',

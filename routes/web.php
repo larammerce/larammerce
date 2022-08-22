@@ -406,7 +406,9 @@ Route::group(
             Route::post("/clip-board/copy", ["as" => "clip-board.copy", "uses" => "ClipBoardController@doCopy"]);
             Route::post("/clip-board/paste", ["as" => "clip-board.paste", "uses" => "ClipBoardController@doPaste"]);
 
-
+            Route::group(["prefix" => "live-reports", "as" => "live-reports."], function () {
+                Route::get("/", ["as" => "index", "uses" => "LiveReportsController@index"]);
+            });
         });
 
         //ShortLink
