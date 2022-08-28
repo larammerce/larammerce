@@ -18,7 +18,7 @@ use stdClass;
  */
 class SystemMessageService
 {
-    public static function addMessage($text, $parameters, $type, $colorCode)
+    public static function addMessage($text, $parameters, $type, $colorCode): void
     {
         $message = new stdClass();
         $message->text = trans($text, $parameters);
@@ -27,43 +27,43 @@ class SystemMessageService
 
         $messages = request()->session()->has('systemMessages') ?
             request()->session()->get('systemMessages') : [];
-        array_push($messages, $message);
+        $messages[] = $message;
         request()->session()->put('systemMessages', $messages);
     }
 
-    public static function hasMessages()
+    public static function hasMessages(): bool
     {
         return request()->session()->has('systemMessages');
     }
 
-    public static function getMessages()
+    public static function getMessages(): array
     {
         return request()->session()->has('systemMessages') ?
             request()->session()->get('systemMessages') : [];
     }
 
-    public static function flushMessages()
+    public static function flushMessages(): void
     {
         if (request()->session()->has('systemMessages'))
             request()->session()->forget('systemMessages');
     }
 
-    public static function addSuccessMessage($text, $parameters = [])
+    public static function addSuccessMessage($text, $parameters = []): void
     {
         self::addMessage($text, $parameters, SystemMessageType::SUCCESS, SystemMessageColor::SUCCESS);
     }
 
-    public static function addWarningMessage($text, $parameters = [])
+    public static function addWarningMessage($text, $parameters = []): void
     {
         self::addMessage($text, $parameters, SystemMessageType::WARNING, SystemMessageColor::WARNING);
     }
 
-    public static function addErrorMessage($text, $parameters = [])
+    public static function addErrorMessage($text, $parameters = []): void
     {
         self::addMessage($text, $parameters, SystemMessageType::ERROR, SystemMessageColor::ERROR);
     }
 
-    public static function addInfoMessage($text, $parameters = [])
+    public static function addInfoMessage($text, $parameters = []): void
     {
         self::addMessage($text, $parameters, SystemMessageType::INFO, SystemMessageColor::INFO);
     }

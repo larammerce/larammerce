@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\CustomerUser;
 use App\Models\User;
+use App\Utils\CMS\SystemMessageService;
 use App\Utils\Common\History;
 use App\Utils\Common\RequestService;
 use Illuminate\Contracts\Foundation\Application;
@@ -55,6 +56,8 @@ class CustomerUserController extends BaseController
 
         if ($customer->user->saveFinManCustomer())
             $customer->update(['is_active' => true]);
+        else
+            SystemMessageService::addErrorMessage("messages.customer_user.activation_failed");
 
         return redirect()->route('admin.customer-user.edit');
     }
@@ -105,6 +108,8 @@ class CustomerUserController extends BaseController
     {
         if ($customer_user->user->saveFinManCustomer())
             $customer_user->update(['is_active' => true]);
+        else
+            SystemMessageService::addErrorMessage("messages.customer_user.activation_failed");
         return History::redirectBack();
     }
 
