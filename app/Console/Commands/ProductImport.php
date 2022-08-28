@@ -16,7 +16,7 @@ class ProductImport extends Command
      *
      * @var string
      */
-    protected $signature = 'products:import';
+    protected $signature = 'products:import {--with-dirs}';
 
     /**
      * The console command description.
@@ -35,13 +35,43 @@ class ProductImport extends Command
         parent::__construct();
     }
 
-    /**
-     * Execute the console command.
-     *
-     * @return int
-     * @throws InvalidArgumentException
-     */
     public function handle()
+    {
+        if ($this->option("with-dirs")) {
+            $this->importDirs();
+        }
+
+        $this->importProducts();
+
+        return 0;
+    }
+
+    private function importProducts()
+    {
+        $products_root_dir = base_path("data/output/");
+
+        foreach (scandir($products_root_dir) as $index => $products_sub_dir) {
+            $sub_dir_full_path = $products_root_dir . $products_sub_dir;
+            if ($products_sub_dir == "menu" or str_starts_with($products_sub_dir, ".") or is_file($sub_dir_full_path)) {
+                continue;
+            }
+
+            $data_file_path = $sub_dir_full_path . "/data.json";
+            if (!is_file($data_file_path)) {
+                echo "No data file exists in $data_file_path\n";
+                continue;
+            }
+
+            $data = json_decode(file_get_contents($data_file_path));
+            if (!isset($data->code)) {
+                echo "The product data file is old and must not be added to the database: $data_file_path \n";
+                continue;
+            }
+            dd($data);
+        }
+    }
+
+    private function importDirs()
     {
         $menu_file_dir = base_path("data/output/menu/");
 
@@ -71,8 +101,6 @@ class ProductImport extends Command
             }
 
         }
-
-        return 0;
     }
 
     private function createProductDirectory(stdClass $node, Directory|Model $directory)
