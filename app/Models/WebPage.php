@@ -18,8 +18,10 @@ use App\Utils\CMS\Template\RelativeBladeType;
 use App\Utils\CMS\Template\TemplateService;
 use App\Utils\Common\ImageService;
 use App\Utils\Common\RequestService;
+use App\Utils\Translation\Traits\Translatable;
 use DateTime;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Yangqi\Htmldom\Htmldom;
 
@@ -43,7 +45,7 @@ use Yangqi\Htmldom\Htmldom;
  */
 class WebPage extends BaseModel implements ImageContract, SeoableContract
 {
-    use Seoable;
+    use Seoable, Translatable;
 
     protected $table = 'web_pages';
     protected $fillable = [
@@ -52,7 +54,13 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
 
     protected static array $SORTABLE_FIELDS = ['id', 'blade_name', 'created_at'];
     protected static array $SEARCHABLE_FIELDS = ['blade_name', 'data'];
-
+    protected static array $TRANSLATABLE_FIELDS = [
+        "seo_title" => ["text", "textarea:normal"],
+        "seo_keywords" => ["text", "textarea:normal"],
+        "seo_description" => ["text", "textarea:normal"],
+        "data" => ["text", "custom"]
+    ];
+    protected static string $TRANSLATION_EDIT_FORM = "admin.pages.web-page.translate";
 
     private $contents;
 
@@ -60,6 +68,26 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
     {
         $this->contents = [];
         parent::__construct($attributes);
+    }
+
+    public function getBladeNameAttribute()
+    {
+        $locale = $this->getDefaultLocale();
+        $blade_name = $this->attributes["blade_name"];
+        $blade_path = TemplateService::getBladePath($blade_name);
+        if ($locale !== null) {
+            $tmp_blade_name = $blade_name . "___locale_{$locale}";
+            $tmp_blade_path = TemplateService::getBladePath($tmp_blade_name);
+            if (!file_exists($tmp_blade_path))
+                TemplateService::copyBlade($blade_path, $tmp_blade_path);
+            return $tmp_blade_name;
+        }
+        return $blade_name;
+    }
+
+    public function setDataAttribute($data): void
+    {
+        $this->attributes["data"] = $this->fillData($data);
     }
 
     /*
@@ -149,42 +177,36 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
         return 'web_page';
     }
 
-    public function save(array $options = [])
+    public function fillData(array $data): string
     {
         if (isset($this->id) and $this->id != null) {
             $this->loadContents();
-            foreach (request()->all() as $attrName => $attrValue) {
-                if (strpos($attrName, "data__") !== false) {
-                    $attrNameParts = explode("__", $attrName);
-                    $contentId = $attrNameParts[3];
-                    if (key_exists($contentId, $this->contents)) {
-                        $attrValueType = RequestService::getType($attrValue);
-                        if ($attrValueType === RequestService::FILE_ATTRIBUTE) {
-                            $tmpImage = ImageService::saveImage("not_categorized", $attrName);
-                            $this->contents[$contentId]->{Str::camel("set_" . $attrNameParts[2])}(
-                                $tmpImage->destinationPath . '/' . $tmpImage->name);
-                        } else if ($attrValueType === RequestService::TEXT_ATTRIBUTE) {
-                            $this->contents[$contentId]->{Str::camel("set_" . $attrNameParts[2])}($attrValue);
+            foreach ($data as $content_id => $values) {
+                if (key_exists($content_id, $this->contents)) {
+                    foreach ($values as $attr_name => $attr_value) {
+                        $attr_value_type = RequestService::getType($attr_value);
+                        if ($attr_value_type === RequestService::FILE_ATTRIBUTE) {
+                            $tmp_image = ImageService::saveImage("not_categorized", file: $attr_value);
+                            $this->contents[$content_id]->{Str::camel("set_" . $attr_name)}(
+                                $tmp_image->destinationPath . '/' . $tmp_image->name);
+                        } else if ($attr_value_type === RequestService::TEXT_ATTRIBUTE) {
+                            $this->contents[$content_id]->{Str::camel("set_" . $attr_name)}($attr_value);
                         }
                     }
                 }
             }
-            $this->data = serialize($this->contents);
-            $this->saveBladeContents();
+            $this->saveBladeContents($this->contents);
+            return serialize($this->contents);
         }
-        return parent::save($options);
+        return serialize([]);
     }
 
 
     /*
      * Helper Methods
      */
-    /**
-     * @return bool
-     */
     private function loadContents()
     {
-        $result = true;
         if (count(is_countable($this->contents) ? $this->contents : []) == 0) {
             if ($this->data != null and strlen($this->data) > 0) {
                 try {
@@ -197,188 +219,182 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
             }
         }
         $this->loadBladeContents();
-        return $result;
     }
 
     private function loadBladeContents()
     {
-        $tmpContents = $this->contents;
+        $tmp_contents = $this->contents;
         $this->contents = [];
         if ($this->blade_name != null and strlen($this->blade_name) > 0) {
-            $bladePath = TemplateService::getBladePath($this->blade_name);
-            $bladeContent = TemplateService::getBladeContent($bladePath);
+            $blade_path = TemplateService::getBladePath($this->blade_name);
+            $bladeContent = TemplateService::getBladeContent($blade_path);
             $html = new Htmldom($bladeContent);
-            $contentTags = $html->find("[" . Directives::CONTENT . "]");
+            $content_tags = $html->find("[" . Directives::CONTENT . "]");
 
-            foreach (RelativeBladeType::values() as $relativeBladePostfix) {
-                $relativeBladePath = TemplateService::getBladePath($this->blade_name . $relativeBladePostfix);
+            foreach (RelativeBladeType::values() as $relative_blade_postfix) {
+                $relativeBladePath = TemplateService::getBladePath($this->blade_name . $relative_blade_postfix);
                 $relativeBladeContent = TemplateService::getBladeContent($relativeBladePath);
                 if ($relativeBladeContent != "") {
                     $relativeHtml = new Htmldom($relativeBladeContent);
                     $relativeContentTags = $relativeHtml->find("[" . Directives::CONTENT . "]");
-                    $contentTags = array_merge($contentTags, $relativeContentTags);
+                    $content_tags = array_merge($content_tags, $relativeContentTags);
                 }
             }
-            $this->loadContentTags($contentTags, $tmpContents);
+            $this->loadContentTags($content_tags, $tmp_contents);
         }
     }
 
-    private function loadContentTags($contentTags, $firstContents)
+    private function loadContentTags($content_tags, $first_contents)
     {
-        foreach ($contentTags as $contentTag) {
-            $contentType = $contentTag->attr[Directives::CONTENT_TYPE];
-            $contentId = $contentTag->attr[Directives::CONTENT];
-            $contentTitle = $contentTag->attr[Directives::TITLE];
+        foreach ($content_tags as $content_tag) {
+            $contentType = $content_tag->attr[Directives::CONTENT_TYPE];
+            $content_id = $content_tag->attr[Directives::CONTENT];
+            $content_title = $content_tag->attr[Directives::TITLE];
             //TODO: fix the issue with old content id's with changed content structure.
             if ($contentType != null and strlen($contentType) != 0
-                and $contentId != null and strlen($contentId) != 0
-                and $contentTitle != null and strlen($contentTitle) != 0) {
-                if (!key_exists($contentId, $firstContents)) {
+                and $content_id != null and strlen($content_id) != 0
+                and $content_title != null and strlen($content_title) != 0) {
+                if (!key_exists($content_id, $first_contents)) {
                     if ($contentType === ContentTypes::TEXT) {
-                        $content = trim($contentTag->innertext);
-                        if ((isset($contentTag->attr[Directives::UNSHARED])
-                            and $contentTag->attr[Directives::UNSHARED] == "true"))
-                            $content = get_unshared_content($contentId, $this);
-                        $newText = new Text($contentId, $contentTitle, $content);
-                        $this->contents[$contentId] = $newText;
+                        $content = trim($content_tag->innertext);
+                        if ((isset($content_tag->attr[Directives::UNSHARED])
+                            and $content_tag->attr[Directives::UNSHARED] == "true"))
+                            $content = get_unshared_content($content_id, $this);
+                        $newText = new Text($content_id, $content_title, $content);
+                        $this->contents[$content_id] = $newText;
 
                     } else if ($contentType === ContentTypes::RICH_TEXT) {
-                        $content = trim($contentTag->innertext);
-                        if ((isset($contentTag->attr[Directives::UNSHARED])
-                            and $contentTag->attr[Directives::UNSHARED] == "true"))
-                            $content = get_unshared_content($contentId, $this);
-                        $newRichText = new RichText($contentId, $contentTitle, $content);
-                        $this->contents[$contentId] = $newRichText;
+                        $content = trim($content_tag->innertext);
+                        if ((isset($content_tag->attr[Directives::UNSHARED])
+                            and $content_tag->attr[Directives::UNSHARED] == "true"))
+                            $content = get_unshared_content($content_id, $this);
+                        $newRichText = new RichText($content_id, $content_title, $content);
+                        $this->contents[$content_id] = $newRichText;
 
                     } else if ($contentType === ContentTypes::LINK) {
 
-                        $newLink = new Link($contentId, $contentTitle,
-                            trim($contentTag->href), trim($contentTag->innertext));
-                        $this->contents[$contentId] = $newLink;
+                        $newLink = new Link($content_id, $content_title,
+                            trim($content_tag->href), trim($content_tag->innertext));
+                        $this->contents[$content_id] = $newLink;
 
                     } else if ($contentType === ContentTypes::FILE) {
 
-                        $newFile = new File($contentId, $contentTitle, $contentTag->innertext, $contentTag->href);
-                        $this->contents[$contentId] = $newFile;
+                        $newFile = new File($content_id, $content_title, $content_tag->innertext, $content_tag->href);
+                        $this->contents[$content_id] = $newFile;
 
                     } else if ($contentType === ContentTypes::IMAGE) {
 
-                        $newImage = new Image($contentId, $contentTitle, $contentTag->alt, $contentTag->src);
-                        $this->contents[$contentId] = $newImage;
+                        $newImage = new Image($content_id, $content_title, $content_tag->alt, $content_tag->src);
+                        $this->contents[$content_id] = $newImage;
 
                     } else if ($contentType === ContentTypes::AUDIO) {
-                        $newAudio = new Audio($contentId, $contentTitle, $contentTag->src, $contentTag->format);
-                        $this->contents[$contentId] = $newAudio;
+                        $newAudio = new Audio($content_id, $content_title, $content_tag->src, $content_tag->format);
+                        $this->contents[$content_id] = $newAudio;
 
                     } else if ($contentType === ContentTypes::VIDEO) {
-                        $newVideo = new Video($contentId, $contentTitle, $contentTag->src, $contentTag->format,
-                            $contentTag->poster, $contentTag->controls, $contentTag->autoPlay, $contentTag->loop);
-                        $this->contents[$contentId] = $newVideo;
+                        $newVideo = new Video($content_id, $content_title, $content_tag->src, $content_tag->format,
+                            $content_tag->poster, $content_tag->controls, $content_tag->auto_play, $content_tag->loop);
+                        $this->contents[$content_id] = $newVideo;
                     }
                 } else {
-                    $this->contents[$contentId] = $firstContents[$contentId];
+                    $this->contents[$content_id] = $first_contents[$content_id];
                 }
             }
         }
     }
 
-    private function setContentTags($contentTags)
+    private function setContentTags(array $contents, array $content_tags)
     {
-        foreach ($contentTags as $contentTag) {
-            $contentType = $contentTag->attr[Directives::CONTENT_TYPE];
-            $contentId = $contentTag->attr[Directives::CONTENT];
-            $contentTitle = $contentTag->attr[Directives::TITLE];
-            if ($contentType != null and strlen($contentType) != 0
-                and $contentId != null and strlen($contentId) != 0
-                and $contentTitle != null and strlen($contentTitle) != 0
-                and key_exists($contentId, $this->contents)
-                and (isset($contentTag->attr[Directives::UNSHARED])
-                    and $contentTag->attr[Directives::UNSHARED] == "true") == false) {
-                if ($contentType === ContentTypes::TEXT) {
+        foreach ($content_tags as $content_tag) {
+            $content_type = $content_tag->attr[Directives::CONTENT_TYPE];
+            $content_id = $content_tag->attr[Directives::CONTENT];
+            $content_title = $content_tag->attr[Directives::TITLE];
+            if ($content_type != null and strlen($content_type) != 0
+                and $content_id != null and strlen($content_id) != 0
+                and $content_title != null and strlen($content_title) != 0
+                and key_exists($content_id, $contents)
+                and !(isset($content_tag->attr[Directives::UNSHARED])
+                    and $content_tag->attr[Directives::UNSHARED] == "true")) {
+                if ($content_type === ContentTypes::TEXT) {
 
-                    $contentTag->innertext = $this->contents[$contentId]->getContent();
+                    $content_tag->innertext = $contents[$content_id]->getContent();
 
-                } else if ($contentType === ContentTypes::RICH_TEXT) {
+                } else if ($content_type === ContentTypes::RICH_TEXT) {
 
-                    $contentTag->innertext = $this->contents[$contentId]->getContent();
+                    $content_tag->innertext = $contents[$content_id]->getContent();
 
-                } else if ($contentType === ContentTypes::LINK) {
+                } else if ($content_type === ContentTypes::LINK) {
 
-                    $contentTag->href = $this->contents[$contentId]->getHref();
-                    $contentTag->innertext = $this->contents[$contentId]->getContent();
+                    $content_tag->href = $contents[$content_id]->getHref();
+                    $content_tag->innertext = $contents[$content_id]->getContent();
 
-                } else if ($contentType === ContentTypes::FILE) {
+                } else if ($content_type === ContentTypes::FILE) {
 
-                    $contentTag->innertext = $this->contents[$contentId]->getName();
-                    $contentTag->href = $this->contents[$contentId]->getHref();
+                    $content_tag->innertext = $contents[$content_id]->getName();
+                    $content_tag->href = $contents[$content_id]->getHref();
 
-                } else if ($contentType === ContentTypes::IMAGE) {
+                } else if ($content_type === ContentTypes::IMAGE) {
 
-                    $contentTag->alt = $this->contents[$contentId]->getAlt();
-                    $contentTag->src = $this->contents[$contentId]->getSrc();
+                    $content_tag->alt = $contents[$content_id]->getAlt();
+                    $content_tag->src = $contents[$content_id]->getSrc();
 
-                } else if ($contentType === ContentTypes::AUDIO) {
+                } else if ($content_type === ContentTypes::AUDIO) {
 
-                    $contentTag->src = $this->contents[$contentId]->getSrc();
-                    $contentTag->format = $this->contents[$contentId]->getFormat();
+                    $content_tag->src = $contents[$content_id]->getSrc();
+                    $content_tag->format = $contents[$content_id]->getFormat();
 
-                } else if ($contentType === ContentTypes::VIDEO) {
-
-                    $contentTag->src = $this->contents[$contentId]->getSrc();
-                    $contentTag->format = $this->contents[$contentId]->getFormat();
-                    $contentTag->poster = $this->contents[$contentId]->getPoster();
-                    $contentTag->controls = $this->contents[$contentId]->hasControls();
-                    $contentTag->autoPlay = $this->contents[$contentId]->hasAutoPlay();
-                    $contentTag->loop = $this->contents[$contentId]->hasLoop();
+                } else if ($content_type === ContentTypes::VIDEO) {
+                    $content_tag->src = $contents[$content_id]->getSrc();
+                    $content_tag->format = $contents[$content_id]->getFormat();
+                    $content_tag->poster = $contents[$content_id]->getPoster();
+                    $content_tag->controls = $contents[$content_id]->hasControls();
+                    $content_tag->auto_play = $contents[$content_id]->isAutoPlay();
+                    $content_tag->loop = $contents[$content_id]->hasLoop();
                 }
             }
         }
     }
 
-    private function saveBladeContents()
+    private function saveBladeContents(array $contents)
     {
         if ($this->blade_name != null and strlen($this->blade_name) > 0) {
-            $this->updateBladeContent(TemplateService::getBladePath($this->blade_name));
-            foreach (RelativeBladeType::values() as $relativeBladePostfix) {
-                $relativeBladePath = TemplateService::getBladePath($this->blade_name . $relativeBladePostfix);
-                $this->updateBladeContent($relativeBladePath, $relativeBladePostfix);
+            $this->updateBladeContent($contents, TemplateService::getBladePath($this->blade_name));
+            foreach (RelativeBladeType::values() as $relative_blade_postfix) {
+                $relative_blade_path = TemplateService::getBladePath($this->blade_name . $relative_blade_postfix);
+                $this->updateBladeContent($contents, $relative_blade_path, $relative_blade_postfix);
             }
         }
     }
 
-    private function updateBladeContent($bladePath, $relativeBladePostfix = null)
+    private function updateBladeContent(array $contents, $blade_path, $relative_blade_postfix = null)
     {
-        $bladeContent = TemplateService::getBladeContent($bladePath);
+        $blade_content = TemplateService::getBladeContent($blade_path);
         $html = null;
-        $contentTags = null;
-        if ($bladeContent != "" and strlen($bladeContent) > 0) {
-            $html = new Htmldom($bladeContent);
-            $contentTags = $html->find("[" . Directives::CONTENT . "]");
+        $content_tags = null;
+        if ($blade_content != "" and strlen($blade_content) > 0) {
+            $html = new Htmldom($blade_content);
+            $content_tags = $html->find("[" . Directives::CONTENT . "]");
         }
-        if ($contentTags != null)
-            $this->setContentTags($contentTags);
+        if ($content_tags != null)
+            $this->setContentTags($contents, $content_tags);
         if ($html != null) {
-            $bladeName = $this->blade_name;
-            if ($relativeBladePostfix != null)
-                $bladeName .= $relativeBladePostfix;
-            TemplateService::setBladeContent(TemplateService::getViewPath($bladeName), $html);
+            $blade_name = $this->blade_name;
+            if ($relative_blade_postfix != null)
+                $blade_name .= $relative_blade_postfix;
+            TemplateService::setBladeContent(TemplateService::getViewPath($blade_name), $html);
         }
     }
 
     public function getContent($contentName)
     {
-        if ($this->loadContents() !== false) {
-            return $this->contents[$contentName];
-        }
-        return false;
+        $this->loadContents();
+        return $this->contents[$contentName];
     }
 
     public function getContents()
     {
-        if ($this->loadContents() != false) {
-            return $this->contents;
-        }
-        return false;
+        $this->loadContents();
+        return $this->contents;
     }
 
     /**

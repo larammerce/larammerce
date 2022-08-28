@@ -47,9 +47,9 @@
         </div>
         @include('admin.templates.pagination', [
             "modelName" => "WebPage",
-            "lastPage" => $webPages->lastPage(),
-            "total" => $webPages->total(),
-            "count" => $webPages->perPage(),
+            "lastPage" => $web_pages->lastPage(),
+            "total" => $web_pages->total(),
+            "count" => $web_pages->perPage(),
             "parentId" => $scope ?? null
         ])
     </div>

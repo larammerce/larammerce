@@ -171,4 +171,19 @@ class LanguageSettingService extends AbstractSettingService
         }
         return null;
     }
+
+    public static function isMultiLangSystem(): bool
+    {
+        return count(static::getEnabledLocalesFromEnvFile()) > 1;
+    }
+
+    public static function isRTLSystem(): bool
+    {
+        return in_array(app()->getLocale(), static::getRTLLocales());
+    }
+
+    public static function getRTLLocales(): array
+    {
+        return config("translation.rtl_locales");
+    }
 }

@@ -28,8 +28,8 @@ class WebPageController extends BaseController
     public function index(): Factory|View|Application
     {
         parent::setPageAttribute();
-        $webPages = WebPage::with('directory', 'tags')->paginate(WebPage::getPaginationCount());
-        return view('admin.pages.web-page.index', compact('webPages'));
+        $web_pages = WebPage::with('directory', 'tags')->paginate(WebPage::getPaginationCount());
+        return view('admin.pages.web-page.index', compact('web_pages'));
     }
 
     /**
@@ -67,9 +67,9 @@ class WebPageController extends BaseController
     {
         $web_page->load('directory', 'tags');
         if (strlen($web_page->blade_name) !== 0) {
-            return view('admin.pages.web-page.edit')->with(['webPage' => $web_page]);
+            return view('admin.pages.web-page.edit')->with(compact("web_page"));
         }
-        return view('admin.pages.web-page.initial')->with(['webPage' => $web_page]);
+        return view('admin.pages.web-page.initial')->with(compact("web_page"));
     }
 
     /**

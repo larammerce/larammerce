@@ -1368,7 +1368,25 @@ if (!function_exists('h_view')) {
             $template = $template . "_mobile";
         elseif (request()->has("app") and request("app") and view()->exists($template . "_app"))
             $template = $template . "_app";
+        if (\App\Utils\CMS\Setting\Language\LanguageSettingService::isMultiLangSystem()) {
+            $locale_template = $template . "___locale_" . app()->getLocale();
+            if (\Illuminate\Support\Facades\View::exists($locale_template))
+                $template = $locale_template;
+        }
         return view($template, $data);
+    }
+}
+
+if (!function_exists("is_multi_lang")) {
+    function is_multi_lang(): bool
+    {
+        return \App\Utils\CMS\Setting\Language\LanguageSettingService::isMultiLangSystem();
+    }
+}
+
+if(!function_exists("is_rtl")) {
+    function is_rtl(){
+        return \App\Utils\CMS\Setting\Language\LanguageSettingService::isRTLSystem();
     }
 }
 

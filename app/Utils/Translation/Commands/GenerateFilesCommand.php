@@ -2,6 +2,7 @@
 
 namespace App\Utils\Translation\Commands;
 
+use App\Utils\CMS\Setting\Language\LanguageSettingService;
 use App\Utils\Translation\TranslationService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -34,7 +35,7 @@ class GenerateFilesCommand extends Command
 
     public function handle(): int
     {
-        if (count(config("translation.locales")) > 1) {
+        if (LanguageSettingService::isMultiLangSystem()) {
             $this->alert("Starting Translation File Generator ... ");
             foreach (TranslationService::getTranslatableModels() as $class) {
                 $this->info("Try to generate files for {$class->getClassName()}");
