@@ -1,102 +1,132 @@
 if (window.PAGE_ID === "admin.pages.live-reports.index") {
-    require(["jquery", "chartJs", "price_data"], function (jQuery, ChartJS) {
+    require(["jquery", "chartJs", "underscore", "price_data"], function (jQuery, ChartJS, _) {
 
-        intervals();
-        setInterval(function () {
             intervals();
-        }, 30000);
+            setInterval(function () {
+                intervals();
+            }, 30000);
 
-        fetchLiveData("#previous-year-sales-amount", "/admin/api/v1/live-reports/previous-year-sales-amount");
-        fetchOverallBarChartData();
+            fetchLiveData("#previous-year-sales-amount", "/admin/api/v1/live-reports/previous-year-sales-amount");
+            fetchOverallBarChartData();
 
-        function fetchLiveData(containerQuery, apiUrl) {
-            const dailySalesAmountContainer = jQuery(containerQuery);
-            if (dailySalesAmountContainer.length === 0)
-                return;
-            const loaderLayer = dailySalesAmountContainer.find(".loader-layer");
-            const priceContainer = dailySalesAmountContainer.find(".price-data");
-            loaderLayer.fadeIn();
-            jQuery.ajax({
-                url: apiUrl,
-                method: "GET"
-            }).done(function (result) {
-                priceContainer.text(result.data.amount);
-                priceContainer.formatPrice();
-                loaderLayer.fadeOut();
-            }).fail(function (error) {
+            function fetchLiveData(containerQuery, apiUrl) {
+                const amountsContainer = jQuery(containerQuery);
+                if (amountsContainer.length === 0)
+                    return;
+                const loaderLayer = amountsContainer.find(".loader-layer");
+                const priceContainer = amountsContainer.find(".price-data");
+                loaderLayer.fadeIn();
+                jQuery.ajax({
+                    url: apiUrl,
+                    method: "GET"
+                }).done(function (result) {
+                    priceContainer.text(result.data.amount);
+                    priceContainer.formatPrice();
+                    loaderLayer.fadeOut();
+                }).fail(function (error) {
 
-            });
-        }
+                });
+            }
 
-        function intervals() {
-            fetchLiveData("#daily-sales-amount", "/admin/api/v1/live-reports/daily-sales-amount");
-            fetchLiveData("#monthly-sales-amount", "/admin/api/v1/live-reports/monthly-sales-amount");
-            fetchLiveData("#yearly-sales-amount", "/admin/api/v1/live-reports/yearly-sales-amount");
-        }
+            function intervals() {
+                fetchLiveData("#daily-sales-amount", "/admin/api/v1/live-reports/daily-sales-amount");
+                fetchLiveData("#monthly-sales-amount", "/admin/api/v1/live-reports/monthly-sales-amount");
+                fetchLiveData("#yearly-sales-amount", "/admin/api/v1/live-reports/yearly-sales-amount");
+            }
 
-        function fetchOverallBarChartData() {
-            const overallBarChartContainer = jQuery("#overall-bar-chart-container");
-            if (overallBarChartContainer.length === 0)
-                return;
-            const loaderLayer = overallBarChartContainer.find(".loader-layer");
-            loaderLayer.fadeIn();
-            jQuery.ajax({
-                url: "/admin/api/v1/live-reports/overall-bar-chart-data",
-                method: "GET"
-            }).done(function (result) {
-                const labels = result.data.labels;
-                const data = {
-                    labels: labels,
-                    datasets: result.data.datasets
-                };
+            function fetchOverallBarChartData() {
+                const overallBarChartContainer = jQuery("#overall-bar-chart-container");
+                if (overallBarChartContainer.length === 0)
+                    return;
+                const loaderLayer = overallBarChartContainer.find(".loader-layer");
+                loaderLayer.fadeIn();
+                jQuery.ajax({
+                    url: "/admin/api/v1/live-reports/overall-bar-chart-data",
+                    method: "GET"
+                }).done(function (result) {
+                        const labels = result.data.labels;
+                        const data = {
+                            labels: labels,
+                            datasets: result.data.datasets
+                        };
 
-                const config = {
-                    type: 'bar',
-                    data: data,
-                    options: {
-                        aspectRatio: 5,
-                        plugins: {
-                            legend: {
-                                labels: {
-                                    // This more specific font property overrides the global property
-                                    font: {
-                                        size: 12,
-                                        family: "persiansans, sans-serif"
+                        const config = {
+                            type: 'bar',
+                            data: data,
+                            options: {
+                                aspectRatio: 5,
+                                plugins: {
+                                    legend: {
+                                        labels: {
+                                            font: {
+                                                size: 12,
+                                                family: "persiansans, sans-serif"
+                                            }
+                                        }
                                     }
+                                },
+                                scales: {
+                                    yAxis: {
+                                        ticks: {
+                                            font: {
+                                                family: "persiansans, sans-serif"
+                                            }
+                                        }
+                                    },
+                                    xAxis: {
+                                        ticks: {
+                                            font: {
+                                                family: "persiansans, sans-serif"
+                                            }
+                                        }
+                                    },
                                 }
-                            }
-                        },
-                        scales: {
-                            yAxes: [{
-                                pointLabels: {
-                                    font: {
-                                        family: "persiansans, sans-serif"
-                                    }
-                                }
-                            }],
-                            xAxes: [{
-                                font: {
-                                    family: "persiansans, sans-serif"
-                                }
-                            }],
-                        }
-                    },
-                };
+                            },
+                        };
 
-                const myChart = new ChartJS(
-                    document.getElementById('overall-bar-chart'),
-                    config
-                );
+                        const myChart = new ChartJS(
+                            document.getElementById('overall-bar-chart'),
+                            config
+                        );
 
-                loaderLayer.fadeOut();
-            }).fail(function (error) {
+                        loaderLayer.fadeOut();
+                    }
+                ).fail(function (error) {
 
-            });
+                });
+            }
+
+            function fetchTablesData(containerQuery, apiUrl) {
+                const tableContainer = jQuery(containerQuery);
+                if (tableContainer.length === 0)
+                    return;
+                const loaderLayer = tableContainer.find(".loader-layer");
+                const rowTemplate = _.template(tableContainer.find(".row-template").html());
+                const rowsContainer = tableContainer.find(".data-container");
+                loaderLayer.fadeIn();
+                jQuery.ajax({
+                    url: apiUrl,
+                    method: "GET"
+                }).done(function (result) {
+                    loaderLayer.fadeOut();
+                    rowsContainer.html("");
+                    let counter = 1;
+                    result.data.rows.forEach(function (row) {
+                        const newRowEl = rowTemplate(row);
+                        setTimeout(function () {
+                            rowsContainer.append(newRowEl);
+                        }, 200 * counter);
+                        counter++;
+                    });
+                }).fail(function (error) {
+                });
+            }
+
+            fetchTablesData("#monthly-categories-table", "/admin/api/v1/live-reports/monthly-categories-sales");
+            fetchTablesData("#yearly-categories-table", "/admin/api/v1/live-reports/yearly-categories-sales");
+            fetchTablesData("#previous-year-categories-table", "/admin/api/v1/live-reports/previous-year-categories-sales");
+
         }
-
-        function fetchTablesData(){
-
-        }
-
-    });
+    )
+    ;
 }
