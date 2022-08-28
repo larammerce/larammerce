@@ -12,11 +12,10 @@ require.config({
         persianDate: '/admin_dashboard/vendor/persianDate/persian-date.min',
         persianDatepicker: '/admin_dashboard/vendor/persianDatepicker/js/persian-datepicker',
         formBuilder: '/admin_dashboard/vendor/form-builder/form-builder.min',
-        chartJs: '/admin_dashboard/vendor/chart-js/chart',
+        chartJs: '/admin_dashboard/vendor/chart-js/chart.min',
         iconPicker: '/admin_dashboard/vendor/fontIconPicker/dist/js/jquery.fonticonpicker',
         spectrum: '/admin_dashboard/vendor/spectrum/spectrum',
         toast: '/admin_dashboard/vendor/jquery-toast/jquery.toast.min',
-        chartjs: '/admin_dashboard/vendor/chartjs/chart.min'
 
     },
     shim: {

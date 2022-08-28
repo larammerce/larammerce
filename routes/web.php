@@ -406,7 +406,13 @@ Route::group(
             Route::post("/clip-board/copy", ["as" => "clip-board.copy", "uses" => "ClipBoardController@doCopy"]);
             Route::post("/clip-board/paste", ["as" => "clip-board.paste", "uses" => "ClipBoardController@doPaste"]);
 
-
+            Route::group(["prefix" => "live-reports", "as" => "live-reports."], function () {
+                Route::get("daily-sales-amount", ["as" => "get-daily-sales-amount", "uses" => "LiveReportsController@getDailySalesAmount"]);
+                Route::get("monthly-sales-amount", ["as" => "get-monthly-sales-amount", "uses" => "LiveReportsController@getMonthlySalesAmount"]);
+                Route::get("yearly-sales-amount", ["as" => "get-yearly-sales-amount", "uses" => "LiveReportsController@getYearlySalesAmount"]);
+                Route::get("previous-year-sales-amount", ["as" => "get-previous-year-sales-amount", "uses" => "LiveReportsController@getPreviousYearSalesAmount"]);
+                Route::get("overall-bar-chart-data", ["as" => "get-overall-bar-chart-data", "uses" => "LiveReportsController@getOverallBarChartData"]);
+            });
         });
 
         //ShortLink

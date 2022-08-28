@@ -17,7 +17,7 @@ use App\Utils\CMS\Template\ContentTypes;
 use App\Utils\CMS\Template\TemplateService;
 use App\Utils\Common\ImageService;
 use App\Utils\Common\TimeService;
-use App\Utils\Jalali\jDate;
+use App\Utils\Jalali\JDate;
 
 return [
 
@@ -275,7 +275,7 @@ return [
         'SortMethod' => SortMethod::class,
         'PaginationService' => PaginationService::class,
         'Directory' => Directory::class,
-        'jDate' => jDate::class,
+        'JDate' => JDate::class,
         'FormService' => FormService::class,
         'ImageService' => ImageService::class,
         'TimeService' => TimeService::class,

@@ -11,7 +11,7 @@ namespace App\Models;
 use App\Models\GlobalScopes\SortScope;
 use App\Utils\CMS\AdminRequestService;
 use App\Utils\CMS\Setting\Layout\LayoutService;
-use App\Utils\Jalali\jDate;
+use App\Utils\Jalali\JDate;
 use App\Utils\Validation\DataValidation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -109,7 +109,7 @@ abstract class BaseModel extends Model
         $parentResponse = parent::toArray();
         foreach ($parentResponse as $key => $value) {
             if (DataValidation::validateDate($value)) {
-                $parentResponse[$key . "_jalali"] = jDate::forge($value)->format("Y/m/d H:i");
+                $parentResponse[$key . "_jalali"] = JDate::forge($value)->format("Y/m/d H:i");
             }
         }
         $parentResponse["search_url"] = $this->getSearchUrl();//TODO: this should be moved to is in admin area section
