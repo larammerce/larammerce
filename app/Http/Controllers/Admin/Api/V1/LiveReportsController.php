@@ -85,7 +85,7 @@ class LiveReportsController extends BaseController
                                 });
                         });
                 })->groupBy("directories.id")
-            ->selectRaw(DB::raw("directories.id as id, directories.title as title ,sum(invoices.sum) as total_amount"))
+            ->selectRaw(DB::raw("directories.id as id, directories.title as title ,sum(invoice_rows.product_price * invoice_rows.count) as total_amount"))
             ->orderBy("total_amount", "DESC")
             ->get();
     }
