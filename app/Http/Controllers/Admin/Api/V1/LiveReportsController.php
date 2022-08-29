@@ -216,6 +216,19 @@ class LiveReportsController extends BaseController
         return MessageFactory::jsonResponse([], 200, compact("rows"));
     }
 
+    public function getLatestCustomers(): JsonResponse
+    {
+        $rows = User::where("is_customer_user", true)->orderBy("created_at", "desc")->limit(10)->get();
+        return MessageFactory::jsonResponse([], 200, compact("rows"));
+    }
+
+    public function getLatestPayedOrders(): JsonResponse
+    {
+        $rows = Invoice::with(["customer.user"])->whereIn("payment_status", [PaymentStatus::SUBMITTED, PaymentStatus::CONFIRMED, PaymentStatus::PAID_OUT])
+            ->orderBy("created_at", "desc")->limit(10)->get();
+        return MessageFactory::jsonResponse([], 200, compact("rows"));
+    }
+
     public function getModel(): ?string
     {
         return null;

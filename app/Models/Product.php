@@ -145,7 +145,8 @@ class Product extends BaseModel implements
     protected $attributes = [
         "extra_properties" => "[]"
     ];
-    //Note : color_code should not be in fillable array.
+
+
     protected $fillable = [
         "title", "latest_price", "latest_special_price", "extra_properties", "directory_id", "p_structure_id",
         "description", "code", "average_rating", "rates_count", "is_active",
@@ -377,9 +378,9 @@ class Product extends BaseModel implements
     public function setExtraPropertiesAttribute(?array $extra_properties)
     {
         $this->attributes["extra_properties"] = json_encode(array_filter($extra_properties,
-                function ($iter_property) {
-                    return $iter_property["key"] !== null;
-                }) ?? []);
+            function ($iter_property) {
+                return $iter_property["key"] !== null;
+            }) ?? []);
     }
 
     public function getExtraProperties()

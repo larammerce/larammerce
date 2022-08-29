@@ -108,7 +108,7 @@ abstract class BaseModel extends Model
     {
         $parentResponse = parent::toArray();
         foreach ($parentResponse as $key => $value) {
-            if (DataValidation::validateDate($value)) {
+            if (is_string($value) and str_ends_with($key, "_at")) {
                 $parentResponse[$key . "_jalali"] = JDate::forge($value)->format("Y/m/d H:i");
             }
         }

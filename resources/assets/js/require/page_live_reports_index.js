@@ -1,13 +1,24 @@
 if (window.PAGE_ID === "admin.pages.live-reports.index") {
-    require(["jquery", "chartJs", "underscore", "price_data"], function (jQuery, ChartJS, _) {
+    require(["jquery", "chartJs", "underscore", "price_data", "persian_number"], function (jQuery, ChartJS, _) {
 
             intervals();
             setInterval(function () {
                 intervals();
-            }, 30000);
+            }, 60 * 1000);
 
             fetchLiveData("#previous-year-sales-amount", "/admin/api/v1/live-reports/previous-year-sales-amount");
+            fetchTablesData("#monthly-categories-table", "/admin/api/v1/live-reports/monthly-categories-sales");
             fetchOverallBarChartData();
+            fetchTablesData("#yearly-categories-table", "/admin/api/v1/live-reports/yearly-categories-sales");
+            fetchTablesData("#previous-year-categories-table", "/admin/api/v1/live-reports/previous-year-categories-sales");
+
+            function intervals() {
+                fetchLiveData("#daily-sales-amount", "/admin/api/v1/live-reports/daily-sales-amount");
+                fetchLiveData("#monthly-sales-amount", "/admin/api/v1/live-reports/monthly-sales-amount");
+                fetchLiveData("#yearly-sales-amount", "/admin/api/v1/live-reports/yearly-sales-amount");
+                fetchTablesData("#latest_customers", "/admin/api/v1/live-reports/latest-customers");
+                fetchTablesData("#latest_payed_orders", "/admin/api/v1/live-reports/latest-payed-orders");
+            }
 
             function fetchLiveData(containerQuery, apiUrl) {
                 const amountsContainer = jQuery(containerQuery);
@@ -26,12 +37,6 @@ if (window.PAGE_ID === "admin.pages.live-reports.index") {
                 }).fail(function (error) {
 
                 });
-            }
-
-            function intervals() {
-                fetchLiveData("#daily-sales-amount", "/admin/api/v1/live-reports/daily-sales-amount");
-                fetchLiveData("#monthly-sales-amount", "/admin/api/v1/live-reports/monthly-sales-amount");
-                fetchLiveData("#yearly-sales-amount", "/admin/api/v1/live-reports/yearly-sales-amount");
             }
 
             function fetchOverallBarChartData() {
@@ -112,19 +117,22 @@ if (window.PAGE_ID === "admin.pages.live-reports.index") {
                     rowsContainer.html("");
                     let counter = 1;
                     result.data.rows.forEach(function (row) {
-                        const newRowEl = rowTemplate(row);
+                        console.log(row);
+                        const newRowEl = jQuery(rowTemplate({
+                            ...row,
+                            row_id: counter
+                        }));
+                        newRowEl.find(".price-data").formatPrice();
+                        newRowEl.find(".numeric-data").persianNumber();
+                        rowsContainer.append(newRowEl);
                         setTimeout(function () {
-                            rowsContainer.append(newRowEl);
-                        }, 200 * counter);
+                            newRowEl.fadeIn();
+                        }, 500 * counter);
                         counter++;
                     });
                 }).fail(function (error) {
                 });
             }
-
-            fetchTablesData("#monthly-categories-table", "/admin/api/v1/live-reports/monthly-categories-sales");
-            fetchTablesData("#yearly-categories-table", "/admin/api/v1/live-reports/yearly-categories-sales");
-            fetchTablesData("#previous-year-categories-table", "/admin/api/v1/live-reports/previous-year-categories-sales");
 
         }
     )

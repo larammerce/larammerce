@@ -148,6 +148,13 @@ body.page-reports {
                 -moz-box-shadow: 15px 18px 38px -4px rgba(130, 130, 130, 0.5);
                 box-shadow: 15px 18px 38px -4px rgba(130, 130, 130, 0.5);
                 padding: 15px;
+                position: relative;
+
+                .livenow {
+                    position: absolute;
+                    left: 15px;
+                    top: 5px;
+                }
 
                 h1 {
                     font-size: 16px;
@@ -160,7 +167,6 @@ body.page-reports {
                 .data-container {
                     height: 200px;
                     overflow-y: scroll;
-                    position: relative;
 
                     .row {
                         margin-top: 15px;

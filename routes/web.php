@@ -415,6 +415,8 @@ Route::group(
                 Route::get("monthly-categories-sales", ["as" => "get-monthly-categories-sales", "uses" => "LiveReportsController@getMonthlyCategoriesSales"]);
                 Route::get("yearly-categories-sales", ["as" => "get-yearly-categories-sales", "uses" => "LiveReportsController@getYearlyCategoriesSales"]);
                 Route::get("previous-year-categories-sales", ["as" => "get-previous-year-categories-sales", "uses" => "LiveReportsController@getPreviousYearCategoriesSales"]);
+                Route::get("latest-customers", ["as" => "get-latest-customers", "uses" => "LiveReportsController@getLatestCustomers"]);
+                Route::get("latest-payed-orders", ["as" => "get-latest-payed-orders", "uses" => "LiveReportsController@getLatestPayedOrders"]);
             });
         });
 
