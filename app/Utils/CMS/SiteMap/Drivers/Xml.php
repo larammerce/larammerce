@@ -18,9 +18,9 @@ use Exception;
 
 class Xml extends BaseDriver
 {
-    protected string $targetFile = "sitemap.xml";
+    protected string $target_file = "sitemap.xml";
 
-    protected function formatResult($result)
+    protected function formatResult()
     {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" .
             "<urlset" .
@@ -28,7 +28,7 @@ class Xml extends BaseDriver
             " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" .
             " xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9" .
             " http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\">" .
-            $result .
+            $this->result .
             "\n</urlset>";
     }
 

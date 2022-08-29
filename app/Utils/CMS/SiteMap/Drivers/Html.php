@@ -16,11 +16,11 @@ use App\Utils\CMS\SiteMap\BaseDriver;
 
 class Html extends BaseDriver
 {
-    protected string $targetFile = "sitemap.html";
+    protected string $target_file = "sitemap.html";
 
-    protected function formatResult($result)
+    protected function formatResult()
     {
-        return "<html><head><meta charset='utf-8'></head><body><ul>{$result}</ul></body></html>";
+        return "<html><head><meta charset='utf-8'></head><body><ul>{$this->result}</ul></body></html>";
     }
 
     protected function formatDirectorySection($title, $content)
@@ -30,16 +30,16 @@ class Html extends BaseDriver
 
     protected function getDirectoryTitle(Directory $directory)
     {
-        return "<a href='".str_replace("-&", '',$directory->getFrontUrl())."'>{$directory->title}</a>";
+        return "<a href='" . str_replace("-&", '', $directory->getFrontUrl()) . "'>{$directory->title}</a>";
     }
 
     protected function getProductSection(Product $product)
     {
-        return "<li><a href='".str_replace("-&", '', $product->getFrontUrl())."'>{$product->title}</a></li>";
+        return "<li><a href='" . str_replace("-&", '', $product->getFrontUrl()) . "'>{$product->title}</a></li>";
     }
 
     protected function getArticleSection(Article $article)
     {
-        return "<li><a href='".str_replace("-&", '', $article->getFrontUrl())."'>{$article->title}</a></li>";
+        return "<li><a href='" . str_replace("-&", '', $article->getFrontUrl()) . "'>{$article->title}</a></li>";
     }
 }

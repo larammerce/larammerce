@@ -13,18 +13,21 @@ use App\Models\Article;
 use App\Models\Directory;
 use App\Models\Enums\DirectoryType;
 use App\Models\Product;
+use Illuminate\Support\Collection;
 
 abstract class BaseDriver
 {
-    protected string $targetFile = "sitemap.xxx";
+    protected string $target_file = "sitemap.xxx";
     protected array $urls;
+    protected string $result;
 
     public function __construct()
     {
         $this->urls = [];
+        $this->result = "";
     }
 
-    public final function save()
+    public final function save(): void
     {
         $siteMap = $this->generate();
         file_put_contents(public_path($this->getTargetFile()), $siteMap);
@@ -32,12 +35,31 @@ abstract class BaseDriver
 
     public final function generate()
     {
-        $result = "";
         $tree = build_directories_tree();
-
         foreach ($tree as $directory)
-            $result .= $this->getDirectorySection($directory);
-        return $this->formatResult($result);
+            $this->result .= $this->getDirectorySection($directory);
+
+        Product::chunk(500,
+            /**
+             * @param Collection|Product[] $products
+             */
+            function (Collection|array $products) {
+                foreach ($products as $product) {
+                    $this->result .= $this->getProductSection($product);
+                }
+            });
+
+        Article::chunk(500,
+            /**
+             * @param Collection|Article[] $articles
+             */
+            function (Collection|array $articles) {
+                foreach ($articles as $article) {
+                    $this->result .= $this->getArticleSection($article);
+                }
+            });
+
+        return $this->formatResult();
     }
 
     protected function getDirectorySection(Directory $directory): string
@@ -54,12 +76,6 @@ abstract class BaseDriver
         if (count(is_countable($sub_directories) ? $sub_directories : []) > 0) {
             foreach ($sub_directories as $subDirectory)
                 $content .= $this->getDirectorySection($subDirectory);
-        } else if ($directory->content_type == DirectoryType::PRODUCT) {
-            foreach ($directory->products()->mainModels()->visible()->get() as $product)
-                $content .= $this->getProductSection($product);
-        } else if ($directory->content_type == DirectoryType::BLOG) {
-            foreach ($directory->articles as $article)
-                $content .= $this->getArticleSection($article);
         }
 
         return $this->formatDirectorySection($title, $content);
@@ -68,10 +84,10 @@ abstract class BaseDriver
 
     protected function getTargetFile()
     {
-        return $this->targetFile;
+        return $this->target_file;
     }
 
-    abstract protected function formatResult($result);
+    abstract protected function formatResult();
 
     abstract protected function formatDirectorySection($title, $content);
 
