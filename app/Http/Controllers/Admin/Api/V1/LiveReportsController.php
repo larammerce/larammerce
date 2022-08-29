@@ -69,8 +69,16 @@ class LiveReportsController extends BaseController
 
     private function getCategoriesSalesAmount($start_date, $end_date): \Illuminate\Support\Collection
     {
+        $head_directories = Directory::where("directory_id", null)->pluck("id")->toArray();
+
+        if (count($head_directories) == 1) {
+            $parent_id = $head_directories[0];
+        } else {
+            $parent_id = null;
+        }
+
         return DB::table("directories")
-            ->where("directories.directory_id", null)
+            ->where("directories.directory_id", $parent_id)
             ->where("directories.content_type", DirectoryType::PRODUCT)
             ->join("directory_product",
                 function ($join_l1) use ($start_date, $end_date) {
