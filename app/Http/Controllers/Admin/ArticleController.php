@@ -85,8 +85,6 @@ class ArticleController extends BaseController
         $article->attachFileTo($directory);
         $article->createReview();
 
-        SiteMapProvider::save();
-
         return redirect()->route('admin.article.index');
     }
 
@@ -131,7 +129,6 @@ class ArticleController extends BaseController
     public function destroy(Article $article): RedirectResponse
     {
         $article->delete();
-        SiteMapProvider::save();
         return History::redirectBack();
     }
 

@@ -68,7 +68,6 @@ class DirectoryController extends BaseController
         $user_role_ids = get_system_user()?->roles()->pluck('id')->toArray();
         $directory->systemRoles()->sync($user_role_ids);
 
-        SiteMapProvider::save();
         return redirect()->route('admin.directory.edit', $directory);
     }
 
@@ -135,7 +134,6 @@ class DirectoryController extends BaseController
         if ($request->hasFile('image'))
             $directory->setImagePath();
 
-        SiteMapProvider::save();
         return History::redirectBack();
     }
 
@@ -146,8 +144,6 @@ class DirectoryController extends BaseController
     {
         $parentDirectory = $directory->parentDirectory;
         $directory->delete();
-
-        SiteMapProvider::save();
 
         if ($parentDirectory)
             return redirect()->route('admin.directory.show', $parentDirectory);
