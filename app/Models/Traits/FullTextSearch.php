@@ -22,9 +22,11 @@ trait FullTextSearch
      */
     public function scopeSearch(Builder $builder, string $term): Builder
     {
-        if ($builder->exactSearch($term)->count() > 0) {
-            return $builder->exactSearch($term);
+        $parent_exact_builder = $builder->clone();
+        if ($parent_exact_builder->exactSearch($term)->count() > 0) {
+            return $parent_exact_builder->exactSearch($term);
         }
+
 
         // TODO: this method has to be modified to work with any object
         $reservedSymbols = ['-', '+', '<', '>', '@', '(', ')', '~', '٬'];
@@ -32,20 +34,28 @@ trait FullTextSearch
         $term = preg_replace("/[ ]+/", " ", $term);
         $words = static::getTermWords($term);
 
-        foreach ($words as $word)
-            if (!is_numeric($word) and strlen($word) > 1) {
-                if (static::$EXACT_SEARCH_FIELD !== null)
-                    $builder->where(static::$EXACT_SEARCH_FIELD, 'LIKE', "%$word%");
+
+        if (static::$EXACT_SEARCH_FIELD !== null) {
+            $exact_builder = $builder->clone();
+            $exact_builder = $exact_builder->where(static::$EXACT_SEARCH_FIELD, 'like', "$term%");
+            if ($exact_builder->count() > 0) {
+                return $exact_builder;
             }
 
-        if ($builder->count() > 0) {
-            return $builder;
+            $exact_builder = $builder->clone();
+            foreach ($words as $word)
+                if (!is_numeric($word) and strlen($word) > 1) {
+                    $exact_builder->where(static::$EXACT_SEARCH_FIELD, 'LIKE', "%$word%");
+                }
+            if ($exact_builder->count() > 0) {
+                return $exact_builder;
+            }
         }
 
         $columns = implode(',', static::$SEARCHABLE_FIELDS);
         $match = "MATCH ({$columns}) AGAINST (? IN BOOLEAN MODE)";
         $against = static::fullTextWildcards($term);
-        $builder->orwhereRaw($match, [$against])->orderByRaw($match . " DESC", [$against]);
+        $builder->whereRaw($match, [$against])->orderByRaw($match . " DESC", [$against]);
         if (static::$EXACT_SEARCH_ORDER_FIELD !== null)
             $builder->orderBy(static::$EXACT_SEARCH_ORDER_FIELD, 'DESC');
         return $builder;
