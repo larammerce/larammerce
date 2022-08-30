@@ -77,6 +77,14 @@ abstract class BaseModel extends Model
     protected static array $IMPORTABLE_ATTRIBUTES = [];
     protected static array $EXPORTABLE_RELATIONS = [];
 
+    public function scopeExactSearch($builder, string $term): Builder
+    {
+        foreach (static::$SEARCHABLE_FIELDS as $searchable_field) {
+            $builder->orWhere($searchable_field, 'LIKE', '%' . $term . '%');
+        }
+        return $builder;
+    }
+
     public function scopeSearch(Builder $builder, string $term): Builder
     {
         $term = preg_replace("/[ ]+/", " ", $term);
