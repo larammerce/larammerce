@@ -131,7 +131,7 @@ class ShopController extends BaseController
     {
         $products_count = request()->has("products_count") ? request()->get("products_count") : 4;
         $directories_count = request()->has("directories_count") ? request()->get("directories_count") : 3;
-        $products = Product::search(request()->get("query"))->mainModels()->visible();
+        $products = Product::search(request()->get("query"))->mainModels();
 
         $directories = Directory::where("content_type", DirectoryType::PRODUCT)->search(request()->get("query"))
             ->orWhereHas("products", function ($q) use ($products) {
