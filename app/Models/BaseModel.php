@@ -50,6 +50,10 @@ abstract class BaseModel extends Model
         'id'
     ];
 
+    protected static array $SEARCHABLE_EXACT_FIELDS = [
+        'id'
+    ];
+
     protected static ?string $EXACT_SEARCH_FIELD = null;
     protected static ?string $EXACT_SEARCH_ORDER_FIELD = null;
 
@@ -79,8 +83,8 @@ abstract class BaseModel extends Model
 
     public function scopeExactSearch($builder, string $term): Builder
     {
-        foreach (static::$SEARCHABLE_FIELDS as $searchable_field) {
-            $builder->orWhere($searchable_field, 'LIKE', '%' . $term . '%');
+        foreach (static::$SEARCHABLE_EXACT_FIELDS as $searchable_field) {
+            $builder->orWhere($searchable_field, $term);
         }
         return $builder;
     }
