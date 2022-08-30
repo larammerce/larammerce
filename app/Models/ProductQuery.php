@@ -98,7 +98,7 @@ class ProductQuery extends BaseModel
         return json_decode($this->data);
     }
 
-    public function getQuery($base_query = null): Builder
+    public function getQuery($base_query = null)
     {
         $products_query = DB::table("products");
         $data = $this->getData();
