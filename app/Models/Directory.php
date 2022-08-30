@@ -8,6 +8,7 @@ use App\Models\Interfaces\HashContract;
 use App\Models\Interfaces\ImageContract;
 use App\Models\Traits\Badgeable;
 use App\Models\Traits\Fileable;
+use App\Models\Traits\FullTextSearch;
 use App\Utils\Common\ImageService;
 use App\Utils\Translation\Traits\Translatable;
 use Exception;
@@ -72,7 +73,7 @@ use Throwable;
  */
 class Directory extends BaseModel implements ImageContract, HashContract, FileContract
 {
-    use Fileable, Badgeable, Translatable;
+    use Fileable, Badgeable, Translatable, FullTextSearch;
 
     protected static array $SORTABLE_FIELDS = ["id", "priority", "title", "created_at"];
     protected static array $SEARCHABLE_FIELDS = ["title", "url_part"];
