@@ -33,7 +33,7 @@ trait FullTextSearch
         $words = static::getTermWords($term);
 
         foreach ($words as $word)
-            if (!is_numeric($word) and strlen($word) > 2) {
+            if (!is_numeric($word) and strlen($word) > 1) {
                 if (static::$EXACT_SEARCH_FIELD !== null)
                     $builder->where(static::$EXACT_SEARCH_FIELD, 'LIKE', "%$word%");
             }
