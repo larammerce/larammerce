@@ -38,10 +38,11 @@ trait FullTextSearch
             if (!is_numeric($word) and strlen($word) > 2) {
                 if (static::$EXACT_SEARCH_FIELD !== null)
                     $builder->where(static::$EXACT_SEARCH_FIELD, 'LIKE', "%$word%");
-                if (static::$EXACT_SEARCH_FIELD !== null)
-                    $builder->orderBy(static::$EXACT_SEARCH_ORDER_FIELD, 'DESC');
             }
+
         $builder->orwhereRaw($match, [$against])->orderByRaw($match . " DESC", [$against]);
+        if (static::$EXACT_SEARCH_ORDER_FIELD !== null)
+            $builder->orderBy(static::$EXACT_SEARCH_ORDER_FIELD, 'DESC');
         return $builder;
     }
 
