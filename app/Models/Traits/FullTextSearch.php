@@ -30,16 +30,21 @@ trait FullTextSearch
         $reservedSymbols = ['-', '+', '<', '>', '@', '(', ')', '~', '٬'];
         $term = str_replace($reservedSymbols, '', $term);
         $term = preg_replace("/[ ]+/", " ", $term);
-        $columns = implode(',', static::$SEARCHABLE_FIELDS);
-        $against = static::fullTextWildcards($term);
-        $match = "MATCH ({$columns}) AGAINST (? IN BOOLEAN MODE)";
         $words = static::getTermWords($term);
+
         foreach ($words as $word)
             if (!is_numeric($word) and strlen($word) > 2) {
                 if (static::$EXACT_SEARCH_FIELD !== null)
                     $builder->where(static::$EXACT_SEARCH_FIELD, 'LIKE', "%$word%");
             }
 
+        if ($builder->count() > 0) {
+            return $builder;
+        }
+
+        $columns = implode(',', static::$SEARCHABLE_FIELDS);
+        $match = "MATCH ({$columns}) AGAINST (? IN BOOLEAN MODE)";
+        $against = static::fullTextWildcards($term);
         $builder->orwhereRaw($match, [$against])->orderByRaw($match . " DESC", [$against]);
         if (static::$EXACT_SEARCH_ORDER_FIELD !== null)
             $builder->orderBy(static::$EXACT_SEARCH_ORDER_FIELD, 'DESC');
