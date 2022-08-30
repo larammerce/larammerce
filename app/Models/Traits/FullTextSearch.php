@@ -22,8 +22,8 @@ trait FullTextSearch
      */
     public function scopeSearch(Builder $builder, string $term): Builder
     {
-        if ($builder->exactSearch($term, 1)->count() > 0) {
-            return $builder->exactSearch($term, 1);
+        if ($builder->exactSearch($term)->count() > 0) {
+            return $builder->exactSearch($term);
         }
 
         // TODO: this method has to be modified to work with any object
