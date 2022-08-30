@@ -89,7 +89,7 @@ abstract class BaseModel extends Model
         return $builder;
     }
 
-    public function scopeSearch(Builder $builder, string $term): Builder
+    public function scopeSearch(Builder $builder, string $term, int $exactness = 0): Builder
     {
         $term = preg_replace("/[ ]+/", " ", $term);
         $termParts = explode(" ", $term);

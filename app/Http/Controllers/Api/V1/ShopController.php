@@ -133,7 +133,7 @@ class ShopController extends BaseController
         $directories_count = request()->has("directories_count") ? request()->get("directories_count") : 3;
         $products = Product::search(request()->get("query"))->mainModels();
 
-        $directories = Directory::where("content_type", DirectoryType::PRODUCT)->search(request()->get("query"))
+        $directories = Directory::where("content_type", DirectoryType::PRODUCT)->search(request()->get("query"), 1)
             ->orWhereHas("products", function ($q) use ($products) {
                 $q->whereIn("id", $products->pluck("id"));
             })->take($directories_count)->get();

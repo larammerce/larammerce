@@ -20,13 +20,12 @@ trait FullTextSearch
      * @param string $term
      * @return Builder
      */
-    public function scopeSearch(Builder $builder, string $term): Builder
+    public function scopeSearch(Builder $builder, string $term, int $exactness = 0): Builder
     {
         $parent_exact_builder = $builder->clone();
-        if ($parent_exact_builder->exactSearch($term)->count() > 0) {
+        if ($parent_exact_builder->exactSearch($term)->count() > 0 or $exactness == 3) {
             return $parent_exact_builder->exactSearch($term);
         }
-
 
         // TODO: this method has to be modified to work with any object
         $reservedSymbols = ['-', '+', '<', '>', '@', '(', ')', '~', '٬'];
@@ -38,7 +37,7 @@ trait FullTextSearch
         if (static::$EXACT_SEARCH_FIELD !== null) {
             $exact_builder = $builder->clone();
             $exact_builder = $exact_builder->where(static::$EXACT_SEARCH_FIELD, 'like', "$term%");
-            if ($exact_builder->count() > 0) {
+            if ($exact_builder->count() > 0 or $exactness == 2) {
                 return $exact_builder;
             }
 
@@ -47,7 +46,7 @@ trait FullTextSearch
                 if (!is_numeric($word) and strlen($word) > 1) {
                     $exact_builder->where(static::$EXACT_SEARCH_FIELD, 'LIKE', "%$word%");
                 }
-            if ($exact_builder->count() > 0) {
+            if ($exact_builder->count() > 0 or $exactness == 1) {
                 return $exact_builder;
             }
         }
