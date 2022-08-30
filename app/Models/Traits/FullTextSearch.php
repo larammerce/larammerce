@@ -18,27 +18,28 @@ trait FullTextSearch
      *
      * @param Builder $builder
      * @param string $term
+     * @param int $exactness
      * @return Builder
      */
     public function scopeSearch(Builder $builder, string $term, int $exactness = 0): Builder
     {
         $parent_exact_builder = $builder->clone();
-        if ($parent_exact_builder->exactSearch($term)->count() > 0 or $exactness == 3) {
-            return $parent_exact_builder->exactSearch($term);
-        }
 
-        // TODO: this method has to be modified to work with any object
         $reservedSymbols = ['-', '+', '<', '>', '@', '(', ')', '~', '٬'];
         $term = str_replace($reservedSymbols, '', $term);
-        $term = preg_replace("/[ ]+/", " ", $term);
+        $term = preg_replace("/ +/", " ", $term);
         $words = static::getTermWords($term);
 
 
         if (static::$EXACT_SEARCH_FIELD !== null) {
             $exact_builder = $builder->clone();
             $exact_builder = $exact_builder->where(static::$EXACT_SEARCH_FIELD, 'like', "$term%");
-            if ($exact_builder->count() > 0 or $exactness == 2) {
+            if ($exactness == 2 or $exact_builder->count() > 0) {
                 return $exact_builder;
+            }
+
+            if ($exactness == 3 or $parent_exact_builder->exactSearch($term)->count() > 0) {
+                return $parent_exact_builder->exactSearch($term);
             }
 
             $exact_builder = $builder->clone();
@@ -46,7 +47,7 @@ trait FullTextSearch
                 if (!is_numeric($word) and strlen($word) > 1) {
                     $exact_builder->where(static::$EXACT_SEARCH_FIELD, 'LIKE', "%$word%");
                 }
-            if ($exact_builder->count() > 0 or $exactness == 1) {
+            if ($exactness == 1 or $exact_builder->count() > 0) {
                 return $exact_builder;
             }
         }
