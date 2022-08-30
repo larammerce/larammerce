@@ -73,7 +73,7 @@ use Throwable;
  */
 class Directory extends BaseModel implements ImageContract, HashContract, FileContract
 {
-    use Fileable, Badgeable, Translatable, FullTextSearch;
+    use Fileable, Badgeable, Translatable;
 
     protected static array $SORTABLE_FIELDS = ["id", "priority", "title", "created_at"];
     protected static array $SEARCHABLE_FIELDS = ["title", "url_part"];
