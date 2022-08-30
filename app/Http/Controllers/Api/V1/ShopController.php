@@ -11,6 +11,8 @@ namespace App\Http\Controllers\Api\V1;
 use App\Models\Directory;
 use App\Models\Enums\DirectoryType;
 use App\Models\Product;
+use App\Models\ProductFilter;
+use App\Models\ProductQuery;
 use App\Models\Rate;
 use App\Utils\CMS\ProductService;
 use App\Utils\Common\MessageFactory;
@@ -42,15 +44,30 @@ class ShopController extends BaseController
     /**
      * @rules(directory_id="exists:directories,id", price_range="array", values="array|min:1",
      *     colors="array",values.*.*="exists:p_structure_attr_values,id", colors.*="exists:colors,id",
-     *     sort.method="in:ASC,DESC,asc,desc", product_ids.*="exists:products,id")
+     *     sort.method="in:ASC,DESC,asc,desc", product_ids.*="exists:products,id", product_query_id="exists:product_queries,id",
+     *     product_filter_id="exists:product_filters,id", product_query_identifier="exists:product_queries,identifier",
+     *     product_filter_identifier="exists:product_filters,identifier")
      * @description(return="products[]", request_method="POST", comment="this api will filter products according to selected options")
      */
     public function filterProducts()
     {
-        if (request()->has("directory_id"))
+        if (request()->has("product_query_id")) {
+            $product_query = ProductQuery::find(request()->get("product_query_id"));
+            $products = $product_query->getQuery();
+        } else if (request()->has("product_query_identifier")) {
+            $product_query = ProductQuery::findByIdentifier(request()->get("product_query_identifier"));
+            $products = $product_query->getQuery();
+        } else if (request()->has("product_filter_id")) {
+            $product_filter = ProductFilter::find(request()->get("product_filter_id"));
+            $products = $product_filter->getQuery();
+        } else if (request()->has("product_filter_identifier")) {
+            $product_filter = ProductFilter::find(request()->get("product_filter_identifier"));
+            $products = $product_filter->getQuery();
+        } else if (request()->has("directory_id")) {
             $products = Directory::find(request("directory_id"))->leafProducts();
-        else
+        } else {
             $products = Product::query();
+        }
 
         if (request()->has("query"))
             $products = $products->search(request("query"));

@@ -9,6 +9,7 @@
 namespace App\Models;
 
 use DateTime;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -97,7 +98,7 @@ class ProductQuery extends BaseModel
         return json_decode($this->data);
     }
 
-    public function getQuery($base_query = null)
+    public function getQuery($base_query = null): Builder
     {
         $products_query = DB::table("products");
         $data = $this->getData();
