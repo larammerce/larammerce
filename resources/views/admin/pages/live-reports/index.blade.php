@@ -41,25 +41,6 @@
 </div>
 <div class="container-fluid data-reports">
     <div class="row">
-        <div class="col-md-12">
-            <div class="report-box" id="overall-bar-chart-container">
-                <div class="loader-layer"><i class="fa fa-4x fa-refresh fa-spin"></i></div>
-                <canvas id="overall-bar-chart" height="250"></canvas>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-4">
-            @include("admin.pages.live-reports._report_table_box", ["id" => "monthly-categories-table", "title" => "پر فروش و کم فروش ترین دسته بندی‌های ماه جاری", "is_live" => false])
-        </div>
-        <div class="col-md-4">
-            @include("admin.pages.live-reports._report_table_box", ["id" => "yearly-categories-table", "title" => "پر فروش و کم فروش ترین دسته بندی‌های سال جاری", "is_live" => false])
-        </div>
-        <div class="col-md-4">
-            @include("admin.pages.live-reports._report_table_box", ["id" => "previous-year-categories-table", "title" => "پر فروش و کم فروش ترین دسته‌بندی‌های سال گذشته", "is_live" => false])
-        </div>
-    </div>
-    <div class="row">
         <div class="col-md-4">
             @include("admin.pages.live-reports._report_table_box", ["id" => "latest_customers", "title" => "آخرین مشتریان ثبت نام شده", "row_el" =>
             "<div class=\"row\" style=\"display: none;\">
@@ -82,6 +63,25 @@
             <div class=\"col-md-2 col-amount\"><span class=\"price-data\"><%- sum %></span> ریال</div>
             <div class=\"col-md-1 col-amount\"><a href=\"/admin/invoice/<%- id %>\" class=\"btn btn-sm btn-success\" target=\"_blank\"><i class=\"fa fa-eye\"></i></a></div>
             </div>"])
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="report-box" id="overall-bar-chart-container">
+                <div class="loader-layer"><i class="fa fa-4x fa-refresh fa-spin"></i></div>
+                <canvas id="overall-bar-chart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            @include("admin.pages.live-reports._report_table_box", ["id" => "monthly-categories-table", "title" => "پر فروش و کم فروش ترین دسته بندی‌های ماه جاری", "is_live" => false])
+        </div>
+        <div class="col-md-4">
+            @include("admin.pages.live-reports._report_table_box", ["id" => "yearly-categories-table", "title" => "پر فروش و کم فروش ترین دسته بندی‌های سال جاری", "is_live" => false])
+        </div>
+        <div class="col-md-4">
+            @include("admin.pages.live-reports._report_table_box", ["id" => "previous-year-categories-table", "title" => "پر فروش و کم فروش ترین دسته‌بندی‌های سال گذشته", "is_live" => false])
         </div>
     </div>
     <div class="row" style="margin-bottom: 20px;"></div>
