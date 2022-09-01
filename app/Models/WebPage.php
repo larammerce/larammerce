@@ -21,6 +21,8 @@ use App\Utils\Common\RequestService;
 use App\Utils\Translation\Traits\Translatable;
 use DateTime;
 use Exception;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Yangqi\Htmldom\Htmldom;
@@ -37,6 +39,8 @@ use Yangqi\Htmldom\Htmldom;
  * @property DateTime created_at
  * @property DateTime updated_at
  *
+ * @property array contents
+ *
  * @property Directory directory
  * @property Tag[] tags
  *
@@ -51,6 +55,7 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
     protected $fillable = [
         'directory_id', 'blade_name', 'data', 'seo_title', 'seo_keywords', 'seo_description',
     ];
+    protected array $cached_attributes;
 
     protected static array $SORTABLE_FIELDS = ['id', 'blade_name', 'created_at'];
     protected static array $SEARCHABLE_FIELDS = ['blade_name', 'data'];
@@ -62,12 +67,31 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
     ];
     protected static string $TRANSLATION_EDIT_FORM = "admin.pages.web-page.translate";
 
-    private $contents;
-
     public function __construct(array $attributes = [])
     {
-        $this->contents = [];
+        $this->cached_attributes["contents"] = [];
         parent::__construct($attributes);
+    }
+
+    public function getContentsAttribute(): array
+    {
+        if (count(is_countable($this->cached_attributes["contents"]) ? $this->cached_attributes["contents"] : []) == 0) {
+            if ($this->data != null and strlen($this->data) > 0) {
+                try {
+                    $this->cached_attributes["contents"] = unserialize($this->data);
+                } catch (Exception $e) {
+                    $this->cached_attributes["contents"] = [];
+                }
+            } else {
+                $this->cached_attributes["contents"] = [];
+            }
+        }
+        return $this->cached_attributes["contents"];
+    }
+
+    public function setContentsAttribute($contents): void
+    {
+        $this->cached_attributes["contents"] = $contents;
     }
 
     public function getBladeNameAttribute()
@@ -90,35 +114,16 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
         $this->attributes["data"] = $this->fillData($data);
     }
 
-    /*
-     * Relation Methods
-     */
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function directory()
+    public function directory(): BelongsTo
     {
-        return $this->belongsTo('\\App\\Models\\Directory', 'directory_id');
+        return $this->belongsTo(Directory::class, 'directory_id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany
-     */
-    public function tags()
+    public function tags(): MorphToMany
     {
-        return $this->morphToMany('\\App\\Models\\Tag', 'taggable');
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 
-
-    /*
-     * Scope Methods
-     */
-
-
-    /*
-     * OverWritten Methods
-     */
     public function delete()
     {
         $this->tags()->detach();
@@ -138,11 +143,6 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
             return $this->seo_title;
         return $this->directory->title;
     }
-
-
-    /*
-    * Image Methods
-    */
 
     public function hasImage()
     {
@@ -177,10 +177,16 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
         return 'web_page';
     }
 
+    public function save(array $options = []): bool
+    {
+        $this->saveBladeContents();
+        return parent::save($options);
+    }
+
     public function fillData(array $data): string
     {
         if (isset($this->id) and $this->id != null) {
-            $this->loadContents();
+            $this->loadBladeContents();
             foreach ($data as $content_id => $values) {
                 if (key_exists($content_id, $this->contents)) {
                     foreach ($values as $attr_name => $attr_value) {
@@ -195,30 +201,9 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
                     }
                 }
             }
-            $this->saveBladeContents($this->contents);
             return serialize($this->contents);
         }
         return serialize([]);
-    }
-
-
-    /*
-     * Helper Methods
-     */
-    private function loadContents()
-    {
-        if (count(is_countable($this->contents) ? $this->contents : []) == 0) {
-            if ($this->data != null and strlen($this->data) > 0) {
-                try {
-                    $this->contents = unserialize($this->data);
-                } catch (Exception $e) {
-                    $this->contents = [];
-                }
-            } else {
-                $this->contents = [];
-            }
-        }
-        $this->loadBladeContents();
     }
 
     private function loadBladeContents()
@@ -355,13 +340,13 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
         }
     }
 
-    private function saveBladeContents(array $contents)
+    private function saveBladeContents()
     {
         if ($this->blade_name != null and strlen($this->blade_name) > 0) {
-            $this->updateBladeContent($contents, TemplateService::getBladePath($this->blade_name));
+            $this->updateBladeContent($this->contents, TemplateService::getBladePath($this->blade_name));
             foreach (RelativeBladeType::values() as $relative_blade_postfix) {
                 $relative_blade_path = TemplateService::getBladePath($this->blade_name . $relative_blade_postfix);
-                $this->updateBladeContent($contents, $relative_blade_path, $relative_blade_postfix);
+                $this->updateBladeContent($this->contents, $relative_blade_path, $relative_blade_postfix);
             }
         }
     }
@@ -387,41 +372,31 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
 
     public function getContent($contentName)
     {
-        $this->loadContents();
         return $this->contents[$contentName];
     }
 
-    public function getContents()
-    {
-        $this->loadContents();
-        return $this->contents;
-    }
-
-    /**
-     * @return string
-     */
     public function getSearchUrl(): string
     {
         return '';
     }
 
-    public function getFrontUrl()
+    public function getFrontUrl(): string
     {
         return $this->directory->getFrontUrl();
     }
 
-    public function getSeoDescription()
+    public function getSeoDescription(): string
     {
         return $this->seo_description;
     }
 
-    public function getSeoKeywords()
+    public function getSeoKeywords(): string
     {
         return $this->seo_keywords;
     }
 
 
-    public function isImageLocal()
+    public function isImageLocal(): bool
     {
         return true;
     }
