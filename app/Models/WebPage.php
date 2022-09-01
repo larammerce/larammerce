@@ -385,12 +385,12 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
         return $this->directory->getFrontUrl();
     }
 
-    public function getSeoDescription(): string
+    public function getSeoDescription(): ?string
     {
         return $this->seo_description;
     }
 
-    public function getSeoKeywords(): string
+    public function getSeoKeywords(): ?string
     {
         return $this->seo_keywords;
     }
