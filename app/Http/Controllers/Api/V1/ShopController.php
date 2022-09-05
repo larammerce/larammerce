@@ -134,9 +134,13 @@ class ShopController extends BaseController
         $products = Product::search(request()->get("query"))->mainModels();
 
         $directories = Directory::where("content_type", DirectoryType::PRODUCT)->search(request()->get("query"), 1)
-            ->orWhereHas("products", function ($q) use ($products) {
-                $q->whereIn("id", $products->pluck("id"));
-            })->take($directories_count)->get();
+            ->take($directories_count)->get();
+
+        foreach ($directories as $directory) {
+            $directory->title = implode(" > ", array_map(function ($iter_directory) {
+                return $iter_directory["title"];
+            }, $directory->getParentDirectories()->toArray()));
+        }
 
         $products = $products->orderBy("priority", "ASC")->take($products_count)->get();
 
