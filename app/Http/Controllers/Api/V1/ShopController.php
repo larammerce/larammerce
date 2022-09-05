@@ -70,7 +70,7 @@ class ShopController extends BaseController
             $products = Product::query();
         }
 
-        $products->selectRaw(DB::raw("IF(products.count > 0, 1 , 0) as has_price"));
+        $products->selectRaw(DB::raw("IF(products.latest_price > 0, 1 , 0) as has_price"));
 
         if (request()->has("query"))
             $products = $products->search(request("query"));
