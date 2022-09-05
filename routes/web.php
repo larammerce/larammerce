@@ -412,6 +412,7 @@ Route::group(
                 Route::get("yearly-sales-amount", ["as" => "get-yearly-sales-amount", "uses" => "LiveReportsController@getYearlySalesAmount"]);
                 Route::get("previous-year-sales-amount", ["as" => "get-previous-year-sales-amount", "uses" => "LiveReportsController@getPreviousYearSalesAmount"]);
                 Route::get("overall-bar-chart-data", ["as" => "get-overall-bar-chart-data", "uses" => "LiveReportsController@getOverallBarChartData"]);
+                Route::get("overall-sales-bar-chart-data", ["as" => "get-overall-sales-bar-chart-data", "uses" => "LiveReportsController@getOverallSalesBarChartData"]);
                 Route::get("monthly-categories-sales", ["as" => "get-monthly-categories-sales", "uses" => "LiveReportsController@getMonthlyCategoriesSales"]);
                 Route::get("yearly-categories-sales", ["as" => "get-yearly-categories-sales", "uses" => "LiveReportsController@getYearlyCategoriesSales"]);
                 Route::get("previous-year-categories-sales", ["as" => "get-previous-year-categories-sales", "uses" => "LiveReportsController@getPreviousYearCategoriesSales"]);

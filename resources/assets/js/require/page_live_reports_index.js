@@ -8,7 +8,8 @@ if (window.PAGE_ID === "admin.pages.live-reports.index") {
 
             fetchLiveData("#previous-year-sales-amount", "/admin/api/v1/live-reports/previous-year-sales-amount");
             fetchTablesData("#monthly-categories-table", "/admin/api/v1/live-reports/monthly-categories-sales");
-            fetchOverallBarChartData();
+            fetchOverallBarChartData("#overall-bar-chart", "/admin/api/v1/live-reports/overall-bar-chart-data");
+            fetchOverallBarChartData("#overall-sales-bar-chart", "/admin/api/v1/live-reports/overall-sales-bar-chart-data");
             fetchTablesData("#yearly-categories-table", "/admin/api/v1/live-reports/yearly-categories-sales");
             fetchTablesData("#previous-year-categories-table", "/admin/api/v1/live-reports/previous-year-categories-sales");
 
@@ -39,14 +40,14 @@ if (window.PAGE_ID === "admin.pages.live-reports.index") {
                 });
             }
 
-            function fetchOverallBarChartData() {
-                const overallBarChartContainer = jQuery("#overall-bar-chart-container");
+            function fetchOverallBarChartData(containerQuery, apiUrl) {
+                const overallBarChartContainer = jQuery(containerQuery);
                 if (overallBarChartContainer.length === 0)
                     return;
                 const loaderLayer = overallBarChartContainer.find(".loader-layer");
                 loaderLayer.fadeIn();
                 jQuery.ajax({
-                    url: "/admin/api/v1/live-reports/overall-bar-chart-data",
+                    url: apiUrl,
                     method: "GET"
                 }).done(function (result) {
                         const labels = result.data.labels;
@@ -90,7 +91,7 @@ if (window.PAGE_ID === "admin.pages.live-reports.index") {
                         };
 
                         const myChart = new ChartJS(
-                            document.getElementById('overall-bar-chart'),
+                            overallBarChartContainer.find("canvas"),
                             config
                         );
 
@@ -155,7 +156,6 @@ if (window.PAGE_ID === "admin.pages.live-reports.index") {
                                 }],
                             }
                         };
-                        console.log(config);
                         const pieChart = new ChartJS(
                             chartContainer,
                             config
