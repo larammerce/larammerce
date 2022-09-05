@@ -96,6 +96,8 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
 
     public function getBladeNameAttribute()
     {
+        if (!isset($this->attributes["blade_name"]))
+            return null;
         $locale = $this->getDefaultLocale();
         $blade_name = $this->attributes["blade_name"];
         $blade_path = TemplateService::getBladePath($blade_name);
