@@ -75,13 +75,13 @@
     </div>
     <div class="row">
         <div class="col-md-4">
-            @include("admin.pages.live-reports._report_table_box", ["id" => "monthly-categories-table", "title" => "پر فروش و کم فروش ترین دسته بندی‌های ماه جاری", "is_live" => false])
+            @include("admin.pages.live-reports._report_table_box", ["id" => "monthly-categories-table", "title" => "پر فروش و کم فروش ترین دسته بندی‌های ماه جاری", "is_live" => false, "with_cart" => true])
         </div>
         <div class="col-md-4">
-            @include("admin.pages.live-reports._report_table_box", ["id" => "yearly-categories-table", "title" => "پر فروش و کم فروش ترین دسته بندی‌های سال جاری", "is_live" => false])
+            @include("admin.pages.live-reports._report_table_box", ["id" => "yearly-categories-table", "title" => "پر فروش و کم فروش ترین دسته بندی‌های سال جاری", "is_live" => false, "with_cart" => true])
         </div>
         <div class="col-md-4">
-            @include("admin.pages.live-reports._report_table_box", ["id" => "previous-year-categories-table", "title" => "پر فروش و کم فروش ترین دسته‌بندی‌های سال گذشته", "is_live" => false])
+            @include("admin.pages.live-reports._report_table_box", ["id" => "previous-year-categories-table", "title" => "پر فروش و کم فروش ترین دسته‌بندی‌های سال گذشته", "is_live" => false, "with_cart" => true])
         </div>
     </div>
     <div class="row" style="margin-bottom: 20px;"></div>

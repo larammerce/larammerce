@@ -103,11 +103,24 @@ if (window.PAGE_ID === "admin.pages.live-reports.index") {
 
             function fetchTablesData(containerQuery, apiUrl) {
                 const tableContainer = jQuery(containerQuery);
+                const fullColorSet = [
+                    "rgb(249, 65, 68)",
+                    "rgb(243, 114, 44)",
+                    "rgb(248, 150, 30)",
+                    "rgb(249, 199, 79)",
+                    "rgb(144, 190, 109)",
+                    "rgb(67, 170, 139)",
+                    "rgb(142, 202, 230)",
+                    "rgb(18, 103, 130)",
+                    "rgb(2, 48, 71)",
+
+                ];
                 if (tableContainer.length === 0)
                     return;
                 const loaderLayer = tableContainer.find(".loader-layer");
                 const rowTemplate = _.template(tableContainer.find(".row-template").html());
                 const rowsContainer = tableContainer.find(".data-container");
+                const chartContainer = tableContainer.find(".chart-container canvas");
                 loaderLayer.fadeIn();
                 jQuery.ajax({
                     url: apiUrl,
@@ -117,7 +130,6 @@ if (window.PAGE_ID === "admin.pages.live-reports.index") {
                     rowsContainer.html("");
                     let counter = 1;
                     result.data.rows.forEach(function (row) {
-                        console.log(row);
                         const newRowEl = jQuery(rowTemplate({
                             ...row,
                             row_id: counter
@@ -130,6 +142,25 @@ if (window.PAGE_ID === "admin.pages.live-reports.index") {
                         }, 500 * counter);
                         counter++;
                     });
+
+                    if (chartContainer.length > 0) {
+                        const config = {
+                            type: 'pie',
+                            data: {
+                                labels: result.data.rows.map((iterRow) => (iterRow.title)),
+                                datasets: [{
+                                    backgroundColor: fullColorSet.slice(0, result.data.rows.length),
+                                    data: result.data.rows.map((iterRow) => (iterRow.total_amount)),
+                                    hoverOffset: 4
+                                }],
+                            }
+                        };
+                        console.log(config);
+                        const pieChart = new ChartJS(
+                            chartContainer,
+                            config
+                        );
+                    }
                 }).fail(function (error) {
                 });
             }

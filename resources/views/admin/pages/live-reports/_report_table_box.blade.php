@@ -19,6 +19,11 @@
          !!}
     </script>
     <div class="loader-layer"><i class="fa fa-4x fa-refresh fa-spin"></i></div>
+    @if($with_cart ?? false)
+        <div class="chart-container">
+            <canvas height="250"></canvas>
+        </div>
+    @endif
     <div class="data-container">
     </div>
 </div>
