@@ -16,6 +16,7 @@ use App\Models\ProductQuery;
 use App\Models\Rate;
 use App\Utils\CMS\ProductService;
 use App\Utils\Common\MessageFactory;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -69,6 +70,8 @@ class ShopController extends BaseController
             $products = Product::query();
         }
 
+        $products->selectRaw(DB::raw("IF(products.count > 0, 1 , 0) as has_price"));
+
         if (request()->has("query"))
             $products = $products->search(request("query"));
 
@@ -109,7 +112,7 @@ class ShopController extends BaseController
                 $query->whereIn("color_id", request("colors"));
             });
 
-        $products = $products->orderBy("is_active", "DESC");
+        $products = $products->orderBy("is_active", "DESC")->orderBy("has_price", "DESC");
         $sort_data = explode(":", config("cms.general.product_sort"));
         if (request()->has("sort")) {
             $sort_data[0] = request("sort.field");
