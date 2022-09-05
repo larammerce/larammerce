@@ -54,23 +54,21 @@ class ShopController extends BaseController
     {
         if (request()->has("product_query_id")) {
             $product_query = ProductQuery::find(request()->get("product_query_id"));
-            $products = $product_query->getQuery();
+            $products = $product_query->getQuery()->selectRaw(DB::raw("IF(products.latest_price > 0, 1 , 0) as has_price, products.*"));
         } else if (request()->has("product_query_identifier")) {
             $product_query = ProductQuery::findByIdentifier(request()->get("product_query_identifier"));
-            $products = $product_query->getQuery();
+            $products = $product_query->getQuery()->selectRaw(DB::raw("IF(products.latest_price > 0, 1 , 0) as has_price, products.*"));
         } else if (request()->has("product_filter_id")) {
             $product_filter = ProductFilter::find(request()->get("product_filter_id"));
-            $products = $product_filter->getQuery();
+            $products = $product_filter->getQuery()->selectRaw(DB::raw("IF(products.latest_price > 0, 1 , 0) as has_price, products.*"));
         } else if (request()->has("product_filter_identifier")) {
             $product_filter = ProductFilter::find(request()->get("product_filter_identifier"));
-            $products = $product_filter->getQuery();
+            $products = $product_filter->getQuery()->selectRaw(DB::raw("IF(products.latest_price > 0, 1 , 0) as has_price, products.*"));
         } else if (request()->has("directory_id")) {
-            $products = Directory::find(request("directory_id"))->leafProducts();
+            $products = Directory::find(request("directory_id"))->leafProducts()->selectRaw(DB::raw("IF(products.latest_price > 0, 1 , 0) as has_price"));
         } else {
-            $products = Product::query();
+            $products = Product::query()->selectRaw(DB::raw("IF(products.latest_price > 0, 1 , 0) as has_price, products.*"));
         }
-
-        $products->selectRaw(DB::raw("IF(products.latest_price > 0, 1 , 0) as has_price"));
 
         if (request()->has("query"))
             $products = $products->search(request("query"));
