@@ -42,7 +42,7 @@
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12" @roleinput($product,
         "title")>
         <span class="label">عنوان</span>
-        <input class="form-control input-sm" name="title" value="{{ $product->title }}" maxlength="62">
+        <input class="form-control input-sm" name="title" value="{{ $product->title }}" maxlength="100">
     </div>
     <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
         <span class="label">متن اعلان محصول</span>

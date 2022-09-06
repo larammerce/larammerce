@@ -37,7 +37,7 @@
                     <span class="label">@lang("structures.attributes.".$name) (@lang('language.id.'.$lang_id))</span>
                     <input class="form-control input-sm" name="{{$name}}"
                            value="@if($translatable_object->translate($lang_id) != null){{ $translatable_object->translate($lang_id)->$name }} @endif"
-                           maxlength="62">
+                           maxlength="100">
                 </div>
             @elseif($type == "textarea:normal")
                 <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
