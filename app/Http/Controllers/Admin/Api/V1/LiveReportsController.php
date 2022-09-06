@@ -11,6 +11,7 @@ use App\Utils\Common\MessageFactory;
 use App\Utils\Jalali\JDateTime;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class LiveReportsController extends BaseController
@@ -93,7 +94,7 @@ class LiveReportsController extends BaseController
         ];
     }
 
-    private function getCategoriesSalesAmount($start_date, $end_date): \Illuminate\Support\Collection
+    private function getCategoriesSalesAmount($start_date, $end_date): Collection
     {
         $head_directories = Directory::where("directory_id", null)->pluck("id")->toArray();
 
@@ -277,6 +278,44 @@ class LiveReportsController extends BaseController
         $rows = Invoice::with(["customer.user"])->whereIn("payment_status", [PaymentStatus::SUBMITTED, PaymentStatus::CONFIRMED, PaymentStatus::PAID_OUT])
             ->orderBy("created_at", "desc")->limit(10)->get();
         return MessageFactory::jsonResponse([], 200, compact("rows"));
+    }
+
+    public function getCategoriesAvailability(): JsonResponse
+    {
+        $labels = [];
+        $datasets = [
+            [
+                "label" => "ناموجود",
+                "backgroundColor" => "rgb(255, 87, 87)",
+                "borderColor" => "rgb(110, 11, 4)",
+                "data" => []
+            ],
+            [
+                "label" => "موجود",
+                "backgroundColor" => "rgb(84, 247, 103)",
+                "borderColor" => "rgb(39, 92, 11)",
+                "data" => []
+            ]
+
+        ];
+
+        $raw_results = DB::select(DB::raw("select count(directories.id) as `count`, directories.title, directories.id, products.is_active as is_active from directories, directory_product, products where directories.directory_id is null and directories.id = directory_product.directory_id and products.id = directory_product.product_id group by directories.id, products.is_active order by directories.id"));
+        $counter = 0;
+        $id_index = [];
+
+        foreach ($raw_results as $raw_result) {
+            if (!isset($id_index[$raw_result->id])) {
+                $id_index[$raw_result->id] = $counter;
+                $counter++;
+                $labels[] = $raw_result->title;
+                $datasets[0]["data"][] = 0;
+                $datasets[1]["data"][] = 0;
+            }
+            $curr_index = $id_index[$raw_result->id];
+            $datasets[$raw_result->is_active]["data"][$curr_index] = $raw_result->count;
+        }
+
+        return MessageFactory::jsonResponse([], 200, compact("labels", "datasets"));
     }
 
     public function getModel(): ?string
