@@ -318,10 +318,10 @@ class Product extends BaseModel implements
     public function getHasDiscountAttribute(): bool
     {
         try {
-            return (!AdminRequestService::isInAdminArea() and $this->attributes["has_discount"] and
+            return (!AdminRequestService::isInAdminArea() and ($this->attributes["has_discount"] ?? false) and
                     (($this->attributes["latest_special_price"] != 0) or
                         ($this->is_package and $this->productPackage->getLatestSpecialPrice() != 0))) or
-                (AdminRequestService::isInAdminArea() and $this->attributes["has_discount"]);
+                (AdminRequestService::isInAdminArea() and ($this->attributes["has_discount"] ?? false));
         } catch (Exception $e) {
             return false;
         }
