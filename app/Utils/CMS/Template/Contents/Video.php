@@ -176,7 +176,7 @@ class Video extends Content
         $this->format = $tmpData->format;
         $this->poster = $tmpData->poster;
         $this->controls = $tmpData->controls;
-        $this->auto_play = $tmpData->auto_play;
+        $this->auto_play = $tmpData->auto_play ?? $tmpData->autoPlay;
         $this->loop = $tmpData->loop;
     }
 
@@ -196,7 +196,7 @@ class Video extends Content
             "id" => $this->id,
             "title" => $this->title,
             "src" => $this->src,
-            "format"=> $this->format,
+            "format" => $this->format,
             "poster" => $this->poster,
             "controls" => $this->controls,
             "auto_play" => $this->auto_play,

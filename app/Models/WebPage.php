@@ -73,7 +73,7 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
         parent::__construct($attributes);
     }
 
-    public function getContentsAttribute(): array
+    private function loadContents()
     {
         if (count(is_countable($this->cached_attributes["contents"]) ? $this->cached_attributes["contents"] : []) == 0) {
             if ($this->data != null and strlen($this->data) > 0) {
@@ -86,7 +86,18 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
                 $this->cached_attributes["contents"] = [];
             }
         }
+    }
+
+    public function getContentsAttribute(): array
+    {
+        $this->loadContents();
         return $this->cached_attributes["contents"];
+    }
+
+    public function putContent($key, $value)
+    {
+        $this->loadContents();
+        $this->cached_attributes["contents"][$key] = $value;
     }
 
     public function setContentsAttribute($contents): void
@@ -247,44 +258,44 @@ class WebPage extends BaseModel implements ImageContract, SeoableContract
                         if ((isset($content_tag->attr[Directives::UNSHARED])
                             and $content_tag->attr[Directives::UNSHARED] == "true"))
                             $content = get_unshared_content($content_id, $this);
-                        $newText = new Text($content_id, $content_title, $content);
-                        $this->contents[$content_id] = $newText;
+                        $new_text = new Text($content_id, $content_title, $content);
+                        $this->putContent($content_id, $new_text);
 
                     } else if ($contentType === ContentTypes::RICH_TEXT) {
                         $content = trim($content_tag->innertext);
                         if ((isset($content_tag->attr[Directives::UNSHARED])
                             and $content_tag->attr[Directives::UNSHARED] == "true"))
                             $content = get_unshared_content($content_id, $this);
-                        $newRichText = new RichText($content_id, $content_title, $content);
-                        $this->contents[$content_id] = $newRichText;
+                        $new_rich_text = new RichText($content_id, $content_title, $content);
+                        $this->putContent($content_id, $new_rich_text);
 
                     } else if ($contentType === ContentTypes::LINK) {
 
-                        $newLink = new Link($content_id, $content_title,
+                        $new_link = new Link($content_id, $content_title,
                             trim($content_tag->href), trim($content_tag->innertext));
-                        $this->contents[$content_id] = $newLink;
+                        $this->putContent($content_id, $new_link);
 
                     } else if ($contentType === ContentTypes::FILE) {
 
-                        $newFile = new File($content_id, $content_title, $content_tag->innertext, $content_tag->href);
-                        $this->contents[$content_id] = $newFile;
+                        $new_file = new File($content_id, $content_title, $content_tag->innertext, $content_tag->href);
+                        $this->putContent($content_id, $new_file);
 
                     } else if ($contentType === ContentTypes::IMAGE) {
 
-                        $newImage = new Image($content_id, $content_title, $content_tag->alt, $content_tag->src);
-                        $this->contents[$content_id] = $newImage;
+                        $new_image = new Image($content_id, $content_title, $content_tag->alt, $content_tag->src);
+                        $this->putContent($content_id, $new_image);
 
                     } else if ($contentType === ContentTypes::AUDIO) {
-                        $newAudio = new Audio($content_id, $content_title, $content_tag->src, $content_tag->format);
-                        $this->contents[$content_id] = $newAudio;
+                        $new_audio = new Audio($content_id, $content_title, $content_tag->src, $content_tag->format);
+                        $this->putContent($content_id, $new_audio);
 
                     } else if ($contentType === ContentTypes::VIDEO) {
-                        $newVideo = new Video($content_id, $content_title, $content_tag->src, $content_tag->format,
+                        $new_video = new Video($content_id, $content_title, $content_tag->src, $content_tag->format,
                             $content_tag->poster, $content_tag->controls, $content_tag->auto_play, $content_tag->loop);
-                        $this->contents[$content_id] = $newVideo;
+                        $this->putContent($content_id, $new_video);
                     }
                 } else {
-                    $this->contents[$content_id] = $first_contents[$content_id];
+                    $this->putContent($content_id, $first_contents[$content_id]);
                 }
             }
         }
