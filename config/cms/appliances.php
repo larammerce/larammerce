@@ -444,5 +444,15 @@ return [
             "route" => "admin.short-link.index"
         ],
     ],
+    //todolist appliance
+    [
+        "show_in_toolbar" => true,
+        "properties" => [
+            "id" => "todo_management",
+            "name" => "general.appliances.todo",
+            "icon" => "/admin_dashboard/images/icons/todo.png",
+            "route" => "admin.todo.index"
+        ],
+    ],
 
 ];

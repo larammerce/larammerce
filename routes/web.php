@@ -152,6 +152,9 @@ Route::group(
         //CustomerAddress
         Route::resource("customer-address", "CustomerAddressController", ["as" => "admin"]);
 
+        //TodoModel
+        Route::resource("todo", "TodoController", ["as" => "admin"]);
+
         //CustomerMetaCategory
         Route::group(["prefix" => "customer-meta-category", "as" => "admin.customer-meta-category."],
             function () {

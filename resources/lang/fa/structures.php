@@ -232,6 +232,8 @@ return [
             'is_package' => 'پکیج است',
             'representative_username' => 'نام کاربری معرف',
             'representative_type' => 'نوع آشنایی با سیستم',
+            'metadata' => 'None',
+            'status' => 'وضعیت'
         ],
     'methods' =>
         [
@@ -333,6 +335,7 @@ return [
             'invoice' => 'فاکتور',
             'invoice_row' => 'سطر فاکتور',
             'language_setting' => 'None',
+            'live_reports' => 'None',
             'logistic' => 'لوجستیک',
             'modal' => 'مودال',
             'modal_route' => 'آدرس نمایش مودال',
@@ -362,6 +365,7 @@ return [
             'system_role' => 'نقش سیستمی',
             'system_user' => 'کاربر سیستمی',
             'tag' => 'تگ',
+            'todo' => 'None',
             'user' => 'کاربر',
             'web_form' => 'فرم صفحات وب',
             'web_form_message' => 'پیام فرم صفحات وب',
