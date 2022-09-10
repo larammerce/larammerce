@@ -153,6 +153,7 @@ if (!function_exists('shorten_text')) {
     }
 }
 
+//TODO: must be moved to a private helpers file.
 if (!function_exists('get_unshared_content')) {
     function get_unshared_content(string $identifier, WebPage $web_page): string
     {
@@ -281,7 +282,7 @@ if (!function_exists('customer_cart_count')) {
 }
 
 if (!function_exists('pending_invoices_count')) {
-    function pending_invoices_count(): bool
+    function pending_invoices_count(): bool|int
     {
         //TODO: I thinks this should be a model scope.
         $customer = get_customer_user();
@@ -508,6 +509,9 @@ if (!function_exists("get_directory")) {
 }
 
 if (!function_exists('get_directory_root')) {
+    /**
+     * @deprecated
+     */
     function get_directory_root($data_type = null)
     {
         return ($data_type != null and is_numeric($data_type)) ?
@@ -517,6 +521,9 @@ if (!function_exists('get_directory_root')) {
 }
 
 if (!function_exists('get_directory_children_chunk')) {
+    /**
+     * @deprecated
+     */
     function get_directory_children_chunk($directory, $chunk)
     {
         return $directory != null ?
@@ -526,6 +533,9 @@ if (!function_exists('get_directory_children_chunk')) {
 }
 
 if (!function_exists('get_directory_children')) {
+    /**
+     * @deprecated
+     */
     function get_directory_children($directory, $count = null)
     {
         return $directory != null ?
@@ -535,6 +545,9 @@ if (!function_exists('get_directory_children')) {
 }
 
 if (!function_exists('get_directory_products')) {
+    /**
+     * @deprecated
+     */
     function get_directory_products($directory, $count = null)
     {
         return $count != null ?
@@ -1384,8 +1397,9 @@ if (!function_exists("is_multi_lang")) {
     }
 }
 
-if(!function_exists("is_rtl")) {
-    function is_rtl(){
+if (!function_exists("is_rtl")) {
+    function is_rtl()
+    {
         return \App\Utils\CMS\Setting\Language\LanguageSettingService::isRTLSystem();
     }
 }
