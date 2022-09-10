@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="/admin_dashboard/vendor/bootstrap/dist/css/bootstrap-theme.min.css"/>
     <link rel="stylesheet" href="/admin_dashboard/vendor/bootstrap-rtl/dist/css/bootstrap-rtl.min.css"/>
     <link rel="stylesheet" href="/admin_dashboard/vendor/font-awesome/css/font-awesome.min.css"/>
-    <link rel="stylesheet" type="text/css" href="/admin_dashboard/css/app-22-09-05r2.css"/>
+    <link rel="stylesheet" type="text/css" href="/admin_dashboard/css/app-22-09-06.css"/>
 </head>
 <body class="page-reports">
 <header class="bs-docs-nav navbar navbar-static-top" id="top">
@@ -67,6 +67,7 @@
     </div>
     @include("admin.pages.live-reports._overall_bar_chart", ["id" => "overall-bar-chart"])
     @include("admin.pages.live-reports._overall_bar_chart", ["id" => "overall-sales-bar-chart"])
+    @include("admin.pages.live-reports._overall_bar_chart", ["id" => "categories-availability"])
     <div class="row">
         <div class="col-md-4">
             @include("admin.pages.live-reports._report_table_box", ["id" => "monthly-categories-table", "title" => "پر فروش و کم فروش ترین دسته بندی‌های ماه جاری", "is_live" => false, "with_cart" => true])
@@ -82,6 +83,6 @@
 </div>
 
 @include("admin.templates.underscore_needle")
-<script data-main="/admin_dashboard/js/all-22-09-05r2" src="/admin_dashboard/vendor/requirejs/require.js"></script>
+<script data-main="/admin_dashboard/js/all-22-09-06" src="/admin_dashboard/vendor/requirejs/require.js"></script>
 </body>
 </html>

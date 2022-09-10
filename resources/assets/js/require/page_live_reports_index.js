@@ -10,6 +10,7 @@ if (window.PAGE_ID === "admin.pages.live-reports.index") {
             fetchTablesData("#monthly-categories-table", "/admin/api/v1/live-reports/monthly-categories-sales");
             fetchOverallBarChartData("#overall-bar-chart", "/admin/api/v1/live-reports/overall-bar-chart-data");
             fetchOverallBarChartData("#overall-sales-bar-chart", "/admin/api/v1/live-reports/overall-sales-bar-chart-data");
+            fetchOverallBarChartData("#categories-availability", "/admin/api/v1/live-reports/categories-availability");
             fetchTablesData("#yearly-categories-table", "/admin/api/v1/live-reports/yearly-categories-sales");
             fetchTablesData("#previous-year-categories-table", "/admin/api/v1/live-reports/previous-year-categories-sales");
 
