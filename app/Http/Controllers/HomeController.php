@@ -29,6 +29,7 @@ class HomeController extends Controller
         $url_path = $request->path();
         $shortened_link = $url_path;
         $url_path = ($url_path != "/" ? "/" : "") . $url_path;
+        $url_last_part = last(explode("/", $url_path));
         $requested_host = $request->getHost();
         $shortened_url = config('app.shortened_host');
         if ($requested_host === $shortened_url) {
@@ -41,7 +42,7 @@ class HomeController extends Controller
         } else {
             $url_paths = [$url_path];
             $needs_landing = false;
-            if (Str::endsWith($url_path, "/landing")) {
+            if ($url_last_part === "landing") {
                 $needs_landing = true;
                 $url_paths[] = Str::replaceLast("/landing", "", $url_path);
             }
@@ -53,8 +54,8 @@ class HomeController extends Controller
                     return redirect()->guest(route('customer-auth.show-auth',
                         config("auth.default_type.customer")));
                 elseif ($directory->has_web_page) {
-                    if (str_starts_with($url_path, "/filter-")) {
-                        $filter_identifier = str_replace("/filter-", "", $url_path);
+                    if (str_starts_with($url_last_part, "filter-")) {
+                        $filter_identifier = str_replace("filter-", "", $url_last_part);
                         try {
                             $product_filter = ProductFilter::findByIdentifier($filter_identifier);
                             return $this->showProductCustomFilter($directory, $product_filter, $cart_rows);
