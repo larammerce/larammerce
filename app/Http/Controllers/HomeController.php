@@ -52,6 +52,10 @@ class HomeController extends Controller
                 if (!$directory->is_anonymously_accessible && auth()->guest())
                     return redirect()->guest(route('customer-auth.show-auth',
                         config("auth.default_type.customer")));
+                elseif ($directory->content_type == DirectoryType::PRODUCT) {
+                    return $this->showProductFilter($directory, $cart_rows, $needs_landing);
+                } elseif ($directory->content_type == DirectoryType::BLOG)
+                    return $this->showBlogList($directory);
                 elseif ($directory->has_web_page) {
                     if (str_starts_with($url_path, "/filter-")) {
                         $filter_identifier = str_replace("/filter-", "", $url_path);
@@ -63,10 +67,6 @@ class HomeController extends Controller
                         }
                     }
                     return $this->showWebPage($directory, $cart_rows);
-                } elseif ($directory->content_type == DirectoryType::BLOG)
-                    return $this->showBlogList($directory);
-                elseif ($directory->content_type == DirectoryType::PRODUCT) {
-                    return $this->showProductFilter($directory, $cart_rows, $needs_landing);
                 }
             } else {
                 $modified_url = ModifiedUrl::where("url_old", $url_path)->first();
