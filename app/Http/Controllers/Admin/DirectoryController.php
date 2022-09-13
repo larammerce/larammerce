@@ -78,13 +78,9 @@ class DirectoryController extends BaseController
     {
         ExploreService::setCurrentDirectory($directory->id);
         parent::setPageAttribute($directory->id);
-        if ($directory->directories()->count() === 0 and
-            $directory->content_type == DirectoryType::PRODUCT and
-            $directory->leafProducts()->count() > 0) {
+        if ($directory->products()->count() > 0) {
             return redirect()->to(route('admin.product.index') . '?directory_id=' . $directory->id);
-        } else if ($directory->directories()->count() === 0 and
-            $directory->content_type == DirectoryType::BLOG and
-            $directory->leafArticles()->count() > 0) {
+        } else if ($directory->articles()->count() > 0) {
             return redirect()->to(route('admin.article.index') . '?directory_id=' . $directory->id);
         }
         return view('admin.pages.directory.index')->with(
