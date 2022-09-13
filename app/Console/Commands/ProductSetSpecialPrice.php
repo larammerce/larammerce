@@ -56,27 +56,31 @@ class ProductSetSpecialPrice extends Command
              */
             function (Collection|array $products) {
                 foreach ($products as $product) {
-                    $special_price = $product->specialPrices()->orderBy("id")->first();
-                    $product->specialPrices()->delete();
-                    $product->update([
-                        "latest_special_price" => $special_price->value,
-                    ]);
+                    if ($product->specialPrices()->count() > 1) {
+                        $special_price = $product->specialPrices()->orderBy("id", "ASC")->first();
+                        $product->specialPrices()->delete();
+                        $this->info("Deleting the special prices for {$product->id}");
+                        $product->update([
+                            "latest_special_price" => $special_price->value,
+                        ]);
+                    }
                 }
             });
+
 
         foreach ($data_rows as $data_row) {
             if (!isset($data_row["code"]) or !isset($data_row["percentage"]))
                 continue;
             $product = Product::where("code", "{$data_row["code"]}")->first();
 
+            if ($product == null)
+                continue;
+
             if ($product->has_discount) {
                 $product->update([
                     "has_discount" => false
                 ]);
             }
-
-            if ($product == null)
-                continue;
 
             $product->update([
                 "latest_special_price" => ($product->latest_price * (100 - $data_row["percentage"]) / 100),
