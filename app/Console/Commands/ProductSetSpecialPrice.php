@@ -11,6 +11,7 @@ namespace App\Console\Commands;
 
 use App\Models\Product;
 use Illuminate\Console\Command;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class ProductSetSpecialPrice extends Command
@@ -49,10 +50,30 @@ class ProductSetSpecialPrice extends Command
         $file_contents = file_get_contents(base_path("data/discount_products.json"));
         $data_rows = json_decode($file_contents, true);
 
+        Product::where("has_discount", true)->chunk(100,
+            /**
+             * @param Product[] $products
+             */
+            function (Collection|array $products) {
+                foreach ($products as $product) {
+                    $special_price = $product->specialPrices()->orderBy("id")->first();
+                    $product->specialPrices()->delete();
+                    $product->update([
+                        "latest_special_price" => $special_price->value,
+                    ]);
+                }
+            });
+
         foreach ($data_rows as $data_row) {
             if (!isset($data_row["code"]) or !isset($data_row["percentage"]))
                 continue;
             $product = Product::where("code", "{$data_row["code"]}")->first();
+
+            if ($product->has_discount) {
+                $product->update([
+                    "has_discount" => false
+                ]);
+            }
 
             if ($product == null)
                 continue;
