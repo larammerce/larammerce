@@ -3,8 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Models\Directory;
+use App\Models\Product;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\Items;
 use stdClass;
@@ -63,12 +65,38 @@ class ProductImport extends Command
             }
 
             $data = json_decode(file_get_contents($data_file_path));
-            if (!isset($data->code)) {
+            if (!isset($data->code) or !isset($data->ref)) {
                 echo "The product data file is old and must not be added to the database: $data_file_path \n";
                 continue;
             }
-            dd($data);
+
+            $product = $this->findMainProductByData($data);
+            if ($product !== null) {
+                $model_id = $product->model_id;
+            }
+
+
         }
+    }
+
+    private function findMainProductByData($data): ?Product
+    {
+        $product = $this->findMainProductByRef($data->ref);
+        if ($product != null)
+            return $product;
+        foreach ($data->related_colors ?? [] as $ref) {
+            $product = $this->findMainProductByRef($ref);
+            if ($product !== null) {
+                return $product;
+            }
+        }
+        return null;
+    }
+
+    private function findMainProductByRef($ref): ?Product
+    {
+        $ref = "prodirect-" . $ref;
+        return Product::whereRaw(DB::Raw("code like \"$ref%\""))->first();
     }
 
     private function importDirs()
