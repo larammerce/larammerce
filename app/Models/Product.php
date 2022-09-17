@@ -145,7 +145,8 @@ class Product extends BaseModel implements
     protected $attributes = [
         "extra_properties" => "[]"
     ];
-    //Note : color_code should not be in fillable array.
+
+
     protected $fillable = [
         "title", "latest_price", "latest_special_price", "extra_properties", "directory_id", "p_structure_id",
         "description", "code", "average_rating", "rates_count", "is_active",
@@ -317,10 +318,10 @@ class Product extends BaseModel implements
     public function getHasDiscountAttribute(): bool
     {
         try {
-            return (!AdminRequestService::isInAdminArea() and $this->attributes["has_discount"] and
+            return (!AdminRequestService::isInAdminArea() and ($this->attributes["has_discount"] ?? false) and
                     (($this->attributes["latest_special_price"] != 0) or
                         ($this->is_package and $this->productPackage->getLatestSpecialPrice() != 0))) or
-                (AdminRequestService::isInAdminArea() and $this->attributes["has_discount"]);
+                (AdminRequestService::isInAdminArea() and ($this->attributes["has_discount"] ?? false));
         } catch (Exception $e) {
             return false;
         }

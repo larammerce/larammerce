@@ -11,9 +11,12 @@ namespace App\Http\Controllers\Api\V1;
 use App\Models\Directory;
 use App\Models\Enums\DirectoryType;
 use App\Models\Product;
+use App\Models\ProductFilter;
+use App\Models\ProductQuery;
 use App\Models\Rate;
 use App\Utils\CMS\ProductService;
 use App\Utils\Common\MessageFactory;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -42,15 +45,30 @@ class ShopController extends BaseController
     /**
      * @rules(directory_id="exists:directories,id", price_range="array", values="array|min:1",
      *     colors="array",values.*.*="exists:p_structure_attr_values,id", colors.*="exists:colors,id",
-     *     sort.method="in:ASC,DESC,asc,desc", product_ids.*="exists:products,id")
+     *     sort.method="in:ASC,DESC,asc,desc", product_ids.*="exists:products,id", product_query_id="exists:product_queries,id",
+     *     product_filter_id="exists:product_filters,id", product_query_identifier="exists:product_queries,identifier",
+     *     product_filter_identifier="exists:product_filters,identifier")
      * @description(return="products[]", request_method="POST", comment="this api will filter products according to selected options")
      */
     public function filterProducts()
     {
-        if (request()->has("directory_id"))
-            $products = Directory::find(request("directory_id"))->leafProducts();
-        else
-            $products = Product::query();
+        if (request()->has("product_query_id")) {
+            $product_query = ProductQuery::find(request()->get("product_query_id"));
+            $products = $product_query->getQuery()->selectRaw(DB::raw("IF(products.latest_price > 0, 1 , 0) as has_price, products.*"));
+        } else if (request()->has("product_query_identifier")) {
+            $product_query = ProductQuery::findByIdentifier(request()->get("product_query_identifier"));
+            $products = $product_query->getQuery()->selectRaw(DB::raw("IF(products.latest_price > 0, 1 , 0) as has_price, products.*"));
+        } else if (request()->has("product_filter_id")) {
+            $product_filter = ProductFilter::find(request()->get("product_filter_id"));
+            $products = $product_filter->getQuery()->selectRaw(DB::raw("IF(products.latest_price > 0, 1 , 0) as has_price, products.*"));
+        } else if (request()->has("product_filter_identifier")) {
+            $product_filter = ProductFilter::find(request()->get("product_filter_identifier"));
+            $products = $product_filter->getQuery()->selectRaw(DB::raw("IF(products.latest_price > 0, 1 , 0) as has_price, products.*"));
+        } else if (request()->has("directory_id")) {
+            $products = Directory::find(request("directory_id"))->leafProducts()->selectRaw(DB::raw("IF(products.latest_price > 0, 1 , 0) as has_price"));
+        } else {
+            $products = Product::query()->selectRaw(DB::raw("IF(products.latest_price > 0, 1 , 0) as has_price, products.*"));
+        }
 
         if (request()->has("query"))
             $products = $products->search(request("query"));
@@ -92,7 +110,7 @@ class ShopController extends BaseController
                 $query->whereIn("color_id", request("colors"));
             });
 
-        $products = $products->orderBy("is_active", "DESC");
+        $products = $products->orderBy("is_active", "DESC")->orderBy("has_price", "DESC");
         $sort_data = explode(":", config("cms.general.product_sort"));
         if (request()->has("sort")) {
             $sort_data[0] = request("sort.field");
@@ -114,12 +132,16 @@ class ShopController extends BaseController
     {
         $products_count = request()->has("products_count") ? request()->get("products_count") : 4;
         $directories_count = request()->has("directories_count") ? request()->get("directories_count") : 3;
-        $products = Product::search(request()->get("query"))->mainModels()->visible();
+        $products = Product::search(request()->get("query"))->mainModels();
 
-        $directories = Directory::where("content_type", DirectoryType::PRODUCT)->search(request()->get("query"))
-            ->orWhereHas("products", function ($q) use ($products) {
-                $q->whereIn("id", $products->pluck("id"));
-            })->take($directories_count)->get();
+        $directories = Directory::where("content_type", DirectoryType::PRODUCT)->search(request()->get("query"), 1)
+            ->take($directories_count)->get();
+
+        foreach ($directories as $directory) {
+            $directory->title = implode(" > ", array_map(function ($iter_directory) {
+                return $iter_directory["title"];
+            }, $directory->getParentDirectories()->toArray()));
+        }
 
         $products = $products->orderBy("priority", "ASC")->take($products_count)->get();
 

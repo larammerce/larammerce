@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 /**
  * @package App\Http\Controllers\Admin
@@ -26,6 +27,7 @@ class ModelTranslationController extends BaseController
             $related_model = $request->get('related_model');
             $related_object_id = $request->get('related_object_id');
             $translatable_object = $related_model::findOrFail($related_object_id);
+            $translatable_object->setDefaultLocale($lang_id);
             $translatable_fields = $related_model::getTranslatableFields(with_input_type: true);
             $translation_edit_form = $related_model::getTranslationEditForm();
 
@@ -58,10 +60,13 @@ class ModelTranslationController extends BaseController
         $lang_id = $request->get("lang_id");
         $related_model = $request->get('related_model');
         $translatable_object = $related_model::find($request->get('id'));
+        $translatable_object->setDefaultLocale($lang_id);
         $translatable_fields = $related_model::getTranslatableFields(with_input_type: true);
         foreach ($translatable_fields as $translatable_field => $field_type) {
             if ($field_type == "json") {
                 $translatable_object->translateOrNew($lang_id)->$translatable_field = json_encode($request->get($translatable_field));
+            } else if ($field_type == "custom") {
+                $translatable_object->translateOrNew($lang_id)->$translatable_field = $translatable_object->{Str::camel("fill_".$translatable_field)}($request->all($translatable_field)[$translatable_field] ?? "");
             } else {
                 $translatable_object->translateOrNew($lang_id)->$translatable_field = $request->get($translatable_field);
             }

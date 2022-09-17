@@ -5,7 +5,7 @@ namespace App\Utils\CMS\Setting\Logistic;
 
 
 use App\Utils\CMS\Setting\AbstractSettingModel;
-use App\Utils\Jalali\jDate;
+use App\Utils\Jalali\JDate;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use JetBrains\PhpStorm\ArrayShape;
@@ -176,7 +176,7 @@ class LogisticModel extends AbstractSettingModel
         $day = Carbon::today()->addDays($row);
         $week_day = $day->englishDayOfWeek;
         $date_string = $day->toDateString();
-        $jalali_date_string = jDate::forge($date_string)->format('%A, %d %B');
+        $jalali_date_string = JDate::forge($date_string)->format('%A, %d %B');
         $this->putDeliveryDay($week_day, $date_string, $jalali_date_string, $row);
     }
 

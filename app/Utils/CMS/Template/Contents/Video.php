@@ -16,7 +16,7 @@ class Video extends Content
     protected $format;
     protected $poster;
     protected $controls;
-    protected $autoPlay;
+    protected $auto_play;
     protected $loop;
 
     /**
@@ -27,11 +27,11 @@ class Video extends Content
      * @param string $format
      * @param string $poster
      * @param boolean $controls
-     * @param boolean $autoPlay
+     * @param boolean $auto_play
      * @param boolean $loop
      */
     public function __construct($id, $title, $src, $format, $poster, $controls = true,
-                                $autoPlay = false, $loop = false)
+                                $auto_play = false, $loop = false)
     {
         $this->id = $id;
         $this->title = $title;
@@ -39,7 +39,7 @@ class Video extends Content
         $this->format = $format;
         $this->poster = $poster;
         $this->controls = $controls;
-        $this->autoPlay = $autoPlay;
+        $this->auto_play = $auto_play;
         $this->loop = $loop;
 
     }
@@ -111,19 +111,19 @@ class Video extends Content
     }
 
     /**
-     * @param bool $autoPlay
+     * @param bool $auto_play
      */
-    public function setAutoPlay($autoPlay)
+    public function setAutoPlay($auto_play)
     {
-        $this->autoPlay = $autoPlay;
+        $this->auto_play = $auto_play;
     }
 
     /**
      * @return bool
      */
-    public function hasAutoPlay()
+    public function isAutoPlay()
     {
-        return $this->autoPlay == true;
+        return $this->auto_play == 1;
     }
 
     /**
@@ -176,7 +176,7 @@ class Video extends Content
         $this->format = $tmpData->format;
         $this->poster = $tmpData->poster;
         $this->controls = $tmpData->controls;
-        $this->autoPlay = $tmpData->autoPlay;
+        $this->auto_play = $tmpData->auto_play ?? $tmpData->autoPlay;
         $this->loop = $tmpData->loop;
     }
 
@@ -196,10 +196,10 @@ class Video extends Content
             "id" => $this->id,
             "title" => $this->title,
             "src" => $this->src,
-            "format"=> $this->format,
+            "format" => $this->format,
             "poster" => $this->poster,
             "controls" => $this->controls,
-            "autoPlay" => $this->autoPlay,
+            "auto_play" => $this->auto_play,
             "loop" => $this->loop
         ];
     }

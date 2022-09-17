@@ -43,7 +43,7 @@ use App\Utils\CMS\Platform\DetectService;
 use App\Utils\CMS\Setting\Logistic\LogisticService;
 use App\Utils\CMS\Setting\ShipmentCost\ShipmentCostService;
 use App\Utils\CMS\SystemMessageService;
-use App\Utils\Jalali\jDateTime;
+use App\Utils\Jalali\JDateTime;
 use App\Utils\PaymentManager\Provider;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\View\Factory;
@@ -153,6 +153,7 @@ if (!function_exists('shorten_text')) {
     }
 }
 
+//TODO: must be moved to a private helpers file.
 if (!function_exists('get_unshared_content')) {
     function get_unshared_content(string $identifier, WebPage $web_page): string
     {
@@ -281,7 +282,7 @@ if (!function_exists('customer_cart_count')) {
 }
 
 if (!function_exists('pending_invoices_count')) {
-    function pending_invoices_count(): bool
+    function pending_invoices_count(): bool|int
     {
         //TODO: I thinks this should be a model scope.
         $customer = get_customer_user();
@@ -508,6 +509,9 @@ if (!function_exists("get_directory")) {
 }
 
 if (!function_exists('get_directory_root')) {
+    /**
+     * @deprecated
+     */
     function get_directory_root($data_type = null)
     {
         return ($data_type != null and is_numeric($data_type)) ?
@@ -517,6 +521,9 @@ if (!function_exists('get_directory_root')) {
 }
 
 if (!function_exists('get_directory_children_chunk')) {
+    /**
+     * @deprecated
+     */
     function get_directory_children_chunk($directory, $chunk)
     {
         return $directory != null ?
@@ -526,6 +533,9 @@ if (!function_exists('get_directory_children_chunk')) {
 }
 
 if (!function_exists('get_directory_children')) {
+    /**
+     * @deprecated
+     */
     function get_directory_children($directory, $count = null)
     {
         return $directory != null ?
@@ -535,6 +545,9 @@ if (!function_exists('get_directory_children')) {
 }
 
 if (!function_exists('get_directory_products')) {
+    /**
+     * @deprecated
+     */
     function get_directory_products($directory, $count = null)
     {
         return $count != null ?
@@ -864,7 +877,7 @@ if (!function_exists('get_years')) {
     function get_years(): array
     {
         $start_year = 1300;
-        $end_year = jDateTime::date('Y', time(), false);
+        $end_year = JDateTime::date('Y', time(), false);
         return range($start_year, $end_year);
     }
 }
@@ -1368,7 +1381,26 @@ if (!function_exists('h_view')) {
             $template = $template . "_mobile";
         elseif (request()->has("app") and request("app") and view()->exists($template . "_app"))
             $template = $template . "_app";
+        if (\App\Utils\CMS\Setting\Language\LanguageSettingService::isMultiLangSystem()) {
+            $locale_template = $template . "___locale_" . app()->getLocale();
+            if (\Illuminate\Support\Facades\View::exists($locale_template))
+                $template = $locale_template;
+        }
         return view($template, $data);
+    }
+}
+
+if (!function_exists("is_multi_lang")) {
+    function is_multi_lang(): bool
+    {
+        return \App\Utils\CMS\Setting\Language\LanguageSettingService::isMultiLangSystem();
+    }
+}
+
+if (!function_exists("is_rtl")) {
+    function is_rtl()
+    {
+        return \App\Utils\CMS\Setting\Language\LanguageSettingService::isRTLSystem();
     }
 }
 
@@ -1533,7 +1565,7 @@ if (!function_exists("get_logistics_schedule")) {
 if (!function_exists("day_of_week")) {
     function day_of_week(int $diff)
     {
-        return \App\Utils\Jalali\jDate::forge(\Illuminate\Support\Carbon::now()->addDay($diff))->format("%A");
+        return \App\Utils\Jalali\JDate::forge(\Illuminate\Support\Carbon::now()->addDay($diff))->format("%A");
     }
 }
 

@@ -27,7 +27,7 @@ class ExcelController extends BaseController
         ini_set("max_execution_time", -1);
         $fields = json_decode($request->get('exporting_fields'), true);
         $relations = json_decode($request->get('exporting_relations'), true);
-        if (count($fields) > 0 || count($relations) > 0) {
+        if (count($fields ?? []) > 0 || count($relations ?? []) > 0) {
             $model_name = $request->get('model_name');
             ExcelCacheService::update($model_name, $fields, $relations);
             $file_name = get_model_entity_name($model_name) . '.xlsx';

@@ -97,7 +97,7 @@ return [
     | The rtl locales that change the direction of website design.
     |
     */
-    "rtl_locates" => ["fa"],
+    "rtl_locates" => ["fa", "ar"],
 
     /*
     |--------------------------------------------------------------------------

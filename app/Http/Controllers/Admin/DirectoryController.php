@@ -68,7 +68,6 @@ class DirectoryController extends BaseController
         $user_role_ids = get_system_user()?->roles()->pluck('id')->toArray();
         $directory->systemRoles()->sync($user_role_ids);
 
-        SiteMapProvider::save();
         return redirect()->route('admin.directory.edit', $directory);
     }
 
@@ -79,13 +78,9 @@ class DirectoryController extends BaseController
     {
         ExploreService::setCurrentDirectory($directory->id);
         parent::setPageAttribute($directory->id);
-        if ($directory->directories()->count() === 0 and
-            $directory->content_type == DirectoryType::PRODUCT and
-            $directory->leafProducts()->count() > 0) {
+        if ($directory->products()->count() > 0) {
             return redirect()->to(route('admin.product.index') . '?directory_id=' . $directory->id);
-        } else if ($directory->directories()->count() === 0 and
-            $directory->content_type == DirectoryType::BLOG and
-            $directory->leafArticles()->count() > 0) {
+        } else if ($directory->articles()->count() > 0) {
             return redirect()->to(route('admin.article.index') . '?directory_id=' . $directory->id);
         }
         return view('admin.pages.directory.index')->with(
@@ -135,7 +130,6 @@ class DirectoryController extends BaseController
         if ($request->hasFile('image'))
             $directory->setImagePath();
 
-        SiteMapProvider::save();
         return History::redirectBack();
     }
 
@@ -146,8 +140,6 @@ class DirectoryController extends BaseController
     {
         $parentDirectory = $directory->parentDirectory;
         $directory->delete();
-
-        SiteMapProvider::save();
 
         if ($parentDirectory)
             return redirect()->route('admin.directory.show', $parentDirectory);

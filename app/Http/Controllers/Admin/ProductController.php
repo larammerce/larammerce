@@ -98,7 +98,6 @@ class ProductController extends BaseController
         $product->createReview();
         if ($request->has("is_package") and $request->get("is_package") == 1)
             $product->productPackage()->create([]);
-        SiteMapProvider::save();
         return redirect()->route('admin.product.edit', $product);
     }
 
@@ -142,7 +141,6 @@ class ProductController extends BaseController
     public function destroy(Product $product): RedirectResponse
     {
         $product->delete();
-        SiteMapProvider::save();
         return back();
     }
 

@@ -9,6 +9,7 @@
 namespace App\Models;
 
 use DateTime;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
 /**

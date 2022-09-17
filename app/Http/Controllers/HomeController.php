@@ -8,6 +8,7 @@ use App\Models\Enums\DirectoryType;
 use App\Models\ModifiedUrl;
 use App\Models\Product;
 use App\Models\PAttr;
+use App\Models\ProductFilter;
 use App\Models\ShortLink;
 use App\Utils\CMS\ProductService;
 use Exception;
@@ -28,6 +29,7 @@ class HomeController extends Controller
         $url_path = $request->path();
         $shortened_link = $url_path;
         $url_path = ($url_path != "/" ? "/" : "") . $url_path;
+        $url_last_part = last(explode("/", $url_path));
         $requested_host = $request->getHost();
         $shortened_url = config('app.shortened_host');
         if ($requested_host === $shortened_url) {
@@ -40,7 +42,7 @@ class HomeController extends Controller
         } else {
             $url_paths = [$url_path];
             $needs_landing = false;
-            if (Str::endsWith($url_path, "/landing")) {
+            if ($url_last_part === "landing") {
                 $needs_landing = true;
                 $url_paths[] = Str::replaceLast("/landing", "", $url_path);
             }
@@ -52,11 +54,21 @@ class HomeController extends Controller
                     return redirect()->guest(route('customer-auth.show-auth',
                         config("auth.default_type.customer")));
                 elseif ($directory->content_type == DirectoryType::PRODUCT) {
+                    if (str_starts_with($url_last_part, "filter-")) {
+                        $filter_identifier = str_replace("filter-", "", $url_last_part);
+                        try {
+                            $product_filter = ProductFilter::findByIdentifier($filter_identifier);
+                            return $this->showProductCustomFilter($directory, $product_filter, $cart_rows);
+                        } catch (Exception $e) {
+                            abort(404);
+                        }
+                    }
                     return $this->showProductFilter($directory, $cart_rows, $needs_landing);
-                } elseif ($directory->content_type == DirectoryType::BLOG)
+                } elseif ($directory->content_type == DirectoryType::BLOG) {
                     return $this->showBlogList($directory);
-                elseif ($directory->has_web_page)
+                } elseif ($directory->has_web_page) {
                     return $this->showWebPage($directory, $cart_rows);
+                }
             } else {
                 $modified_url = ModifiedUrl::where("url_old", $url_path)->first();
                 if (!is_null($modified_url) and isset($modified_url->url_new) and strlen($modified_url->url_new) > 0) {
@@ -97,7 +109,7 @@ class HomeController extends Controller
 
     public function showProduct(Product $product): Factory|Application|View
     {
-        if ($product->is_visible or (get_user() != false and get_user()->is_system_user)) {
+        if ($product->is_visible or (get_user() !== false and get_user()->is_system_user)) {
             $attributes = PAttr::getProductAttributes($product);
             $blade_name = $product->productStructure->blade_name ?: 'product-single';
 
@@ -126,6 +138,15 @@ class HomeController extends Controller
         }
         return h_view("public.product-filter",
             compact("directory", "cart_rows"))->with($filter_data);
+    }
+
+    private function showProductCustomFilter(Directory $directory, ProductFilter $product_filter, $cart_rows): Factory|Application|View
+    {
+        $product_ids = $product_filter->getQuery()->mainModels()->visible()->pluck("products.id")->toArray();
+        $filter_data = ProductService::getFilterData($product_ids);
+        $web_page = $directory->webPage;
+        return h_view("public." . $web_page->blade_name,
+            compact("product_filter", "web_page", "cart_rows"))->with($filter_data);
     }
 
     private function showBlogList($directory): Factory|Application|View

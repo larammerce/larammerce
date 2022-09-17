@@ -1,6 +1,6 @@
 @extends("admin.pages.model-translation.edit")
 
-@section("extra_fields")
+@section("translation_form_footer")
     @php
         $extra_properties_trans_raw = $translatable_object?->translate($lang_id)?->extra_properties;
         $extra_properties_trans_raw = ($extra_properties_trans_raw == null or strlen($extra_properties_trans_raw) == 0) ? "[]" : $extra_properties_trans_raw;

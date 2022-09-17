@@ -15,7 +15,7 @@
 @endsection
 
 @section('form_attributes')
-    action="{{route('admin.model-translation.update')}}" method="POST"
+    action="{{route('admin.model-translation.update')}}" method="POST" enctype="multipart/form-data" form-with-hidden-checkboxes
 @endsection
 
 @section('form_body')
@@ -25,6 +25,7 @@
     <input name="lang_id" type="hidden" value="{{ $lang_id }}">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         {{ method_field('PUT') }}
+        @yield("translation_form_header")
         @foreach($translatable_fields as $name => $type)
             @if(str_starts_with($type, "input"))
                 <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
@@ -36,7 +37,7 @@
                     <span class="label">@lang("structures.attributes.".$name) (@lang('language.id.'.$lang_id))</span>
                     <input class="form-control input-sm" name="{{$name}}"
                            value="@if($translatable_object->translate($lang_id) != null){{ $translatable_object->translate($lang_id)->$name }} @endif"
-                           maxlength="62">
+                           maxlength="100">
                 </div>
             @elseif($type == "textarea:normal")
                 <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
@@ -64,7 +65,7 @@
                 </div>
             @endif
         @endforeach
-        @yield("extra_fields")
+        @yield("translation_form_footer")
     </div>
 @endsection
 

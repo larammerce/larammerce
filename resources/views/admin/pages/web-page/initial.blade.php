@@ -2,20 +2,20 @@
 
 @section('bread_crumb')
     <li><a href="{{route('admin.web-page.index')}}">صفحات وب</a></li>
-    <li class="active"><a href="{{route('admin.web-page.edit', $webPage)}}">ویرایش صفحه وب</a></li>
+    <li class="active"><a href="{{route('admin.web-page.edit', $web_page)}}">ویرایش صفحه وب</a></li>
 
 @endsection
 
 @section('form_title')ویرایش صفحه وب@endsection
 
-@section('form_attributes') action="{{route('admin.web-page.update', $webPage)}}" method="POST" @endsection
+@section('form_attributes') action="{{route('admin.web-page.update', $web_page)}}" method="POST" @endsection
 
 @section('form_body')
     {{ method_field('PUT')}}
     <input type="hidden" name="initial" value="1">
     <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
         <span class="label">عنوان</span>
-        <input class="form-control input-sm" value="{{$webPage->directory->title}}" disabled>
+        <input class="form-control input-sm" value="{{$web_page->directory->title}}" disabled>
     </div>
     <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
         <span class="label">نام بلید</span>

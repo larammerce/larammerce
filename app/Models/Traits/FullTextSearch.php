@@ -18,26 +18,46 @@ trait FullTextSearch
      *
      * @param Builder $builder
      * @param string $term
+     * @param int $exactness
      * @return Builder
      */
-    public function scopeSearch(Builder $builder, string $term): Builder
+    public function scopeSearch(Builder $builder, string $term, int $exactness = 0): Builder
     {
-        // TODO: this method has to be modified to work with any object
+        $parent_exact_builder = $builder->clone();
+
         $reservedSymbols = ['-', '+', '<', '>', '@', '(', ')', '~', '٬'];
         $term = str_replace($reservedSymbols, '', $term);
-        $term = preg_replace("/[ ]+/", " ", $term);
-        $columns = implode(',', static::$SEARCHABLE_FIELDS);
-        $against = static::fullTextWildcards($term);
-        $match = "MATCH ({$columns}) AGAINST (? IN BOOLEAN MODE)";
+        $term = preg_replace("/ +/", " ", $term);
         $words = static::getTermWords($term);
-        foreach ($words as $word)
-            if (!is_numeric($word) and strlen($word) > 2) {
-                if (static::$EXACT_SEARCH_FIELD !== null)
-                    $builder->where(static::$EXACT_SEARCH_FIELD, 'LIKE', "%$word%");
-                if (static::$EXACT_SEARCH_FIELD !== null)
-                    $builder->orderBy(static::$EXACT_SEARCH_ORDER_FIELD, 'DESC');
+
+
+        if (static::$EXACT_SEARCH_FIELD !== null) {
+            $exact_builder = $builder->clone();
+            $exact_builder = $exact_builder->where(static::$EXACT_SEARCH_FIELD, 'like', "$term%");
+            if ($exactness == 2 or $exact_builder->count() > 0) {
+                return $exact_builder;
             }
-        $builder->orwhereRaw($match, [$against])->orderByRaw($match . " DESC", [$against]);
+
+            if ($exactness == 3 or $parent_exact_builder->exactSearch($term)->count() > 0) {
+                return $parent_exact_builder->exactSearch($term);
+            }
+
+            $exact_builder = $builder->clone();
+            foreach ($words as $word)
+                if (!is_numeric($word) and strlen($word) > 1) {
+                    $exact_builder->where(static::$EXACT_SEARCH_FIELD, 'LIKE', "%$word%");
+                }
+            if ($exactness == 1 or $exact_builder->count() > 0) {
+                return $exact_builder;
+            }
+        }
+
+        $columns = implode(',', static::$SEARCHABLE_FIELDS);
+        $match = "MATCH ({$columns}) AGAINST (? IN BOOLEAN MODE)";
+        $against = static::fullTextWildcards($term);
+        $builder->whereRaw($match, [$against])->orderByRaw($match . " DESC", [$against]);
+        if (static::$EXACT_SEARCH_ORDER_FIELD !== null)
+            $builder->orderBy(static::$EXACT_SEARCH_ORDER_FIELD, 'DESC');
         return $builder;
     }
 

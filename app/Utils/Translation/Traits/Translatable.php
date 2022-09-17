@@ -2,6 +2,7 @@
 
 namespace App\Utils\Translation\Traits;
 
+use App\Utils\CMS\Setting\Language\LanguageSettingService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -24,7 +25,7 @@ trait Translatable
 
     protected static ?bool $AUTOLOAD_TRANSLATIONS = null;
     protected static ?bool $DELETE_TRANSLATIONS_CASCADE = false;
-    protected ?string $default_locale;
+    protected $default_locale;
 
     public static function getTranslatableFields(bool $with_input_type = false, bool $with_column_type = false): array
     {
@@ -140,23 +141,21 @@ trait Translatable
 
     public function getAttribute($key)
     {
-        if (count(config("translation.locales")) > 1 and
-            $this->getLocalesHelper()->current() !== config("translation.fallback_locale")) {
-            [$attribute, $locale] = $this->getAttributeAndLocale($key);
-
-            if ($this->isTranslationAttribute($attribute)) {
-                if ($this->getTranslation($locale) === null) {
-                    return $this->getAttributeValue($attribute);
-                }
-
-                if ($this->hasGetMutator($attribute)) {
-                    $this->attributes[$attribute] = $this->getAttributeOrFallback($locale, $attribute);
-
-                    return $this->getAttributeValue($attribute);
-                }
-
-                return $this->getAttributeOrFallback($locale, $attribute);
+        [$attribute, $locale] = $this->getAttributeAndLocale($key);
+        if (LanguageSettingService::isMultiLangSystem() and
+            $locale !== config("translation.fallback_locale") and
+            $this->isTranslationAttribute($attribute)) {
+            if ($this->getTranslation($locale) === null) {
+                return $this->getAttributeValue($attribute);
             }
+
+            if ($this->hasGetMutator($attribute)) {
+                $this->attributes[$attribute] = $this->getAttributeOrFallback($locale, $attribute);
+
+                return $this->getAttributeValue($attribute);
+            }
+
+            return $this->getAttributeOrFallback($locale, $attribute);
         }
 
         return parent::getAttribute($key);

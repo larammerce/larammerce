@@ -8,7 +8,7 @@
 
 namespace App\Utils\Common;
 
-use App\Utils\Jalali\jDate;
+use App\Utils\Jalali\JDate;
 
 class TimeService
 {
@@ -19,46 +19,46 @@ class TimeService
 
     public static function getCurrentDate()
     {
-        return jDate::forge()->format(self::$dateFormat);
+        return JDate::forge()->format(self::$dateFormat);
     }
 
     public static function getCurrentFormalDate()
     {
-        return jDate::forge()->format(self::$formalDateFormat);
+        return JDate::forge()->format(self::$formalDateFormat);
     }
 
     public static function getDateFrom($date)
     {
         if ($date == self::NULL_DATE)
             return '-';
-        return jDate::forge($date)->format(self::$dateFormat);
+        return JDate::forge($date)->format(self::$dateFormat);
     }
 
     public static function getFormalDateFrom($date)
     {
         if ($date == self::NULL_DATE)
             return '-';
-        return jDate::forge($date)->format(self::$formalDateFormat);
+        return JDate::forge($date)->format(self::$formalDateFormat);
     }
 
     public static function getTimeFrom($date)
     {
         if ($date == self::NULL_DATE)
             return '-';
-        return jDate::forge($date)->format(self::$timeFormat);
+        return JDate::forge($date)->format(self::$timeFormat);
     }
 
     public static function getDateTimeFrom($date)
     {
         if ($date == self::NULL_DATE)
             return '-';
-        return jDate::forge($date)->format(self::$formalDateFormat . " " . self::$timeFormat);
+        return JDate::forge($date)->format(self::$formalDateFormat . " " . self::$timeFormat);
     }
 
     public static function getCustomFormatFrom($date, $format)
     {
         if ($date == self::NULL_DATE)
             return '-';
-        return jDate::forge($date)->format($format);
+        return JDate::forge($date)->format($format);
     }
 }

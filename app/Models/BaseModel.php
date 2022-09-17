@@ -11,7 +11,7 @@ namespace App\Models;
 use App\Models\GlobalScopes\SortScope;
 use App\Utils\CMS\AdminRequestService;
 use App\Utils\CMS\Setting\Layout\LayoutService;
-use App\Utils\Jalali\jDate;
+use App\Utils\Jalali\JDate;
 use App\Utils\Validation\DataValidation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -77,7 +77,18 @@ abstract class BaseModel extends Model
     protected static array $IMPORTABLE_ATTRIBUTES = [];
     protected static array $EXPORTABLE_RELATIONS = [];
 
-    public function scopeSearch(Builder $builder, string $term): Builder
+    public function scopeExactSearch($builder, string $term): Builder
+    {
+        $builder->where(function ($q) use ($term) {
+            foreach (static::$SEARCHABLE_FIELDS as $searchable_field) {
+                $q->orWhere($searchable_field, "=", $term);
+            }
+        });
+
+        return $builder;
+    }
+
+    public function scopeSearch(Builder $builder, string $term, int $exactness = 0): Builder
     {
         $term = preg_replace("/[ ]+/", " ", $term);
         $termParts = explode(" ", $term);
@@ -108,8 +119,8 @@ abstract class BaseModel extends Model
     {
         $parentResponse = parent::toArray();
         foreach ($parentResponse as $key => $value) {
-            if (DataValidation::validateDate($value)) {
-                $parentResponse[$key . "_jalali"] = jDate::forge($value)->format("Y/m/d H:i");
+            if (is_string($value) and str_ends_with($key, "_at")) {
+                $parentResponse[$key . "_jalali"] = JDate::forge($value)->format("Y/m/d H:i");
             }
         }
         $parentResponse["search_url"] = $this->getSearchUrl();//TODO: this should be moved to is in admin area section

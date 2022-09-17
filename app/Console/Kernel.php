@@ -28,7 +28,8 @@ class Kernel extends ConsoleKernel
         //          ->hourly();
 
         $schedule->command('short-links:store')->dailyAt('00:01');
-        $schedule->command('logistic-table:update')->dailyAt('00:01');
+        $schedule->command('logistic-table:update')->dailyAt('00:11');
+        $schedule->command('sitemap:generate')->dailyAt('00:21');
     }
 
     /**

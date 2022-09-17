@@ -1,7 +1,7 @@
 <?php
 namespace App\Utils\Jalali;
 
-class jDate
+class JDate
 {
 	protected $time;
 
@@ -55,7 +55,7 @@ class jDate
 
 		// if valid unix timestamp...
 		if ($this->time !== false){
-			return jDateTime::strftime($str, $this->time);
+			return JDateTime::strftime($str, $this->time);
 		}
 		else{
 			return false;
@@ -121,4 +121,6 @@ class jDate
 	{
 		return $this->ago();
 	}
+
+
 }

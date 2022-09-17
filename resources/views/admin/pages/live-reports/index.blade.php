@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="/admin_dashboard/vendor/bootstrap/dist/css/bootstrap-theme.min.css"/>
     <link rel="stylesheet" href="/admin_dashboard/vendor/bootstrap-rtl/dist/css/bootstrap-rtl.min.css"/>
     <link rel="stylesheet" href="/admin_dashboard/vendor/font-awesome/css/font-awesome.min.css"/>
-    <link rel="stylesheet" type="text/css" href="/admin_dashboard/css/app-22-08-09.css"/>
+    <link rel="stylesheet" type="text/css" href="/admin_dashboard/css/app-22-09-06.css"/>
 </head>
 <body class="page-reports">
 <header class="bs-docs-nav navbar navbar-static-top" id="top">
@@ -33,365 +33,56 @@
 <script>window.PAGE_ID = "admin.pages.live-reports.index";</script>
 <div class="container numeric-reports">
     <div class="row">
-        <div class="col-md-3">
-            <div class="numeric-report-container">
-                <div class="loader-layer"><i class="fa fa-4x fa-refresh fa-spin"></i></div>
-                <div class="livenow">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-                <h1>فروش امروز</h1>
-                <p>
-                    <span id="report-daily-amount">۱۰۰۰۰۰</span>
-                    <span>ریال</span>
-                </p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="numeric-report-container">
-                <div class="livenow">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-                <h1>فروش ماه جاری</h1>
-                <p>
-                    <span id="report-daily-amount">۱۰۰۰۰۰</span>
-                    <span>ریال</span>
-                </p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="numeric-report-container">
-                <div class="livenow">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-                <h1>فروش سال جاری</h1>
-                <p>
-                    <span id="report-daily-amount">۱۰۰۰۰۰</span>
-                    <span>ریال</span>
-                </p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="numeric-report-container">
-                <h1>فروش سال گذشته</h1>
-                <p>
-                    <span id="report-daily-amount">۱۰۰۰۰۰</span>
-                    <span>ریال</span>
-                </p>
-            </div>
-        </div>
-
+        @include("admin.pages.live-reports._live_numeric_data", ["id" => "daily-sales-amount", "title" => "فروش امروز"])
+        @include("admin.pages.live-reports._live_numeric_data", ["id" => "monthly-sales-amount", "title" => "فروش ماه جاری"])
+        @include("admin.pages.live-reports._live_numeric_data", ["id" => "yearly-sales-amount", "title" => "فروش سال جاری"])
+        @include("admin.pages.live-reports._live_numeric_data", ["id" => "previous-year-sales-amount", "title" => "فروش سال گذشته", "is_live" => false])
     </div>
 </div>
 <div class="container-fluid data-reports">
     <div class="row">
-        <div class="col-md-12">
-            <div class="report-box">
-                <canvas id="overall-bar-chart" height="250"></canvas>
+        <div class="col-md-4">
+            @include("admin.pages.live-reports._report_table_box", ["id" => "latest_customers", "title" => "آخرین مشتریان ثبت نام شده", "row_el" =>
+            "<div class=\"row\" style=\"display: none;\">
+            <div class=\"col-md-1 col-count\">
+                <span class=\"numeric-data\"><%- row_id %></span>
             </div>
+            <div class=\"col-md-7 col-title\"><%- full_name %> (شناسه: <%- id %>)</div>
+            <div class=\"col-md-4 col-amount\"><%- created_at_jalali %></div>
+            </div>"])
+        </div>
+        <div class="col-md-8">
+            @include("admin.pages.live-reports._report_table_box", ["id" => "latest_payed_orders", "title" => "آخرین سفارشات پرداخت شده", "row_el" =>
+            "<div class=\"row\" style=\"display: none;\">
+            <div class=\"col-md-1 col-count\">
+                <span class=\"numeric-data\"><%- row_id %></span>
+            </div>
+            <div class=\"col-md-4 col-title\"><%- customer.user.full_name %> (شناسه مشتری: <%- customer.user.id %>)</div>
+            <div class=\"col-md-2 \">تاریخ ثبت نام مشتری: <%- customer.user.created_at_jalali %></div>
+            <div class=\"col-md-2 \">ثبت سفارش: <%- created_at_jalali %></div>
+            <div class=\"col-md-2 col-amount\"><span class=\"price-data\"><%- sum %></span> ریال</div>
+            <div class=\"col-md-1 col-amount\"><a href=\"/admin/invoice/<%- id %>\" class=\"btn btn-sm btn-success\" target=\"_blank\"><i class=\"fa fa-eye\"></i></a></div>
+            </div>"])
         </div>
     </div>
+    @include("admin.pages.live-reports._overall_bar_chart", ["id" => "overall-bar-chart"])
+    @include("admin.pages.live-reports._overall_bar_chart", ["id" => "overall-sales-bar-chart"])
+    @include("admin.pages.live-reports._overall_bar_chart", ["id" => "categories-availability"])
     <div class="row">
         <div class="col-md-4">
-            <div class="report-box">
-                <h1>پر فروش و کم فروش ترین محصولات ماه جاری</h1>
-                <div class="data-container">
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-down"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-
-                </div>
-            </div>
+            @include("admin.pages.live-reports._report_table_box", ["id" => "monthly-categories-table", "title" => "پر فروش و کم فروش ترین دسته بندی‌های ماه جاری", "is_live" => false, "with_cart" => true])
         </div>
         <div class="col-md-4">
-            <div class="report-box">
-                <h1>پر فروش و کم فروش ترین محصولات سال جاری</h1>
-                <div class="data-container">
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-down"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-
-                </div>
-            </div>
+            @include("admin.pages.live-reports._report_table_box", ["id" => "yearly-categories-table", "title" => "پر فروش و کم فروش ترین دسته بندی‌های سال جاری", "is_live" => false, "with_cart" => true])
         </div>
         <div class="col-md-4">
-            <div class="report-box">
-                <h1>پر فروش و کم فروش ترین محصولات سال گذشته</h1>
-                <div class="data-container">
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-down"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-
-                </div>
-            </div>
+            @include("admin.pages.live-reports._report_table_box", ["id" => "previous-year-categories-table", "title" => "پر فروش و کم فروش ترین دسته‌بندی‌های سال گذشته", "is_live" => false, "with_cart" => true])
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-6">
-            <div class="report-box">
-                <h1>پر فروش و کم فروش ترین محصولات ماه جاری</h1>
-                <div class="data-container">
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-down"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="report-box">
-                <h1>پر فروش و کم فروش ترین محصولات سال جاری</h1>
-                <div class="data-container">
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-up"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-count">
-                            <span><i class="fa fa-arrow-down"></i></span>
-                            <span> #1 </span>
-                        </div>
-                        <div class="col-md-7 col-title">پر فروش و کم فروش ترین محصولات ماه</div>
-                        <div class="col-md-3 col-amount">۳۶۰۰۰۰۰ ریال</div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="row" style="margin-bottom: 20px;"></div>
 </div>
 
 @include("admin.templates.underscore_needle")
-<script data-main="/admin_dashboard/js/all-22-08-09" src="/admin_dashboard/vendor/requirejs/require.js"></script>
+<script data-main="/admin_dashboard/js/all-22-09-06" src="/admin_dashboard/vendor/requirejs/require.js"></script>
 </body>
 </html>
