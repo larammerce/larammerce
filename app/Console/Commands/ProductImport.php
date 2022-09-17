@@ -176,7 +176,6 @@ class ProductImport extends Command
                 }
                 $product->save();
             }
-            dd();
         }
     }
 
