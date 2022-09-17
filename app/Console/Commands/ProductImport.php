@@ -167,7 +167,6 @@ class ProductImport extends Command
                 }
 
                 $product->colors()->sync($color_ids);
-                $product->attachFileTo($parent_directory);
                 $product->directories()->sync($parent_directory_ids);
 
                 foreach ($image_paths as $image_path) {
@@ -177,6 +176,7 @@ class ProductImport extends Command
                 }
                 $product->save();
             }
+            dd();
         }
     }
 
@@ -228,7 +228,14 @@ class ProductImport extends Command
 
     private function getParentDirectoryIds($categories): array
     {
-        return Directory::whereIn("metadata", $categories)->pluck("id")->toArray();
+        $result = [];
+        $directories = Directory::whereIn("metadata", $categories)->get();
+        foreach ($directories as $directory) {
+            foreach ($directory->getParentDirectories() as $sub_directory) {
+                $result[] = $sub_directory->id;
+            }
+        }
+        return $result;
     }
 
     private function detectColors($color)
