@@ -372,7 +372,7 @@ class Product extends BaseModel implements
 
     public function setModelIdAttribute($value)
     {
-        $this->attributes["model_id"] = $value ?: $this->id;
+        $this->attributes["model_id"] = $value ?? $this->id;
     }
 
     public function setExtraPropertiesAttribute(?array $extra_properties)
