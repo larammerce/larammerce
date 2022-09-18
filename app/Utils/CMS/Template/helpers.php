@@ -557,12 +557,7 @@ if (!function_exists('get_directory_products')) {
 }
 
 if (!function_exists('get_important_product_leaves')) {
-    /**
-     * @param Directory $root_directory
-     * @param int $count
-     * @return Product[]
-     */
-    function get_important_product_leaves(Directory $root_directory, int $count)
+    function get_important_product_leaves(Directory $root_directory, int $count): array|Collection
     {
         return $root_directory->leafProducts()->mainModels()->visible()
             ->where('important_at', '!=', null)
@@ -572,12 +567,7 @@ if (!function_exists('get_important_product_leaves')) {
     }
 }
 if (!function_exists('get_visible_product_leaves')) {
-    /**
-     * @param Directory $root_directory
-     * @param int $count
-     * @return Product[]
-     */
-    function get_visible_product_leaves(Directory $root_directory, int $count)
+    function get_visible_product_leaves(Directory $root_directory, int $count): array|Collection
     {
         return $root_directory->leafProducts()->mainModels()->visible()->isActive()
             ->orderBy('important_at', 'DESC')
@@ -586,7 +576,7 @@ if (!function_exists('get_visible_product_leaves')) {
 }
 
 if (!function_exists('get_directory_product_leaves')) {
-    function get_directory_product_leaves(Directory $root_directory, int $count, $only_active_items = true)
+    function get_directory_product_leaves(Directory $root_directory, int $count, $only_active_items = true): array|Collection
     {
         $result = $root_directory->leafProducts()->mainModels()->visible();
         $tmp_result = clone $result;
@@ -597,11 +587,7 @@ if (!function_exists('get_directory_product_leaves')) {
 }
 
 if (!function_exists('latest_products')) {
-    /**
-     * @param int $count
-     * @return Product[]
-     */
-    function latest_products(int $count = 8)
+    function latest_products(int $count = 8): array|Collection
     {
         if ($count > 0) {
             return Product::mainModels()->visible()
@@ -615,11 +601,7 @@ if (!function_exists('latest_products')) {
 }
 
 if (!function_exists('rated_products')) {
-    /**
-     * @param int $count
-     * @return Product[]
-     */
-    function rated_products(int $count = 8)
+    function rated_products(int $count = 8): array|Collection
     {
         if ($count > 0)
             return Product::mainModels()->visible()->popular()->where("is_active", true)->take($count)->get();
@@ -628,11 +610,7 @@ if (!function_exists('rated_products')) {
 }
 
 if (!function_exists('custom_query_products')) {
-    /**
-     * @param string $identifier
-     * @return Collection|array
-     */
-    function custom_query_products(string $identifier)
+    function custom_query_products(string $identifier): array|Collection
     {
         try {
             return ProductQuery::findByIdentifier($identifier)->getProducts();
@@ -643,7 +621,7 @@ if (!function_exists('custom_query_products')) {
 }
 
 if (!function_exists('custom_query_product_ids')) {
-    function custom_query_product_ids(string $identifier): array
+    function custom_query_product_ids(string $identifier): array|Collection
     {
         try {
             return ProductQuery::findByIdentifier($identifier)->getProductIds();
@@ -666,11 +644,7 @@ if (!function_exists('get_product_filter')) {
 }
 
 if (!function_exists('custom_filter_products')) {
-    /**
-     * @param string $identifier
-     * @return Collection|array
-     */
-    function custom_filter_products(string $identifier)
+    function custom_filter_products(string $identifier): array|Collection
     {
         try {
             return ProductFilter::findByIdentifier($identifier)->getProducts();
@@ -681,7 +655,7 @@ if (!function_exists('custom_filter_products')) {
 }
 
 if (!function_exists('custom_filter_product_ids')) {
-    function custom_filter_product_ids(string $identifier): array
+    function custom_filter_product_ids(string $identifier): array|Collection
     {
         try {
             return ProductFilter::findByIdentifier($identifier)->getProductIds();
@@ -699,11 +673,7 @@ if (!function_exists('get_filter_data')) {
 }
 
 if (!function_exists('important_products')) {
-    /**
-     * @param int $count
-     * @return Product[]|array
-     */
-    function important_products(int $count = 8)
+    function important_products(int $count = 8): array|Collection
     {
         if ($count > 0) {
             return Product::important()
