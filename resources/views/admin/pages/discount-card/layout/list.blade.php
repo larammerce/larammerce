@@ -3,7 +3,7 @@
         $href = route("admin.directory.edit", $iter_discount_card["id"]);
         $title = $iter_discount_card["title"];
         return "<a href='{$href}'>{$title}</a>";
-    }, $discount_card->directories->toArray())); ?>
+    }, $discount_card->directories()->get()->toArray())); ?>
     <div
         class="col-lg-offset-1 col-lg-10 col-md-offset-0 col-md-12 col-sm-offset-0 col-sm-12 col-xs-offset-0 col-xs-12 list-row discount-cards @if(!$discount_card->is_active) disabled @endif">
         <div class="col-lg-1 col-md-3 col-sm-6 col-xs-3 col">
