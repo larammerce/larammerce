@@ -23,15 +23,19 @@ trait FullTextSearch
      */
     public function scopeSearch(Builder $builder, string $term, int $exactness = 0): Builder
     {
-        $parent_exact_builder = $builder->clone();
 
         if (static::$EXACT_SEARCH_FIELD !== null) {
             $exact_builder = $builder->clone();
             $exact_builder = $exact_builder->where(static::$EXACT_SEARCH_FIELD, 'like', "$term%");
-            if ($exactness == 2 or $exact_builder->count() > 0) {
+            $exact_search_result_count = $exact_builder->count();
+            if ($exactness == 2 or $exact_search_result_count > 0) {
+                if ($exact_search_result_count < 10) {
+                    $exact_builder = $exact_builder->orWhere(static::$EXACT_SEARCH_FIELD, 'like', "%$term%");
+                }
                 return $exact_builder;
             }
 
+            $parent_exact_builder = $builder->clone();
             if ($exactness == 3 or $parent_exact_builder->exactSearch($term)->count() > 0) {
                 return $parent_exact_builder->exactSearch($term);
             }
