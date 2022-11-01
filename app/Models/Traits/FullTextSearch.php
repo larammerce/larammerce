@@ -25,12 +25,6 @@ trait FullTextSearch
     {
         $parent_exact_builder = $builder->clone();
 
-        $reservedSymbols = ['-', '+', '<', '>', '@', '(', ')', '~', '٬'];
-        $term = str_replace($reservedSymbols, '', $term);
-        $term = preg_replace("/ +/", " ", $term);
-        $words = static::getTermWords($term);
-
-
         if (static::$EXACT_SEARCH_FIELD !== null) {
             $exact_builder = $builder->clone();
             $exact_builder = $exact_builder->where(static::$EXACT_SEARCH_FIELD, 'like', "$term%");
@@ -43,6 +37,10 @@ trait FullTextSearch
             }
 
             $exact_builder = $builder->clone();
+            $reservedSymbols = ['-', '+', '<', '>', '@', '(', ')', '~', '٬'];
+            $term = str_replace($reservedSymbols, '', $term);
+            $term = preg_replace("/ +/", " ", $term);
+            $words = static::getTermWords($term);
             foreach ($words as $word)
                 if (!is_numeric($word) and strlen($word) > 1) {
                     $exact_builder->where(static::$EXACT_SEARCH_FIELD, 'LIKE', "%$word%");
