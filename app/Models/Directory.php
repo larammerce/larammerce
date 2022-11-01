@@ -50,6 +50,7 @@ use Throwable;
  * @property integer inaccessibility_type
  * @property string notice
  * @property string metadata
+ * @property integer depth
  *
  * @property Directory parentDirectory
  * @property Directory[] directories
@@ -84,7 +85,7 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
     protected $fillable = [
         "title", "url_part", "url_full", "is_internal_link", "is_anonymously_accessible", "has_web_page", "priority",
         "content_type", "directory_id", "show_in_navbar", "show_in_footer", "cover_image_path", "description",
-        "data_type", "show_in_app_navbar", "is_location_limited", "cmc_id",
+        "data_type", "show_in_app_navbar", "is_location_limited", "cmc_id", "depth",
         "badges", "force_show_landing", "inaccessibility_type", "notice", "metadata"
     ];
 
@@ -97,6 +98,15 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
         "notice" => ["string", "input:text"],
         "description" => ["text", "textarea:rich"]
     ];
+
+    public function setDirectoryIdAttribute($directory_id)
+    {
+        $parent = static::find($directory_id);
+        if ($parent == null)
+            return;
+        $this->depth = $parent->depth + 1;
+        $this->attributes["directory_id"] = $directory_id;
+    }
 
     public function getContentTypeTitleAttribute(): string
     {
@@ -331,7 +341,7 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
         return str_ends_with($front_url, "/landing") ? $front_url : $front_url . "/landing";
     }
 
-    public function getParentDirectories()
+    public function getParentsUrlFull(): array
     {
         $url_parts = explode("/", substr($this->url_full, 1));
         $directories_url_full = [];
@@ -340,7 +350,13 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
             $directory_url_full .= "/" . $url_part;
             $directories_url_full[] = $directory_url_full;
         }
-        return self::whereIn("url_full", $directories_url_full)->orderBy("id", "ASC")->get();
+        return $directories_url_full;
+    }
+
+    public function getParentDirectories()
+    {
+        $directories_url_full = $this->getParentsUrlFull();
+        return self::whereIn("url_full", $directories_url_full)->orderBy("depth", "ASC")->get();
     }
 
     public function getParentDirectoriesRecursive(): array
