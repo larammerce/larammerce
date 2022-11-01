@@ -78,7 +78,7 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
 
     protected static array $SORTABLE_FIELDS = ["id", "priority", "title", "created_at"];
     protected static array $SEARCHABLE_FIELDS = ["title", "url_part"];
-    protected static ?string $EXACT_SEARCH_FIELD = "title";
+    protected static ?string $IMPORTANT_SEARCH_FIELD = "title";
 
     protected $table = "directories";
     public $timestamps = true;

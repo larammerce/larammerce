@@ -50,7 +50,7 @@ abstract class BaseModel extends Model
         'id'
     ];
 
-    protected static ?string $EXACT_SEARCH_FIELD = null;
+    protected static ?string $IMPORTANT_SEARCH_FIELD = "id";
     protected static ?string $EXACT_SEARCH_ORDER_FIELD = null;
 
     protected static array $ROLE_PROPERTY_ACCESS = [

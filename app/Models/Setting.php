@@ -47,7 +47,7 @@ class Setting extends Model
 
     protected array $caches = [];
 
-    protected static ?string $EXACT_SEARCH_FIELD = null;
+    protected static ?string $IMPORTANT_SEARCH_FIELD = null;
     protected static ?string $EXACT_SEARCH_ORDER_FIELD = null;
     protected static array $ONE_TO_ONE_RELATIONS = [];
     protected static array $EXPORTABLE_RELATIONS = [];
