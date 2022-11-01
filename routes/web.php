@@ -535,6 +535,7 @@ Route::group(
                 Route::get("detach-product/{product}", ["as" => "detach-product", "uses" => "CartController@detachProduct"]);
                 Route::get("update-count/{product}", ["as" => "update-count", "uses" => "CartController@updateCount"]);
                 Route::delete("remove-deactivated", ["as" => "remove-deactivated", "uses" => "CartController@removeDeactivated"]);
+                Route::delete("remove-all", ["as" => "remove-all", "uses" => "CartController@removeAll"]);
             });
 
         Route::group(["prefix" => "rate", "as" => "rate."],
@@ -587,6 +588,7 @@ Route::group(
     ],
     function () {
         Route::get("local-cart", ["as" => "show-local-cart", "uses" => "CartController@showLocal"]);
+        Route::delete("cart/remove-local", ["as" => "cart.remove-local", "uses" => "CartController@removeLocal"]);
         Route::get("email-confirmation", ["as" => "email-confirmation", "uses" => "AuthController@emailConfirmation"]);
         Route::post("location", ["as" => "location.store", "uses" => "LocationController@store"]);
     }
