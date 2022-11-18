@@ -114,25 +114,10 @@ class AuthController extends Controller
         $value = email_decode($value);
         $oneTimeCode = $request->get("one_time_code");
         try {
-            $customerUser = CustomerAuthProvider::validateByCode($type, $value, $oneTimeCode);
-            if ($customerUser != null) {
-                auth('web')->login($customerUser->user);
-                SystemMessageService::addInfoMessage("system_messages.user.login_message",
-                    ["name" => $customerUser->user->full_name]);
-                $customer = get_customer_user();
-                foreach (get_local_cart() as $cart_row) {
-                    try {
-                        $customer->cartRows()->create([
-                            "product_id" => $cart_row->product_id,
-                            "count" => $cart_row->count,
-                            "customer_user_id" => $customer->id
-                        ]);
-                    } catch (QueryException $exception) {
-                        continue;
-                    }
-
-                }
-                return redirect()->intended(UserService::getHome($customerUser->user));
+            $customer_user = CustomerAuthProvider::validateByCode($type, $value, $oneTimeCode);
+            if ($customer_user != null) {
+                CustomerAuthProvider::login($customer_user);
+                return redirect()->intended(UserService::getHome($customer_user->user));
             } else {
                 SystemMessageService::addSuccessMessage("system_messages.one_time_code.valid_one_time_code");
                 return redirect()->route("customer-auth.show-register", [$type, email_encode($value)]);
@@ -180,12 +165,10 @@ class AuthController extends Controller
         $password = $request->get("password");
 
         try {
-            $customerUser = CustomerAuthProvider::validateByPassword($type, $value, $password);
-            if ($customerUser != null) {
-                auth('web')->login($customerUser->user);
-                SystemMessageService::addInfoMessage("system_messages.user.login_message",
-                    ["name" => $customerUser->user->full_name]);
-                return redirect()->intended(UserService::getHome($customerUser->user));
+            $customer_user = CustomerAuthProvider::validateByPassword($type, $value, $password);
+            if ($customer_user != null) {
+                CustomerAuthProvider::login($customer_user);
+                return redirect()->intended(UserService::getHome($customer_user->user));
             } else {
                 SystemMessageService::addErrorMessage("system_messages.user.login_error");
                 return redirect()->route('customer-auth.show-auth', [$type, email_encode($value)]);
@@ -204,11 +187,15 @@ class AuthController extends Controller
 
 
     /**
-     * @rules(name="required|user_alphabet_rule|min:2", family="required|user_alphabet_rule|min:2",
-     *     email="email|unique:users", main_phone="required|mobile_number|unique:customer_users",
-     *     national_code="required|national_code",
+     * @rules(
+     *     name="required|user_alphabet_rule|min:2",
+     *     family="required|user_alphabet_rule|min:2",
+     *     email="nullable|email|unique:users",
+     *     main_phone="required|mobile_number|unique:customer_users",
+     *     national_code="nullable|national_code",
      *     representative_username=strlen(request("representative_username") ?? "") > 0 ? "exists:users,username" : "",
-     *     representative_type=strlen(request("representative_type") ?? "") > 0 ? "in:".implode(",", representative_get_options()) : "")
+     *     representative_type=strlen(request("representative_type") ?? "") > 0 ? "in:".implode(",", representative_get_options()) : ""
+     * )
      */
     public function doRegister(Request $request, $type, $value): RedirectResponse
     {
@@ -216,11 +203,11 @@ class AuthController extends Controller
         $value = email_decode($value);
         $data = $request->only(["name", "family", "main_phone", "email", "national_code", "representative_username", "representative_type"]);
         try {
-            $customerUser = CustomerAuthProvider::register($type, $value, $data);
-            if ($customerUser != null) {
-                auth('web')->login($customerUser->user);
+            $customer_user = CustomerAuthProvider::register($type, $value, $data);
+            if ($customer_user != null) {
+                CustomerAuthProvider::login($customer_user);
                 SystemMessageService::addSuccessMessage("system_messages.user.register_done");
-                return redirect()->intended(UserService::getHome($customerUser->user));
+                return redirect()->intended(UserService::getHome($customer_user->user));
             } else {
                 SystemMessageService::addErrorMessage("system_messages.user.register_failed");
                 return redirect()->to("/");
@@ -228,10 +215,6 @@ class AuthController extends Controller
         } catch (VerificationException $e) {
             SystemMessageService::addErrorMessage("system_messages.user.not_verified_info");
             return redirect()->route('customer-auth.show-register', [$type, email_encode($value)])->withInput();
-        } catch (CustomerActivationException $e) {
-            SystemMessageService::addSuccessMessage("system_messages.user.account_registered");
-            SystemMessageService::addErrorMessage("system_messages.user.account_activation_error");
-            return redirect()->to("/");
         }
     }
 

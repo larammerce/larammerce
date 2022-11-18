@@ -37,7 +37,7 @@ class InvoiceService
     public static function getTheNew(): Invoice
     {
         try {
-            return session()->get(self::$CURRENT_INVOICE_KEY);
+            return session()->get(self::$CURRENT_INVOICE_KEY) ?? new Invoice();
         } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
             return new Invoice();
         }

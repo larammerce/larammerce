@@ -270,11 +270,12 @@ class User extends BaseModel implements
      */
     public function saveFinManCustomer(): bool
     {
-        $this->load('customerUser');
+        if (!$this->relationLoaded('customerUser'))
+            $this->load('customerUser');
         $result = FinFactory::driver()->addCustomer($this, false);
         if ($result === false)
             return false;
-        $this->customerUser->update(["fin_relation" => $result]);
+        $this->customerUser->update(["fin_relation" => $result, "is_active" => true]);
         return true;
     }
 

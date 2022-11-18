@@ -56,7 +56,7 @@ class ProfileController extends BaseController
     /**
      * @rules(name="required|user_alphabet_rule",
      *     family="required|user_alphabet_rule",
-     *     email="email|unique:users",
+     *     email="nullable|email|unique:users",
      *     national_code="required|national_code",
      *     is_legal_person="boolean",
      *     gender="in:".\App\Models\Enums\Gender::stringValues(),

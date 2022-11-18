@@ -5,6 +5,7 @@ namespace App\Utils\CMS\CustomerAuth;
 
 
 use App\Jobs\SendEmail;
+use App\Utils\CMS\SystemMessageService;
 use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
 use App\Models\{
     CustomerUser,
@@ -16,6 +17,7 @@ use App\Utils\OneTimeCode\{
     Provider as OneTimeCodeProvider,
     SecurityLevelException
 };
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Hash;
 
 class Provider
@@ -67,7 +69,6 @@ class Provider
      * @param $code
      * @return CustomerUser|null
      * @throws SecurityLevelException
-     * @throws CustomerActivationException
      * @throws BadValidationCodePassed
      */
     public static function validateByCode($type, $value, $code)
@@ -76,14 +77,6 @@ class Provider
             OneTimeCodeProvider::clear($value);
             $customerUser = self::getCustomerUser($type, $value);
             if ($customerUser != null) {
-                if (!$customerUser->is_active) {
-                    if ($customerUser->user->saveFinManCustomer()) {
-                        $customerUser->update(["is_active" => true]);
-                    } else {
-                        throw new CustomerActivationException("Customer with id: `{$customerUser->user->id}`" .
-                            " can not be activated.");
-                    }
-                }
                 return $customerUser;
             } else {
                 SessionService::setVal($value);
@@ -122,9 +115,7 @@ class Provider
      * @param $value
      * @param $data
      * @return CustomerUser
-     * @throws CustomerActivationException
      * @throws VerificationException
-     * @throws FinancialDriverInvalidConfigurationException
      */
     public static function register($type, $value, $data)
     {
@@ -154,14 +145,8 @@ class Provider
             "is_initiated" => true,
         ]);
 
-        if ($newUser->saveFinManCustomer()) {
-            $customerUser->update(["is_active" => true]);
-            SessionService::forgetVal($value);
-            return $customerUser;
-        } else {
-            throw new CustomerActivationException("The customer with id `{$customerUser->id}` can not be" .
-                " activated at this moment.");
-        }
+        SessionService::forgetVal($value);
+        return $customerUser;
     }
 
     /**
@@ -180,5 +165,26 @@ class Provider
                 $q->where("email", $value);
             })->first();
         return $customerUser;
+    }
+
+    public static function login(CustomerUser $customer_user): void
+    {
+        auth('web')->login($customer_user->user);
+        SystemMessageService::addInfoMessage("system_messages.user.login_message",
+            ["name" => $customer_user->user->full_name]);
+        $customer = get_customer_user();
+        foreach (get_local_cart() as $cart_row) {
+            try {
+                if ($customer->cartRows()->where("product_id", $cart_row->product_id)->count() == 0)
+                    $customer->cartRows()->create([
+                        "product_id" => $cart_row->product_id,
+                        "count" => $cart_row->count,
+                        "customer_user_id" => $customer->id
+                    ]);
+            } catch (QueryException $exception) {
+                continue;
+            }
+
+        }
     }
 }
