@@ -2,5 +2,10 @@
 
 namespace App\Services\Product;
 
-class ProductExporterService {
+class ProductExporterService
+{
+    public static function exportData()
+    {
+
+    }
 }
