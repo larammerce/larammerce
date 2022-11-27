@@ -13,16 +13,39 @@ use Illuminate\Support\Facades\Schema;
 
 class ProductImporterService
 {
+    private const CASTS = [
+        "latest_price" => "int",
+        "latest_special_price" => "int",
+        "count" => "int",
+        "min_purchase_count" => "int",
+        "previous_price" => "int"
+    ];
+
+    private const UPDATE_EXCLUDE_ATTRIBUTES = [
+        "directory_id",
+        "is_package",
+        "color_code",
+        "average_rating",
+        "cmc_id"
+    ];
 
     private static function getMainAttributesFromDataArray(array $data_array): array {
         $result = [];
         $tmp_product = new Product();
 
         foreach ($tmp_product->getFillable() as $fillable) {
-            if (($data_array[$fillable] ?? null) == null)
+            if (!key_exists($fillable, $data_array) or $data_array[$fillable] === null) {
                 continue;
+            }
+            $value = $data_array[$fillable];
 
-            $result[$fillable] = $data_array[$fillable];
+            if (key_exists($fillable, self::CASTS)) {
+                if (self::CASTS[$fillable] == "int") {
+                    $value = (int)$value;
+                }
+            }
+
+            $result[$fillable] = $value;
         }
 
         return $result;
@@ -114,11 +137,18 @@ class ProductImporterService
 
         if ($product_id == null) {
             $directory = DirectoryService::findDirectoryById($directory_id);
-            ProductService::createProductFromAttributesArray($main_attributes, $directory);
-        }
+            $product = ProductService::createProductFromAttributesArray($main_attributes, $directory);
+        } else {
+            $clean_attributes = [];
+            foreach ($main_attributes as $attribute_key => $attribute_value) {
+                if (in_array($attribute_key, static::UPDATE_EXCLUDE_ATTRIBUTES))
+                    continue;
 
-        $product = ProductService::findProductById($product_id);
-        ProductService::updateProductFromAttributesArray($product, $main_attributes);
+                $clean_attributes[$attribute_key] = $attribute_value;
+            }
+            $product = ProductService::findProductById($product_id);
+            ProductService::updateProductFromAttributesArray($product, $clean_attributes);
+        }
 
         $current_p_structure_attrs = PStructureService::getAllPAttrsByProductsIds([$product->id]);
         $current_p_structure_value_ids = array_map(function (PAttr $p_attr) {
@@ -137,8 +167,9 @@ class ProductImporterService
         }
 
         foreach ($current_p_structure_attrs as $current_p_structure_attr) {
-            if (!in_array($current_p_structure_attr->p_structure_attr_value_id, $p_structure_value_ids))
+            if (!in_array($current_p_structure_attr->p_structure_attr_value_id, $p_structure_value_ids)) {
                 ProductService::detachAttributeFromProduct($product, $current_p_structure_attr->key, $current_p_structure_attr->value);
+            }
         }
 
         return $product;

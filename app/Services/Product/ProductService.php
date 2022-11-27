@@ -14,15 +14,6 @@ use Illuminate\Support\Collection;
 
 class ProductService
 {
-
-    private const UPDATE_EXCLUDE_ATTRIBUTES = [
-        "directory_id",
-        "is_package",
-        "color_code",
-        "average_rating",
-        "cmc_id"
-    ];
-
     /**
      * @throws ProductNotFoundException
      */
@@ -55,18 +46,8 @@ class ProductService
     }
 
     public static function updateProductFromAttributesArray(Product $product, array $attributes): Product {
-        $clean_attributes = [];
-
-        foreach ($attributes as $attribute_key => $attribute_value) {
-            if (in_array($attribute_key, static::UPDATE_EXCLUDE_ATTRIBUTES))
-                continue;
-
-            $clean_attributes[$attribute_key] = $attribute_value;
-        }
-
-        $product->update($clean_attributes);
+        $product->update($attributes);
         $product->updateReview();
-
         return $product;
     }
 

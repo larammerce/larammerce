@@ -2,12 +2,14 @@
 
 namespace App\Services\Product;
 
+use App\Jobs\Product\ProductImportFromDataArray;
 use App\Models\PStructure;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 
-class ProductExcelImporterService implements ToModel, WithHeadingRow {
+class ProductExcelImporterService implements ToModel, WithHeadingRow
+{
 
     private PStructure $p_structure;
 
@@ -17,7 +19,7 @@ class ProductExcelImporterService implements ToModel, WithHeadingRow {
     }
 
     public function model(array $row): void {
-        ProductImporterService::importFromDataArray($this->p_structure, $row);
+        dispatch(new ProductImportFromDataArray($this->p_structure, $row));
     }
 
     public function headingRow(): int {

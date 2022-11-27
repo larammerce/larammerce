@@ -130,7 +130,8 @@ use Throwable;
  */
 class Product extends BaseModel implements
     FileAbstractionContract, ShareContract, PublishScheduleContract, ImageContract,
-    RateableContract, SeoableContract, HashContract {
+    RateableContract, SeoableContract, HashContract
+{
     use Rateable, Seoable, Fileable, FullTextSearch, Badgeable, Translatable;
 
     public $timestamps = true;
@@ -336,13 +337,21 @@ class Product extends BaseModel implements
     public function getLatestSellPriceAttribute(): int {
         if ($this->is_package) {
             $product_package = $this->productPackage;
-            if ($this->attributes["has_discount"] and $product_package->getLatestSpecialPrice() != 0)
+            if (
+                isset($this->attributes["has_discount"]) and
+                $this->attributes["has_discount"] and
+                $product_package->getLatestSpecialPrice() != 0
+            )
                 return $product_package->getLatestSpecialPrice();
             return $product_package->getLatestPrice();
         } else
-            return ($this->attributes["has_discount"]
-                and $this->attributes["latest_special_price"] != 0) ?
-                $this->attributes["latest_special_price"] : $this->attributes["latest_price"];
+            return (
+                isset($this->attributes["has_discount"]) and
+                $this->attributes["has_discount"] and
+                $this->attributes["latest_special_price"] != 0
+            ) ?
+                $this->attributes["latest_special_price"] :
+                $this->attributes["latest_price"];
     }
 
     public function getCountAttribute(): int {
@@ -356,9 +365,9 @@ class Product extends BaseModel implements
 
     public function setExtraPropertiesAttribute(?array $extra_properties) {
         $this->attributes["extra_properties"] = json_encode(array_filter($extra_properties,
-            function ($iter_property) {
-                return $iter_property["key"] !== null;
-            }) ?? []);
+                function ($iter_property) {
+                    return $iter_property["key"] !== null;
+                }) ?? []);
     }
 
     public function getExtraProperties() {

@@ -11,7 +11,8 @@ use App\Services\PStructure\PStructureService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 
-class ProductExporterService {
+class ProductExporterService
+{
 
     private const EXCLUDE_COLUMNS = [
         "extra_properties",
@@ -29,7 +30,7 @@ class ProductExporterService {
         "pure_price",
         "cmc_id",
         "notice",
-        "is_package"
+        "average_rating"
     ];
 
     /**
