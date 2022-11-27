@@ -29,7 +29,8 @@ class ProductExporterService {
         "tax_amount",
         "pure_price",
         "cmc_id",
-        "notice"
+        "notice",
+        "is_package"
     ];
 
     /**
@@ -46,7 +47,7 @@ class ProductExporterService {
     public static function exportDataArray(PStructure $p_structure): array {
         ini_set("memory_limit", -1);
         ini_set("max_execution_time", -1);
-        
+
         $products = ProductService::getAllProductsByPStructure($p_structure);
         $product_ids = static::getProductIdsFromProductList($products);
         $p_attrs = PStructureService::getAllPAttrsByProductsIds($product_ids);
@@ -74,13 +75,13 @@ class ProductExporterService {
 
         }
 
-        $keys = PStructureService::getAllPStructureAttrKeysById($key_ids);
+        $keys = PStructureService::getAllPStructureAttrKeysByIds($key_ids);
         $key_titles = array_map(function (PStructureAttrKey $key) {
             return $key->title;
         }, $keys->all());
 
 
-        $values = PStructureService::getAllPStructureAttrValuesById($value_ids);
+        $values = PStructureService::getAllPStructureAttrValuesByIds($value_ids);
         $values_map = [];
         foreach ($values as $value) {
             $values_map[$value->id] = $value;

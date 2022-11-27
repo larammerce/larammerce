@@ -160,7 +160,8 @@ class Product extends BaseModel implements
         "is_accessory" => "bool",
         "is_package" => "bool",
         "is_active" => "bool",
-        "is_visible" => "bool"
+        "is_visible" => "bool",
+        "is_discountable" => "bool"
     ];
 
     protected $with = [
@@ -929,16 +930,10 @@ class Product extends BaseModel implements
         return $this->seo_keywords;
     }
 
-    /**
-     * @param Directory|null $dest
-     * @return mixed
-     * @throws Throwable
-     */
-    public function attachFileTo($dest) {
-        $this->directory_id = $dest != null ? $dest->id : null;
+    public function attachFileTo(?Directory $dest): void {
+        $this->directory_id = $dest?->id;
         $this->save();
-        if ($dest != null)
-            $dest->attachLeafFiles($this->id);
+        $dest?->attachLeafFiles($this->id);
     }
 
     /**

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Interfaces\FileContract;
 use App\Models\Interfaces\FileContract as FileAbstractionContract;
 use App\Models\Interfaces\HashContract;
 use App\Models\Interfaces\ImageContract;
@@ -18,7 +17,6 @@ use App\Utils\Translation\Traits\Translatable;
 use DateTime;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -52,8 +50,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  */
 class Article extends BaseModel implements
     FileAbstractionContract, ShareContract, PublishScheduleContract, ImageContract,
-    RateableContract, SeoableContract, HashContract
-{
+    RateableContract, SeoableContract, HashContract {
     use Rateable, Seoable, Fileable, Translatable;
 
     protected $table = 'articles';
@@ -61,7 +58,7 @@ class Article extends BaseModel implements
 
     protected $fillable = [
         'directory_id', 'system_user_id', 'title', 'short_content', 'full_text', 'source', 'average_rating',
-        'rates_count', 'seo_keywords','seo_title', 'seo_description', 'content_type', 'is_suggested',
+        'rates_count', 'seo_keywords', 'seo_title', 'seo_description', 'content_type', 'is_suggested',
 
         //these are not table fields, these are form sections that role permission system works with
         'tags', 'main_image',
@@ -84,39 +81,32 @@ class Article extends BaseModel implements
      * Relation Methods
      */
 
-    public function directory(): BelongsTo
-    {
+    public function directory(): BelongsTo {
         return $this->belongsTo(Directory::class, 'directory_id');
     }
 
-    public function directories(): BelongsToMany
-    {
+    public function directories(): BelongsToMany {
         return $this->belongsToMany(Directory::class, 'article_directory',
             'article_id', 'directory_id');
     }
 
-    public function tags(): MorphToMany
-    {
+    public function tags(): MorphToMany {
         return $this->morphToMany(Tag::class, 'taggable');
     }
 
-    public function author(): BelongsTo
-    {
+    public function author(): BelongsTo {
         return $this->belongsTo(SystemUser::class, 'system_user_id');
     }
 
-    public function scopeLatest(Builder $query): Builder
-    {
+    public function scopeLatest(Builder $query): Builder {
         return $query->orderBy('id', 'DESC');
     }
 
-    public function scopeExcept(Builder $query, int $id): Builder
-    {
+    public function scopeExcept(Builder $query, int $id): Builder {
         return $query->where('id', '!=', $id);
     }
 
-    public function scopeFrom(Builder $query, $type): Builder
-    {
+    public function scopeFrom(Builder $query, $type): Builder {
         $contentType = 0;
         foreach (get_article_types() as $key => $value)
             if ($type == $value['title'])
@@ -124,13 +114,11 @@ class Article extends BaseModel implements
         return $query->where('content_type', $contentType);
     }
 
-    public function scopeSuggested(Builder $query): Builder
-    {
+    public function scopeSuggested(Builder $query): Builder {
         return $query->where('is_suggested', true);
     }
 
-    public function delete(): ?bool
-    {
+    public function delete(): ?bool {
         $this->rates()->delete();
         $this->tags()->detach();
         $this->review()->delete();
@@ -138,94 +126,77 @@ class Article extends BaseModel implements
         return parent::delete();
     }
 
-    public function hasImage(): bool
-    {
+    public function hasImage(): bool {
         return $this->image_path != null;
     }
 
-    public function getImagePath(): string
-    {
+    public function getImagePath(): string {
         return $this->image_path;
     }
 
-    public function setImagePath()
-    {
+    public function setImagePath() {
         $tmpImage = ImageService::saveImage($this->getImageCategoryName());
         $this->image_path = $tmpImage->destinationPath . '/' . $tmpImage->name;
         $this->save();
     }
 
-    public function removeImage()
-    {
+    public function removeImage() {
         $this->image_path = null;
         $this->save();
     }
 
-    public function getDefaultImagePath(): string
-    {
+    public function getDefaultImagePath(): string {
         return '/admin_dashboard/images/No_image.jpg.png';
     }
 
-    public function getImageCategoryName(): string
-    {
+    public function getImageCategoryName(): string {
         return 'blog';
     }
 
-    public static function getFrontPaginationCount(): int
-    {
+    public static function getFrontPaginationCount(): int {
         return self::$FRONT_PAGINATION_COUNT;
     }
 
-    public function parentField(): string
-    {
+    public function parentField(): string {
         return 'directory_id';
     }
 
-    public function getName(): string
-    {
+    public function getName(): string {
         return $this->title;
     }
 
-    public function getAdminUrl(): string
-    {
+    public function getAdminUrl(): string {
         return route('admin.article.show', $this);
     }
 
-    public function getFrontUrl(): string
-    {
+    public function getFrontUrl(): string {
         return lm_route('public.view-blog', $this) . '/' . url_encode($this->title);
     }
 
-    public function getSearchUrl(): string
-    {
+    public function getSearchUrl(): string {
         return '';
     }
 
-    public function getTitle(): string
-    {
+    public function getTitle(): string {
         return $this->title;
     }
 
-    public function getSeoTitle(): string
-    {
+    public function getSeoTitle(): string {
         if ($this->seo_title !== null and strlen($this->seo_title) > 0)
             return $this->seo_title;
         return $this->title . " - " . $this->directory->title;
     }
 
 
-    public function getSeoDescription(): string
-    {
+    public function getSeoDescription(): string {
         return $this->seo_description;
     }
 
-    public function getSeoKeywords(): string
-    {
+    public function getSeoKeywords(): string {
         return $this->seo_keywords;
     }
 
-    public function attachFileTo($dest)
-    {
+    public function attachFileTo(?Directory $dest): void {
         $this->directory_id = $dest?->id;
         $this->save();
         $dest?->attachLeafFiles($this->id);
@@ -234,8 +205,7 @@ class Article extends BaseModel implements
     /**
      * @throws Exception
      */
-    public function detachFile($dest = null)
-    {
+    public function detachFile($dest = null) {
         if ($this->directory != null) {
             $destParentDirectoriesIds = [];
             if ($dest != null) {
@@ -258,22 +228,19 @@ class Article extends BaseModel implements
         }
     }
 
-    public function cloneFile()
-    {
+    public function cloneFile() {
         $newArticle = $this->replicate();
         $newArticle->push();
         $newArticle->createReview();
         return $newArticle;
     }
 
-    public function generateNewUrls($dest)
-    {
+    public function generateNewUrls($dest) {
         // TODO: Implement generateNewUrls() method.
         $this->save();
     }
 
-    public function getHash(): string
-    {
+    public function getHash(): string {
         return md5(
             $this->system_user_id . "#",
             $this->title . "#" .
@@ -289,8 +256,7 @@ class Article extends BaseModel implements
         );
     }
 
-    public function isImageLocal(): bool
-    {
+    public function isImageLocal(): bool {
         return true;
     }
 }
