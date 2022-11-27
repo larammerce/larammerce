@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Schema;
 class ProductExporterService {
 
     private const EXCLUDE_COLUMNS = [
-        "attributes_content",
         "extra_properties",
         "description",
         "created_at",

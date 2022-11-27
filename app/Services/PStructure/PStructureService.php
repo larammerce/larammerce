@@ -9,12 +9,14 @@ use App\Models\PStructureAttrKey;
 use App\Models\PStructureAttrValue;
 use Illuminate\Support\Collection;
 
-class PStructureService {
+class PStructureService
+{
     /**
      * @param int[]|Collection $product_ids
      * @return PAttr[]|Collection
      */
-    public static function getAllPAttrsByProductsIds(array|Collection $product_ids): Collection|array {
+    public static function getAllPAttrsByProductsIds(array|Collection $product_ids): Collection|array
+    {
         return PAttr::whereIn("product_id", $product_ids)
             ->orderBy("product_id", "ASC")
             ->orderBy("p_structure_attr_key_id", "ASC")
@@ -25,7 +27,8 @@ class PStructureService {
      * @param int[]|Collection $p_s_attribute_key_ids
      * @return PStructureAttrKey[]|Collection
      */
-    public static function getAllPStructureAttrKeysByIds(array|Collection $p_s_attribute_key_ids): Collection|array {
+    public static function getAllPStructureAttrKeysByIds(array|Collection $p_s_attribute_key_ids): Collection|array
+    {
         return PStructureAttrKey::whereIn("id", $p_s_attribute_key_ids)->orderBy("id", "ASC")->get();
     }
 
@@ -34,14 +37,16 @@ class PStructureService {
      * @param int[]|Collection $p_s_attribute_value_ids
      * @return PStructureAttrValue[]|Collection
      */
-    public static function getAllPStructureAttrValuesByIds(array|Collection $p_s_attribute_value_ids): Collection|array {
+    public static function getAllPStructureAttrValuesByIds(array|Collection $p_s_attribute_value_ids): Collection|array
+    {
         return PStructureAttrValue::whereIn("id", $p_s_attribute_value_ids)->orderBy("id", "ASC")->get();
     }
 
     /**
      * @throws PStructureAttrKeyNotFoundException
      */
-    public static function findKeyByTitle(string $title): PStructureAttrKey {
+    public static function findKeyByTitle(string $title): PStructureAttrKey
+    {
         /**
          * @var PStructureAttrKey $p_structure_attr_key
          */
@@ -52,7 +57,8 @@ class PStructureService {
         return $p_structure_attr_key;
     }
 
-    public static function findOrCreateKeyByTitle(string $title): PStructureAttrKey {
+    public static function findOrCreateKeyByTitle(string $title): PStructureAttrKey
+    {
         try {
             return static::findKeyByTitle($title);
         } catch (PStructureAttrKeyNotFoundException $e) {
@@ -66,7 +72,8 @@ class PStructureService {
         int    $priority = 0,
         bool   $is_model_option = false,
         bool   $is_sortable = false
-    ): PStructureAttrKey {
+    ): PStructureAttrKey
+    {
         return PStructureAttrKey::create([
             "title" => $title,
             "show_type" => $show_type,
@@ -80,20 +87,22 @@ class PStructureService {
     /**
      * @throws PStructureAttrValueNotFoundException
      */
-    public static function findValueByTitle(string $title, PStructureAttrKey $key): PStructureAttrValue {
+    public static function findValueByName(string $name, PStructureAttrKey $key): PStructureAttrValue
+    {
         /**
          * @var PStructureAttrValue $p_structure_attr_value
          */
-        $p_structure_attr_value = $key->values()->where("title", $title)->first();
+        $p_structure_attr_value = $key->values()->where("name", $name)->first();
         if ($p_structure_attr_value == null) {
-            throw new PStructureAttrValueNotFoundException("The p structure value with title `{$title}` does not exist in the database.");
+            throw new PStructureAttrValueNotFoundException("The p structure value with title `{$name}` does not exist in the database.");
         }
         return $p_structure_attr_value;
     }
 
-    public static function findOrCreateValueByName(string $name, PStructureAttrKey $key): PStructureAttrValue {
+    public static function findOrCreateValueByName(string $name, PStructureAttrKey $key): PStructureAttrValue
+    {
         try {
-            return static::findValueByTitle($name, $key);
+            return static::findValueByName($name, $key);
         } catch (PStructureAttrValueNotFoundException $e) {
             return static::createValue($name, $key);
         }
@@ -106,7 +115,8 @@ class PStructureService {
         string            $image_path = "",
         string            $image_alias = "",
         int               $priority = 0
-    ): PStructureAttrValue {
+    ): PStructureAttrValue
+    {
         return PStructureAttrValue::create([
             'name' => $name,
             'en_name' => $en_name,

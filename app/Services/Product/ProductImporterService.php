@@ -4,20 +4,22 @@ namespace App\Services\Product;
 
 use App\Exceptions\Directory\DirectoryNotFoundException;
 use App\Exceptions\Product\ProductNotFoundException;
+use App\Models\PAttr;
 use App\Models\Product;
 use App\Models\PStructure;
 use App\Services\Directory\DirectoryService;
 use App\Services\PStructure\PStructureService;
 use Illuminate\Support\Facades\Schema;
 
-class ProductImporterService {
+class ProductImporterService
+{
 
     private static function getMainAttributesFromDataArray(array $data_array): array {
         $result = [];
         $tmp_product = new Product();
 
         foreach ($tmp_product->getFillable() as $fillable) {
-            if ($data_array[$fillable] == null)
+            if (($data_array[$fillable] ?? null) == null)
                 continue;
 
             $result[$fillable] = $data_array[$fillable];
@@ -97,13 +99,18 @@ class ProductImporterService {
      * @throws DirectoryNotFoundException
      */
     public static function importFromDataArray(PStructure $p_structure, array $data_array): Product {
+        ini_set("memory_limit", -1);
+        ini_set("max_execution_time", -1);
+
         $product_id = $data_array["id"];
         $directory_id = $data_array["directory_id"];
 
         $main_attributes = static::getMainAttributesFromDataArray($data_array);
         $p_structure_attributes = static::getPStructureAttributesFromDataArray($data_array);
-        $extra_properties = json_encode(static::getExtraPropertiesFromDataArray($data_array));
+        $extra_properties = static::getExtraPropertiesFromDataArray($data_array);
         $main_attributes["extra_properties"] = $extra_properties;
+        $main_attributes["p_structure_id"] = $p_structure->id;
+        $p_structure_value_ids = [];
 
         if ($product_id == null) {
             $directory = DirectoryService::findDirectoryById($directory_id);
@@ -112,5 +119,28 @@ class ProductImporterService {
 
         $product = ProductService::findProductById($product_id);
         ProductService::updateProductFromAttributesArray($product, $main_attributes);
+
+        $current_p_structure_attrs = PStructureService::getAllPAttrsByProductsIds([$product->id]);
+        $current_p_structure_value_ids = array_map(function (PAttr $p_attr) {
+            return $p_attr->p_structure_attr_value_id;
+        }, $current_p_structure_attrs->all());
+
+        foreach ($p_structure_attributes as $p_structure_attribute) {
+            $key = $p_structure_attribute["key"];
+            foreach ($p_structure_attribute["values"] as $value) {
+                $p_structure_value_ids[] = $value->id;
+
+                if (!in_array($value->id, $current_p_structure_value_ids)) {
+                    ProductService::attachAttributeToProduct($product, $key, $value);
+                }
+            }
+        }
+
+        foreach ($current_p_structure_attrs as $current_p_structure_attr) {
+            if (!in_array($current_p_structure_attr->p_structure_attr_value_id, $p_structure_value_ids))
+                ProductService::detachAttributeFromProduct($product, $current_p_structure_attr->key, $current_p_structure_attr->value);
+        }
+
+        return $product;
     }
 }

@@ -4,12 +4,16 @@ namespace App\Services\Product;
 
 use App\Exceptions\Product\ProductNotFoundException;
 use App\Models\Directory;
+use App\Models\PAttr;
 use App\Models\Product;
 use App\Models\PStructure;
+use App\Models\PStructureAttrKey;
+use App\Models\PStructureAttrValue;
 use Exception;
 use Illuminate\Support\Collection;
 
-class ProductService {
+class ProductService
+{
 
     private const UPDATE_EXCLUDE_ATTRIBUTES = [
         "directory_id",
@@ -38,10 +42,6 @@ class ProductService {
         return $p_structure->products()->orderBy("id", "ASC")->get();
     }
 
-    public static function chunkAllProductsByPStructure(PStructure $p_structure, int $count, callable $callback): bool {
-        return $p_structure->products()->chunk($count, $callback);
-    }
-
     public static function createProductFromAttributesArray(array $attributes, Directory $directory): Product {
         $product = Product::create($attributes);
         $product->attachFileTo($directory);
@@ -68,5 +68,35 @@ class ProductService {
         $product->updateReview();
 
         return $product;
+    }
+
+    public static function attachAttributeToProduct(Product $product, PStructureAttrKey $key, PStructureAttrValue $value): void {
+        if ($product->pAttributes()
+                ->where('p_structure_attr_key_id', '=', $key->id)
+                ->where('p_structure_attr_value_id', '=', $value->id)
+                ->count() > 0) {
+            return;
+        }
+
+        PAttr::create([
+            "product_id" => $product->id,
+            "p_structure_attr_key_id" => $key->id,
+            "p_structure_attr_value_id" => $value->id,
+        ]);
+
+        if ($key->is_sortable) {
+            $product->buildStructureSortScore($key);
+        }
+    }
+
+    public static function detachAttributeFromProduct(Product $product, PStructureAttrKey $key, PStructureAttrValue $value): void {
+        $product->pAttributes()
+            ->where('p_structure_attr_key_id', '=', $key->id)
+            ->where('p_structure_attr_value_id', '=', $value->id)
+            ->delete();
+
+        if ($key->is_sortable) {
+            $product->buildStructureSortScore($key);
+        }
     }
 }

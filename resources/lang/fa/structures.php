@@ -130,7 +130,6 @@ return [
             'previous_price' => 'قیمت پیشین',
             'is_accessory' => 'لوازم جانبی است',
             'is_visible' => 'قابل مشاهده است',
-            'attributes_content' => 'محتوای ویژگی‌ها',
             'inaccessibility_type' => 'نوع غیرقابل دسترس بودن',
             'notice' => 'اعلان',
             'is_discountable' => 'قابل تخفیف است',

@@ -46,6 +46,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Routing\Exceptions\UrlGenerationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Psy\Util\Json;
 use stdClass;
 use Throwable;
 
@@ -86,7 +87,6 @@ use Throwable;
  * @property int model_id
  * @property bool has_discount TODO: rename this property to has_special_offer
  * @property bool is_visible
- * @property string attributes_content
  * @property integer cmc_id
  * @property string notice
  * @property integer models_count
@@ -149,7 +149,7 @@ class Product extends BaseModel implements
         "description", "code", "average_rating", "rates_count", "is_active",
         "min_allowed_count", "max_purchase_count", "min_purchase_count",
         "is_important", "seo_title", "seo_keywords", "seo_description", "model_id",
-        "has_discount", "previous_price", "is_accessory", "is_visible", "attributes_content", "inaccessibility_type",
+        "has_discount", "previous_price", "is_accessory", "is_visible", "inaccessibility_type",
         "cmc_id", "notice", "discount_group_id", "priority", "is_discountable", "structure_sort_score", "package_id", "accessory_for",
         //these are not table fields, these are form sections that role permission system works with
         "tags", "attributes", "gallery", "colors", "badges", "is_package"
