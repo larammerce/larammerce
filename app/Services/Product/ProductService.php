@@ -2,23 +2,20 @@
 
 namespace App\Services\Product;
 
-use App\Exceptions\PStructure\PStructureNotFoundException;
 use App\Models\Product;
-use App\Services\PStructure\PStructureService;
+use App\Models\PStructure;
 use Illuminate\Support\Collection;
 
-class ProductService
-{
+class ProductService {
     /**
-     * @param int $p_structure_id
+     * @param PStructure $p_structure
      * @return Collection|Product[]
-     * @throws PStructureNotFoundException
      */
-    public static function getAllProductsByPStructure(int $p_structure_id): Collection|array
-    {
-        if (!PStructureService::pStructureExists($p_structure_id))
-            throw new PStructureNotFoundException("The exception with id `$p_structure_id` not found.");
+    public static function getAllProductsByPStructure(PStructure $p_structure): Collection|array {
+        return $p_structure->products()->orderBy("id", "ASC")->get();
+    }
 
-        return Product::where("p_structure_id", $p_structure_id)->get();
+    public static function chunkAllProductsByPStructure(PStructure $p_structure, int $count, callable $callback): bool {
+        return $p_structure->products()->chunk($count, $callback);
     }
 }
