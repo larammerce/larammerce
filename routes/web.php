@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\PStructureController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -303,6 +304,7 @@ Route::group(
                     ["as" => "attach-attribute-key", "uses" => "PStructureController@attachAttributeKey"]);
                 Route::post("{p_structure}/detach-attribute-key",
                     ["as" => "detach-attribute-key", "uses" => "PStructureController@detachAttributeKey"]);
+                Route::get("{p_structure}/download-excel", [PStructureController::class, "downloadExcel"])->name("download-excel");
             });
         Route::resource("p-structure", "PStructureController", ["as" => "admin"]);
 

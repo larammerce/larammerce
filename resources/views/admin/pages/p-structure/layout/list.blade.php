@@ -25,8 +25,8 @@
                    data-method="DELETE" confirm>
                     <i class="fa fa-trash"></i>
                 </a>
-                <a class="btn btn-sm btn-success" href="{{route('admin.p-structure.show', $p_structure)}}">
-                    <i class="fa fa-eye"></i>
+                <a class="btn btn-sm btn-success" href="{{route('admin.p-structure.download-excel', $p_structure)}}">
+                    <i class="fa fa-download"></i>
                 </a>
             </div>
         </div>

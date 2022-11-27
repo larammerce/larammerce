@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\PAttr;
 use App\Models\PStructure;
+use App\Services\Product\ProductExcelExporterService;
 use App\Utils\Common\History;
 use App\Utils\Common\MessageFactory;
 use App\Utils\Common\RequestService;
@@ -12,18 +13,17 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 /**
  * @package App\Http\Controllers\Admin
  * @role(enabled=true)
  */
-class PStructureController extends BaseController
-{
+class PStructureController extends BaseController {
     /**
      * @role(super_user, cms_manager)
      */
-    public function index(): Factory|\Illuminate\Contracts\View\View|Application
-    {
+    public function index(): Factory|\Illuminate\Contracts\View\View|Application {
         parent::setPageAttribute();
         $p_structures = PStructure::with('attributeKeys')
             ->paginate(PStructure::getPaginationCount());
@@ -33,8 +33,7 @@ class PStructureController extends BaseController
     /**
      * @role(super_user, cms_manager)
      */
-    public function create(): Factory|\Illuminate\Contracts\View\View|Application
-    {
+    public function create(): Factory|\Illuminate\Contracts\View\View|Application {
         return view('admin.pages.p-structure.create');
     }
 
@@ -42,8 +41,7 @@ class PStructureController extends BaseController
      * @role(super_user, cms_manager)
      * @rules(title="required|unique:p_structures")
      */
-    public function store(Request $request): RedirectResponse
-    {
+    public function store(Request $request): RedirectResponse {
         $p_structure = PStructure::create($request->all());
         return redirect()->route('admin.p-structure.edit', $p_structure);
     }
@@ -51,8 +49,7 @@ class PStructureController extends BaseController
     /**
      * @role(super_user, cms_manager)
      */
-    public function edit(PStructure $p_structure): Factory|\Illuminate\Contracts\View\View|Application
-    {
+    public function edit(PStructure $p_structure): Factory|\Illuminate\Contracts\View\View|Application {
         $p_structure->load('attributeKeys');
         return view('admin.pages.p-structure.edit')->with(compact("p_structure"));
     }
@@ -61,8 +58,7 @@ class PStructureController extends BaseController
      * @role(super_user, cms_manager)
      * @rules(title="required|unique:p_structures,title," . request()->get('id'))
      */
-    public function update(Request $request, PStructure $p_structure): RedirectResponse
-    {
+    public function update(Request $request, PStructure $p_structure): RedirectResponse {
         $p_structure->update($request->all());
         return History::redirectBack();
     }
@@ -70,8 +66,7 @@ class PStructureController extends BaseController
     /**
      * @role(super_user, cms_manager)
      */
-    public function destroy(PStructure $p_structure): RedirectResponse
-    {
+    public function destroy(PStructure $p_structure): RedirectResponse {
         $p_structure->delete();
         return back();
     }
@@ -80,8 +75,7 @@ class PStructureController extends BaseController
      * @role(super_user, cms_manager)
      * @rules(attributeKeys="array", attributeKeys.*="exists:p_structure_attribute_keys,id")
      */
-    public function attachAttributeKeys(Request $request, PStructure $p_structure): RedirectResponse
-    {
+    public function attachAttributeKeys(Request $request, PStructure $p_structure): RedirectResponse {
         $p_structure->attributeKeys()->detach();
         $p_structure->attributeKeys()->attach($request->get('attributeKeys'));
         return redirect()->route('admin.pages.p-structure.index');
@@ -91,8 +85,7 @@ class PStructureController extends BaseController
      * @role(super_user, cms_manager)
      * @rules(id="required|exists:p_structure_attr_keys,id")
      */
-    public function attachAttributeKey(Request $request, PStructure $p_structure): JsonResponse|RedirectResponse
-    {
+    public function attachAttributeKey(Request $request, PStructure $p_structure): JsonResponse|RedirectResponse {
         $p_structure->attributeKeys()->attach($request->get('id'));
         if (RequestService::isRequestAjax()) {
             return response()->json(MessageFactory::create(
@@ -107,8 +100,7 @@ class PStructureController extends BaseController
      * @role(super_user, cms_manager)
      * @rules(id="required|exists:p_structure_attr_keys,id")
      */
-    public function detachAttributeKey(Request $request, PStructure $p_structure): JsonResponse|RedirectResponse
-    {
+    public function detachAttributeKey(Request $request, PStructure $p_structure): JsonResponse|RedirectResponse {
         $p_structure->attributeKeys()->detach($request->get('id'));
         PAttr::clean($p_structure->products, $request->get('id'));
         if (RequestService::isRequestAjax()) {
@@ -120,9 +112,13 @@ class PStructureController extends BaseController
         return redirect()->route('admin.p-structure.index');
     }
 
+    public function downloadExcel(Request $request, PStructure $p_structure): \Symfony\Component\HttpFoundation\BinaryFileResponse {
+        $filename = "{$p_structure->title}.xlsx";
+        return Excel::download(new ProductExcelExporterService($p_structure), $filename);
+    }
 
-    public function getModel(): ?string
-    {
+
+    public function getModel(): ?string {
         return PStructure::class;
     }
 }

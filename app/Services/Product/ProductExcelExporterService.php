@@ -5,9 +5,12 @@ namespace App\Services\Product;
 use App\Models\PStructure;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Events\AfterSheet;
 
-class ProductExcelExporterService implements WithHeadings, FromCollection {
+class ProductExcelExporterService implements WithHeadings, FromCollection, ShouldAutoSize, WithEvents {
 
     private PStructure $p_structure;
     private Collection $collection;
@@ -26,5 +29,13 @@ class ProductExcelExporterService implements WithHeadings, FromCollection {
 
     public function collection(): Collection {
         return $this->collection;
+    }
+
+    public function registerEvents(): array {
+        return [
+            AfterSheet::class => function (AfterSheet $event) {
+                $event->sheet->getDelegate()->setRightToLeft(true);
+            },
+        ];
     }
 }

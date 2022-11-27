@@ -42,7 +42,7 @@ class ProductExporterService {
                 $p_attr_product_id_map[$p_attr->product_id][$p_attr->p_structure_attr_key_id] = [];
             }
 
-            $p_attr_product_id_map[$p_attr->product_id][$p_attr->p_structure_attr_key_id] = $p_attr;
+            $p_attr_product_id_map[$p_attr->product_id][$p_attr->p_structure_attr_key_id][] = $p_attr;
 
             if (!in_array($p_attr->p_structure_attr_key_id, $key_ids))
                 $key_ids[] = $p_attr->p_structure_attr_key_id;
@@ -55,7 +55,7 @@ class ProductExporterService {
         $keys = PStructureService::getAllPStructureAttrKeysById($key_ids);
         $key_titles = array_map(function (PStructureAttrKey $key) {
             return $key->title;
-        }, $keys);
+        }, $keys->all());
 
 
         $values = PStructureService::getAllPStructureAttrValuesById($value_ids);
@@ -65,18 +65,41 @@ class ProductExporterService {
         }
 
         $tmp_product = new Product();
-        $base_columns = Schema::getColumnListing($tmp_product->getTable());
-        $extra_columns = $key_titles;
+        $base_columns = array_filter(Schema::getColumnListing($tmp_product->getTable()), function (string $column) {
+            return !in_array($column,
+                [
+                    "attributes_content",
+                    "extra_properties",
+                    "description",
+                    "created_at",
+                    "updated_at",
+                    "color_code",
+                    "models_count",
+                    "discount_group_id",
+                    "structure_sort_score",
+                    "important_at",
+                    "rates_count",
+                    "toll_amount",
+                    "tax_amount",
+                    "pure_price",
+                    "cmc_id",
+                    "notice"
+                ]
+            );
+        });
+        $key_columns = $key_titles;
         $columns = [
             ...$base_columns,
-            ...$extra_columns
+            ...$key_columns
         ];
+        $extra_columns = [];
+        $count_of_current_columns = count($columns);
 
         $rows = [];
         foreach ($products as $product) {
             $product_attrs = $p_attr_product_id_map[$product->id] ?? [];
 
-            $rows[] = [
+            $row = [
                 ...array_map(
                     function (string $col_name) use ($product) {
                         return $product->$col_name;
@@ -95,9 +118,33 @@ class ProductExporterService {
                     return implode(", ", array_map(function (PStructureAttrValue $value) {
                         return $value->name;
                     }, $values));
-                }, $keys)
+                }, $keys->all()),
+                ...array_fill(0, count($extra_columns), "")
             ];
+
+            $extra_properties = $product->getExtraProperties();
+            foreach ($extra_properties as $item) {
+                $ex_col_name = "e:" . $item->key;
+                $ex_col_value = $item->value;
+
+                $col_index = array_search($ex_col_name, $extra_columns);
+
+                if ($col_index !== false) {
+                    $row[$col_index + $count_of_current_columns] = $ex_col_value;
+                } else {
+                    $extra_columns[] = $ex_col_name;
+                    $row[] = $ex_col_value;
+                }
+            }
+
+
+            $rows[] = $row;
         }
+
+        $columns = [
+            ...$columns,
+            ...$extra_columns
+        ];
 
         return compact("columns", "rows");
     }
