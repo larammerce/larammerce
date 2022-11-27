@@ -1,6 +1,6 @@
 @foreach($p_structures as $p_structure)
     <div
-        class="col-lg-offset-1 col-lg-10 col-md-offset-0 col-md-12 col-sm-offset-0 col-sm-12 col-xs-offset-0 col-xs-12 list-row roles">
+            class="col-lg-offset-1 col-lg-10 col-md-offset-0 col-md-12 col-sm-offset-0 col-sm-12 col-xs-offset-0 col-xs-12 list-row roles">
         <div class="col-lg-1 col-md-2 col-sm-2 col-xs-3 col">
             <div class="img-container">
                 <img class="img-responsive" src="/admin_dashboard/images/No_image.jpg.png">
@@ -27,6 +27,11 @@
                 </a>
                 <a class="btn btn-sm btn-success" href="{{route('admin.p-structure.download-excel', $p_structure)}}">
                     <i class="fa fa-download"></i>
+                </a>
+                <a class="btn btn-sm btn-success p-structure-upload-excel"
+                   href="#"
+                   data-href="{{route("admin.p-structure.upload-excel", $p_structure)}}">
+                    <i class="fa fa-upload"></i>
                 </a>
             </div>
         </div>

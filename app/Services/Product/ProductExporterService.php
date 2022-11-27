@@ -13,6 +13,25 @@ use Illuminate\Support\Facades\Schema;
 
 class ProductExporterService {
 
+    private const EXCLUDE_COLUMNS = [
+        "attributes_content",
+        "extra_properties",
+        "description",
+        "created_at",
+        "updated_at",
+        "color_code",
+        "models_count",
+        "discount_group_id",
+        "structure_sort_score",
+        "important_at",
+        "rates_count",
+        "toll_amount",
+        "tax_amount",
+        "pure_price",
+        "cmc_id",
+        "notice"
+    ];
+
     /**
      * @param Collection|array $products
      * @return int[]
@@ -25,6 +44,9 @@ class ProductExporterService {
     }
 
     public static function exportDataArray(PStructure $p_structure): array {
+        ini_set("memory_limit", -1);
+        ini_set("max_execution_time", -1);
+        
         $products = ProductService::getAllProductsByPStructure($p_structure);
         $product_ids = static::getProductIdsFromProductList($products);
         $p_attrs = PStructureService::getAllPAttrsByProductsIds($product_ids);
@@ -66,26 +88,7 @@ class ProductExporterService {
 
         $tmp_product = new Product();
         $base_columns = array_filter(Schema::getColumnListing($tmp_product->getTable()), function (string $column) {
-            return !in_array($column,
-                [
-                    "attributes_content",
-                    "extra_properties",
-                    "description",
-                    "created_at",
-                    "updated_at",
-                    "color_code",
-                    "models_count",
-                    "discount_group_id",
-                    "structure_sort_score",
-                    "important_at",
-                    "rates_count",
-                    "toll_amount",
-                    "tax_amount",
-                    "pure_price",
-                    "cmc_id",
-                    "notice"
-                ]
-            );
+            return !in_array($column, static::EXCLUDE_COLUMNS);
         });
         $key_columns = $key_titles;
         $columns = [

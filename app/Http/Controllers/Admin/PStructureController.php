@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\PAttr;
 use App\Models\PStructure;
 use App\Services\Product\ProductExcelExporterService;
+use App\Services\Product\ProductExcelImporterService;
 use App\Utils\Common\History;
 use App\Utils\Common\MessageFactory;
 use App\Utils\Common\RequestService;
@@ -115,6 +116,14 @@ class PStructureController extends BaseController {
     public function downloadExcel(Request $request, PStructure $p_structure): \Symfony\Component\HttpFoundation\BinaryFileResponse {
         $filename = "{$p_structure->title}.xlsx";
         return Excel::download(new ProductExcelExporterService($p_structure), $filename);
+    }
+
+    /**
+     * @rules(file="required|file|mimes:xlsx")
+     */
+    public function uploadExcel(Request $request, PStructure $p_structure): RedirectResponse {
+        Excel::import(new ProductExcelImporterService($p_structure), $request->file("file"));
+        return redirect()->back();
     }
 
 

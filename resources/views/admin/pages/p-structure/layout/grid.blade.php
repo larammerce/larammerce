@@ -30,6 +30,11 @@
                            href="{{route('admin.p-structure.download-excel', $p_structure)}}">
                             <i class="fa fa-download"></i>
                         </a>
+                        <a class="btn btn-sm btn-success p-structure-upload-excel"
+                           href="#"
+                           data-href="{{route("admin.p-structure.upload-excel", $p_structure)}}">
+                            <i class="fa fa-upload"></i>
+                        </a>
                     </div>
                 </div>
             </div>

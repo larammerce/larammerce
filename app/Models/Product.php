@@ -158,7 +158,9 @@ class Product extends BaseModel implements
     protected $casts = [
         "important_at" => "timestamp",
         "is_accessory" => "bool",
-        "is_package" => "bool"
+        "is_package" => "bool",
+        "is_active" => "bool",
+        "is_visible" => "bool"
     ];
 
     protected $with = [
