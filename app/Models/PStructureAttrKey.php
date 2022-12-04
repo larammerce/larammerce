@@ -81,7 +81,7 @@ class PStructureAttrKey extends BaseModel implements TaggableContract {
     }
 
     public function setIsSortableAttribute($value): void {
-        if ($value != $this->attributes["is_sortable"]) {
+        if ($value != ($this->attributes["is_sortable"] ?? null)) {
             $this->attributes["is_sortable"] = $value;
             if ($value) {
                 foreach ($this->productStructures as $related_p_structure) {

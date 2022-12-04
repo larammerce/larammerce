@@ -11,8 +11,7 @@ use App\Services\Directory\DirectoryService;
 use App\Services\PStructure\PStructureService;
 use Illuminate\Support\Facades\Schema;
 
-class ProductImporterService
-{
+class ProductImporterService {
     private const CASTS = [
         "latest_price" => "int",
         "latest_special_price" => "int",

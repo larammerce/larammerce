@@ -2,18 +2,17 @@
 
 namespace App\Jobs\Product;
 
+use App\Exceptions\Directory\DirectoryNotFoundException;
+use App\Exceptions\Product\ProductNotFoundException;
 use App\Jobs\Job;
 use App\Models\PStructure;
 use App\Services\Product\ProductImporterService;
-use App\Exceptions\Directory\DirectoryNotFoundException;
-use App\Exceptions\Product\ProductNotFoundException;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class ProductImportFromDataArray extends Job implements ShouldQueue
-{
+class ProductImportFromDataArray extends Job implements ShouldQueue {
     use InteractsWithQueue, SerializesModels;
 
     private PStructure $p_structure;

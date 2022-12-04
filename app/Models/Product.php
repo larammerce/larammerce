@@ -46,7 +46,6 @@ use Illuminate\Database\QueryException;
 use Illuminate\Routing\Exceptions\UrlGenerationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Psy\Util\Json;
 use stdClass;
 use Throwable;
 
@@ -95,7 +94,6 @@ use Throwable;
  * @property boolean is_new
  * @property boolean is_discountable
  * @property string structure_sort_score
- * @property integer package_id
  * @property bool is_package
  * @property integer maximum_allowed_purchase_count
  * @property integer minimum_allowed_purchase_count
@@ -130,8 +128,7 @@ use Throwable;
  */
 class Product extends BaseModel implements
     FileAbstractionContract, ShareContract, PublishScheduleContract, ImageContract,
-    RateableContract, SeoableContract, HashContract
-{
+    RateableContract, SeoableContract, HashContract {
     use Rateable, Seoable, Fileable, FullTextSearch, Badgeable, Translatable;
 
     public $timestamps = true;
@@ -151,9 +148,10 @@ class Product extends BaseModel implements
         "min_allowed_count", "max_purchase_count", "min_purchase_count",
         "is_important", "seo_title", "seo_keywords", "seo_description", "model_id",
         "has_discount", "previous_price", "is_accessory", "is_visible", "inaccessibility_type",
-        "cmc_id", "notice", "discount_group_id", "priority", "is_discountable", "structure_sort_score", "package_id", "accessory_for",
+        "cmc_id", "notice", "discount_group_id", "priority", "is_discountable", "structure_sort_score",
+        "is_package", "accessory_for",
         //these are not table fields, these are form sections that role permission system works with
-        "tags", "attributes", "gallery", "colors", "badges", "is_package"
+        "tags", "attributes", "gallery", "colors", "badges"
     ];
 
     protected $casts = [
@@ -365,9 +363,9 @@ class Product extends BaseModel implements
 
     public function setExtraPropertiesAttribute(?array $extra_properties) {
         $this->attributes["extra_properties"] = json_encode(array_filter($extra_properties,
-                function ($iter_property) {
-                    return $iter_property["key"] !== null;
-                }) ?? []);
+            function ($iter_property) {
+                return $iter_property["key"] !== null;
+            }) ?? []);
     }
 
     public function getExtraProperties() {
