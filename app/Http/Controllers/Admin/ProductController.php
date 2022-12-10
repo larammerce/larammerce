@@ -8,6 +8,8 @@ use App\Models\PAttr;
 use App\Models\ProductFilter;
 use App\Models\PStructure;
 use App\Models\PStructureAttrKey;
+use App\Models\PStructureAttrValue;
+use App\Services\Product\ProductService;
 use App\Utils\CMS\File\ExploreService;
 use App\Utils\CMS\FormService;
 use App\Utils\CMS\SiteMap\Provider as SiteMapProvider;
@@ -157,22 +159,10 @@ class ProductController extends BaseController
      * @role(super_user, cms_manager, acc_manager)
      * @rules(id="required|exists:p_structure_attr_values,id")
      */
-
     public function attachAttribute(Request $request, Product $product, PStructureAttrKey $key): JsonResponse|RedirectResponse
     {
-        PAttr::create([
-            "product_id" => $product->id,
-            "p_structure_attr_key_id" => $key->id,
-            "p_structure_attr_value_id" => $request->get('id'),
-        ]);
-        $product->attributes_content = $request->get('data_text');
-        $product->save();
-
-        if ($key->is_sortable) {
-            $product->buildStructureSortScore($key);
-        }
-
-
+        $value = PStructureAttrValue::find($request->get('id'));
+        ProductService::attachAttributeToProduct($product, $key, $value);
         if (RequestService::isRequestAjax()) {
             return response()->json(MessageFactory::create(
                 ['messages.product.attribute_attached'], 200, compact('product')
@@ -187,17 +177,8 @@ class ProductController extends BaseController
      */
     public function detachAttribute(Request $request, Product $product, PStructureAttrKey $key): JsonResponse|RedirectResponse
     {
-        $product->pAttributes()
-            ->where('p_structure_attr_key_id', '=', $key->id)
-            ->where('p_structure_attr_value_id', '=', $request->get('id'))
-            ->delete();
-        $product->attributes_content = $request->get('data_text');
-        $product->save();
-
-        if ($key->is_sortable) {
-            $product->buildStructureSortScore($key);
-        }
-
+        $value = PStructureAttrValue::find($request->get('id'));
+        ProductService::detachAttributeFromProduct($product, $key, $value);
         if (RequestService::isRequestAjax()) {
             return response()->json(MessageFactory::create(
                 ['messages.product.attribute_detached'], 200, compact('product')

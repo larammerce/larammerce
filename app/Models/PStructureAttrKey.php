@@ -28,14 +28,18 @@ use Illuminate\Support\Facades\DB;
  * Class PStructureAttrKey
  * @package App\Models
  */
-class PStructureAttrKey extends BaseModel implements TaggableContract
-{
+class PStructureAttrKey extends BaseModel implements TaggableContract {
     use Taggable, Translatable;
 
     protected $table = 'p_structure_attr_keys';
 
     protected $fillable = [
         'title', 'show_type', 'priority', 'is_model_option', 'is_sortable'
+    ];
+
+    protected $casts = [
+        'is_model_option' => "bool",
+        'is_sortable' => "bool"
     ];
 
     public $timestamps = false;
@@ -49,42 +53,35 @@ class PStructureAttrKey extends BaseModel implements TaggableContract
     /*
      * Relations Methods
      */
-    public function productStructures(): BelongsToMany
-    {
+    public function productStructures(): BelongsToMany {
         return $this->belongsToMany(PStructure::class, 'p_structure_attrs',
             'p_structure_attr_key_id', 'p_structure_id');
     }
 
-    public function values(): HasMany
-    {
+    public function values(): HasMany {
         return $this->hasMany(PStructureAttrValue::class, 'p_structure_attr_key_id');
     }
 
-    public function products(): BelongsToMany
-    {
+    public function products(): BelongsToMany {
         return $this->belongsToMany(Product::class, 'p_attr_assignments',
             'p_structure_attr_key_id', 'product_id');
     }
 
-    public function attributes(): HasMany
-    {
+    public function attributes(): HasMany {
         return $this->hasMany(PAttr::class, 'p_structure_attr_key_id');
     }
 
 
-    public function getText(): string
-    {
+    public function getText(): string {
         return $this->title;
     }
 
-    public function getValue(): int
-    {
+    public function getValue(): int {
         return $this->id;
     }
 
-    public function setIsSortableAttribute($value): void
-    {
-        if ($value != $this->attributes["is_sortable"]) {
+    public function setIsSortableAttribute($value): void {
+        if ($value != ($this->attributes["is_sortable"] ?? null)) {
             $this->attributes["is_sortable"] = $value;
             if ($value) {
                 foreach ($this->productStructures as $related_p_structure) {
@@ -103,8 +100,7 @@ class PStructureAttrKey extends BaseModel implements TaggableContract
      * @param array $product_ids
      * @return Collection|PStructureAttrValue[]
      */
-    private static function getFilterBladeValues(array $product_ids): Collection|array
-    {
+    private static function getFilterBladeValues(array $product_ids): Collection|array {
         return PStructureAttrValue::join("p_attr_assignments", function ($join) use ($product_ids) {
             $join->on("p_attr_assignments.p_structure_attr_value_id", "=", "p_structure_attr_values.id")
                 ->whereIn("p_attr_assignments.product_id", $product_ids);
@@ -113,8 +109,7 @@ class PStructureAttrKey extends BaseModel implements TaggableContract
             ->selectRaw(DB::raw("p_structure_attr_values.*"))->get();
     }
 
-    public static function getFilterBladeKeys($product_ids)
-    {
+    public static function getFilterBladeKeys($product_ids) {
         $keys = [];
         PAttr::whereIn("product_id", $product_ids)->with("value");
 
@@ -143,8 +138,7 @@ class PStructureAttrKey extends BaseModel implements TaggableContract
     /**
      * @return string
      */
-    public function getSearchUrl(): string
-    {
+    public function getSearchUrl(): string {
         return '';
     }
 }

@@ -23,6 +23,8 @@ use Illuminate\Support\Facades\Schema;
  * @method static static find(int | string $id)
  * @method static static findOrFail(int | string $id)
  * @method static static create(array $attributes)
+ * @method static Builder where(string $col_name, mixed $param_two, mixed $param_three = null)
+ * @method static Builder whereIn(string $col_name, array $values)
  *
  * Class BaseModel
  * @package App\Models

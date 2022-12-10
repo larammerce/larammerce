@@ -7,6 +7,7 @@
 @endsection
 
 @section('main_content')
+    <script>window.PAGE_ID = "admin.pages.p-structure.index"</script>
     <div class="inner-container">
         <div class="toolbar">
             <ul class="has-divider-left">
@@ -61,5 +62,37 @@
             "count" => $p_structures->perPage(),
             "parentId" => $scope ?? null
         ])
+    </div>
+
+@endsection
+
+@section("outer_content")
+    <div id="upload-p-structure-excel-file" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <form action="" method="post" enctype="multipart/form-data">
+                    {{csrf_field()}}
+                    <div class="modal-header">
+                        <div class="button-container">
+                            <div class="btn btn-exit" data-dismiss="modal"></div>
+                        </div>
+                        <div class="title-container"><h1 class="title"> آپلود فایل اکسل </h1></div>
+                    </div>
+                    <div class="modal-body">
+                        <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                            <label>انتخاب فایل اکسل</label>
+                            <input class="form-control input-sm" name="file" type="file"
+                                   accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-sm btn-danger btn-default">تایید
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
     </div>
 @endsection

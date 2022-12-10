@@ -1,13 +1,27 @@
-require(['jquery', 'form_control'], function (jQuery) {
+require(['jquery', 'form_control', 'toast'], function (jQuery) {
     jQuery('.form-control').formControl();
     jQuery(".error-messages ul").each(function () {
-        var thisEl = jQuery(this);
-        var inputName = thisEl.attr('input-name');
-        var inputEl = jQuery('input[name="' + inputName + '"]');
-        if (inputEl) {
-            thisEl.find('li').each(function () {
-                inputEl.trigger('message:danger', jQuery(this).text());
-            });
-        }
+        const thisEl = jQuery(this);
+        const inputName = thisEl.attr('input-name');
+        const inputEl = jQuery('input[name="' + inputName + '"]');
+        thisEl.find('li').each(function () {
+            const messageEl = jQuery(this);
+            if (inputEl.length > 0) {
+                inputEl.trigger('message:danger', messageEl.text());
+            } else {
+                jQuery.toast({
+                    text: messageEl.text(),
+                    icon: messageEl.data('type'),
+                    loader: true,
+                    textAlign: 'right',
+                    bgColor: messageEl.data('color'),
+                    loaderBg: '#DE0426',
+                    position: 'bottom-right',
+                    hideAfter: 7000
+
+                });
+            }
+        });
+
     });
 });
