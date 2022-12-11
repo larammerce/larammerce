@@ -589,8 +589,9 @@ class Product extends BaseModel implements
             $this->specialPrices()->create(["value" => $this->latest_special_price]);
         }
 
-        if ($this->id and $this->isDirty("latest_special_price") or $this->isDirty("latest_price"))
+        if ($this->id and ($this->isDirty("latest_special_price") or $this->isDirty("latest_price"))){
             $this->updateTaxAmount();
+        }
 
         $result = parent::save($options);
         if (!$this->isDirty(["models_count"]))
