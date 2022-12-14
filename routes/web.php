@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes();
 
+//Vue App
+Route::get("/app/{any}", "AppController@index")->where("any", ".*");
+
 //Admin private routes
 Route::group(
     [
