@@ -30,6 +30,10 @@ class PStructure extends BaseModel
         'title', 'blade_name', 'is_shippable'
     ];
 
+    protected $casts = [
+        "is_shippable" => "bool"
+    ];
+
     public $timestamps = false;
 
     protected static array $SORTABLE_FIELDS = ['id', 'title'];
