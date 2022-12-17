@@ -118,7 +118,7 @@ class ProductModelService
     }
 
     public static function getProductModelOptionsSingleLevel(Product $product): array {
-
+        return [];
     }
 
 }
