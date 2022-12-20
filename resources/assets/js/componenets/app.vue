@@ -1,0 +1,3 @@
+<template>
+    first component
+</template>
