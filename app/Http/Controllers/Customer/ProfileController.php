@@ -61,7 +61,7 @@ class ProfileController extends BaseController
      *     is_legal_person="boolean",
      *     gender="in:".\App\Models\Enums\Gender::stringValues(),
      *     company_name="required_with:is_legal_person",
-     *     economical_code="required_with:is_legal_person|regex:/[0-9]{8,16}/|min:8|max:16",
+     *     economical_code="nullable|regex:/[0-9]{8,16}/|min:8|max:16",
      *     national_id="required_with:is_legal_person|regex:/[0-9]{6,11}/|min:6|max:11",
      *     company_phone="required_with:is_legal_person|regex:/[0-9]{11}/|min:11|max:11",
      *     registration_code="required_with:is_legal_person|regex:/[0-9]{4,11}/|min:4|max:11",
