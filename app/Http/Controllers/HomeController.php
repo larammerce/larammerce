@@ -46,6 +46,8 @@ class HomeController extends Controller
                 $needs_landing = true;
                 $url_paths[] = Str::replaceLast("/landing", "", $url_path);
             }
+
+            /** @var Directory $directory */
             $directory = Directory::whereIn("url_full", $url_paths)->orderBy("has_web_page", "DESC")
                 ->orderBy("updated_at", "desc")->first();
             $cart_rows = get_cart();

@@ -464,6 +464,12 @@ class Product extends BaseModel implements
         return $this->hasMany(ProductPackageItem::class, "product_id");
     }
 
+    public function getMainProduct(): ?Product {
+        if ($this->model_id === $this->id)
+            return $this;
+        return Product::find($this->model_id);
+    }
+
     public function accessories(): Builder {
         return static::where("is_accessory", true)->where("accessory_for", $this->model_id);
     }
@@ -589,7 +595,7 @@ class Product extends BaseModel implements
             $this->specialPrices()->create(["value" => $this->latest_special_price]);
         }
 
-        if ($this->id and ($this->isDirty("latest_special_price") or $this->isDirty("latest_price"))){
+        if ($this->id and ($this->isDirty("latest_special_price") or $this->isDirty("latest_price"))) {
             $this->updateTaxAmount();
         }
 
