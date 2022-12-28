@@ -2,10 +2,12 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Enums\Gender;
+use App\Models\User;
+use App\Utils\FinancialManager\Factory;
 use Illuminate\Console\Command;
 
-class TestCommand extends Command
-{
+class TestCommand extends Command {
     /**
      * The name and signature of the console command.
      *
@@ -25,8 +27,14 @@ class TestCommand extends Command
      *
      * @return mixed
      */
-    public function handle()
-    {
+    public function handle() {
         $this->info("Hello world !");
+
+        $user = User::find(20);
+        $user->customerUser->fin_relation = "9350";
+        $user->name = "Ali";
+        $user->gender = Gender::MALE;
+        $driver = Factory::driver("darik");
+        dd($driver->editCustomer($user, false));
     }
 }

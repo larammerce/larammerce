@@ -97,6 +97,7 @@ use Throwable;
  * @property bool is_package
  * @property integer maximum_allowed_purchase_count
  * @property integer minimum_allowed_purchase_count
+ * @property integer is_main_model
  *
  * @property Directory directory
  * @property Directory[] directories

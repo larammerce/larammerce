@@ -8,12 +8,12 @@
 
 namespace App\Utils\FinancialManager;
 
-class Kernel
-{
+class Kernel {
     public static array $drivers = [
-        'arpa' => \App\Utils\FinancialManager\Drivers\Arpa\Driver::class,
-        'taraznegar' => \App\Utils\FinancialManager\Drivers\Taraznegar\Driver::class,
-        'hamkaran' => \App\Utils\FinancialManager\Drivers\HamkaranSystem\Driver::class,
-        'local' => \App\Utils\FinancialManager\Drivers\Local\Driver::class,
+        Drivers\Arpa\Driver::DRIVER_ID => Drivers\Arpa\Driver::class,
+        Drivers\Taraznegar\Driver::DRIVER_ID => Drivers\Taraznegar\Driver::class,
+        Drivers\HamkaranSystem\Driver::DRIVER_ID => Drivers\HamkaranSystem\Driver::class,
+        Drivers\Darik\Driver::DRIVER_ID => Drivers\Darik\Driver::class,
+        Drivers\Local\Driver::DRIVER_ID => Drivers\Local\Driver::class,
     ];
 }
