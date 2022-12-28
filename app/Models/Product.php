@@ -464,7 +464,7 @@ class Product extends BaseModel implements
         return $this->hasMany(ProductPackageItem::class, "product_id");
     }
 
-    public function mainProduct(): ?Product {
+    public function getMainProduct(): ?Product {
         if ($this->model_id === $this->id)
             return $this;
         return Product::find($this->model_id);
