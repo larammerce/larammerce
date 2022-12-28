@@ -20,7 +20,7 @@
         <input class="form-control input-sm" name="company_name" value="{{ $customer_user_legal_info->company_name }}">
     </div>
     <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
-        <span class="label">کد افتصادی</span>
+        <span class="label">کد اقتصادی</span>
         <input class="form-control input-sm" name="economical_code"
                value="{{ $customer_user_legal_info->economical_code }}">
     </div>

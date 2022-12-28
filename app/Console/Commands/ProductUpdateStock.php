@@ -39,6 +39,7 @@ class ProductUpdateStock extends Command
     public function handle()
     {
         $this->output->write("Updating product [code: " . $this->option('code') . "] ... \t ", false);
+        /** @var Product $product */
         $product = Product::where("code", $this->option('code'))->first();
         if ($product == null) {
             $this->output->writeln("[<fg=red>✘</>]");
