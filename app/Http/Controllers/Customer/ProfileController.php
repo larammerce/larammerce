@@ -67,7 +67,7 @@ class ProfileController extends BaseController
      *     registration_code="required_with:is_legal_person|regex:/[0-9]{4,11}/|min:4|max:11",
      *     state_id="required_with:is_legal_person|exists:states,id",
      *     city_id="required_with:is_legal_person|exists:cities,id",
-     *     bank_account_card_number="min:16|max:16", bank_account_uuid="min:24|max:24")
+     *     bank_account_card_number="nullable|min:16|max:16", bank_account_uuid="nullable|min:24|max:24")
      */
     public function update(Request $request): RedirectResponse
     {
