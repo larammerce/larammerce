@@ -54,7 +54,14 @@ class InvoiceController extends BaseController
 
     public function submitCart(): RedirectResponse
     {
+
         $customer = get_customer_user();
+
+        if ($customer->national_code == null) {
+            SystemMessageService::addWarningMessage("messages.customer_user.no_national_code");
+            return redirect()->route("customer.profile.show-edit-profile");
+        }
+
         $fault_flag = false;
         $invoice = new Invoice();
         $invoice->status = NewInvoiceType::CART_SUBMISSION;

@@ -11,18 +11,16 @@ namespace App\Models\Interfaces;
 use App\Models\Directory;
 use App\Models\Traits\Fileable;
 
-interface FileContract
-{
+interface FileContract {
     public function parentField();
+
     public function getName();
+
     public function getAdminUrl();
+
     public function getFrontUrl();
 
-    /**
-     * @param Directory|null $dest
-     * @return mixed
-     */
-    public function attachFileTo($dest);
+    public function attachFileTo(?Directory $dest): void;
 
     /**
      * fill $dest param to detach more efficiently.

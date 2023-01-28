@@ -23,7 +23,6 @@ use App\Models\Traits\Seoable;
 use App\Utils\CMS\AdminRequestService;
 use App\Utils\CMS\Enums\CMSSettingKey;
 use App\Utils\CMS\ProductService;
-use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationService;
 use App\Utils\Common\EmailService;
 use App\Utils\Common\ImageService;
 use App\Utils\Common\SMSService;
@@ -31,6 +30,7 @@ use App\Utils\FinancialManager\ConfigProvider;
 use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
 use App\Utils\FinancialManager\Factory;
 use App\Utils\FinancialManager\Provider;
+use App\Utils\Translation\Traits\Translatable;
 use Carbon\Carbon;
 use DateTime;
 use Exception;
@@ -46,8 +46,6 @@ use Illuminate\Database\QueryException;
 use Illuminate\Routing\Exceptions\UrlGenerationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Utils\Translation\Traits\Translatable;
-use Psy\Util\Json;
 use stdClass;
 use Throwable;
 
@@ -88,7 +86,6 @@ use Throwable;
  * @property int model_id
  * @property bool has_discount TODO: rename this property to has_special_offer
  * @property bool is_visible
- * @property json attributes_content
  * @property integer cmc_id
  * @property string notice
  * @property integer models_count
@@ -97,7 +94,6 @@ use Throwable;
  * @property boolean is_new
  * @property boolean is_discountable
  * @property string structure_sort_score
- * @property integer package_id
  * @property bool is_package
  * @property integer maximum_allowed_purchase_count
  * @property integer minimum_allowed_purchase_count
@@ -110,7 +106,7 @@ use Throwable;
  * @property ProductImage[] images
  * @property PStructureAttrKey[] attributeKeys
  * @property PStructureAttrValue[] attributeValues
- * @property PAttr[] pAttributes
+ * @property PAttr[]|Collection pAttributes
  * @property Invoice[] invoices
  * @property CustomerUser[] wishLists
  * @property CustomerUser[] needLists
@@ -132,8 +128,7 @@ use Throwable;
  */
 class Product extends BaseModel implements
     FileAbstractionContract, ShareContract, PublishScheduleContract, ImageContract,
-    RateableContract, SeoableContract, HashContract
-{
+    RateableContract, SeoableContract, HashContract {
     use Rateable, Seoable, Fileable, FullTextSearch, Badgeable, Translatable;
 
     public $timestamps = true;
@@ -152,24 +147,27 @@ class Product extends BaseModel implements
         "description", "code", "average_rating", "rates_count", "is_active",
         "min_allowed_count", "max_purchase_count", "min_purchase_count",
         "is_important", "seo_title", "seo_keywords", "seo_description", "model_id",
-        "has_discount", "previous_price", "is_accessory", "is_visible", "attributes_content", "inaccessibility_type",
-        "cmc_id", "notice", "discount_group_id", "priority", "is_discountable", "structure_sort_score", "package_id", "accessory_for",
+        "has_discount", "previous_price", "is_accessory", "is_visible", "inaccessibility_type",
+        "cmc_id", "notice", "discount_group_id", "priority", "is_discountable", "structure_sort_score",
+        "is_package", "accessory_for",
         //these are not table fields, these are form sections that role permission system works with
-        "tags", "attributes", "gallery", "colors", "badges", "is_package"
+        "tags", "attributes", "gallery", "colors", "badges"
     ];
 
     protected $casts = [
         "important_at" => "timestamp",
         "is_accessory" => "bool",
-        "is_package" => "bool"
+        "is_package" => "bool",
+        "is_active" => "bool",
+        "is_visible" => "bool",
+        "is_discountable" => "bool"
     ];
 
     protected $with = [
         "discountGroup", "directory", "images"
     ];
 
-    public function __construct(array $attributes = [])
-    {
+    public function __construct(array $attributes = []) {
         if (!$this->is_package) {
             $financial_driver = Provider::getEnabledDriver();
             if (strlen($financial_driver) > 0 and Provider::hasDriver($financial_driver)) {
@@ -185,7 +183,7 @@ class Product extends BaseModel implements
     protected static array $SORTABLE_FIELDS = ["id", "created_at", "is_active", "is_accessory"];
     protected static int $FILTER_PAGINATION_COUNT = 20;
     protected static array $SEARCHABLE_FIELDS = ["seo_keywords", "title", "code", "description"];
-    protected static ?string $EXACT_SEARCH_FIELD = "title";
+    protected static ?string $IMPORTANT_SEARCH_FIELD = "title";
     protected static ?string $EXACT_SEARCH_ORDER_FIELD = "is_active";
     protected static array $ROLE_PROPERTY_ACCESS = [
         "super_user" => ["*"],
@@ -225,20 +223,17 @@ class Product extends BaseModel implements
 
     protected static string $TRANSLATION_EDIT_FORM = "admin.pages.product.translate";
 
-    public function getIsLikedAttribute(): bool
-    {
+    public function getIsLikedAttribute(): bool {
         return is_customer() and
             get_customer_user()->wishList()->where("product_id", $this->id)->count() > 0;
     }
 
-    public function getIsNeededAttribute(): bool
-    {
+    public function getIsNeededAttribute(): bool {
         return is_customer() and get_customer_user() != false and
             get_customer_user()->needList()->where("product_id", $this->id)->count() > 0;
     }
 
-    public function getIsNewAttribute(): bool
-    {
+    public function getIsNewAttribute(): bool {
         if ($this->created_at === null)
             return false;
         try {
@@ -249,13 +244,11 @@ class Product extends BaseModel implements
         return Carbon::now()->lessThan($this->created_at->addDays($new_product_delay_days));
     }
 
-    public function getIsImportantAttribute(): bool
-    {
+    public function getIsImportantAttribute(): bool {
         return isset($this->attributes["important_at"]) and $this->attributes["important_at"] !== null;
     }
 
-    public function setIsImportantAttribute($value): void
-    {
+    public function setIsImportantAttribute($value): void {
         if ($value) {
             $this->attributes["important_at"] = Carbon::now();
         } else {
@@ -263,8 +256,7 @@ class Product extends BaseModel implements
         }
     }
 
-    public function setPStructureIdAttribute(int $p_structure_id): void
-    {
+    public function setPStructureIdAttribute(int $p_structure_id): void {
         try {
             $p_structure = PStructure::findOrFail($p_structure_id);
             $this->pAttributes()->whereNotIn("p_structure_attr_key_id",
@@ -275,48 +267,39 @@ class Product extends BaseModel implements
         }
     }
 
-    public function getMainPhotoAttribute(): string
-    {
+    public function getMainPhotoAttribute(): string {
         return ImageService::getImage($this, "preview");
     }
 
-    public function getSecondaryPhotoAttribute(): string
-    {
+    public function getSecondaryPhotoAttribute(): string {
         return ImageService::getImage($this->getSecondaryPhoto(), "preview");
     }
 
-    public function getFinManPriceAttribute(): int
-    {
+    public function getFinManPriceAttribute(): int {
         return $this->getStandardLatestPrice();
     }
 
-    public function getStatusAttribute(): string
-    {
+    public function getStatusAttribute(): string {
         return $this->is_active ? "active" : "not-active";
     }
 
-    public function getUrlAttribute(): string
-    {
+    public function getUrlAttribute(): string {
         return $this->getFrontUrl();
     }
 
-    public function getIsMainModelAttribute(): bool
-    {
+    public function getIsMainModelAttribute(): bool {
         return $this->isMainModel();
     }
 
-    public function getMinimumAllowedPurchaseCountAttribute(): int
-    {
+    public function getMinimumAllowedPurchaseCountAttribute(): int {
         return $this->getMinimumAllowedPurchaseCount();
     }
 
-    public function getMaximumAllowedPurchaseCountAttribute(): int
-    {
+    public function getMaximumAllowedPurchaseCountAttribute(): int {
         return $this->getMaximumAllowedPurchaseCount();
     }
 
-    public function getHasDiscountAttribute(): bool
-    {
+    public function getHasDiscountAttribute(): bool {
         try {
             return (!AdminRequestService::isInAdminArea() and ($this->attributes["has_discount"] ?? false) and
                     (($this->attributes["latest_special_price"] != 0) or
@@ -327,8 +310,7 @@ class Product extends BaseModel implements
         }
     }
 
-    public function getLatestPriceAttribute(): int
-    {
+    public function getLatestPriceAttribute(): int {
         try {
             if ($this->has_discount and !AdminRequestService::isInAdminArea())
                 return ($this->is_package and $this->attributes["latest_price"] == 0) ?
@@ -341,8 +323,7 @@ class Product extends BaseModel implements
         }
     }
 
-    public function getPreviousPriceAttribute(): int
-    {
+    public function getPreviousPriceAttribute(): int {
         if ($this->has_discount and !AdminRequestService::isInAdminArea())
             return $this->is_package ? $this->productPackage->getLatestPrice() :
                 $this->attributes["latest_price"];
@@ -351,133 +332,118 @@ class Product extends BaseModel implements
                 $this->attributes["previous_price"];
     }
 
-    public function getLatestSellPriceAttribute(): int
-    {
+    public function getLatestSellPriceAttribute(): int {
         if ($this->is_package) {
             $product_package = $this->productPackage;
-            if ($this->attributes["has_discount"] and $product_package->getLatestSpecialPrice() != 0)
+            if (
+                isset($this->attributes["has_discount"]) and
+                $this->attributes["has_discount"] and
+                $product_package->getLatestSpecialPrice() != 0
+            )
                 return $product_package->getLatestSpecialPrice();
             return $product_package->getLatestPrice();
         } else
-            return ($this->attributes["has_discount"]
-                and $this->attributes["latest_special_price"] != 0) ?
-                $this->attributes["latest_special_price"] : $this->attributes["latest_price"];
+            return (
+                isset($this->attributes["has_discount"]) and
+                $this->attributes["has_discount"] and
+                $this->attributes["latest_special_price"] != 0
+            ) ?
+                $this->attributes["latest_special_price"] :
+                $this->attributes["latest_price"];
     }
 
-    public function getCountAttribute(): int
-    {
+    public function getCountAttribute(): int {
         return $this->is_package ? ($this->productPackage?->getCount() ?? 0) :
             ($this->attributes["count"] ?? 0);
     }
 
-    public function setModelIdAttribute($value)
-    {
+    public function setModelIdAttribute($value) {
         $this->attributes["model_id"] = $value ?? $this->id;
     }
 
-    public function setExtraPropertiesAttribute(?array $extra_properties)
-    {
+    public function setExtraPropertiesAttribute(?array $extra_properties) {
         $this->attributes["extra_properties"] = json_encode(array_filter($extra_properties,
-                function ($iter_property) {
-                    return $iter_property["key"] !== null;
-                }) ?? []);
+            function ($iter_property) {
+                return $iter_property["key"] !== null;
+            }) ?? []);
     }
 
-    public function getExtraProperties()
-    {
+    public function getExtraProperties() {
         return json_decode($this->extra_properties);
     }
 
-    public function directory(): BelongsTo
-    {
+    public function directory(): BelongsTo {
         return $this->belongsTo(Directory::class, "directory_id", "id");
     }
 
-    public function directories(): BelongsToMany
-    {
+    public function directories(): BelongsToMany {
         return $this->belongsToMany(Directory::class, "directory_product", "product_id", "directory_id");
     }
 
-    public function productStructure(): BelongsTo
-    {
+    public function productStructure(): BelongsTo {
         return $this->belongsTo(PStructure::class, "p_structure_id", "id");
     }
 
-    public function colors(): BelongsToMany
-    {
+    public function colors(): BelongsToMany {
         return $this->belongsToMany(Color::class, "product_color", "product_id", "color_id");
     }
 
-    public function prices(): HasMany
-    {
+    public function prices(): HasMany {
         return $this->hasMany(ProductPrice::class, "product_id", "id");
     }
 
-    public function specialPrices(): HasMany
-    {
+    public function specialPrices(): HasMany {
         return $this->hasMany(ProductSpecialPrice::class, "product_id", "id");
     }
 
-    public function images(): HasMany
-    {
+    public function images(): HasMany {
         return $this->hasMany(ProductImage::class, "product_id");
     }
 
-    public function attributeKeys(): BelongsToMany
-    {
+    public function attributeKeys(): BelongsToMany {
         return $this->belongsToMany(PStructureAttrKey::class, "p_attr_assignments",
             "product_id", "p_structure_attr_key_id")->distinct("id");
     }
 
-    public function attributeValues(): BelongsToMany
-    {
+    public function attributeValues(): BelongsToMany {
         return $this->belongsToMany(PStructureAttrValue::class, "p_attr_assignments",
             "product_id", "p_structure_attr_value_id");
     }
 
-    public function invoices(): BelongsToMany
-    {
+    public function invoices(): BelongsToMany {
         return $this->belongsToMany(Product::class, "invoice_rows", "product_id", "invoice_id");
     }
 
-    public function wishLists(): BelongsToMany
-    {
+    public function wishLists(): BelongsToMany {
         return $this->belongsToMany(CustomerUser::class, "customer_wish_lists", "product_id", "customer_user_id");
     }
 
-    public function needLists(): BelongsToMany
-    {
+    public function needLists(): BelongsToMany {
         return $this->belongsToMany(CustomerUser::class, "customer_need_lists",
             "product_id", "customer_user_id")->withTimestamps();
     }
 
-    public function cartRows(): HasMany
-    {
+    public function cartRows(): HasMany {
         return $this->hasMany(CartRow::class, "product_id");
     }
 
-    public function tags(): MorphToMany
-    {
+    public function tags(): MorphToMany {
         return $this->morphToMany(Tag::class, "taggable");
     }
 
-    public function pAttributes(): HasMany
-    {
+    public function pAttributes(): HasMany {
         return $this->hasMany(PAttr::class, "product_id", "id");
     }
 
-    public function invoiceRows(): HasMany
-    {
+    public function invoiceRows(): HasMany {
         return $this->hasMany(InvoiceRow::class, "product_id", "id");
     }
 
-    public function customerMetaCategory(): BelongsTo
-    {
+    public function customerMetaCategory(): BelongsTo {
         return $this->belongsTo(CustomerMetaCategory::class, "cmc_id", "id");
     }
 
-    public function discountGroup(): BelongsTo
-    {
+    public function discountGroup(): BelongsTo {
         return $this->belongsTo(DiscountGroup::class, "discount_group_id", "id")
             ->whereRaw(DB::raw($this->has_discount ? "1=0" : "1=1"))
             ->where("is_active", true)->where(function ($query) {
@@ -485,29 +451,30 @@ class Product extends BaseModel implements
             });
     }
 
-    public function productPackage(): HasOne
-    {
+    public function productPackage(): HasOne {
         return $this->hasOne(ProductPackage::class, 'product_id');
     }
 
-    public function productPackages(): BelongsToMany
-    {
+    public function productPackages(): BelongsToMany {
         return $this->belongsToMany(ProductPackage::class,
             "product_package_items", "product_id", "package_id");
     }
 
-    public function productPackageItems(): HasMany
-    {
+    public function productPackageItems(): HasMany {
         return $this->hasMany(ProductPackageItem::class, "product_id");
     }
 
-    public function accessories(): Builder
-    {
+    public function getMainProduct(): ?Product {
+        if ($this->model_id === $this->id)
+            return $this;
+        return Product::find($this->model_id);
+    }
+
+    public function accessories(): Builder {
         return static::where("is_accessory", true)->where("accessory_for", $this->model_id);
     }
 
-    public function accessoryFor(): Builder
-    {
+    public function accessoryFor(): Builder {
         return static::where("is_accessory", false)->where("model_id", $this->accessory_for);
     }
 
@@ -518,8 +485,7 @@ class Product extends BaseModel implements
      * @throws ProductPackageItemInvalidIdException
      * @throws ProductPackageNotExistsException
      */
-    public function syncPackageItems($package_items)
-    {
+    public function syncPackageItems($package_items) {
         $productPackage = $this->productPackage;
         if ($productPackage != null) {
             $items_to_attach = collect();
@@ -550,23 +516,19 @@ class Product extends BaseModel implements
         }
     }
 
-    public function scopeLatest(Builder $query): Builder
-    {
+    public function scopeLatest(Builder $query): Builder {
         return $query->orderBy("id", "DESC");
     }
 
-    public function scopeExcept(Builder $query, $id): Builder
-    {
+    public function scopeExcept(Builder $query, $id): Builder {
         return $query->where("id", "!=", $id);
     }
 
-    public function scopeMainModels(Builder $query): Builder
-    {
+    public function scopeMainModels(Builder $query): Builder {
         return $query->groupBy(["color_code", "model_id", "is_active"]);
     }
 
-    public function scopeModels(Builder $query, Product $product, bool $onlyOthers = true): Builder
-    {
+    public function scopeModels(Builder $query, Product $product, bool $onlyOthers = true): Builder {
         $result = $query->whereNotNull("model_id")
             ->where("model_id", "=", $product->model_id);
         if ($onlyOthers)
@@ -574,13 +536,11 @@ class Product extends BaseModel implements
         return $result;
     }
 
-    public function scopeImportant(Builder $query): Builder
-    {
+    public function scopeImportant(Builder $query): Builder {
         return $query->where("important_at", '!=', null);
     }
 
-    public function scopeVisible(Builder $query): Builder
-    {
+    public function scopeVisible(Builder $query): Builder {
         /*$customer_location = CustomerLocationService::getRecord();
         if ($customer_location != null) {
             $query = $query->join("directories", function ($join) use ($customer_location) {
@@ -594,8 +554,7 @@ class Product extends BaseModel implements
         return $query->where("is_visible", true);
     }
 
-    public function scopeIsActive(Builder $query): Builder
-    {
+    public function scopeIsActive(Builder $query): Builder {
         if (config("cms.general.site.show_deactivated_products")) {
             return $query->where("latest_price", ">", "0");
         } else {
@@ -603,13 +562,11 @@ class Product extends BaseModel implements
         }
     }
 
-    public function scopeHasDiscount(Builder $query): Builder
-    {
+    public function scopeHasDiscount(Builder $query): Builder {
         return $query->where("has_discount", true);
     }
 
-    public function delete()
-    {
+    public function delete() {
         $this->rates()->delete();
         $this->tags()->detach();
         $this->review()->delete();
@@ -618,8 +575,7 @@ class Product extends BaseModel implements
         return parent::delete();
     }
 
-    public function save(array $options = [])
-    {
+    public function save(array $options = []) {
         //TODO: This method content should be moved to accessor methods.
 
         $this->updateEnabledStatus(false);
@@ -639,8 +595,9 @@ class Product extends BaseModel implements
             $this->specialPrices()->create(["value" => $this->latest_special_price]);
         }
 
-        if ($this->id and $this->isDirty("latest_special_price") or $this->isDirty("latest_price"))
+        if ($this->id and ($this->isDirty("latest_special_price") or $this->isDirty("latest_price"))) {
             $this->updateTaxAmount();
+        }
 
         $result = parent::save($options);
         if (!$this->isDirty(["models_count"]))
@@ -654,8 +611,7 @@ class Product extends BaseModel implements
         return $result;
     }
 
-    public function update(array $attributes = [], array $options = []): bool
-    {
+    public function update(array $attributes = [], array $options = []): bool {
         try {
             return parent::update($attributes, $options);
         } catch (QueryException $e) {
@@ -667,8 +623,7 @@ class Product extends BaseModel implements
         }
     }
 
-    public function generateColorCode(): string
-    {
+    public function generateColorCode(): string {
         $result = "";
         foreach ($this->colors()->orderBy("id")->get() as $color) {
             $result .= "#{$color->id}";
@@ -677,8 +632,7 @@ class Product extends BaseModel implements
         return $result;
     }
 
-    public function updateTaxAmount()
-    {
+    public function updateTaxAmount() {
 
         $priceData = ConfigProvider::isTaxAddedToPrice() ?
             ProductService::reverseCalculateTaxAndToll(
@@ -690,8 +644,7 @@ class Product extends BaseModel implements
         $this->toll_amount = $priceData->toll;
     }
 
-    public function updateFinData(): bool
-    {
+    public function updateFinData(): bool {
         try {
             $std_product = Factory::driver()->getProduct($this->code);
         } catch (FinancialDriverInvalidConfigurationException $e) {
@@ -718,8 +671,7 @@ class Product extends BaseModel implements
         }
     }
 
-    public function buildStructureSortScore(PStructureAttrKey $key): bool
-    {
+    public function buildStructureSortScore(PStructureAttrKey $key): bool {
         $p_attr = DB::table(DB::raw('p_attr_assignments as paa1'))
             ->where('paa1.p_structure_attr_key_id', $key->id)
             ->where('paa1.product_id', $this->id)
@@ -731,16 +683,14 @@ class Product extends BaseModel implements
         return $this->save();
     }
 
-    private function updateEnabledStatus(bool $do_save = true): bool
-    {
+    private function updateEnabledStatus(bool $do_save = true): bool {
         $min_allowed_count = static::shouldDisableOnMin() ? $this->min_allowed_count : 0;
         if ($this->count > $min_allowed_count and $this->latest_price > 0)
             return $this->makeEnabled($do_save);
         return $this->makeDisabled($do_save);
     }
 
-    private function makeDisabled(bool $do_save = true): bool
-    {
+    private function makeDisabled(bool $do_save = true): bool {
         if ($this->is_active) {
             $this->is_active = false;
             try {
@@ -757,8 +707,7 @@ class Product extends BaseModel implements
         return true;
     }
 
-    private function makeEnabled(bool $do_save = true): bool
-    {
+    private function makeEnabled(bool $do_save = true): bool {
         if (!$this->is_active) {
             $this->is_active = true;
             try {
@@ -783,15 +732,13 @@ class Product extends BaseModel implements
         return true;
     }
 
-    private function deleteFromCarts(): void
-    {
+    private function deleteFromCarts(): void {
         $this->cartRows()->delete();
         Log::info("product.notification.$this->id : product ran out. (to customers)");
         //TODO: notify customer about that
     }
 
-    private function sendNotificationToStockManagers(int $status): void
-    {
+    private function sendNotificationToStockManagers(int $status): void {
         $stockManagers = SystemUser::where("is_stock_manager", true)->get();
         if (count(is_countable($stockManagers) ? $stockManagers : []) > 0) {
             $productTitle = $this->title;
@@ -829,16 +776,14 @@ class Product extends BaseModel implements
         }
     }
 
-    public function hasImage(): bool
-    {
+    public function hasImage(): bool {
         if (isset($this->relations["images"])) {
             return count($this->images) > 0;
         }
         return $this->images()->main()->count() > 0;
     }
 
-    public function getImagePath(): string
-    {
+    public function getImagePath(): string {
         if (isset($this->relations["images"])) {
             foreach ($this->images as $image) {
                 if ($image->is_main)
@@ -849,28 +794,23 @@ class Product extends BaseModel implements
         return $this->images()->main()->first()->getImagePath();
     }
 
-    public function setImagePath(): void
-    {
+    public function setImagePath(): void {
         // the process is in handled in ProductImage model
     }
 
-    public function removeImage(): void
-    {
+    public function removeImage(): void {
         // the process is in handled in ProductImage model
     }
 
-    public function getDefaultImagePath(): string
-    {
+    public function getDefaultImagePath(): string {
         return "/admin_dashboard/images/No_image.jpg.png";
     }
 
-    public function getImageCategoryName(): string
-    {
+    public function getImageCategoryName(): string {
         return "product";
     }
 
-    public function getMainPhoto(): ?ProductImage
-    {
+    public function getMainPhoto(): ?ProductImage {
         if (isset($this->relations["images"])) {
             foreach ($this->images as $image) {
                 if ($image->is_main)
@@ -881,8 +821,7 @@ class Product extends BaseModel implements
         return $this->images()->main()->first();
     }
 
-    public function getSecondaryPhoto(): ?ProductImage
-    {
+    public function getSecondaryPhoto(): ?ProductImage {
         if (isset($this->relations["images"])) {
             foreach ($this->images as $image) {
                 if ($image->is_secondary)
@@ -893,18 +832,15 @@ class Product extends BaseModel implements
         return $this->images()->secondary()->first();
     }
 
-    public function parentField(): string
-    {
+    public function parentField(): string {
         return "directory_id";
     }
 
-    public function getName(): string
-    {
+    public function getName(): string {
         return $this->title;
     }
 
-    public function getAdminUrl(): string
-    {
+    public function getAdminUrl(): string {
         try {
             return route("admin.product.show", $this);
         } catch (UrlGenerationException $e) {
@@ -912,22 +848,19 @@ class Product extends BaseModel implements
         }
     }
 
-    public function hasValue($value)
-    {
+    public function hasValue($value): bool {
         return $this->pAttributes->contains(function ($v, $k) use ($value) {
             return $v->p_structure_attr_value_id == $value->id;
         });
     }
 
-    public static function getFilterPaginationCount(): int
-    {
+    public static function getFilterPaginationCount(): int {
         if (request()->has("pagination_count"))
             return request("pagination_count");
         return self::$FILTER_PAGINATION_COUNT;
     }
 
-    public function getFrontUrl(): string
-    {
+    public function getFrontUrl(): string {
         try {
             return lm_route("public.view-product", $this) . "/" . url_encode($this->title);
         } catch (UrlGenerationException $e) {
@@ -936,8 +869,7 @@ class Product extends BaseModel implements
     }
 
     // Todo : this method must be checked check
-    public function getMaximumAllowedPurchaseCount()
-    {
+    public function getMaximumAllowedPurchaseCount() {
         try {
             $min_allowed_count = static::shouldDisableOnMin() ? $this->min_allowed_count : 0;
             return max((config('cms.general.site.show_deactivated_products') ? 1 : 0),
@@ -947,13 +879,11 @@ class Product extends BaseModel implements
         }
     }
 
-    public function getMinimumAllowedPurchaseCount(): int
-    {
+    public function getMinimumAllowedPurchaseCount(): int {
         return $this->min_purchase_count ?: 1;
     }
 
-    public function getSearchUrl(): string
-    {
+    public function getSearchUrl(): string {
         try {
             return route("admin.product.edit", $this);
         } catch (UrlGenerationException $e) {
@@ -961,23 +891,19 @@ class Product extends BaseModel implements
         }
     }
 
-    public function getStandardLatestPrice(): int
-    {
+    public function getStandardLatestPrice(): int {
         return intval($this->latest_price / ProductService::getPriceRatio());
     }
 
-    public function isMainModel(): bool
-    {
+    public function isMainModel(): bool {
         return $this->model_id == null or $this->model_id == $this->id;
     }
 
-    public function getModels(array $with_relations = []): Collection|array
-    {
+    public function getModels(array $with_relations = []): Collection|array {
         return Product::models($this, true)->with($with_relations)->get();
     }
 
-    public function getPAttributes($show_type): array
-    {
+    public function getPAttributes($show_type): array {
         $result = [];
         $pAttributes = $this->pAttributes()->whereHas("key", function ($q) use ($show_type) {
             $q->where("show_type", $show_type);
@@ -999,40 +925,29 @@ class Product extends BaseModel implements
     /**
      * @return string
      */
-    function getTitle(): string
-    {
+    function getTitle(): string {
         return $this->title;
     }
 
-    public function getSeoTitle()
-    {
+    public function getSeoTitle() {
         if ($this->seo_title !== null and strlen($this->seo_title) > 0)
             return $this->seo_title;
         return $this->title . " - " . $this->directory->title;
     }
 
 
-    public function getSeoDescription()
-    {
+    public function getSeoDescription() {
         return $this->seo_description;
     }
 
-    public function getSeoKeywords()
-    {
+    public function getSeoKeywords() {
         return $this->seo_keywords;
     }
 
-    /**
-     * @param Directory|null $dest
-     * @return mixed
-     * @throws Throwable
-     */
-    public function attachFileTo($dest)
-    {
-        $this->directory_id = $dest != null ? $dest->id : null;
+    public function attachFileTo(?Directory $dest): void {
+        $this->directory_id = $dest?->id;
         $this->save();
-        if ($dest != null)
-            $dest->attachLeafFiles($this->id);
+        $dest?->attachLeafFiles($this->id);
     }
 
     /**
@@ -1040,8 +955,7 @@ class Product extends BaseModel implements
      * @param Directory|null $dest
      * @return mixed
      */
-    public function detachFile($dest = null)
-    {
+    public function detachFile($dest = null) {
         if ($this->directory != null) {
             $destParentDirectoriesIds = [];
             if ($dest != null) {
@@ -1067,8 +981,7 @@ class Product extends BaseModel implements
     /**
      * @return Model|FileContract
      */
-    public function cloneFile()
-    {
+    public function cloneFile() {
         if ($this->model_id == null)
             $this->update(["model_id" => $this->id]);
 
@@ -1093,14 +1006,12 @@ class Product extends BaseModel implements
      * @return void
      * @throws Throwable
      */
-    public function generateNewUrls($dest)
-    {
+    public function generateNewUrls($dest) {
         // TODO: Implement generateNewUrls() method.
         $this->save();
     }
 
-    public function getHash()
-    {
+    public function getHash() {
         return md5($this->title . "#" .
             ($this->latest_price != null ? $this->latest_price : 0) . "#" .
             $this->extra_properties . "#" .
@@ -1119,8 +1030,7 @@ class Product extends BaseModel implements
         );
     }
 
-    public function isImageLocal()
-    {
+    public function isImageLocal() {
         return true;
     }
 
@@ -1130,8 +1040,7 @@ class Product extends BaseModel implements
      *
      * @return array
      */
-    public function toArray(): array
-    {
+    public function toArray(): array {
         $parent_result = parent::toArray();
 
         if (!static::shouldDisableOnMin() and $this->is_active and $this->count <= $this->min_allowed_count) {
@@ -1147,8 +1056,7 @@ class Product extends BaseModel implements
      *
      * @return string
      */
-    public static function shouldDisableOnMin()
-    {
+    public static function shouldDisableOnMin() {
         if (static::$DISABLE_ON_MIN !== null)
             return static::$DISABLE_ON_MIN;
         try {
@@ -1160,8 +1068,7 @@ class Product extends BaseModel implements
         return static::$DISABLE_ON_MIN;
     }
 
-    public static function create(array $attributes = [])
-    {
+    public static function create(array $attributes = []) {
         if (!isset($attributes["cmc_id"]) and isset($attributes["directory_id"])) {
             $parent_directory = Directory::find($attributes["directory_id"]);
             if ($parent_directory !== null and $parent_directory->hasCustomerMetaCategory()) {
@@ -1171,13 +1078,11 @@ class Product extends BaseModel implements
         return static::query()->create($attributes);
     }
 
-    public function hasCustomerMetaCategory(): bool
-    {
+    public function hasCustomerMetaCategory(): bool {
         return $this->cmc_id !== null;
     }
 
-    private function updateModelsCount()
-    {
+    private function updateModelsCount() {
         $models = Product::models($this, false)->get();
         $count = count($models);
         foreach ($models as $model) {

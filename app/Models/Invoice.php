@@ -6,6 +6,7 @@ use App\Models\Enums\NewInvoiceType;
 use App\Models\Enums\PaymentStatus;
 use App\Utils\CMS\InvoiceService;
 use App\Utils\CMS\ProductService;
+use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
 use App\Utils\FinancialManager\Factory;
 use App\Utils\ShipmentService\Factory as ShipmentFactory;
 use DateTime;
@@ -172,6 +173,14 @@ class Invoice extends BaseModel
         if ($this->is_active)
             return false;
 
+        if ($this->customer->fin_relation == null or strlen($this->customer->fin_relation) == 0) {
+            try {
+                $this->customer->user->saveFinManCustomer();
+            } catch (FinancialDriverInvalidConfigurationException $e) {
+                return false;
+            }
+        }
+
         $preInvoiceAddResult = Factory::driver()->addPreInvoice($this);
         if ($preInvoiceAddResult === false) {
             return false;
@@ -295,7 +304,7 @@ class Invoice extends BaseModel
         return ShipmentFactory::driver($this->shipment_driver)->getTrackingUrl();
     }
 
-    public function getShipmentDeliveryDate()
+    public function getShipmentDeliveryDate(): string
     {
         if (!$this->shipment_driver)
             return '-';

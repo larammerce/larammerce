@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\PStructureController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -303,6 +304,8 @@ Route::group(
                     ["as" => "attach-attribute-key", "uses" => "PStructureController@attachAttributeKey"]);
                 Route::post("{p_structure}/detach-attribute-key",
                     ["as" => "detach-attribute-key", "uses" => "PStructureController@detachAttributeKey"]);
+                Route::get("{p_structure}/download-excel", [PStructureController::class, "downloadExcel"])->name("download-excel");
+                Route::post("{p_structure}/upload-excel", [PStructureController::class, "uploadExcel"])->name("upload-excel");
             });
         Route::resource("p-structure", "PStructureController", ["as" => "admin"]);
 
@@ -535,6 +538,7 @@ Route::group(
                 Route::get("detach-product/{product}", ["as" => "detach-product", "uses" => "CartController@detachProduct"]);
                 Route::get("update-count/{product}", ["as" => "update-count", "uses" => "CartController@updateCount"]);
                 Route::delete("remove-deactivated", ["as" => "remove-deactivated", "uses" => "CartController@removeDeactivated"]);
+                Route::delete("remove-all", ["as" => "remove-all", "uses" => "CartController@removeAll"]);
             });
 
         Route::group(["prefix" => "rate", "as" => "rate."],
@@ -587,6 +591,7 @@ Route::group(
     ],
     function () {
         Route::get("local-cart", ["as" => "show-local-cart", "uses" => "CartController@showLocal"]);
+        Route::delete("cart/remove-local", ["as" => "cart.remove-local", "uses" => "CartController@removeLocal"]);
         Route::get("email-confirmation", ["as" => "email-confirmation", "uses" => "AuthController@emailConfirmation"]);
         Route::post("location", ["as" => "location.store", "uses" => "LocationController@store"]);
     }

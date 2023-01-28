@@ -26,7 +26,7 @@ class AddressController extends BaseController
 
     /**
      * @rules(state_id="required|exists:states,id", city_id="required|exists:cities,id",
-     *     zipcode="regex:/[0-9]{10}/|min:10|max:10", phone_number="required",
+     *     zipcode="nullable|regex:/[0-9]{10}/|min:10|max:10", phone_number="required",
      *     superscription="required", transferee_name="required")
      * @param Request $request
      * @description(comment="this method is for adding an address to user")

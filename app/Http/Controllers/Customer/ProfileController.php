@@ -56,18 +56,18 @@ class ProfileController extends BaseController
     /**
      * @rules(name="required|user_alphabet_rule",
      *     family="required|user_alphabet_rule",
-     *     email="email|unique:users",
+     *     email="nullable|email|unique:users",
      *     national_code="required|national_code",
      *     is_legal_person="boolean",
-     *     gender="in:".\App\Models\Enums\Gender::stringValues(),
+     *     gender="nullable|in:".\App\Models\Enums\Gender::stringValues(),
      *     company_name="required_with:is_legal_person",
-     *     economical_code="required_with:is_legal_person|regex:/[0-9]{8,16}/|min:8|max:16",
+     *     economical_code="nullable|regex:/[0-9]{8,16}/|min:8|max:16",
      *     national_id="required_with:is_legal_person|regex:/[0-9]{6,11}/|min:6|max:11",
      *     company_phone="required_with:is_legal_person|regex:/[0-9]{11}/|min:11|max:11",
      *     registration_code="required_with:is_legal_person|regex:/[0-9]{4,11}/|min:4|max:11",
      *     state_id="required_with:is_legal_person|exists:states,id",
      *     city_id="required_with:is_legal_person|exists:cities,id",
-     *     bank_account_card_number="min:16|max:16", bank_account_uuid="min:24|max:24")
+     *     bank_account_card_number="nullable|min:16|max:16", bank_account_uuid="nullable|min:24|max:24")
      */
     public function update(Request $request): RedirectResponse
     {

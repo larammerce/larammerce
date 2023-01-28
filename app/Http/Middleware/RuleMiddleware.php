@@ -42,8 +42,8 @@ class RuleMiddleware
         }
 
         $disabled_rules = explode(",", env("TEMPORARILY_DISABLED_RULES", ""));
-        foreach ($disabled_rules as $disabled_rule){
-            if(key_exists($disabled_rule, $rules)){
+        foreach ($disabled_rules as $disabled_rule) {
+            if (key_exists($disabled_rule, $rules)) {
                 unset($rules[$disabled_rule]);
             }
         }

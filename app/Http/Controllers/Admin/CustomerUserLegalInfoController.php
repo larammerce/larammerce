@@ -68,7 +68,7 @@ class CustomerUserLegalInfoController extends BaseController
 
     /**
      * @role(super_user, cms_manager, acc_manager)
-     * @rules(company_name="required", economical_code="required", national_id="required",
+     * @rules(company_name="required", national_id="required",
      *     registration_code="required",company_phone="required", state_id="required|exists:states,id",
      *     city_id="exists:cities,id")
      */

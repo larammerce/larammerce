@@ -340,10 +340,10 @@
     </div>
     <hr>
     <h4>ویژگی‌های محصول</h4>
-    @foreach($product->productStructure->attributeKeys as $attributeKey)
+    @foreach($product->productStructure->attributeKeys as $p_structure_attr_key)
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12 filled"
              @roleinput($product, "attributes") style="padding-left: 50px;">
-        <span class="label">{{ $attributeKey->title }} @if($attributeKey->is_sortable)
+        <span class="label">{{ $p_structure_attr_key->title }} @if($p_structure_attr_key->is_sortable)
                 (قابل مرتب
                 سازی)
             @endif</span>
@@ -351,12 +351,11 @@
                 class="tags-multi-select attachable"
                 data-user-option-allowed="true"
                 data-load-once="true"
-                data-attr-text="@if($product->attributes_content != null){{json_decode($product->attributes_content)}}@else {{1}} @endif"
                 placeholder="گزینه های مورد نظر خود را انتخاب کنید"
-                data-attach="{{route('admin.product.attach-attribute', [$product, $attributeKey])}}"
-                data-detach="{{route('admin.product.detach-attribute', [$product, $attributeKey])}}"
-                data-parent-name="{{ $attributeKey->title }}">
-            @foreach($attributeKey->values as $value)
+                data-attach="{{route('admin.product.attach-attribute', [$product, $p_structure_attr_key])}}"
+                data-detach="{{route('admin.product.detach-attribute', [$product, $p_structure_attr_key])}}"
+                data-parent-name="{{ $p_structure_attr_key->title }}">
+            @foreach($p_structure_attr_key->values as $value)
                 <option data-json='{{json_encode($value)}}' value="{{ $value->id }}"
                         @if($product->hasValue($value)) selected @endif>
                     {{ $value->name }}
@@ -365,7 +364,7 @@
         </select>
         <a class="btn btn-sm btn-primary"
            style="position: absolute;top: 10px; left: 10px ;width: 30px;height: 30px;border-radius: 15px;"
-           href="{{route('admin.p-structure-attr-key.edit', $attributeKey)}}" target="_blank">
+           href="{{route('admin.p-structure-attr-key.edit', $p_structure_attr_key)}}" target="_blank">
             <i class="fa fa-pencil" style="display: inline-block;margin-right: -1px;"></i>
         </a>
         </div>

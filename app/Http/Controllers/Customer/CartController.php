@@ -162,4 +162,16 @@ class CartController extends BaseController
         CartProvider::removeDeactivated($customer);
         return redirect()->back();
     }
+
+    public function removeAll(): RedirectResponse
+    {
+        CartProvider::flush("web");
+        return redirect()->back();
+    }
+
+    public function removeLocal(): RedirectResponse
+    {
+        CartProvider::cleanCookie();
+        return redirect()->back();
+    }
 }
