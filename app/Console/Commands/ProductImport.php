@@ -3,8 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Models\Directory;
+use App\Models\Enums\DirectoryType;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
+use Ixudra\Curl\Facades\Curl;
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\Items;
 use stdClass;
@@ -30,8 +32,7 @@ class ProductImport extends Command
      *
      * @return void
      */
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
     }
 
@@ -41,42 +42,46 @@ class ProductImport extends Command
      * @return int
      * @throws InvalidArgumentException
      */
-    public function handle()
-    {
-        $menu_file_dir = base_path("data/output/menu/");
+    public function handle() {
+        /** @var Directory[] $head_product_directories */
+        $head_product_directories = Directory::from(DirectoryType::PRODUCT)->get();
 
-        foreach (scandir($menu_file_dir) as $index => $menu_file_path) {
-            $menu_file_full_path = $menu_file_dir . $menu_file_path;
-            if (is_dir($menu_file_full_path))
-                continue;
-
-            $site_address = str_replace(["menu.", ".json"], "", $menu_file_path);
-            $site_title = str_replace(["www.", ".com"], "", $site_address);
-
-            $head_directory = Directory::where("url_full", "/" . $site_title)->first();
-            if ($head_directory == null) {
-                $head_directory = Directory::create([
-                    "title" => $site_title, "url_part" => $site_title, "is_internal_link" => false, "is_anonymously_accessible" => true,
-                    "has_web_page" => false, "priority" => $index, "content_type" => 3, "directory_id" => null,
-                    "show_in_navbar" => true, "show_in_footer" => false, "cover_image_path" => null, "description" => "",
-                    "data_type" => 1, "show_in_app_navbar" => false, "has_discount" => false, "is_location_limited" => false,
-                    "cmc_id" => null, "force_show_landing" => false, "inaccessibility_type" => 1, "notice" => "",
-                    "metadata" => $site_address
-                ]);
-                $head_directory->setUrlFull();
-            }
-
-            foreach (Items::fromFile($menu_file_full_path) as $head) {
-                $this->createProductDirectory($head, $head_directory);
-            }
-
+        foreach ($head_product_directories as $head_product_directory) {
+            $menu_data = file_get_contents(env("STOCK_HOST") . "/api/root?url=" . base64_encode($head_product_directory->metadata));
+            dd($menu_data);
         }
+        /*
+                foreach (scandir($menu_file_dir) as $index => $menu_file_path) {
+                    $menu_file_full_path = $menu_file_dir . $menu_file_path;
+                    if (is_dir($menu_file_full_path))
+                        continue;
+
+                    $site_address = str_replace(["menu.", ".json"], "", $menu_file_path);
+                    $site_title = str_replace(["www.", ".com"], "", $site_address);
+
+                    $head_directory = Directory::where("url_full", "/" . $site_title)->first();
+                    if ($head_directory == null) {
+                        $head_directory = Directory::create([
+                            "title" => $site_title, "url_part" => $site_title, "is_internal_link" => false, "is_anonymously_accessible" => true,
+                            "has_web_page" => false, "priority" => $index, "content_type" => 3, "directory_id" => null,
+                            "show_in_navbar" => true, "show_in_footer" => false, "cover_image_path" => null, "description" => "",
+                            "data_type" => 1, "show_in_app_navbar" => false, "has_discount" => false, "is_location_limited" => false,
+                            "cmc_id" => null, "force_show_landing" => false, "inaccessibility_type" => 1, "notice" => "",
+                            "metadata" => $site_address
+                        ]);
+                        $head_directory->setUrlFull();
+                    }
+
+                    foreach (Items::fromFile($menu_file_full_path) as $head) {
+                        $this->createProductDirectory($head, $head_directory);
+                    }
+
+                }*/
 
         return 0;
     }
 
-    private function createProductDirectory(stdClass $node, Directory|Model $directory)
-    {
+    private function createProductDirectory(stdClass $node, Directory|Model $directory) {
         $title = strip_tags($node?->data?->title);
         $url_part = strtolower(str_replace([" • ", "\"", "'", " ", ".", "_", "\t", "\n", "@", "#", "%", "!", "?", "^", "&", "*", "(", ")", "=", "+", "•"], "-", $title));
 
