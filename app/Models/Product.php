@@ -97,6 +97,8 @@ use Throwable;
  * @property bool is_package
  * @property integer maximum_allowed_purchase_count
  * @property integer minimum_allowed_purchase_count
+ * @property string main_photo
+ * @property string secondary_photo
  *
  * @property Directory directory
  * @property Directory[] directories
@@ -151,7 +153,7 @@ class Product extends BaseModel implements
         "cmc_id", "notice", "discount_group_id", "priority", "is_discountable", "structure_sort_score",
         "is_package", "accessory_for",
         //these are not table fields, these are form sections that role permission system works with
-        "tags", "attributes", "gallery", "colors", "badges"
+        "tags", "attributes", "gallery", "colors", "badges", "main_photo", "secondary_photo"
     ];
 
     protected $casts = [
@@ -161,10 +163,6 @@ class Product extends BaseModel implements
         "is_active" => "bool",
         "is_visible" => "bool",
         "is_discountable" => "bool"
-    ];
-
-    protected $with = [
-        "discountGroup", "directory", "images"
     ];
 
     public function __construct(array $attributes = []) {
@@ -265,14 +263,6 @@ class Product extends BaseModel implements
         } catch (Exception $e) {
             return;
         }
-    }
-
-    public function getMainPhotoAttribute(): string {
-        return ImageService::getImage($this, "preview");
-    }
-
-    public function getSecondaryPhotoAttribute(): string {
-        return ImageService::getImage($this->getSecondaryPhoto(), "preview");
     }
 
     public function getFinManPriceAttribute(): int {
