@@ -8,7 +8,6 @@
 
 use App\Models\Article;
 use App\Models\BaseModel;
-use App\Models\CartRow;
 use App\Models\City;
 use App\Models\Color;
 use App\Models\CustomerAddress;
@@ -22,8 +21,8 @@ use App\Models\Enums\PaymentStatus;
 use App\Models\Gallery;
 use App\Models\GalleryItem;
 use App\Models\Invoice;
-use App\Models\Product;
 use App\Models\PAttr;
+use App\Models\Product;
 use App\Models\ProductFilter;
 use App\Models\ProductQuery;
 use App\Models\PStructureAttrKey;
@@ -1347,29 +1346,7 @@ if (!function_exists("get_shipment_cost")) {
 
 if (!function_exists("build_directories_tree")) {
     function build_directories_tree(?Directory $root = null, array $conditions = [], array $order = []): array {
-        $directories = Directory::permitted()->where($conditions)
-            ->orderBy($order["column"] ?? "priority", $order["direction"] ?? "ASC")->get();
-        $branch = [];
-        $parts = [];
-        $map = [];
-
-        foreach ($directories as $directory) {
-            $map[$directory->id] = $directory;
-            $directory->setRelation("directories", []);
-            if (!isset($parts[$directory->directory_id]))
-                $parts[$directory->directory_id] = [];
-            $parts[$directory->directory_id][] = $directory;
-        }
-
-        foreach ($parts as $parent_id => $children) {
-            if (isset($map[$parent_id]))
-                $map[$parent_id]->setRelation("directories", $children);
-            else {
-                $branch = array_merge($branch, $children);
-            }
-        }
-
-        return $root == null ? $branch : ($map[$root->id]->directories ?? []);
+        return \App\Services\Directory\DirectoryService::buildDirectoriesTree($root, $conditions, $order);
     }
 }
 
