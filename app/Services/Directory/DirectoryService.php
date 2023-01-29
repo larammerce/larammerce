@@ -22,7 +22,6 @@ class DirectoryService {
 
     public static function buildDirectoriesTree(?Directory $root = null, array $conditions = [], array $order = []): array {
         $cache_key = StringHelper::getCacheKey([static::class, __FUNCTION__], $root?->id ?? 0, json_encode($conditions), json_encode($order));
-
         if(!Cache::has($cache_key)){
             $directories = Directory::permitted()->where($conditions)
                 ->orderBy($order["column"] ?? "priority", $order["direction"] ?? "ASC")->get();

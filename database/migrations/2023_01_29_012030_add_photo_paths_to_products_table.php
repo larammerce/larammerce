@@ -24,9 +24,10 @@ class AddPhotoPathsToProductsTable extends Migration {
              */
             function (Collection|array $products) {
                 foreach ($products as $product) {
+                    echo "Updating product {$product->id} image addresses." . PHP_EOL;
                     $product->update([
-                        "main_photo" => $product->getMainPhoto()->getImagePath(),
-                        "secondary_photo" => $product->getSecondaryPhoto()->getImagePath(),
+                        "main_photo" => $product->getMainPhoto()?->getImagePath(),
+                        "secondary_photo" => $product->getSecondaryPhoto()?->getImagePath(),
                     ]);
                 }
             });
