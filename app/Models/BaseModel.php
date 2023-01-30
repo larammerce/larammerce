@@ -171,7 +171,7 @@ abstract class BaseModel extends Model
     public static function getExportableAttributes(): array
     {
         $model = new static();
-        return array_diff($model->getfillable(), $model->getHidden());
+        return $model->getfillable();
     }
 
     public function getAllowedInputs(): array
