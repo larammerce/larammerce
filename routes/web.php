@@ -221,6 +221,8 @@ Route::group(
                 Route::get("{directory}/special-price", ["as" => "special-price.edit", "uses" => "DirectoryController@editSpecialPrice"]);
                 Route::post("{directory}/special-price", ["as" => "special-price.update", "uses" => "DirectoryController@updateSpecialPrice"]);
                 Route::delete("{directory}/special-price", ["as" => "special-price.destroy", "uses" => "DirectoryController@destroySpecialPrice"]);
+                Route::get("{directory}/sync", ["as" => "sync", "uses" => "DirectoryController@sync"]);
+                Route::get("cache-clear", ["as" => "cache-clear", "uses" => "DirectoryController@cacheClear"]);
             });
         Route::resource("directory", "DirectoryController", ["as" => "admin"]);
 

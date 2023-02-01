@@ -24,7 +24,6 @@ use App\Utils\CMS\AdminRequestService;
 use App\Utils\CMS\Enums\CMSSettingKey;
 use App\Utils\CMS\ProductService;
 use App\Utils\Common\EmailService;
-use App\Utils\Common\ImageService;
 use App\Utils\Common\SMSService;
 use App\Utils\FinancialManager\ConfigProvider;
 use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
@@ -134,9 +133,8 @@ class Product extends BaseModel implements
     use Rateable, Seoable, Fileable, FullTextSearch, Badgeable, Translatable;
 
     public $timestamps = true;
-    protected $appends = ["is_liked", "is_needed", "main_photo", "secondary_photo", "fin_man_price",
-        "status", "url", "is_main_model", "minimum_allowed_purchase_count", "maximum_allowed_purchase_count",
-        "is_new", "is_important"];
+    protected $appends = ["is_liked", "is_needed", "fin_man_price", "status", "url", "is_main_model",
+        "minimum_allowed_purchase_count", "maximum_allowed_purchase_count", "is_new", "is_important"];
     protected $hidden = ["count", "min_allowed_count", "max_purchase_count"];
     protected $table = "products";
     protected $attributes = [
@@ -767,21 +765,11 @@ class Product extends BaseModel implements
     }
 
     public function hasImage(): bool {
-        if (isset($this->relations["images"])) {
-            return count($this->images) > 0;
-        }
-        return $this->images()->main()->count() > 0;
+        return strlen($this->main_photo) > 0;
     }
 
     public function getImagePath(): string {
-        if (isset($this->relations["images"])) {
-            foreach ($this->images as $image) {
-                if ($image->is_main)
-                    return $image->getImagePath();
-            }
-            return $this->getDefaultImagePath();
-        }
-        return $this->images()->main()->first()->getImagePath();
+        return $this->main_photo;
     }
 
     public function setImagePath(): void {
