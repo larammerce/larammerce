@@ -187,6 +187,10 @@ class Article extends BaseModel implements
         return $this->title . " - " . $this->directory->title;
     }
 
+    public function getSeoUrl(): string{
+        return $this->getFrontUrl();
+    }
+
 
     public function getSeoDescription(): string {
         return $this->seo_description;

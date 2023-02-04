@@ -32,4 +32,5 @@ interface SeoContract
     public function getSeoDescription();
     public function getSeoKeywords();
     public function getSeoTitle();
+    public function getSeoUrl();
 }

@@ -913,7 +913,9 @@ class Product extends BaseModel implements
         return $this->title . " - " . $this->directory->title;
     }
 
-
+    public function getSeoUrl(): string {
+        return $this->getMainProduct()->getFrontUrl();
+    }
     public function getSeoDescription() {
         return $this->seo_description;
     }

@@ -51,7 +51,7 @@ class DirectoryService {
                 }
             }
 
-            Cache::tags([Directory::class])->put($cache_key, ($root == null ? $branch : ($map[$root->id]->directories ?? [])), 600);
+            Cache::tags([Directory::class])->put($cache_key, ($root == null ? $branch : ($map[$root->id]->directories ?? [])));
         }
 
         return Cache::tags([Directory::class])->get($cache_key);

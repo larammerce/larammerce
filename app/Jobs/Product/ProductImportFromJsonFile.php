@@ -67,7 +67,6 @@ class ProductImportFromJsonFile extends Job implements ShouldQueue {
         }
 
         Product::whereRaw(DB::raw("code like '{$data->code}%'"))->update(["count" => 0, "is_active" => 0]);
-
         $parent_directory = $this->detectParentDirectory($data->categories);
         if ($parent_directory == null)
             return;
@@ -138,8 +137,9 @@ class ProductImportFromJsonFile extends Job implements ShouldQueue {
             $product->colors()->sync($color_ids);
             $product->directories()->sync($parent_directory_ids);
 
+            $current_images_real_name = $product->images()->pluck("real_name")->toArray();
             foreach ($image_paths as $image_path) {
-                if ($product->images()->where("path", $image_path["path"])->where("real_name", $image_path["real_name"])->count() == 0) {
+                if (!in_array($image_path["real_name"], $current_images_real_name)) {
                     $product->images()->create($image_path);
                 }
             }

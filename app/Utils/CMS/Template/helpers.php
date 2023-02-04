@@ -530,6 +530,7 @@ if (!function_exists('get_important_product_leaves')) {
 if (!function_exists('get_visible_product_leaves')) {
     function get_visible_product_leaves(Directory $root_directory, int $count): array|Collection {
         return $root_directory->leafProducts()->mainModels()->visible()->isActive()
+            ->orderBy("updated_at", "DESC")
             ->orderBy('important_at', 'DESC')
             ->take($count)->get();
     }
