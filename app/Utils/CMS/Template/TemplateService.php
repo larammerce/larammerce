@@ -11,8 +11,7 @@ namespace App\Utils\CMS\Template;
 use App\Models\WebPage;
 use Exception;
 
-class TemplateService
-{
+class TemplateService {
     private static $TEMPLATE_VIEWS_DIR = "hc-template";
     private static $FINAL_VIEWS_DIR = "views/public";
     private static $ORIGINAL_VIEWS = [];
@@ -21,8 +20,7 @@ class TemplateService
      * when new template is uploaded to the system, this method must be called to define template entries
      * @SuppressWarnings(PHPMD)
      */
-    public static function initializeTemplate()
-    {
+    public static function initializeTemplate() {
         echo "<h1>Initializing template</h1>";
         static::clearGeneratedViews();
         static::loadViews();
@@ -42,7 +40,7 @@ class TemplateService
                 foreach (RelativeBladeType::values() as $relative_blade_postfix) {
                     $relative_blade = $blade_name . $relative_blade_postfix . ".blade.php";
                     if (in_array($relative_blade, static::$ORIGINAL_VIEWS)) {
-                        echo "│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; └── initializing blade \"${relative_blade}\"<br/>"
+                        echo "│      └── initializing blade \"${relative_blade}\"<br/>"
                             . PHP_EOL;
                         $relative_template = new TemplateModel(
                             $relative_blade,
@@ -51,13 +49,13 @@ class TemplateService
                         );
                         $relative_template->initialize();
                         if (static::isPartialView($blade)) {
-                            echo "│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; └── detected partial blade, saving it ... <br/>"
+                            echo "│      └── detected partial blade, saving it ... <br/>"
                                 . PHP_EOL;
                             $relative_template->savePublic(static::getViewPath($relative_blade));
                         }
 
                         if (static::isSystemView($blade)) {
-                            echo "│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; └── detected system needle blade, saving it ... " .
+                            echo "│      └── detected system needle blade, saving it ... " .
                                 "<br/>" . PHP_EOL;
                             $relative_template->savePublic(static::getViewPath($relative_blade));
                         }
@@ -70,29 +68,27 @@ class TemplateService
         }
     }
 
-    private static function loadViews()
-    {
+    private static function loadViews() {
         static::$ORIGINAL_VIEWS = static::getOriginalBlades();
     }
 
-    private static function rebuildTemplateWebPage(TemplateModel $template, $blade_name)
-    {
+    private static function rebuildTemplateWebPage(TemplateModel $template, $blade_name) {
 
         if (static::isPartialView($blade_name)) {
-            echo "│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; └── detected partial blade, saving it ... <br/>" . PHP_EOL;
+            echo "│      └── detected partial blade, saving it ... <br/>" . PHP_EOL;
             $template->savePublic(static::getViewPath($blade_name));
         }
 
         if (static::isSystemView($blade_name)) {
-            echo "│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; └── detected system needle blade, saving it ... <br/>" . PHP_EOL;
+            echo "│      └── detected system needle blade, saving it ... <br/>" . PHP_EOL;
             $template->savePublic(static::getViewPath($blade_name));
         }
 
         $webPages = WebPage::whereBladeName($blade_name)->get();
         foreach ($webPages as $webPage) {
-            echo "│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; └── rebuilding web page with id : " . $webPage->id .
+            echo "│      └── rebuilding web page with id : " . $webPage->id .
                 "<br/>" . PHP_EOL;
-            $webPage->save();
+            $webPage->update(["data" => []]);
         }
     }
 
@@ -103,8 +99,7 @@ class TemplateService
      * @param null $directoryId
      * @return array
      */
-    public static function getGalleries($bladeName, $directoryId = null)
-    {
+    public static function getGalleries($bladeName, $directoryId = null) {
         $template = new TemplateModel($bladeName, static::getBladePath($bladeName));
         return $template->getGalleries($directoryId);
     }
@@ -115,8 +110,7 @@ class TemplateService
      * @param bool $system
      * @return array
      */
-    public static function getOriginalBlades(bool $system = false): array
-    {
+    public static function getOriginalBlades(bool $system = false): array {
         $result = [];
         $extension = "/originals";
         foreach (scandir(resource_path(static::$TEMPLATE_VIEWS_DIR . $extension)) as $file) {
@@ -135,13 +129,12 @@ class TemplateService
      * @param $bladeName
      * @return string
      */
-    public static function getBladePath($blade_name)
-    {
+    public static function getBladePath($blade_name) {
         $blade_name = strpos($blade_name, ".blade.php") !== false ? $blade_name : $blade_name . ".blade.php";
         return resource_path(static::$TEMPLATE_VIEWS_DIR . "/${blade_name}");
     }
 
-    public static function copyBlade($from_blade_name, $to_blade_name){
+    public static function copyBlade($from_blade_name, $to_blade_name) {
         $from_blade_content = static::getBladeContent($from_blade_name);
         static::setBladeContent($to_blade_name, $from_blade_content);
     }
@@ -153,8 +146,7 @@ class TemplateService
      * @param $bladeName
      * @return string
      */
-    public static function getOriginalBladePath($blade_name)
-    {
+    public static function getOriginalBladePath($blade_name) {
         $blade_name = strpos($blade_name, ".blade.php") !== false ? $blade_name : $blade_name . ".blade.php";
         return resource_path(static::$TEMPLATE_VIEWS_DIR . "/originals/${blade_name}");
     }
@@ -166,8 +158,7 @@ class TemplateService
      * @param $bladeName
      * @return string
      */
-    public static function getViewPath($bladeName)
-    {
+    public static function getViewPath($bladeName) {
         $bladeName = strpos($bladeName, ".blade.php") !== false ? $bladeName : $bladeName . ".blade.php";
         try {
             mkdir(resource_path(static::$FINAL_VIEWS_DIR));
@@ -177,8 +168,7 @@ class TemplateService
         return resource_path(static::$FINAL_VIEWS_DIR . "/${bladeName}");
     }
 
-    public static function getBladeContent($bladePath)
-    {
+    public static function getBladeContent($bladePath) {
         if (file_exists($bladePath)) {
             $bladeFile = fopen($bladePath, "r");
             if ($bladeFile !== false) {
@@ -189,8 +179,7 @@ class TemplateService
         return "";
     }
 
-    public static function setBladeContent($bladePath, $bladeContent)
-    {
+    public static function setBladeContent($bladePath, $bladeContent) {
         $bladeFile = fopen($bladePath, "w");
         if ($bladeFile !== false) {
             fwrite($bladeFile, $bladeContent);
@@ -198,14 +187,12 @@ class TemplateService
         fclose($bladeFile);
     }
 
-    public static function clearGeneratedViews()
-    {
+    public static function clearGeneratedViews() {
         static::deleteAll(resource_path(static::$FINAL_VIEWS_DIR));
         static::deleteAll(resource_path(static::$TEMPLATE_VIEWS_DIR));
     }
 
-    public static function clearAllViews()
-    {
+    public static function clearAllViews() {
         static::deleteAll(resource_path(static::$FINAL_VIEWS_DIR));
         static::deleteAll(resource_path(static::$TEMPLATE_VIEWS_DIR));
         static::deleteAll(resource_path(static::$TEMPLATE_VIEWS_DIR . "/originals"));
@@ -216,8 +203,7 @@ class TemplateService
      * @param int $depth
      * @return void
      */
-    private static function deleteAll($str_path, $depth = 1): void
-    {
+    private static function deleteAll($str_path, $depth = 1): void {
         if (is_file($str_path)) {
             unlink($str_path);
         } elseif (is_dir($str_path) and $depth > 0) {
@@ -232,8 +218,7 @@ class TemplateService
      * @param string $blade_name
      * @return bool
      */
-    private static function isPartialView(string $blade_name): bool
-    {
+    private static function isPartialView(string $blade_name): bool {
         return strpos($blade_name, "_") === 0;
     }
 
@@ -241,8 +226,7 @@ class TemplateService
      * @param string $blade_name
      * @return bool
      */
-    private static function isSystemView(string $blade_name): bool
-    {
+    private static function isSystemView(string $blade_name): bool {
         return strpos($blade_name, "_") === false;
     }
 }
