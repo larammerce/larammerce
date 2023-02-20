@@ -229,7 +229,7 @@ class Driver extends AbstractDriver
      * @throws PaymentConnectionException
      * @throws PaymentInvalidParametersException
      */
-    public function rejectPayment($amount, $payment_id, $payment_data): bool
+    public function rejectPayment($amount, $payment_id, $payment_data): string
     {
         $payment_data = json_decode($payment_data);
         $timestamp = date("Y/m/d H:i:s");
@@ -283,8 +283,10 @@ class Driver extends AbstractDriver
     /**
      * @throws PaymentConnectionException
      */
-    private function getPaymentResult(stdClass $payment_data): stdClass
+    private function getPaymentResult($payment_data): stdClass
     {
+        if(! $payment_data instanceof stdClass)
+            return new stdClass();
 
         if (!isset($payment_data->tref) or !isset($payment_data->iN))
             return $payment_data;
