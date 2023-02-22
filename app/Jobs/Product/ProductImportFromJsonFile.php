@@ -26,7 +26,7 @@ class ProductImportFromJsonFile extends Job implements ShouldQueue {
         $this->p_structure_id = $p_structure_id;
         $this->json_path = $json_path;
         $this->images_path = $images_path;
-        $this->price_ratio = env("SITE_PRICE_RATIO", 30000);
+        $this->price_ratio = env("FIN_MAN_PRICE_RATIO", 30000);
         $this->queue = config('queue.names.admin');
     }
 
@@ -104,7 +104,8 @@ class ProductImportFromJsonFile extends Job implements ShouldQueue {
                     "priority" => $data->priority,
                     "notice" => $iter_size->message,
                     "main_photo" => $main_photo,
-                    "secondary_photo" => $secondary_photo
+                    "secondary_photo" => $secondary_photo,
+                    "metadata" => $this->json_path
                 ]);
 
                 if ($model_id == 0) {
@@ -130,7 +131,8 @@ class ProductImportFromJsonFile extends Job implements ShouldQueue {
                     "latest_price" => $previous_price !== 0 ? $previous_price : $latest_price,
                     "latest_special_price" => $previous_price !== 0 ? $latest_price : 0,
                     "count" => 10,
-                    "is_active" => 1
+                    "is_active" => 1,
+                    "metadata" => $this->json_path
                 ]);
             }
 
