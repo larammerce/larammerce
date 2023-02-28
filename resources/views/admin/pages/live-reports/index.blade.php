@@ -68,6 +68,7 @@
     @include("admin.pages.live-reports._overall_bar_chart", ["id" => "overall-bar-chart"])
     @include("admin.pages.live-reports._overall_bar_chart", ["id" => "overall-sales-bar-chart"])
     @include("admin.pages.live-reports._overall_bar_chart", ["id" => "categories-availability"])
+    @include("admin.pages.live-reports._overall_bar_chart", ["id" => "overall-created-products-per-category"])
     <div class="row">
         <div class="col-md-4">
             @include("admin.pages.live-reports._report_table_box", ["id" => "monthly-categories-table", "title" => "پر فروش و کم فروش ترین دسته بندی‌های ماه جاری", "is_live" => false, "with_cart" => true])
