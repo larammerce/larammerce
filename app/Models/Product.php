@@ -128,7 +128,8 @@ use Throwable;
  */
 class Product extends BaseModel implements
     FileAbstractionContract, ShareContract, PublishScheduleContract, ImageContract,
-    RateableContract, SeoableContract, HashContract {
+    RateableContract, SeoableContract, HashContract
+{
     use Rateable, Seoable, Fileable, FullTextSearch, Badgeable, Translatable;
 
     public $timestamps = true;
@@ -306,6 +307,33 @@ class Product extends BaseModel implements
             else
                 return ($this->is_package and $this->attributes["latest_price"] == 0) ?
                     $this->productPackage->getLatestPrice() : $this->attributes["latest_price"];
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
+    public function getPurePriceAttribute(): int {
+        try {
+            return ($this->is_package and $this->attributes["pure_price"] == 0) ?
+                $this->productPackage->getLatestPrice() : $this->attributes["pure_price"];
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
+    public function getTaxAmountAttribute(): int {
+        try {
+            return ($this->is_package and $this->attributes["tax_amount"] == 0) ?
+                $this->productPackage->getLatestPrice() : $this->attributes["tax_amount"];
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
+    public function getTollAmountAttribute(): int {
+        try {
+            return ($this->is_package and $this->attributes["toll_amount"] == 0) ?
+                $this->productPackage->getLatestPrice() : $this->attributes["toll_amount"];
         } catch (Exception $e) {
             return 0;
         }
