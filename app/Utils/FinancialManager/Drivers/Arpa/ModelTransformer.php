@@ -197,11 +197,11 @@ class ModelTransformer
                     $sum_product_price = 0;
                     $sum_pure_price = 0;
                     foreach ($product->productPackage->productPackageItems as $index => $product_package_item) {
+                        $item_product = $product_package_item->product;
                         if (($index + 1) !== $items_count) {
-                            $item_product = $product_package_item->product;
                             $item_latest_price = $item_product->latest_price;
-
                             $tmp_ratio = (($item_latest_price * $product_package_item->usage_count) / $latest_price);
+
                             $tmp_discount_amount = (int)($invoice_row->discount_amount * $tmp_ratio);
                             $tmp_tax_amount = (int)($invoice_row->tax_amount * $tmp_ratio);
                             $tmp_toll_amount = (int)($invoice_row->toll_amount * $tmp_ratio);
@@ -224,7 +224,7 @@ class ModelTransformer
 
                         $tmp_invoice_row = new InvoiceRow();
                         $tmp_invoice_row->count = $invoice_row->count * $product_package_item->usage_count;
-                        $tmp_invoice_row->product = $product;
+                        $tmp_invoice_row->product = $item_product;
                         $tmp_invoice_row->discount_amount = (int)($tmp_discount_amount / $product_package_item->usage_count);
                         $tmp_invoice_row->tax_amount = (int)($tmp_tax_amount / $product_package_item->usage_count);
                         $tmp_invoice_row->toll_amount = (int)($tmp_toll_amount / $product_package_item->usage_count);

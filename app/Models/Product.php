@@ -315,7 +315,7 @@ class Product extends BaseModel implements
     public function getPurePriceAttribute(): int {
         try {
             return ($this->is_package and $this->attributes["pure_price"] == 0) ?
-                $this->productPackage->getLatestPrice() : $this->attributes["pure_price"];
+                $this->productPackage->getPurePrice() : $this->attributes["pure_price"];
         } catch (Exception $e) {
             return 0;
         }
@@ -324,7 +324,7 @@ class Product extends BaseModel implements
     public function getTaxAmountAttribute(): int {
         try {
             return ($this->is_package and $this->attributes["tax_amount"] == 0) ?
-                $this->productPackage->getLatestPrice() : $this->attributes["tax_amount"];
+                $this->productPackage->getTaxAmount() : $this->attributes["tax_amount"];
         } catch (Exception $e) {
             return 0;
         }
@@ -333,7 +333,7 @@ class Product extends BaseModel implements
     public function getTollAmountAttribute(): int {
         try {
             return ($this->is_package and $this->attributes["toll_amount"] == 0) ?
-                $this->productPackage->getLatestPrice() : $this->attributes["toll_amount"];
+                $this->productPackage->getTollAmount() : $this->attributes["toll_amount"];
         } catch (Exception $e) {
             return 0;
         }

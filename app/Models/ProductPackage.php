@@ -118,6 +118,27 @@ class ProductPackage extends BaseModel
             "where ppi.package_id = {$this->id}) as package_prices"))->sum("calc_price");
     }
 
+    public function getPurePrice(): int
+    {
+        return DB::table(DB::raw("(select (pr.pure_price * ppi.usage_count) as calc_price " .
+            "from product_package_items as ppi inner join products as pr on ppi.product_id = pr.id " .
+            "where ppi.package_id = {$this->id}) as package_prices"))->sum("calc_price");
+    }
+
+    public function getTaxAmount(): int
+    {
+        return DB::table(DB::raw("(select (pr.tax_amount * ppi.usage_count) as calc_price " .
+            "from product_package_items as ppi inner join products as pr on ppi.product_id = pr.id " .
+            "where ppi.package_id = {$this->id}) as package_prices"))->sum("calc_price");
+    }
+
+    public function getTollAmount(): int
+    {
+        return DB::table(DB::raw("(select (pr.toll_amount * ppi.usage_count) as calc_price " .
+            "from product_package_items as ppi inner join products as pr on ppi.product_id = pr.id " .
+            "where ppi.package_id = {$this->id}) as package_prices"))->sum("calc_price");
+    }
+
     /**
      * @return int
      */
