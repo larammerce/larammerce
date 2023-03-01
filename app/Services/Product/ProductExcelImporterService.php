@@ -25,7 +25,7 @@ class ProductExcelImporterService implements ToModel, WithHeadingRow, WithValida
      * @throws ValidationException
      */
     public function model(array $row): void {
-//        dispatch(new ProductImportFromDataArray($this->p_structure, $row));
+        dispatch(new ProductImportFromDataArray($this->p_structure, $row));
     }
 
     public function headingRow(): int {

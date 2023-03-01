@@ -204,7 +204,7 @@ abstract class BaseModel extends Model
         $allowed_attributes = [];
         $allowed_inputs = $this->getAllowedInputs();
         foreach ($attributes as $attr_key => $attr_value) {
-            if (in_array($attr_key, $allowed_inputs) and (key_exists($attr_key, $this->attributes) or in_array($attr_key, $this->appends))) {
+            if (in_array($attr_key, $allowed_inputs)) {
                 $allowed_attributes[$attr_key] = $attr_value;
             }
         }
