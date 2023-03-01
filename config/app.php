@@ -201,7 +201,7 @@ return [
         Riverskies\Laravel\MobileDetect\MobileDetectServiceProvider::class,
         Stevebauman\Location\LocationServiceProvider::class,
         Jenssegers\Mongodb\MongodbServiceProvider::class,
-        Maatwebsite\Excel\ExcelServiceProvider::class,
+        App\Utils\Excel\ExcelServiceProvider::class,
 
         /*
          * Larammerce
@@ -288,7 +288,7 @@ return [
         'Gender' => Gender::class,
         'PSAttrKeyShowType' => PSAttrKeyShowType::class,
         'Location' => Stevebauman\Location\Facades\Location::class,
-        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'Excel' => App\Utils\Excel\Facades\Excel::class,
     ],
 
 ];

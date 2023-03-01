@@ -6,12 +6,12 @@ namespace App\Utils\CMS\Setting\Excel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use JetBrains\PhpStorm\ArrayShape;
-use Maatwebsite\Excel\Concerns\FromQuery;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Events\AfterSheet;
+use App\Utils\Excel\Concerns\FromQuery;
+use App\Utils\Excel\Concerns\ShouldAutoSize;
+use App\Utils\Excel\Concerns\WithEvents;
+use App\Utils\Excel\Concerns\WithHeadings;
+use App\Utils\Excel\Concerns\WithMapping;
+use App\Utils\Excel\Events\AfterSheet;
 
 class ModelExport implements FromQuery, WithHeadings, WithEvents, WithMapping, ShouldAutoSize
 {

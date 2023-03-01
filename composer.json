@@ -36,7 +36,6 @@
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.3",
-        "maatwebsite/excel": "^3.1",
         "mailerlite/mailerlite-api-v2-php-sdk": "^0.3.2",
         "niklasravnsborg/laravel-pdf": "^4.1",
         "phpseclib/phpseclib": "^2.0",
