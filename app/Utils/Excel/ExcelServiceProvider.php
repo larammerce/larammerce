@@ -57,11 +57,6 @@ class ExcelServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(
-            $this->getConfigFile(),
-            'excel'
-        );
-
         $this->app->bind(CacheManager::class, function ($app) {
             return new CacheManager($app);
         });

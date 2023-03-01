@@ -79,7 +79,7 @@ class Failure implements Arrayable, JsonSerializable
     public function toArray()
     {
         return collect($this->errors)->map(function ($message) {
-            return __('There was an error on row :row. :message', ['row' => $this->row, 'message' => $message]);
+            return trans("messages.excel.row_validation_failed", ['row' => $this->row, 'message' => $message]);
         })->all();
     }
 
