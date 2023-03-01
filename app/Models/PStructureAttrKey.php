@@ -28,7 +28,8 @@ use Illuminate\Support\Facades\DB;
  * Class PStructureAttrKey
  * @package App\Models
  */
-class PStructureAttrKey extends BaseModel implements TaggableContract {
+class PStructureAttrKey extends BaseModel implements TaggableContract
+{
     use Taggable, Translatable;
 
     protected $table = 'p_structure_attr_keys';
@@ -122,6 +123,12 @@ class PStructureAttrKey extends BaseModel implements TaggableContract {
                 $keys[$value->p_structure_attr_key_id]->setRelation("values", new Collection());
             }
             $keys[$value->p_structure_attr_key_id]->values->push($value);
+        }
+
+        foreach ($keys as $key_id => $key) {
+            if (count($key->values) === 1) {
+                unset($keys[$key_id]);
+            }
         }
 
         usort($keys, function ($a, $b) {
