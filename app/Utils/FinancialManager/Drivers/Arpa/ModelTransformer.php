@@ -27,8 +27,7 @@ class ModelTransformer
      * @param stdClass $std_customer
      * @return Customer|boolean
      */
-    public static function customerStdToModel(stdClass $std_customer): Customer|bool
-    {
+    public static function customerStdToModel(stdClass $std_customer): Customer|bool {
         try {
             $customer = new Customer();
             $customer->id = $std_customer->businessID;
@@ -59,8 +58,7 @@ class ModelTransformer
      * @param Customer $customer
      * @return stdClass|boolean
      */
-    public static function customerModelToStd(Customer $customer): stdClass|bool
-    {
+    public static function customerModelToStd(Customer $customer): stdClass|bool {
         try {
             $std_customer = new stdClass();
             $std_customer->BusinessId = $customer->id;
@@ -86,8 +84,7 @@ class ModelTransformer
         }
     }
 
-    public static function userToFinCustomer(User $user): Customer
-    {
+    public static function userToFinCustomer(User $user): Customer {
         $customer = new Customer();
         $customer->id = $user->customerUser->fin_relation;
         $customer->name = $user->name;
@@ -101,8 +98,7 @@ class ModelTransformer
         return $customer;
     }
 
-    public static function legalUserToFinCustomer(User $user): Customer
-    {
+    public static function legalUserToFinCustomer(User $user): Customer {
         $legalInfo = $user->customerUser->legalInfo;
         $customer = new Customer();
         $customer->id = $legalInfo->fin_relation;
@@ -117,8 +113,7 @@ class ModelTransformer
         return $customer;
     }
 
-    public static function userConfigToFinCustomer(Customer $customer, array $config): Customer
-    {
+    public static function userConfigToFinCustomer(Customer $customer, array $config): Customer {
         if (isset($config["full_address"]))
             $customer->address = $config["full_address"];
         if (isset($config["state_id"]))
@@ -126,8 +121,7 @@ class ModelTransformer
         return $customer;
     }
 
-    public static function productStdToModel(stdClass $stdProduct): Product|bool
-    {
+    public static function productStdToModel(stdClass $stdProduct): Product|bool {
         $ratio = ProductService::getPriceRatio();
         try {
             $product = new Product();
@@ -142,8 +136,7 @@ class ModelTransformer
         }
     }
 
-    public static function productModelToStd(Product $product): stdClass|bool
-    {
+    public static function productModelToStd(Product $product): stdClass|bool {
         try {
             $stdProduct = new stdClass();
             $stdProduct->itemID = $product->id;
@@ -157,49 +150,93 @@ class ModelTransformer
         }
     }
 
-    public static function invoiceRowModelToStd(InvoiceRow $invoiceRow, $tax_added_to_price = true): stdClass
-    {
+    public static function invoiceRowModelToStd(InvoiceRow $invoice_row, $tax_added_to_price = true): stdClass {
         $preInvoiceRowStd = new stdClass();
 
-        $preInvoiceRowStd->ItemCode = $invoiceRow->product->code;
-        $preInvoiceRowStd->MjQty = $invoiceRow->count;
+        $preInvoiceRowStd->ItemCode = $invoice_row->product->code;
+        $preInvoiceRowStd->MjQty = $invoice_row->count;
 
         $discount_data = $tax_added_to_price ?
-            ProductService::reverseCalculateTaxAndToll($invoiceRow->discount_amount) :
-            ProductService::calculateTaxAndToll($invoiceRow->discount_amount);
+            ProductService::reverseCalculateTaxAndToll($invoice_row->discount_amount) :
+            ProductService::calculateTaxAndToll($invoice_row->discount_amount);
 
-        $preInvoiceRowStd->DiscountAmount = intval($discount_data->price * $invoiceRow->count);
+        $preInvoiceRowStd->DiscountAmount = intval($discount_data->price * $invoice_row->count);
         $preInvoiceRowStd->DiscountPercent = 0;
 
         $price_data = $tax_added_to_price ?
-            ProductService::reverseCalculateTaxAndToll($invoiceRow->product_price) :
-            ProductService::calculateTaxAndToll($invoiceRow->product_price);
+            ProductService::reverseCalculateTaxAndToll($invoice_row->product_price) :
+            ProductService::calculateTaxAndToll($invoice_row->product_price);
 
         $preInvoiceRowStd->Price = $price_data->price;
-        $preInvoiceRowStd->TaxAmount = intval($invoiceRow->tax_amount * $invoiceRow->count);
-        $preInvoiceRowStd->TollAmount = intval($invoiceRow->toll_amount * $invoiceRow->count);
+        $preInvoiceRowStd->TaxAmount = intval($invoice_row->tax_amount * $invoice_row->count);
+        $preInvoiceRowStd->TollAmount = intval($invoice_row->toll_amount * $invoice_row->count);
 
         return $preInvoiceRowStd;
     }
 
-    public static function invoiceModelToStd(Invoice $invoice, $tax_added_to_price = true): stdClass|bool
-    {
+    public static function invoiceModelToStd(Invoice $invoice, $tax_added_to_price = true): stdClass|bool {
         try {
-            $preInvoiceStd = new stdClass();
-            $customerUser = $invoice->customer;
+            $pre_invoice_std = new stdClass();
+            $customer_user = $invoice->customer;
 
-            $preInvoiceStd->data = new stdClass();
-            $preInvoiceStd->data->BusinessId = $customerUser->getFinManRelation($invoice->is_legal);;
-            $preInvoiceStd->data->Description = "تحویل گیرنده : " . $invoice->transferee_name . " - " .
+            $pre_invoice_std->data = new stdClass();
+            $pre_invoice_std->data->BusinessId = $customer_user->getFinManRelation($invoice->is_legal);;
+            $pre_invoice_std->data->Description = "تحویل گیرنده : " . $invoice->transferee_name . " - " .
                 "سفارش دهنده : " . $invoice->customer->user->full_name;
 
-            $preInvoiceStd->items = [];
-            foreach ($invoice->rows as $invoiceRow) {
-                $preInvoiceRowStd = static::invoiceRowModelToStd($invoiceRow, $tax_added_to_price);
-                $preInvoiceStd->items[] = $preInvoiceRowStd;
+            $pre_invoice_std->items = [];
+            foreach ($invoice->rows as $invoice_row) {
+                if ($invoice_row->product->is_package) {
+                    $product = $invoice_row->product;
+                    $items_count = count($product->productPackage->productPackageItems);
+
+                    $latest_price = $product->latest_price;
+                    $sum_discount_amount = 0;
+                    $sum_tax_amount = 0;
+                    $sum_toll_amount = 0;
+                    $sum_product_price = 0;
+                    $sum_pure_price = 0;
+                    foreach ($product->productPackage->productPackageItems as $index => $product_package_item) {
+                        if (($index + 1) !== $items_count) {
+                            $item_latest_price = $product_package_item->product->latest_price;
+
+                            $tmp_ratio = (($item_latest_price * $product_package_item->usage_count) / $latest_price);
+                            $tmp_discount_amount = (int)($invoice_row->discount_amount * $tmp_ratio);
+                            $tmp_tax_amount = (int)($invoice_row->tax_amount * $tmp_ratio);
+                            $tmp_toll_amount = (int)($invoice_row->toll_amount * $tmp_ratio);
+                            $tmp_product_price = (int)($invoice_row->product_price * $tmp_ratio);
+                            $tmp_pure_price = (int)($invoice_row->pure_price * $tmp_ratio);
+
+                            $sum_discount_amount += $tmp_discount_amount;
+                            $sum_tax_amount += $tmp_tax_amount;
+                            $sum_toll_amount += $tmp_toll_amount;
+                            $sum_product_price += $tmp_product_price;
+                            $sum_pure_price += $tmp_pure_price;
+
+                        } else {
+                            $tmp_discount_amount = $invoice_row->discount_amount - $sum_discount_amount;
+                            $tmp_tax_amount = $invoice_row->tax_amount - $sum_tax_amount;
+                            $tmp_toll_amount = $invoice_row->toll_amount - $sum_toll_amount;
+                            $tmp_product_price = $invoice_row->product_price - $sum_product_price;
+                            $tmp_pure_price = $invoice_row->pure_price - $sum_pure_price;
+                        }
+
+                        $tmp_invoice_row = new InvoiceRow();
+                        $tmp_invoice_row->count = $invoice_row->count * $product_package_item->usage_count;
+                        $tmp_invoice_row->discount_amount = (int)($tmp_discount_amount / $product_package_item->usage_count);
+                        $tmp_invoice_row->tax_amount = (int)($tmp_tax_amount / $product_package_item->usage_count);
+                        $tmp_invoice_row->toll_amount = (int)($tmp_toll_amount / $product_package_item->usage_count);
+                        $tmp_invoice_row->product_price = (int)($tmp_product_price / $product_package_item->usage_count);
+                        $tmp_invoice_row->pure_price = (int)($tmp_pure_price / $product_package_item->usage_count);
+
+                        $pre_invoice_std->items[] = static::invoiceRowModelToStd($tmp_invoice_row, $tax_added_to_price);
+                    }
+                } else {
+                    $pre_invoice_std->items[] = static::invoiceRowModelToStd($invoice_row, $tax_added_to_price);
+                }
             }
 
-            $preInvoiceStd->addsubs = [];
+            $pre_invoice_std->addsubs = [];
             if ($invoice->has_shipment_cost) {
                 $standardShipmentCost = $invoice->shipment_cost;
                 $shipmentCostExploded = ProductService::reverseCalculateTaxAndToll($standardShipmentCost);
@@ -210,10 +247,10 @@ class ModelTransformer
                 $addSub->TASTaxAmount = $shipmentCostExploded->tax;
                 $addSub->TASTollAmount = $shipmentCostExploded->toll;
 
-                $preInvoiceStd->addsubs[] = $addSub;
+                $pre_invoice_std->addsubs[] = $addSub;
             }
-            return $preInvoiceStd;
-        }catch (Exception $exception){
+            return $pre_invoice_std;
+        } catch (Exception $exception) {
             return false;
         }
     }

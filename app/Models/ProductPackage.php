@@ -15,6 +15,7 @@ use stdClass;
  * @property integer product_id
  * @property Product product
  * @property Product[] products
+ * @property ProductPackageItem[] productPackageItems
  *
  * Class ProductPackage
  * @package App\Models
