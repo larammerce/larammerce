@@ -7,11 +7,12 @@ use App\Models\PStructure;
 use App\Validations\ProductValidation;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Imports\HeadingRowFormatter;
+use App\Utils\Excel\Concerns\ToModel;
+use App\Utils\Excel\Concerns\WithHeadingRow;
+use App\Utils\Excel\Concerns\WithValidation;
+use App\Utils\Excel\Imports\HeadingRowFormatter;
 
-class ProductExcelImporterService implements ToModel, WithHeadingRow {
+class ProductExcelImporterService implements ToModel, WithHeadingRow, WithValidation {
 
     private PStructure $p_structure;
 
@@ -24,12 +25,14 @@ class ProductExcelImporterService implements ToModel, WithHeadingRow {
      * @throws ValidationException
      */
     public function model(array $row): void {
-        $validator = Validator::make($row, ProductValidation::EXCEL_ROW);
-        $validator->validate();
         dispatch(new ProductImportFromDataArray($this->p_structure, $row));
     }
 
     public function headingRow(): int {
         return 1;
+    }
+
+    public function rules(): array {
+        return ProductValidation::EXCEL_ROW;
     }
 }

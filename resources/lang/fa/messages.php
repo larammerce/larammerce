@@ -79,5 +79,6 @@ return [
     "excel" => [
         "row_not_valid" => "خط :row از فایل اکسل معتبر نمیباشد.",
         "importable_attributes_not_set" => "فیلد های قابل خروجی گرفتن تعریف نشده اند",
+        "row_validation_failed" => "متاسفانه اطلاعات موجود در خط :row معتبر نمی‌باشد. :message"
     ],
 ];

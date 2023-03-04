@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\DB;
@@ -12,6 +13,9 @@ use stdClass;
  * @property integer usage_count
  * @property integer package_id
  * @property integer product_id
+ *
+ * @property Product product
+ * @property ProductPackage package
  *
  * Class ProductPackage
  * @package App\Models
@@ -24,16 +28,15 @@ class ProductPackageItem extends BaseModel
 
     public $timestamps = false;
 
-
-    /*
-     * Relations Methods
-     */
-
-    /**
-     * @return string
-     */
-    public function getSearchUrl(): string
-    {
+    public function getSearchUrl(): string {
         return '';
+    }
+
+    public function product(): BelongsTo {
+        return $this->belongsTo(Product::class, "product_id", "id");
+    }
+
+    public function package(): BelongsTo {
+        return $this->belongsTo(ProductPackage::class, "package_id", "id");
     }
 }

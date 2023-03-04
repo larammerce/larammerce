@@ -4,11 +4,11 @@ namespace App\Services\Product;
 
 use App\Models\PStructure;
 use Illuminate\Support\Collection;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Events\AfterSheet;
+use App\Utils\Excel\Concerns\FromCollection;
+use App\Utils\Excel\Concerns\ShouldAutoSize;
+use App\Utils\Excel\Concerns\WithEvents;
+use App\Utils\Excel\Concerns\WithHeadings;
+use App\Utils\Excel\Events\AfterSheet;
 
 class ProductExcelExporterService implements WithHeadings, FromCollection, ShouldAutoSize, WithEvents {
 

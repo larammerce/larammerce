@@ -16,7 +16,7 @@
                         <li>
                             <a class="virt-form" data-method="POST"
                                data-action="{{route("admin.model-translation.edit")}}"
-                               data-fields='{"related_model": "{{str_replace("\\", "\\\\", $class->getClassName())}}", "related_object_id": "{{$$entity_name->id}}", "lang_id": "{{$iter_lang_id}}"}'>
+                               data-fields='{"related_model": "{{str_replace("\\", "\\\\", $class->getClassName())}}", "related_object_id": "{{$$entity_name?->id}}", "lang_id": "{{$iter_lang_id}}"}'>
                                 @lang('language.id.'.$iter_lang_id)
                             </a>
                         </li>

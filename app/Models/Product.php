@@ -129,7 +129,8 @@ use Throwable;
  */
 class Product extends BaseModel implements
     FileAbstractionContract, ShareContract, PublishScheduleContract, ImageContract,
-    RateableContract, SeoableContract, HashContract {
+    RateableContract, SeoableContract, HashContract
+{
     use Rateable, Seoable, Fileable, FullTextSearch, Badgeable, Translatable;
 
     public $timestamps = true;
@@ -149,7 +150,7 @@ class Product extends BaseModel implements
         "is_important", "seo_title", "seo_keywords", "seo_description", "model_id",
         "has_discount", "previous_price", "is_accessory", "is_visible", "inaccessibility_type",
         "cmc_id", "notice", "discount_group_id", "priority", "is_discountable", "structure_sort_score",
-        "is_package", "accessory_for",
+        "is_package", "accessory_for", "count",
         //these are not table fields, these are form sections that role permission system works with
         "tags", "attributes", "gallery", "colors", "badges", "main_photo", "secondary_photo"
     ];
@@ -306,6 +307,33 @@ class Product extends BaseModel implements
             else
                 return ($this->is_package and $this->attributes["latest_price"] == 0) ?
                     $this->productPackage->getLatestPrice() : $this->attributes["latest_price"];
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
+    public function getPurePriceAttribute(): int {
+        try {
+            return ($this->is_package and $this->attributes["pure_price"] == 0) ?
+                $this->productPackage->getPurePrice() : $this->attributes["pure_price"];
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
+    public function getTaxAmountAttribute(): int {
+        try {
+            return ($this->is_package and $this->attributes["tax_amount"] == 0) ?
+                $this->productPackage->getTaxAmount() : $this->attributes["tax_amount"];
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
+    public function getTollAmountAttribute(): int {
+        try {
+            return ($this->is_package and $this->attributes["toll_amount"] == 0) ?
+                $this->productPackage->getTollAmount() : $this->attributes["toll_amount"];
         } catch (Exception $e) {
             return 0;
         }

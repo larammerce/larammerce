@@ -14,15 +14,12 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
-class LiveReportsController extends BaseController
-{
-    private function getMonthLength($month_number): int
-    {
+class LiveReportsController extends BaseController {
+    private function getMonthLength($month_number): int {
         return [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29][$month_number - 1];
     }
 
-    private function getTodayRange(): array
-    {
+    private function getTodayRange(): array {
         $now = Carbon::now();
         return [
             $now->format("Y-m-d 00:00:00"),
@@ -30,8 +27,7 @@ class LiveReportsController extends BaseController
         ];
     }
 
-    private function getPreviousYearMonthsRanges()
-    {
+    private function getPreviousYearMonthsRanges() {
         $now = Carbon::now();
         list($year, $month, $day) = JDateTime::toJalali($now->year, $now->month, $now->day);
 
@@ -56,8 +52,7 @@ class LiveReportsController extends BaseController
         return $result;
     }
 
-    private function getCurrentMonthRange(): array
-    {
+    private function getCurrentMonthRange(): array {
         $now = Carbon::now();
         list($year, $month, $day) = JDateTime::toJalali($now->year, $now->month, $now->day);
         list($start_year, $start_month, $start_day) = JDateTime::toGregorian($year, $month, 1);
@@ -68,8 +63,7 @@ class LiveReportsController extends BaseController
         ];
     }
 
-    private function getCurrentYearRange(): array
-    {
+    private function getCurrentYearRange(): array {
         $now = Carbon::now();
         list($year, $month, $day) = JDateTime::toJalali($now->year, $now->month, $now->day);
         list($start_year, $start_month, $start_day) = JDateTime::toGregorian($year, 1, 1);
@@ -81,8 +75,7 @@ class LiveReportsController extends BaseController
         ];
     }
 
-    private function getPreviousYearRange(): array
-    {
+    private function getPreviousYearRange(): array {
         $now = Carbon::now();
         list($year, $month, $day) = JDateTime::toJalali($now->year, $now->month, $now->day);
         list($start_year, $start_month, $start_day) = JDateTime::toGregorian($year - 1, 1, 1);
@@ -94,8 +87,7 @@ class LiveReportsController extends BaseController
         ];
     }
 
-    private function getCategoriesSalesAmount($start_date, $end_date): Collection
-    {
+    private function getCategoriesSalesAmount($start_date, $end_date): Collection {
         $head_directories = Directory::where("directory_id", null)->pluck("id")->toArray();
 
         if (count($head_directories) == 1) {
@@ -125,8 +117,7 @@ class LiveReportsController extends BaseController
             ->get();
     }
 
-    public function getDailySalesAmount(): JsonResponse
-    {
+    public function getDailySalesAmount(): JsonResponse {
         list($start_date, $end_date) = $this->getTodayRange();
 
         $amount = Invoice::whereIn("payment_status", [PaymentStatus::SUBMITTED, PaymentStatus::CONFIRMED, PaymentStatus::PAID_OUT])
@@ -137,8 +128,7 @@ class LiveReportsController extends BaseController
         return MessageFactory::jsonResponse([], 200, compact("amount"));
     }
 
-    public function getMonthlySalesAmount(): JsonResponse
-    {
+    public function getMonthlySalesAmount(): JsonResponse {
         list($start_date, $end_date) = $this->getCurrentMonthRange();
 
         $amount = Invoice::whereIn("payment_status", [PaymentStatus::SUBMITTED, PaymentStatus::CONFIRMED, PaymentStatus::PAID_OUT])
@@ -149,8 +139,7 @@ class LiveReportsController extends BaseController
         return MessageFactory::jsonResponse([], 200, compact("amount"));
     }
 
-    public function getYearlySalesAmount(): JsonResponse
-    {
+    public function getYearlySalesAmount(): JsonResponse {
         list($start_date, $end_date) = $this->getCurrentYearRange();
 
         $amount = Invoice::whereIn("payment_status", [PaymentStatus::SUBMITTED, PaymentStatus::CONFIRMED, PaymentStatus::PAID_OUT])
@@ -161,8 +150,7 @@ class LiveReportsController extends BaseController
         return MessageFactory::jsonResponse([], 200, compact("amount"));
     }
 
-    public function getPreviousYearSalesAmount(): JsonResponse
-    {
+    public function getPreviousYearSalesAmount(): JsonResponse {
         list($start_date, $end_date) = $this->getPreviousYearRange();
 
         $amount = Invoice::whereIn("payment_status", [PaymentStatus::SUBMITTED, PaymentStatus::CONFIRMED, PaymentStatus::PAID_OUT])
@@ -173,8 +161,7 @@ class LiveReportsController extends BaseController
         return MessageFactory::jsonResponse([], 200, compact("amount"));
     }
 
-    public function getOverallBarChartData(): JsonResponse
-    {
+    public function getOverallBarChartData(): JsonResponse {
         $now = Carbon::now();
         $labels = [];
         $datasets = [
@@ -203,24 +190,23 @@ class LiveReportsController extends BaseController
             list($end_year, $end_month, $end_day) = $month_range["end"];
             $labels[] = $month_range["label"];
 
-            $datasets[0]["data"][] = User::where("created_at", ">=", $now->format("$start_year-$start_month-$start_day 00:00:00"))
-                ->where("created_at", "<=", $now->format("$end_year-$end_month-$end_day 23:59:59"))
+            $datasets[0]["data"][] = User::where("created_at", ">=", "$start_year-$start_month-$start_day 00:00:00")
+                ->where("created_at", "<=", "$end_year-$end_month-$end_day 23:59:59")
                 ->count();
-            $datasets[1]["data"][] = Invoice::where("created_at", ">=", $now->format("$start_year-$start_month-$start_day 00:00:00"))
-                ->where("created_at", "<=", $now->format("$end_year-$end_month-$end_day 23:59:59"))
+            $datasets[1]["data"][] = Invoice::where("created_at", ">=", "$start_year-$start_month-$start_day 00:00:00")
+                ->where("created_at", "<=", "$end_year-$end_month-$end_day 23:59:59")
                 ->count();
 
             $datasets[2]["data"][] = Invoice::whereIn("payment_status", [PaymentStatus::SUBMITTED, PaymentStatus::CONFIRMED, PaymentStatus::PAID_OUT])
-                ->where("created_at", ">=", $now->format("$start_year-$start_month-$start_day 00:00:00"))
-                ->where("created_at", "<=", $now->format("$end_year-$end_month-$end_day 23:59:59"))
+                ->where("created_at", ">=", "$start_year-$start_month-$start_day 00:00:00")
+                ->where("created_at", "<=", "$end_year-$end_month-$end_day 23:59:59")
                 ->count();
         }
 
         return MessageFactory::jsonResponse([], 200, compact("labels", "datasets"));
     }
 
-    public function getOverallSalesBarChartData(): JsonResponse
-    {
+    public function getOverallSalesBarChartData(): JsonResponse {
         $now = Carbon::now();
         $labels = [];
         $datasets = [
@@ -238,50 +224,44 @@ class LiveReportsController extends BaseController
             $labels[] = $month_range["label"];
 
             $datasets[0]["data"][] = Invoice::whereIn("payment_status", [PaymentStatus::SUBMITTED, PaymentStatus::CONFIRMED, PaymentStatus::PAID_OUT])
-                ->where("created_at", ">=", $now->format("$start_year-$start_month-$start_day 00:00:00"))
-                ->where("created_at", "<=", $now->format("$end_year-$end_month-$end_day 23:59:59"))
+                ->where("created_at", ">=", "$start_year-$start_month-$start_day 00:00:00")
+                ->where("created_at", "<=", "$end_year-$end_month-$end_day 23:59:59")
                 ->sum("sum");
         }
 
         return MessageFactory::jsonResponse([], 200, compact("labels", "datasets"));
     }
 
-    public function getMonthlyCategoriesSales(): JsonResponse
-    {
+    public function getMonthlyCategoriesSales(): JsonResponse {
         list($start_date, $end_date) = $this->getCurrentMonthRange();
         $rows = $this->getCategoriesSalesAmount($start_date, $end_date);
         return MessageFactory::jsonResponse([], 200, compact("rows"));
     }
 
-    public function getYearlyCategoriesSales(): JsonResponse
-    {
+    public function getYearlyCategoriesSales(): JsonResponse {
         list($start_date, $end_date) = $this->getCurrentYearRange();
         $rows = $this->getCategoriesSalesAmount($start_date, $end_date);
         return MessageFactory::jsonResponse([], 200, compact("rows"));
     }
 
-    public function getPreviousYearCategoriesSales(): JsonResponse
-    {
+    public function getPreviousYearCategoriesSales(): JsonResponse {
         list($start_date, $end_date) = $this->getPreviousYearRange();
         $rows = $this->getCategoriesSalesAmount($start_date, $end_date);
         return MessageFactory::jsonResponse([], 200, compact("rows"));
     }
 
-    public function getLatestCustomers(): JsonResponse
-    {
+    public function getLatestCustomers(): JsonResponse {
         $rows = User::where("is_customer_user", true)->orderBy("created_at", "desc")->limit(10)->get();
         return MessageFactory::jsonResponse([], 200, compact("rows"));
     }
 
-    public function getLatestPayedOrders(): JsonResponse
-    {
+    public function getLatestPayedOrders(): JsonResponse {
         $rows = Invoice::with(["customer.user"])->whereIn("payment_status", [PaymentStatus::SUBMITTED, PaymentStatus::CONFIRMED, PaymentStatus::PAID_OUT])
             ->orderBy("created_at", "desc")->limit(10)->get();
         return MessageFactory::jsonResponse([], 200, compact("rows"));
     }
 
-    public function getCategoriesAvailability(): JsonResponse
-    {
+    public function getCategoriesAvailability(): JsonResponse {
         $labels = [];
         $datasets = [
             [
@@ -318,8 +298,61 @@ class LiveReportsController extends BaseController
         return MessageFactory::jsonResponse([], 200, compact("labels", "datasets"));
     }
 
-    public function getModel(): ?string
-    {
+    public function getOverallCreatedProductsPerCategory() {
+        $now = Carbon::now();
+        $labels = [];
+        $colors = [
+            "rgb(255,99,71)",
+            "rgb(255,140,0)",
+            "rgb(255,215,0)",
+            "rgb(128,128,0)",
+            "rgb(173,255,47)",
+            "rgb(32,178,170)",
+            "rgb(176,224,230)",
+            "rgb(100,149,237)",
+            "rgb(0,0,128)",
+            "rgb(138,43,226)",
+            "rgb(123,104,238)",
+            "rgb(128,0,128)",
+            "rgb(255,0,255)",
+            "rgb(255,248,220)",
+            "rgb(160,82,45)",
+            "rgb(210,180,140)",
+            "rgb(112,128,144)"
+        ];
+
+        /** @var Directory[] $root_dirs */
+        $root_dirs = Directory::from(DirectoryType::PRODUCT)->roots()->get();
+        $datasets = [
+        ];
+        foreach ($root_dirs as $index => $root_dir) {
+            $datasets[] = [
+                "label" => $root_dir->title,
+                "backgroundColor" => $colors[($index % count($colors))],
+                "borderColor" => "rgb(10, 10, 10)",
+                "data" => []
+            ];
+        }
+
+        foreach ($this->getPreviousYearMonthsRanges() as $month_range) {
+            list($start_year, $start_month, $start_day) = $month_range["start"];
+            list($end_year, $end_month, $end_day) = $month_range["end"];
+            $labels[] = $month_range["label"];
+
+            foreach ($root_dirs as $index => $root_dir) {
+                $result = $root_dir->leafProducts()
+                    ->where("created_at", ">=", "$start_year-$start_month-$start_day 00:00:00")
+                    ->where("created_at", "<=", "$end_year-$end_month-$end_day 23:59:59")
+                    ->count();
+
+                $datasets[$index]["data"][] = $result;
+            }
+        }
+
+        return MessageFactory::jsonResponse([], 200, compact("labels", "datasets"));
+    }
+
+    public function getModel(): ?string {
         return null;
     }
 }

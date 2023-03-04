@@ -70,3 +70,4 @@ demo.retopi.com/
 .phpunit.result.cache
 npm-debug.log
 yarn-error.log
+resources/lang/*.json

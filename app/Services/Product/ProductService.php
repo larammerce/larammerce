@@ -38,6 +38,12 @@ class ProductService
         $product->attachFileTo($directory);
         $product->createReview();
 
+        if (!isset($attributes["model_id"])) {
+            $product->update([
+                "model_id" => $product->id
+            ]);
+        }
+
         if ($attributes["is_package"] ?? false) {
             $product->productPackage()->create([]);
         }
