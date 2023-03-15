@@ -390,7 +390,7 @@ class ProductImportFromJsonFile extends Job implements ShouldQueue {
         if ($base_price == 0)
             return 0;
 
-        if (str_contains($keywords, "boot") or
+        if (str_contains($keywords, "boot") or str_contains($keywords, "shoe") or
             (str_contains($keywords, "tennis") and (str_contains($keywords, "racket") or str_contains($keywords, "bag") or str_contains($keywords, "pack")))) {
             $result = intval($base_price * 0.90 * 1.75 * $this->price_ratio) + 1200000;
         } else if (str_contains($keywords, "nit") or str_contains($keywords, "glasses") or str_contains($keywords, "hat") or str_contains($keywords, "cap") or str_contains($keywords, "beanie")) {
