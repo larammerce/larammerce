@@ -614,6 +614,19 @@ Route::group(
     }
 );
 
+Route::group(
+    [
+        "prefix" => "health",
+        "as" => "health."
+    ],
+    function (){
+        Route::get("dbversion", [
+            "as" => "dbversion",
+            "uses" => "HealthController@getDBVersion"
+        ]);
+    }
+);
+
 //Public routes
 Route::post("/message/save", ["as" => "message-save", "uses" => "MessageController@saveMessage"]);
 Route::post("/newsletter/subscribe", ["as" => "newsletter", "uses" => "NewsletterController@save"]);
