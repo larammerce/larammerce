@@ -31,6 +31,6 @@ class HealthController extends Controller {
             ->take(1)
             ->pluck("updated_at")
             ->first();
-        die(hash("sha256", $final_string));
+        return response(hash("sha256", $final_string));
     }
 }
