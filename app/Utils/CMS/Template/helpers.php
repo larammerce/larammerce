@@ -514,7 +514,7 @@ if (!function_exists('get_directory_products')) {
      * @deprecated
      */
     function get_directory_products($directory, $count = null) {
-        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $root?->id ?? 0, json_encode($directory), "{$count}");
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], json_encode($directory), "{$count}");
         if (!Cache::tags([Product::class])->has($cache_key)) {
             Cache::tags([Product::class])->put($cache_key, $count != null ?
                 $directory->products()->mainModels()->visible()->orderBy('priority')->take($count)->get() :
@@ -526,7 +526,7 @@ if (!function_exists('get_directory_products')) {
 
 if (!function_exists('get_important_product_leaves')) {
     function get_important_product_leaves(Directory $root_directory, int $count): array|Collection {
-        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $root?->id ?? 0, json_encode($root_directory), "{$count}");
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], json_encode($root_directory), "{$count}");
         if (!Cache::tags([Product::class])->has($cache_key)) {
             Cache::tags([Product::class])->put($cache_key, $root_directory->leafProducts()->mainModels()->visible()
                 ->where('important_at', '!=', null)
@@ -539,7 +539,7 @@ if (!function_exists('get_important_product_leaves')) {
 }
 if (!function_exists('get_visible_product_leaves')) {
     function get_visible_product_leaves(Directory $root_directory, int $count): array|Collection {
-        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $root?->id ?? 0, json_encode($root_directory), "{$count}");
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], json_encode($root_directory), "{$count}");
         if (!Cache::tags([Product::class])->has($cache_key)) {
             Cache::tags([Product::class])->put($cache_key, $root_directory->leafProducts()->mainModels()->visible()->isActive()
                 ->orderBy("updated_at", "DESC")
@@ -552,7 +552,7 @@ if (!function_exists('get_visible_product_leaves')) {
 
 if (!function_exists('get_directory_product_leaves')) {
     function get_directory_product_leaves(Directory $root_directory, int $count, $only_active_items = true): array|Collection {
-        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $root?->id ?? 0, json_encode($root_directory), "{$count}");
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], json_encode($root_directory), "{$count}");
         if (!Cache::tags([Product::class])->has($cache_key)) {
             $result = $root_directory->leafProducts()->mainModels()->visible();
             $tmp_result = clone $result;
@@ -566,7 +566,7 @@ if (!function_exists('get_directory_product_leaves')) {
 
 if (!function_exists('latest_products')) {
     function latest_products(int $count = 8): array|Collection {
-        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $root?->id ?? 0, "{$count}");
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], "{$count}");
         if (!Cache::tags([Product::class])->has($cache_key)) {
             if ($count > 0) {
                 Cache::tags([Product::class])->put($cache_key, Product::mainModels()->visible()
@@ -584,7 +584,7 @@ if (!function_exists('latest_products')) {
 
 if (!function_exists('rated_products')) {
     function rated_products(int $count = 8): array|Collection {
-        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $root?->id ?? 0, "{$count}");
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], "{$count}");
         if (!Cache::tags([Product::class])->has($cache_key)) {
             if ($count > 0) {
                 Cache::tags([Product::class])->put($cache_key, Product::mainModels()->visible()->popular()->where("is_active", true)->take($count)->get());
@@ -598,7 +598,7 @@ if (!function_exists('rated_products')) {
 
 if (!function_exists('custom_query_products')) {
     function custom_query_products(string $identifier): array|Collection {
-        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $root?->id ?? 0, $identifier);
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $identifier);
         if (!Cache::tags([Product::class])->has($cache_key)) {
             try {
                 Cache::tags([Product::class])->put($cache_key, ProductQuery::findByIdentifier($identifier)->getProducts());
@@ -612,7 +612,7 @@ if (!function_exists('custom_query_products')) {
 
 if (!function_exists('custom_query_product_ids')) {
     function custom_query_product_ids(string $identifier): array|Collection {
-        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $root?->id ?? 0, $identifier);
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $identifier);
         if (!Cache::tags([Product::class])->has($cache_key)) {
             try {
                 Cache::tags([Product::class])->put($cache_key, ProductQuery::findByIdentifier($identifier)->getProductIds());
@@ -638,7 +638,7 @@ if (!function_exists('get_product_filter')) {
 
 if (!function_exists('custom_filter_products')) {
     function custom_filter_products(string $identifier): array|Collection {
-        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $root?->id ?? 0, $identifier);
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $identifier);
         if (!Cache::tags([Product::class])->has($cache_key)) {
             try {
                 Cache::tags([Product::class])->put($cache_key, ProductFilter::findByIdentifier($identifier)->getProducts());
@@ -653,7 +653,7 @@ if (!function_exists('custom_filter_products')) {
 
 if (!function_exists('custom_filter_product_ids')) {
     function custom_filter_product_ids(string $identifier): array|Collection {
-        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $root?->id ?? 0, $identifier);
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $identifier);
         if (!Cache::tags([Product::class])->has($cache_key)) {
             try {
                 Cache::tags([Product::class])->put($cache_key, ProductFilter::findByIdentifier($identifier)->getProductIds());
@@ -674,7 +674,7 @@ if (!function_exists('get_filter_data')) {
 
 if (!function_exists('important_products')) {
     function important_products(int $count = 8): array|Collection {
-        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $root?->id ?? 0, "{$count}");
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], "{$count}");
         if (!Cache::tags([Product::class])->has($cache_key)) {
             if ($count > 0) {
                 Cache::tags([Product::class])->put($cache_key,  Product::important()
