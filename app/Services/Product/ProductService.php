@@ -11,9 +11,14 @@ use App\Models\PStructureAttrKey;
 use App\Models\PStructureAttrValue;
 use Exception;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class ProductService
 {
+    public static function clearCache(): void {
+        Cache::tags([Product::class])->flush();
+    }
+
     /**
      * @throws ProductNotFoundException
      */

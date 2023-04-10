@@ -274,6 +274,7 @@ Route::group(
                 Route::put("{product}/publish", ["as" => "publish", "uses" => "ProductController@publish"]);
                 Route::put("{product}/clone", ["as" => "clone", "uses" => "ProductController@cloneModel"]);
                 Route::get("{product}/models", ["as" => "models", "uses" => "ProductController@models"]);
+                Route::get("cache-clear", ["as" => "cache-clear", "uses" => "DirectoryController@cacheClear"]);
             });
         Route::resource("product", "ProductController", ["as" => "admin"]);
 

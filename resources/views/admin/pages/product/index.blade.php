@@ -63,6 +63,11 @@
                 @endforeach
 
             </ul>
+            <ul class="has-divider-left">
+                <li class="btn btn-default" href="{{route('admin.directory.cache-clear')}}" act="link">
+                    <i class="fa fa-edit"></i>تخلیه کش
+                </li>
+            </ul>
             @if(isset($directory) and is_paste_possible($directory))
                 <ul>
                     <li class="btn btn-default"
