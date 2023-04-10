@@ -634,8 +634,8 @@ Route::post("/message/save", ["as" => "message-save", "uses" => "MessageControll
 Route::post("/newsletter/subscribe", ["as" => "newsletter", "uses" => "NewsletterController@save"]);
 Route::get("/", ["as" => "public.home", "uses" => "HomeController@main"]);
 Route::get("/search", ["as" => "public.search", "uses" => "HomeController@search"]);
-Route::get("/product/{product}", ["as" => "public.view-product", "uses" => "HomeController@showProduct"]);
-Route::get("/product/{product}/{any}", "HomeController@showProduct")->where("any", ".*");
+Route::get("/product/{product}", ["as" => "public.view-product", "uses" => "HomeController@showProduct"])->where('product', '[0-9]+');
+Route::get("/product/{product}/{any}", "HomeController@showProduct")->where("any", ".*")->where('product', '[0-9]+');
 Route::get("/blog/{article}", ["as" => "public.view-blog", "uses" => "HomeController@showBlog"]);
 Route::get("/blog/{article}/{any}", "HomeController@showBlog")->where("any", ".*");
 Route::get("/{any}", "HomeController@main")->where("any", ".*");
