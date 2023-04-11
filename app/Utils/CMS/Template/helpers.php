@@ -514,7 +514,7 @@ if (!function_exists('get_directory_products')) {
      * @deprecated
      */
     function get_directory_products($directory, $count = null) {
-        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], json_encode($directory), "{$count}");
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $directory->id, "{$count}");
         if (!Cache::tags([Product::class])->has($cache_key)) {
             Cache::tags([Product::class])->put($cache_key, $count != null ?
                 $directory->products()->mainModels()->visible()->orderBy('priority')->take($count)->get() :
@@ -526,7 +526,7 @@ if (!function_exists('get_directory_products')) {
 
 if (!function_exists('get_important_product_leaves')) {
     function get_important_product_leaves(Directory $root_directory, int $count): array|Collection {
-        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], json_encode($root_directory), "{$count}");
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $root_directory->id, "{$count}");
         if (!Cache::tags([Product::class])->has($cache_key)) {
             Cache::tags([Product::class])->put($cache_key, $root_directory->leafProducts()->mainModels()->visible()
                 ->where('important_at', '!=', null)
@@ -539,7 +539,7 @@ if (!function_exists('get_important_product_leaves')) {
 }
 if (!function_exists('get_visible_product_leaves')) {
     function get_visible_product_leaves(Directory $root_directory, int $count): array|Collection {
-        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], json_encode($root_directory), "{$count}");
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $root_directory->id, "{$count}");
         if (!Cache::tags([Product::class])->has($cache_key)) {
             Cache::tags([Product::class])->put($cache_key, $root_directory->leafProducts()->mainModels()->visible()->isActive()
                 ->orderBy("updated_at", "DESC")
@@ -552,7 +552,7 @@ if (!function_exists('get_visible_product_leaves')) {
 
 if (!function_exists('get_directory_product_leaves')) {
     function get_directory_product_leaves(Directory $root_directory, int $count, $only_active_items = true): array|Collection {
-        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], json_encode($root_directory), "{$count}");
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $root_directory->id, "{$count}");
         if (!Cache::tags([Product::class])->has($cache_key)) {
             $result = $root_directory->leafProducts()->mainModels()->visible();
             $tmp_result = clone $result;
