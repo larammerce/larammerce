@@ -20,6 +20,7 @@ class AdminRequestService
         $searchResult = array_search('admin', explode("/", $request->server('REQUEST_URI')));
         $result = ($searchResult !== false and $searchResult < 2);
         RequestService::setAttr(self::getAdminAreaKey(), $result, $request);
+        //TODO: remove the in_admin_area if there's no admin in first two section.
     }
 
     public static function isInAdminArea($request = null)
