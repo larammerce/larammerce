@@ -755,6 +755,9 @@ class Product extends BaseModel implements
     }
 
     private function sendNotificationToStockManagers(int $status): void {
+        if(config("cms.general.stock_manager_notification") === false)
+            return;
+
         $stockManagers = SystemUser::where("is_stock_manager", true)->get();
         if (count(is_countable($stockManagers) ? $stockManagers : []) > 0) {
             $productTitle = $this->title;
