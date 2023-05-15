@@ -124,4 +124,8 @@ class ConfigProvider
         }
         return $rules;
     }
+
+    public static function getMaxTransactionAmount(): int {
+        return intval(env("SITE_MAX_TRANSACTION_AMOUNT", static::MAX_TRANSACTION));
+    }
 }

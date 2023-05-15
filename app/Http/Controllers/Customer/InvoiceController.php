@@ -262,7 +262,7 @@ class InvoiceController extends BaseController
 
             if ($invoice->payment_type == PaymentType::ONLINE) {
                 try {
-                    if ($invoice->sum >= ConfigProvider::MAX_TRANSACTION) {
+                    if ($invoice->sum >= ConfigProvider::getMaxTransactionAmount()) {
                         SystemMessageService::addWarningMessage("system_messages.invoice.maximum_order_ceiling");
                         return redirect(route('customer.invoice.index'));
                     }

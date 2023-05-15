@@ -1435,7 +1435,7 @@ if (!function_exists("get_current_date")) {
 
 if (!function_exists("get_max_transaction_amount")) {
     function get_max_transaction_amount(): int {
-        return \App\Utils\PaymentManager\ConfigProvider::MAX_TRANSACTION;
+        return \App\Utils\PaymentManager\ConfigProvider::getMaxTransactionAmount();
     }
 }
 
