@@ -96,7 +96,7 @@ class GalleryItem extends BaseModel implements ImageContract
     {
         $this->loadFields();
         foreach ($galleryFields as $id => $content) {
-            if ($content->getContent() == null and key_exists($id, $this->fields)) {
+            if (is_null($content->getContent())  and key_exists($id, $this->fields)) {
                 $galleryFields[$id] = $this->fields[$id];
             }
         }
