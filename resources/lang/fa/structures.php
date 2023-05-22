@@ -231,6 +231,9 @@ return [
             'is_package' => 'پکیج است',
             'representative_username' => 'نام کاربری معرف',
             'representative_type' => 'نوع آشنایی با سیستم',
+            'color_code' => 'کد رنگ',
+            'models_count' => 'تعداد محصولات هم مدل',
+            'important_at' => 'تاریخ اعلام مهم بودن'
         ],
     'methods' =>
         [
