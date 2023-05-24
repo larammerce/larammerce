@@ -105,7 +105,7 @@ class ProductModelService
                     $tmp_row_set["values"][$tmp_value_index_map[$p_attr->p_structure_attr_value_id]]["parent_values"] =
                         array_unique([
                             ...$tmp_row_set["values"][$tmp_value_index_map[$p_attr->p_structure_attr_value_id]]["parent_values"],
-                            ...array_keys($tmp_product_value_map[$row_index - 1][$p_attr->product_id])
+                            ...array_keys($tmp_product_value_map[$row_index - 1][$p_attr->product_id] ?? [])
                         ]);
                 }
             }
