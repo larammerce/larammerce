@@ -26,7 +26,7 @@ class GalleryItemField implements JsonSerializable, Serializable
     public function __construct($title, $content)
     {
         $this->title = $title;
-        $this->content = $content;
+        $this->content = $content ?? "";
     }
 
 
@@ -43,7 +43,7 @@ class GalleryItemField implements JsonSerializable, Serializable
      */
     public function setTitle($title)
     {
-        $this->title = $title;
+        $this->title = $title ?? "";
     }
 
     /**
