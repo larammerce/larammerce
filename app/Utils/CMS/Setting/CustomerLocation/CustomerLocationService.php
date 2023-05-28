@@ -22,8 +22,6 @@ class CustomerLocationService extends AbstractSettingService
 
     public static function getRecord(string $name = "", ?string $parent_id = null): null|CustomerLocationModel|AbstractSettingModel
     {
-        if (!config("cms.general.enable_directory_location"))
-            return null;
         try {
             return parent::getRecord($name, $parent_id);
         } catch (Exception $e) {

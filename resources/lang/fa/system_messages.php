@@ -48,6 +48,7 @@ return [
         'product_max_count_not_allowed' => 'موجودی محصول :product_title کافی نیست.',
         'product_not_active' => 'در حال حاضر امکان خرید :product_title وجود ندارد.',
         'fill_meta' => 'لطفا برای محصول :product_title اطلاعات مورد نظر را پر کنید.',
+        'cant_deliver' => ':product_title امکان ارسال به لوکیشن انتخابی شما را ندارد.',
     ],
     'invoice' => [
         'not_saved' => 'متاسفانه در ذخیره فاکتور شما مشکلی پیش آمده، لطفا با واحد پشتیبانی تماس بگیرید.',

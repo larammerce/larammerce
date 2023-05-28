@@ -10,6 +10,8 @@ namespace App\Http\Controllers\Customer;
 
 
 use App\Models\CustomerAddress;
+use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationModel;
+use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationService;
 use App\Utils\CMS\SystemMessageService;
 use App\Utils\Common\History;
 use Exception;
@@ -107,6 +109,7 @@ class AddressController extends BaseController
     {
         $address = CustomerAddress::find(request()->get("address_id"));
         $address->setAsMain();
+        CustomerLocationService::setRecord(new CustomerLocationModel($address->state, $address->city));
         SystemMessageService::addSuccessMessage("system_messages.user.location_updated");
         return redirect()->back();
     }
