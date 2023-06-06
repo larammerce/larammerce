@@ -21,6 +21,12 @@ Route::group(
                 Route::get("{any}", "ShopController@__call")->where("any", ".*");
             });
 
+        Route::group(["prefix" => "product", "as" => "product."],
+            function () {
+                Route::get("/", ["as" => "index", "uses" => "ProductController@index"]);
+                Route::get("/torob", ["as" => "index", "uses" => "ProductController@torob"]);
+            });
+
         Route::group(["prefix" => "location", "as" => "location."],
             function () {
                 Route::get("get-states", ["as" => "get-states", "uses" => "LocationController@getStates"]);
