@@ -62,28 +62,41 @@
                                         <table class="table table-striped" dir="rtl" width="100%">
                                             <thead>
                                             <tr>
-                                                <th class="text-center" scope="col">شناسه</th>
-                                                <th class="text-center" scope="col">تعداد</th>
-                                                <th class="text-center" scope="col">محصول</th>
-                                                <th class="text-center" scope="col">تخفیف</th>
+                                                <th class="text-center" scope="col">ردیف</th>
+                                                <th class="text-center" scope="col">کد کالا</th>
+                                                <th class="text-center" scope="col">عنوان</th>
                                                 <th class="text-center" scope="col">قیمت واحد</th>
+                                                <th class="text-center" scope="col">تعداد</th>
+                                                <th class="text-center" scope="col">تخفیف</th>
+                                                <th class="text-center" scope="col">مالیات</th>
                                                 <th class="text-center" scope="col">قیمت کل</th>
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            @foreach($invoice->rows as $key=>$product)
+                                            @foreach($invoice->rows as $index => $row)
                                                 <tr>
-                                                    <td class="text-center">{{env('APP_NAME')}}{{$product->product->code}}</td>
-                                                    <td class="text-center  price-data">{{$product->count}}</td>
-                                                    <td class="text-center">
-                                                        {{ $product->product->title }}
-                                                    </td>
-                                                    <td class="text-center price-data">{{$product->discount_amount * $product->count }}</td>
-                                                    <td class="text-center"
-                                                    >{{\App\Utils\Common\Format::number($product->shownPrice()) }}</td>
-                                                    <td class="text-center">{{\App\Utils\Common\Format::number($product->shownPrice() * $product->count)}}</td>
+                                                    <td class="text-center">{{$index}}</td>
+                                                    <td class="text-center">{{$row->product->code}}</td>
+                                                    <td class="text-center">{{ $row->product->title }}</td>
+                                                    <td class="text-center price-data">{{ $row->pure_price  }}</td>
+                                                    <td class="text-center">{{$row->count}}</td>
+                                                    <td class="text-center price-data">{{ $row->discount_amount * $row->count }}</td>
+                                                    <td class="text-center price-data">{{ ($row->tax_amount + $row->toll_amount)  }}</td>
+                                                    <td class="text-center price-data">{{ $row->sum() }}</td>
                                                 </tr>
                                             @endforeach
+                                            @if($invoice->has_shipment_cost)
+                                                <tr class="goods-item">
+                                                    <td class="text-center">{{$index + 1}}</td>
+                                                    <td class="text-center"> SHP-CST</td>
+                                                    <td class="text-center">هزینه ارسال</td>
+                                                    <td class="text-center price-data">{{ $invoice->shipment_cost  }}</td>
+                                                    <td class="text-center"> 1</td>
+                                                    <td class="text-center price-data"> -</td>
+                                                    <td class="text-center price-data"> -</td>
+                                                    <td class="text-center price-data">{{$invoice->shipment_cost}}</td>
+                                                </tr>
+                                            @endif
                                             </tbody>
                                         </table>
                                         <hr>
