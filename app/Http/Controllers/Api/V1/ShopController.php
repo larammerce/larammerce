@@ -79,7 +79,7 @@ class ShopController extends BaseController
         if (request()->has("p_structure_id"))
             $products = $products->where("p_structure_id", request("p_structure_id"));
 
-        if(config("cms.general.only_main_models")){
+        if(config("cms.general.site.only_main_models")){
             $products = $products->mainModels()->visible();
         }else{
             $products = $products->visible();
