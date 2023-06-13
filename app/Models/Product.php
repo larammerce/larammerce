@@ -138,7 +138,7 @@ class Product extends BaseModel implements
     use Rateable, Seoable, Fileable, FullTextSearch, Badgeable, Translatable;
 
     public $timestamps = true;
-    protected $appends = ["is_liked", "is_needed", "main_photo", "secondary_photo", "fin_man_price",
+    protected $appends = ["is_liked", "is_needed", "fin_man_price",
         "status", "url", "is_main_model", "minimum_allowed_purchase_count", "maximum_allowed_purchase_count",
         "is_new", "is_important", "location_limitations", "is_location_limited", "can_deliver"];
     protected $hidden = ["count", "min_allowed_count", "max_purchase_count"];
