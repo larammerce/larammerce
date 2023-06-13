@@ -169,18 +169,6 @@ class Product extends BaseModel implements
         "is_discountable" => "bool"
     ];
 
-    public function __construct(array $attributes = []) {
-        if (!$this->is_package) {
-            $financial_driver = Provider::getEnabledDriver();
-            if (strlen($financial_driver) > 0 and Provider::hasDriver($financial_driver)) {
-                $financial_driver_config = ConfigProvider::getConfig($financial_driver);
-                if ($financial_driver_config->is_manual_stock)
-                    $this->fillable[] = "count";
-            }
-        }
-        parent::__construct($attributes);
-    }
-
     protected static ?bool $DISABLE_ON_MIN = null; //TODO: move this to admin layer setting.
     protected static array $SORTABLE_FIELDS = ["id", "created_at", "is_active", "is_accessory"];
     protected static int $FILTER_PAGINATION_COUNT = 20;
