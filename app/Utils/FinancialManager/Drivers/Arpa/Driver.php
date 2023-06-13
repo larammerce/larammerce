@@ -108,9 +108,10 @@ class Driver implements BaseDriver
         $curl_result = ConnectionFactory::create('/serv/api/PostBusiness', $config)
             ->withData(['data' => $std_customer])->asJson()
             ->post();
-        try {
+
+        if(!is_null($curl_result->data)){
             return $curl_result->data->result;
-        } catch (Exception $exception) {
+        } else {
             return false;
         }
     }

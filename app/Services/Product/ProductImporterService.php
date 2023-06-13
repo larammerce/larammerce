@@ -149,6 +149,9 @@ class ProductImporterService {
             ProductService::updateProductFromAttributesArray($product, $clean_attributes);
         }
 
+        $product->updateTaxAmount();
+        $product->save();
+
         $current_p_structure_attrs = PStructureService::getAllPAttrsByProductsIds([$product->id]);
         $current_p_structure_value_ids = array_map(function (PAttr $p_attr) {
             return $p_attr->p_structure_attr_value_id;

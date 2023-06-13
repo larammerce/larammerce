@@ -20,15 +20,16 @@ use App\Models\Traits\Fileable;
 use App\Models\Traits\FullTextSearch;
 use App\Models\Traits\Rateable;
 use App\Models\Traits\Seoable;
+use App\Services\Directory\DirectoryLocationService;
 use App\Utils\CMS\AdminRequestService;
 use App\Utils\CMS\Enums\CMSSettingKey;
 use App\Utils\CMS\ProductService;
+use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationModel;
 use App\Utils\Common\EmailService;
 use App\Utils\Common\SMSService;
 use App\Utils\FinancialManager\ConfigProvider;
 use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
 use App\Utils\FinancialManager\Factory;
-use App\Utils\FinancialManager\Provider;
 use App\Utils\Translation\Traits\Translatable;
 use Carbon\Carbon;
 use DateTime;
@@ -99,6 +100,10 @@ use Throwable;
  * @property string main_photo
  * @property string secondary_photo
  *
+ * @property CustomerLocationModel[] location_limitations
+ * @property bool is_location_limited
+ * @property bool can_deliver
+ *
  * @property Directory directory
  * @property Directory[] directories
  * @property PStructure productStructure
@@ -129,13 +134,13 @@ use Throwable;
  */
 class Product extends BaseModel implements
     FileAbstractionContract, ShareContract, PublishScheduleContract, ImageContract,
-    RateableContract, SeoableContract, HashContract
-{
+    RateableContract, SeoableContract, HashContract {
     use Rateable, Seoable, Fileable, FullTextSearch, Badgeable, Translatable;
 
     public $timestamps = true;
-    protected $appends = ["is_liked", "is_needed", "fin_man_price", "status", "url", "is_main_model",
-        "minimum_allowed_purchase_count", "maximum_allowed_purchase_count", "is_new", "is_important"];
+    protected $appends = ["is_liked", "is_needed", "main_photo", "secondary_photo", "fin_man_price",
+        "status", "url", "is_main_model", "minimum_allowed_purchase_count", "maximum_allowed_purchase_count",
+        "is_new", "is_important", "location_limitations", "is_location_limited", "can_deliver"];
     protected $hidden = ["count", "min_allowed_count", "max_purchase_count"];
     protected $table = "products";
     protected $attributes = [
@@ -219,6 +224,27 @@ class Product extends BaseModel implements
     ];
 
     protected static string $TRANSLATION_EDIT_FORM = "admin.pages.product.translate";
+
+    public function getIsLocationLimitedAttribute(): bool {
+        if (config("cms.general.site.enable_directory_location")) {
+            return DirectoryLocationService::isProductLocationLimited($this);
+        }
+        return false;
+    }
+
+    public function getLocationLimitationsAttribute(): array {
+        if (config("cms.general.site.enable_directory_location")) {
+            return DirectoryLocationService::getProductLocationLimitations($this);
+        }
+        return [];
+    }
+
+    public function getCanDeliverAttribute(): bool {
+        if (config("cms.general.site.enable_directory_location")) {
+            return DirectoryLocationService::canDeliverProduct($this);
+        }
+        return true;
+    }
 
     public function getIsLikedAttribute(): bool {
         return is_customer() and
@@ -392,6 +418,10 @@ class Product extends BaseModel implements
         return $this->belongsTo(Directory::class, "directory_id", "id");
     }
 
+    public function directoryLocations(): HasMany {
+        return $this->hasMany(DirectoryLocation::class, "directory_id", "directory_id");
+    }
+
     public function directories(): BelongsToMany {
         return $this->belongsToMany(Directory::class, "directory_product", "product_id", "directory_id");
     }
@@ -557,16 +587,6 @@ class Product extends BaseModel implements
     }
 
     public function scopeVisible(Builder $query): Builder {
-        /*$customer_location = CustomerLocationService::getRecord();
-        if ($customer_location != null) {
-            $query = $query->join("directories", function ($join) use ($customer_location) {
-                $join->on("products.directory_id", "=", "directories.id")
-                    ->whereRaw(DB::raw("directories.is_location_limited = 0 or " .
-                        "exists(select directory_location.id from directory_location where " .
-                        "(directory_location.city_id is null or directory_location.city_id = {$customer_location->getCity()->id})" .
-                        " and directory_location.state_id = {$customer_location->getState()->id} )"));
-            });
-        }*/
         return $query->where("is_visible", true);
     }
 
@@ -755,6 +775,9 @@ class Product extends BaseModel implements
     }
 
     private function sendNotificationToStockManagers(int $status): void {
+        if (config("cms.general.stock_manager_notification") === false)
+            return;
+
         $stockManagers = SystemUser::where("is_stock_manager", true)->get();
         if (count(is_countable($stockManagers) ? $stockManagers : []) > 0) {
             $productTitle = $this->title;

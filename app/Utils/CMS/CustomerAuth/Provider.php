@@ -138,7 +138,7 @@ class Provider
         $customerUser = CustomerUser::create([
             "user_id" => $newUser->id,
             "main_phone" => $data["main_phone"],
-            "national_code" => $data["national_code"],
+            "national_code" => $data["national_code"] ?? null,
             "is_legal_person" => false,
             "is_active" => false,
             "is_initiated" => true,

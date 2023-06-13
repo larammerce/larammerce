@@ -15,12 +15,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 
-class SettingService
-{
+class SettingService {
 
-    private static function create(string $key, string $value, ?int $user_id = null): void
-    {
-        Setting::create([
+    private const GLOBAL_KEY="globals";
+    private const LOCAL_KEY="locals";
+
+    private static array $CACHED_RECORDS = [];
+
+    private static function create(string $key, string $value, ?int $user_id = null): ?Setting {
+        return Setting::create([
             "key" => $key,
             "value" => $value,
             "user_id" => $user_id,
@@ -28,32 +31,29 @@ class SettingService
         ]);
     }
 
-    public static function setGlobal(string $key, AbstractSettingModel $value, string $driver = DataSourceDriver::DATABASE): void
-    {
+    public static function setGlobal(string $key, AbstractSettingModel $value, string $driver = DataSourceDriver::DATABASE): void {
         if ($driver == DataSourceDriver::DATABASE) {
             $setting = self::getGlobal($key);
             $value = serialize($value);
-            if ($setting){
-                $setting->update(compact('value'));
-            }
-            else{
-                self::create($key, $value);
+            if ($setting) {
+                static::$CACHED_RECORDS[static::GLOBAL_KEY][$key] = $setting->update(compact('value'));
+            } else {
+                static::$CACHED_RECORDS[static::GLOBAL_KEY][$key] = self::create($key, $value);
             }
         } else if ($driver == DataSourceDriver::SESSION) {
             die('session can not be global ! :) go read more about sessions :D');
         }
     }
 
-    public static function setLocal(string $key, AbstractSettingModel $value, string $driver = DataSourceDriver::DATABASE): void
-    {
+    public static function setLocal(string $key, AbstractSettingModel $value, string $driver = DataSourceDriver::DATABASE): void {
         if ($driver == DataSourceDriver::DATABASE) {
             $setting = self::getLocal($key);
             $value = serialize($value);
             if ($setting)
-                $setting->update(compact('value'));
+                static::$CACHED_RECORDS[static::LOCAL_KEY][$key] = $setting->update(compact('value'));
             else {
                 try {
-                    self::create($key, $value, Auth::user()->id);
+                    static::$CACHED_RECORDS[static::LOCAL_KEY][$key] = self::create($key, $value, Auth::user()->id);
                 } catch (Exception $e) {
                     Log::error("SettingService.setLocal.DATABASE." . $e->getMessage());
                 }
@@ -65,50 +65,53 @@ class SettingService
         }
     }
 
-    public static function getGlobal($key, string $driver = DataSourceDriver::DATABASE): ?Setting
-    {
-        if ($driver == DataSourceDriver::DATABASE) {
-            try {
-                return Setting::globalData()->systemSettings()->where("key", $key)->firstOrFail();
-            } catch (Exception $e) {
-                //Log::error("SettingService.getGlobal.DATABASE." . $e->getMessage());
-                return null;
-            }
-        } else if ($driver == DataSourceDriver::SESSION) {
-            die('session can not be global ! :) go read more about sessions :D');
-        }
-        return null;
-    }
-
-    public static function getLocal($key, string $driver = DataSourceDriver::DATABASE): ?Setting
-    {
-        if ($driver == DataSourceDriver::DATABASE) {
-            try {
-                return Setting::localData()->systemSettings()->where("key", $key)->firstOrFail();
-            } catch (Exception $e) {
-                Setting::localData()->systemSettings()->where("key", $key)->delete();
-                //Log::error("SettingService.getLocal.DATABASE." . $e->getMessage());
-                return null;
-            }
-        } else if ($driver == DataSourceDriver::SESSION) {
-            $strResult = request()->session()->get($key, false);
-            if ($strResult !== false) {
-                $result = new Setting();
-                $result->key = $key;
-                $result->value = $strResult;
-                return $result;
+    public static function getGlobal($key, string $driver = DataSourceDriver::DATABASE): ?Setting {
+        if (!isset(static::$CACHED_RECORDS[static::GLOBAL_KEY][$key])) {
+            if ($driver == DataSourceDriver::DATABASE) {
+                try {
+                    static::$CACHED_RECORDS[static::GLOBAL_KEY][$key] = Setting::globalData()->systemSettings()->where("key", $key)->firstOrFail();
+                } catch (Exception $e) {
+                    //Log::error("SettingService.getGlobal.DATABASE." . $e->getMessage());
+                    static::$CACHED_RECORDS[static::GLOBAL_KEY][$key] = null;
+                }
+            } else if ($driver == DataSourceDriver::SESSION) {
+                static::$CACHED_RECORDS[static::GLOBAL_KEY][$key] = null;
+                die('session can not be global ! :) go read more about sessions :D');
             }
         }
-        return null;
+        return static::$CACHED_RECORDS[static::GLOBAL_KEY][$key];
     }
 
-    public static function get($key, string $driver = DataSourceDriver::DATABASE): ?Setting
-    {
+    public static function getLocal($key, string $driver = DataSourceDriver::DATABASE): ?Setting {
+        if (!isset(static::$CACHED_RECORDS[static::LOCAL_KEY][$key])) {
+            if ($driver == DataSourceDriver::DATABASE) {
+                try {
+                    static::$CACHED_RECORDS[static::LOCAL_KEY][$key] = Setting::localData()->systemSettings()->where("key", $key)->firstOrFail();
+                } catch (Exception $e) {
+                    Setting::localData()->systemSettings()->where("key", $key)->delete();
+                    //Log::error("SettingService.getLocal.DATABASE." . $e->getMessage());
+                    static::$CACHED_RECORDS[static::LOCAL_KEY][$key] = null;
+                }
+            } else if ($driver == DataSourceDriver::SESSION) {
+                $strResult = request()->session()->get($key, false);
+                if ($strResult !== false) {
+                    $result = new Setting();
+                    $result->key = $key;
+                    $result->value = $strResult;
+                    static::$CACHED_RECORDS[static::LOCAL_KEY][$key] = $result;
+                }else{
+                    static::$CACHED_RECORDS[static::LOCAL_KEY][$key] = null;
+                }
+            }
+        }
+        return static::$CACHED_RECORDS[static::LOCAL_KEY][$key];
+    }
+
+    public static function get($key, string $driver = DataSourceDriver::DATABASE): ?Setting {
         return self::getLocal($key, $driver) ?? self::getGlobal($key, $driver);
     }
 
-    public static function deleteGlobal(string $key, string $driver = DataSourceDriver::DATABASE): void
-    {
+    public static function deleteGlobal(string $key, string $driver = DataSourceDriver::DATABASE): void {
         if ($driver == DataSourceDriver::DATABASE) {
             $setting = self::getGlobal($key, $driver);
             $setting?->delete();
@@ -117,8 +120,7 @@ class SettingService
         }
     }
 
-    public static function deleteLocal(string $key, string $driver = DataSourceDriver::DATABASE): void
-    {
+    public static function deleteLocal(string $key, string $driver = DataSourceDriver::DATABASE): void {
         if ($driver == DataSourceDriver::DATABASE) {
             $setting = self::getLocal($key, $driver);
             $setting?->delete();

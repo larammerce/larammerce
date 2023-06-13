@@ -79,7 +79,11 @@ class ShopController extends BaseController
         if (request()->has("p_structure_id"))
             $products = $products->where("p_structure_id", request("p_structure_id"));
 
-        $products = $products->mainModels()->visible();
+        if(config("cms.general.site.only_main_models")){
+            $products = $products->mainModels()->visible();
+        }else{
+            $products = $products->visible();
+        }
 
         if (request()->has("price_range")) {
             $price_range = request("price_range");

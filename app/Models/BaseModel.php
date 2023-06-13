@@ -171,7 +171,7 @@ abstract class BaseModel extends Model
     public static function getExportableAttributes(): array
     {
         $model = new static();
-        return $model->getfillable();
+        return Schema::getColumnListing($model->getTable());
     }
 
     public function getAllowedInputs(): array

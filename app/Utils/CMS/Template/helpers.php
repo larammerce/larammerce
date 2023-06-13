@@ -1341,8 +1341,8 @@ if (!function_exists('get_template_views')) {
     }
 }
 
-if (!function_exists("get_current_customer_location")) {
-    function get_current_customer_location(): string {
+if (!function_exists("get_current_customer_location_title")) {
+    function get_current_customer_location_title(): string {
         $customer_location = \App\Utils\CMS\Setting\CustomerLocation\CustomerLocationService::getRecord();
         if ($customer_location != null)
             return "{$customer_location->getState()->name}، {$customer_location->getCity()->name}";
@@ -1466,7 +1466,7 @@ if (!function_exists("get_current_date")) {
 
 if (!function_exists("get_max_transaction_amount")) {
     function get_max_transaction_amount(): int {
-        return \App\Utils\PaymentManager\ConfigProvider::MAX_TRANSACTION;
+        return \App\Utils\PaymentManager\ConfigProvider::getMaxTransactionAmount();
     }
 }
 

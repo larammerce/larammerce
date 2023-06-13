@@ -73,6 +73,16 @@ class InvoiceController extends BaseController
         $invoice->updateAddress($customer->main_address);
 
         foreach (get_cart() as $row) {
+            if (!$row->product->can_deliver) {
+                SystemMessageService::addWarningMessage(
+                    "system_messages.cart.cant_deliver",
+                    [
+                        "product_title" => $row->product->title
+                    ]);
+                $fault_flag = true;
+                continue;
+            }
+
             if ($row->product->hasCustomerMetaCategory() and
                 $row->customerMetaItem === null) {
                 SystemMessageService::addWarningMessage(
@@ -262,7 +272,7 @@ class InvoiceController extends BaseController
 
             if ($invoice->payment_type == PaymentType::ONLINE) {
                 try {
-                    if ($invoice->sum >= ConfigProvider::MAX_TRANSACTION) {
+                    if ($invoice->sum >= ConfigProvider::getMaxTransactionAmount()) {
                         SystemMessageService::addWarningMessage("system_messages.invoice.maximum_order_ceiling");
                         return redirect(route('customer.invoice.index'));
                     }

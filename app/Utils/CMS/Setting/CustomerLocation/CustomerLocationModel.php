@@ -75,4 +75,9 @@ class CustomerLocationModel extends AbstractSettingModel
     {
         return "";
     }
+
+    public function equals(CustomerLocationModel $model): bool {
+        return $this->city->id === $model->city->id and
+            $this->state->id === $model->state->id;
+    }
 }
