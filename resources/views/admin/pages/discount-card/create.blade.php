@@ -32,13 +32,12 @@
             </select>
         </div>
     @endif
-    @if($discount_group->is_event and ! $discount_group->is_assigned)
+    @if($discount_group->is_event)
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
             <span class="label">کد مورد نظر </span>
             <input class="form-control input-sm" name="code" value="{{old('code')}}">
         </div>
-    @endif
-    @if($discount_group->is_assigned)
+    @elseif($discount_group->is_assigned)
         <div class="filled tag-manager input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
             <span class="label">مشتریان</span>
             <textarea act="tag" class="form-control input-sm attachable" name="users"
@@ -48,7 +47,7 @@
             <ul act="tag-data">
             </ul>
         </div>
-    @elseif(!$discount_group->is_event)
+    @else
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
             <span class="label">تعداد</span>
             <input class="form-control input-sm" name="count" value="{{old('count')}}">

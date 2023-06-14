@@ -78,7 +78,7 @@ class DiscountCardController extends BaseController
     public function store(Request $request): JsonResponse|RedirectResponse
     {
         $discount_group = DiscountGroup::find(request()->get('discount_group_id'));
-        if ($discount_group->is_assigned) {
+        if ($discount_group->is_assigned and !$discount_group->is_event) {
             $users = json_decode($request->get('users'));
             if ($users != null) {
                 foreach ($users as $user) {

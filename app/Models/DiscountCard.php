@@ -159,7 +159,9 @@ class DiscountCard extends BaseModel
 
     public static function checkCode($discount_code, $guard = null)
     {
+        /** @var DiscountCard $discount_card */
         $discount_card = DiscountCard::where("code", $discount_code)->first();
+        $current_customer_user = get_customer_user($guard);
 
         if ($discount_card != null) {
             if (!$discount_card->is_active or !$discount_card->group->is_active) {
@@ -172,9 +174,16 @@ class DiscountCard extends BaseModel
             }
 
             if (!$discount_card->group->is_event and $discount_card->customer_user_id != null) {
-                if ($discount_card->customer_user_id != get_customer_user($guard)->id) {
+                if ($discount_card->customer_user_id != $current_customer_user->id) {
                     throw new InvalidDiscountCodeException("The discount code `{$discount_code}` is not for you.",
                         DiscountCardStatus::NOT_FOR_YOU);
+                }
+            }
+
+            if($discount_card->group->is_event and $discount_card->group->is_assigned){
+                if($discount_card->invoices()->where("customer_user_id", $current_customer_user->id)->count() != 0){
+                    throw new InvalidDiscountCodeException("The discount code `{$discount_code}` is used.",
+                        DiscountCardStatus::IS_USED);
                 }
             }
 
