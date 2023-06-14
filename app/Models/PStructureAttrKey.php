@@ -133,7 +133,7 @@ class PStructureAttrKey extends BaseModel implements TaggableContract
 
         usort($keys, function ($a, $b) {
             if ($a->priority == $b->priority)
-                return 0;
+                return strcmp($a->title, $b->title);
             if ($a->priority < $b->priority)
                 return -1;
             return 1;
