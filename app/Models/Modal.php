@@ -32,72 +32,60 @@ class Modal extends BaseModel implements ImageContract
         'text' => ['longText', 'textarea:rich']
     ];
 
-    public function getDecodedButtons()
-    {
+    public function getDecodedButtons() {
         if (!isset($this->cached_attributes["buttons_decoded"])) {
             $this->cached_attributes["buttons_decoded"] = json_decode($this->attributes["buttons"]);
         }
-        return $this->cached_attributes["buttons_decoded"];
+        return $this->cached_attributes["buttons_decoded"] ?? [];
     }
 
-    public function routes(): HasMany
-    {
+    public function routes(): HasMany {
         return $this->hasMany(ModalRoute::class, 'modal_id');
     }
 
-    public function getText()
-    {
+    public function getText() {
         return $this->title;
     }
 
-    public function getValue()
-    {
+    public function getValue() {
         return $this->id;
     }
 
-    public function hasImage()
-    {
+    public function hasImage() {
         return isset($this->image_path);
     }
 
-    public function getImagePath()
-    {
+    public function getImagePath() {
         return $this->image_path;
     }
 
-    public function setImagePath()
-    {
+    public function setImagePath() {
         $tmpImage = ImageService::saveImage($this->getImageCategoryName());
         $this->image_path = $tmpImage->destinationPath . '/' . $tmpImage->name;
         $this->save();
     }
 
-    public function removeImage()
-    {
+    public function removeImage() {
         $this->image_path = null;
         $this->save();
     }
 
-    public function getDefaultImagePath()
-    {
+    public function getDefaultImagePath() {
         return '/admin_dashboard/images/No_image.jpg.png';
     }
 
-    public function getImageCategoryName()
-    {
+    public function getImageCategoryName() {
         return 'modal';
     }
 
-    public function isImageLocal()
-    {
+    public function isImageLocal() {
         return 'true';
     }
 
-    public function html(): string
-    {
+    public function html(): string {
         $template = "admin.templates.modals.custom_modal";
-        if (View::exists("public.custom_modal"))
-            $template = "public.custom_modal";
+        if (View::exists("public.custom-modal"))
+            $template = "public.custom-modal";
         try {
             return h_view($template)->with(["modal" => $this])->render();
         } catch (\Throwable $e) {
@@ -105,8 +93,7 @@ class Modal extends BaseModel implements ImageContract
         }
     }
 
-    public function getSearchUrl(): string
-    {
+    public function getSearchUrl(): string {
         return '';
     }
 }
