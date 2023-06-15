@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\Log;
  * @property Invoice[] invoices
  * @property CustomerUserLegalInfo legalInfo
  * @property CustomerAddress main_address
+ * @property Coupon[] coupons
  *
  * Class CustomerUser
  * @package App\Models
@@ -99,6 +100,10 @@ class CustomerUser extends BaseModel
     public function legalInfo(): HasOne
     {
         return $this->hasOne(CustomerUserLegalInfo::class, 'customer_user_id');
+    }
+
+    public function coupons(): HasMany {
+        return $this->hasMany(Coupon::class, "customer_user_id", "id");
     }
 
     public function getMainAddressAttribute(): CustomerAddress|Model|null

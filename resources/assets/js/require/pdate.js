@@ -5,7 +5,7 @@ require(["jquery", "persianDate", "hamster"], function (jQuery, persianDate, Ham
         let datepickers = jQuery("[name$='_datepicker']");
         datepickers.each(function () {
             let thisEl = jQuery(this);
-            const altName = thisEl.attr('name').replace("_datepicker", "_date");
+            const altName = typeof thisEl.data("name") != "undefined" ? thisEl.data("name") : (thisEl.attr('name').replace("_datepicker", "_date"));
             thisEl.persianDatepicker({
                 format: 'YYYY/MM/DD',
                 altField: 'input[name="' + altName + '"]',

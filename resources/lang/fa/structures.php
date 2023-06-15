@@ -233,7 +233,9 @@ return [
             'representative_type' => 'نوع آشنایی با سیستم',
             'color_code' => 'کد رنگ',
             'models_count' => 'تعداد محصولات هم مدل',
-            'important_at' => 'تاریخ اعلام مهم بودن'
+            'important_at' => 'تاریخ اعلام مهم بودن',
+            'expire_at' => 'تاریخ انقضا',
+            'used_at' => 'تاریخ استفاده'
         ],
     'methods' =>
         [
@@ -377,6 +379,7 @@ return [
             'product_package_item' => 'آیتم پکیج محصول',
             'robot_txt_record' => 'رکورد تنظیمات ربات جستجوگر',
             'short_link_statistic' => 'آمار لینک کوتاه',
+            'coupon' => 'کوپن ها'
         ],
     'actions' =>
         [

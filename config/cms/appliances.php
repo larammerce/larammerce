@@ -158,6 +158,14 @@ return [
             ],
             [
                 "properties" => [
+                    "id" => "coupon_management",
+                    "name" => "general.shop.coupons",
+                    "icon" => "icon-coupon",
+                    "route" => "admin.coupon.index"
+                ]
+            ],
+            [
+                "properties" => [
                     "id" => "shop_customers",
                     "name" => "general.shop.customers",
                     "icon" => "icon-customer",

@@ -139,6 +139,13 @@ Route::group(
         );
         Route::resource("discount-group", "DiscountGroupController", ["as" => "admin"]);
 
+        //Coupon
+        Route::group(["prefix" => "coupon", "as" => "admin.coupon."],
+            function () {
+            }
+        );
+        Route::resource("coupon", "CouponController", ["as" => "admin"]);
+
 
         Route::group(["prefix" => "discount-card", "as" => "admin.discount-card."],
             function () {

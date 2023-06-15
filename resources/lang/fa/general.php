@@ -52,6 +52,7 @@ return [
         "carts" => "سبدهای خرید",
         "badges" => "نشان ها",
         "modals" => "پاپ آپ ها",
+        "coupons" => "کوپن ها"
     ],
     "explore" => [
         "directory_management" => "پوشه",
