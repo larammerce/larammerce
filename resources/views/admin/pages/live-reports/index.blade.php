@@ -31,9 +31,10 @@
     </div>
 </header>
 <script>window.PAGE_ID = "admin.pages.live-reports.index";</script>
-<div class="container numeric-reports">
+<div class="container-fluid numeric-reports">
     <div class="row">
         @include("admin.pages.live-reports._live_numeric_data", ["id" => "daily-sales-amount", "title" => "فروش امروز"])
+        @include("admin.pages.live-reports._live_numeric_data", ["id" => "yesterday-sales-amount", "title" => "فروش روز گذشته"])
         @include("admin.pages.live-reports._live_numeric_data", ["id" => "monthly-sales-amount", "title" => "فروش ماه جاری"])
         @include("admin.pages.live-reports._live_numeric_data", ["id" => "yearly-sales-amount", "title" => "فروش سال جاری"])
         @include("admin.pages.live-reports._live_numeric_data", ["id" => "previous-year-sales-amount", "title" => "فروش سال گذشته", "is_live" => false])
