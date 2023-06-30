@@ -17,6 +17,7 @@ if (window.PAGE_ID === "admin.pages.live-reports.index") {
 
             function intervals() {
                 fetchLiveData("#daily-sales-amount", "/admin/api/v1/live-reports/daily-sales-amount");
+                fetchLiveData("#yesterday-sales-amount", "/admin/api/v1/live-reports/yesterday-sales-amount");
                 fetchLiveData("#monthly-sales-amount", "/admin/api/v1/live-reports/monthly-sales-amount");
                 fetchLiveData("#yearly-sales-amount", "/admin/api/v1/live-reports/yearly-sales-amount");
                 fetchTablesData("#latest_customers", "/admin/api/v1/live-reports/latest-customers");

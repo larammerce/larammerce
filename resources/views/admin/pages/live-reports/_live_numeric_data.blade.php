@@ -1,4 +1,4 @@
-<div class="col-md-3">
+<div class="col-md-2">
     <div class="numeric-report-container" id="{{$id}}">
         <div class="loader-layer"><i class="fa fa-4x fa-refresh fa-spin"></i></div>
         @if(($is_live ?? true))
