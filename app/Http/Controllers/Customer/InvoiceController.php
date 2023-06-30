@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\Customer;
 
+use App\Models\Coupon;
 use App\Models\CustomerAddress;
 use App\Models\DiscountCard;
 use App\Models\Enums\DiscountCardStatus;
@@ -45,15 +46,12 @@ use Illuminate\View\View;
 use niklasravnsborg\LaravelPdf\Facades\Pdf;
 use Throwable;
 
-class InvoiceController extends BaseController
-{
-    public function index()
-    {
+class InvoiceController extends BaseController {
+    public function index() {
         return h_view("public.orders");
     }
 
-    public function submitCart(): RedirectResponse
-    {
+    public function submitCart(): RedirectResponse {
 
         $customer = get_customer_user();
 
@@ -158,8 +156,7 @@ class InvoiceController extends BaseController
         return redirect()->route("customer.invoice.show-shipment");
     }
 
-    public function showShipment(): Application|Factory|View|RedirectResponse
-    {
+    public function showShipment(): Application|Factory|View|RedirectResponse {
         if (!InvoiceService::hasNew(NewInvoiceType::CART_SUBMISSION)) {
             SystemMessageService::addWarningMessage("system_messages.invoice.no_invoice");
             return redirect()->route("customer.cart.show");
@@ -183,8 +180,7 @@ class InvoiceController extends BaseController
      * @description(comment="this method is for adding customer address and shipment method and paper need selection for each invoice")
      * @return RedirectResponse
      */
-    public function saveShipment(Request $request): RedirectResponse
-    {
+    public function saveShipment(Request $request): RedirectResponse {
         if (!InvoiceService::hasNew(NewInvoiceType::CART_SUBMISSION)) {
             SystemMessageService::addWarningMessage("system_messages.invoice.no_invoice");
             return redirect()->route("customer.cart.show");
@@ -209,8 +205,7 @@ class InvoiceController extends BaseController
         return redirect()->route("customer.invoice.show-payment");
     }
 
-    public function showPayment(): Application|Factory|View|RedirectResponse
-    {
+    public function showPayment(): Application|Factory|View|RedirectResponse {
         if (!InvoiceService::hasNew(NewInvoiceType::SHIPMENT)) {
             SystemMessageService::addWarningMessage("system_messages.invoice.no_invoice");
             return redirect()->route("customer.cart.show");
@@ -226,8 +221,7 @@ class InvoiceController extends BaseController
     /**
      * @rules(payment_type="required|in:".\App\Models\Enums\PaymentType::stringValues())
      */
-    public function savePayment(Request $request): Factory|Application|Redirector|View|\Illuminate\Contracts\Foundation\Application|RedirectResponse
-    {
+    public function savePayment(Request $request): Factory|Application|Redirector|View|\Illuminate\Contracts\Foundation\Application|RedirectResponse {
 
         $customer_user = get_customer_user();
 
@@ -237,6 +231,7 @@ class InvoiceController extends BaseController
         }
 
         $invoice = InvoiceService::getTheNew();
+        $coupon = isset($invoice->coupon_id) ? Coupon::find($invoice->coupon_id) : null;
         $invoice->payment_status = PaymentStatus::PENDING;
         $invoice->payment_type = $request->get("payment_type");
         $invoice->shipment_status = ShipmentStatus::WAITING_TO_CONFIRM;
@@ -249,6 +244,8 @@ class InvoiceController extends BaseController
         InvoiceService::forgetTheNew();
         InvoiceService::flush();
 
+        $coupon->update(["invoice_id" => $invoice->id]);
+        $invoice->updateRows();
 
         if ($invoice->createFinManRelation()) {
 
@@ -292,8 +289,7 @@ class InvoiceController extends BaseController
         return redirect()->route("customer.invoice.show-checkout", $invoice);
     }
 
-    public function showCheckout(?Invoice $invoice): Application|Factory|View|RedirectResponse
-    {
+    public function showCheckout(?Invoice $invoice): Application|Factory|View|RedirectResponse {
         if ($invoice->customer_user_id != get_customer_user()->id) {
             SystemMessageService::addErrorMessage("system_messages.invoice.not_owner");
             return redirect()->route("customer.invoice.index");
@@ -333,8 +329,7 @@ class InvoiceController extends BaseController
     /**
      * @rules(payment_driver="required|in:".\App\Utils\PaymentManager\Provider::getEnabledDrivers(false, true))
      */
-    public function payOnline(Invoice $invoice): RedirectResponse
-    {
+    public function payOnline(Invoice $invoice): RedirectResponse {
         if ($invoice->customer_user_id != get_customer_user()->id or (!$invoice->is_active))
             return redirect()->back();
         if ($invoice->payment_type == PaymentType::ONLINE) {
@@ -365,8 +360,7 @@ class InvoiceController extends BaseController
     /**
      * @rules(discount_code="required|exists:discount_cards,code")
      */
-    public function checkDiscountCode(): JsonResponse
-    {
+    public function checkDiscountCode(): JsonResponse {
         $discount_code = strtoupper(request()->get("discount_code"));
         try {
             $discount_card = DiscountCard::checkCode($discount_code);
@@ -405,12 +399,41 @@ class InvoiceController extends BaseController
             ]), 200);
     }
 
+    public function checkCoupon(Request $request, Coupon $coupon) {
+        $customer_user = get_customer_user();
+        $invoice = InvoiceService::getTheNew();
+        if ($coupon->customer_user_id !== $customer_user->id) {
+            SystemMessageService::addErrorMessage("system_messages.coupon.not_owner");
+            return response()->json(
+                MessageFactory::create(["system_messages.invoice.coupon.not_owned_by_you"], 400, [])
+                , 400);
+        }
+
+        if ($coupon->is_used) {
+            return response()->json(
+                MessageFactory::create(["system_messages.invoice.coupon.is_used"], 400, [])
+                , 400);
+        }
+
+        $invoice->coupon_id = $coupon->id;
+        InvoiceService::setNew($invoice);
+
+        $discount_amount = $coupon->amount;
+
+        return response()->json(
+            MessageFactory::create(
+                ["system_messages.invoice.discount_card_status.0"],
+                200, [
+                "discount_amount" => $discount_amount,
+                "invoice_sum" => ($invoice->sum - $discount_amount)
+            ]), 200);
+    }
+
     /**
      * @param Invoice $invoice
      * @return RedirectResponse
      */
-    public function enable(Invoice $invoice)
-    {
+    public function enable(Invoice $invoice) {
         if (get_customer_user()->id == $invoice->customer_user_id) {
             $invoice->updateRows();
             $invoice->customPush();
@@ -426,8 +449,7 @@ class InvoiceController extends BaseController
         return redirect()->back();
     }
 
-    public function showSurvey(Invoice $invoice): RedirectResponse
-    {
+    public function showSurvey(Invoice $invoice): RedirectResponse {
         $survey_config = SurveyService::getRecord();
         if (!is_string($survey_config->getDefaultSurveyUrl()) or !strlen($survey_config->getDefaultSurveyUrl()) > 0) {
             abort(404);

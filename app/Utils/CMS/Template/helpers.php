@@ -8,7 +8,6 @@
 
 use App\Models\Article;
 use App\Models\BaseModel;
-use App\Models\CartRow;
 use App\Models\City;
 use App\Models\Color;
 use App\Models\CustomerAddress;
@@ -22,8 +21,8 @@ use App\Models\Enums\PaymentStatus;
 use App\Models\Gallery;
 use App\Models\GalleryItem;
 use App\Models\Invoice;
-use App\Models\Product;
 use App\Models\PAttr;
+use App\Models\Product;
 use App\Models\ProductFilter;
 use App\Models\ProductQuery;
 use App\Models\PStructureAttrKey;
@@ -1460,5 +1459,12 @@ if (!function_exists("representative_is_customer_representative_enabled")) {
 if (!function_exists("get_product_model_options_multi_level")) {
     function get_product_model_options_multi_level(Product $product): array {
         return \App\Services\Product\ProductModelService::getProductModelOptionsMultiLevel($product);
+    }
+}
+
+if (!function_exists("get_not_used_coupons")) {
+    function get_not_used_coupons($guard = null): array|Collection {
+        $customer_user = get_customer_user($guard);
+        return \App\Services\Coupon\CouponService::getNotUsedCoupons($customer_user);
     }
 }

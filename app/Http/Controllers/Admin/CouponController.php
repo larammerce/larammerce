@@ -5,7 +5,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Coupon;
+use App\Models\CustomerUser;
 use App\Models\ProductFilter;
+use App\Utils\CMS\SystemMessageService;
 use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -27,7 +29,7 @@ class CouponController extends BaseController
     public function index(): Factory|View|Application
     {
         parent::setPageAttribute();
-        $coupons = Coupon::with('cards')->paginate(Coupon::getPaginationCount());
+        $coupons = Coupon::with('customer.user')->paginate(Coupon::getPaginationCount());
         return view('admin.pages.coupon.index', compact("coupons"));
     }
 
@@ -41,13 +43,18 @@ class CouponController extends BaseController
 
     /**
      * @role(super_user, acc_manager)
-     * @rules(title="required")
+     * @rules(title="required", expire_at="date", amount="required|integer", phone_number="required|exists:customer_users,main_phone")
      */
     public function store(Request $request): RedirectResponse
     {
-        dd($request->all());
+        /** @var CustomerUser $customer_user */
+        $customer_user = CustomerUser::where("main_phone", $request->get("phone_number"))->first();
+        $request->merge([
+            "customer_user_id" => $customer_user->id
+        ]);
         $coupon = Coupon::create($request->all());
-        return redirect()->route('admin.coupon.edit', $coupon);
+        SystemMessageService::addSuccessMessage("messages.coupon.created_successfully");
+        return redirect()->route('admin.coupon.index');
     }
 
     /**
@@ -73,6 +80,7 @@ class CouponController extends BaseController
     public function update(Request $request, Coupon $coupon)
     {
         $coupon->update($request->all());
+        SystemMessageService::addSuccessMessage("messages.coupon.updated_successfully");
         return History::redirectBack();
     }
 

@@ -578,6 +578,7 @@ Route::group(
                 Route::any("pay-online/{invoice}", ["as" => "pay-online", "uses" => "InvoiceController@payOnline"]);
                 Route::get("survey/{invoice}", ["as" => "survey.show", "uses" => "InvoiceController@showSurvey"]);
                 Route::post("enable/{invoice}", ["as" => "enable", "uses" => "InvoiceController@enable"]);
+                Route::post("check-coupon/{coupon}", ["as" => "check-coupon", "uses" => "InvoiceController@checkCoupon"]);
                 Route::post("check-discount-code",
                     ["as" => "check-discount-code", "uses" => "InvoiceController@checkDiscountCode"]);
             });
@@ -587,6 +588,11 @@ Route::group(
                 Route::get("/{cart_row}/{customer_meta_category}", ["as" => "create", "uses" => "MetaItemController@create"]);
                 Route::post("/{cart_row}/{customer_meta_category}", ["as" => "store", "uses" => "MetaItemController@store"]);
                 Route::delete("/{customer_meta_item}", ["as" => "destroy", "uses" => "MetaItemController@destroy"]);
+            });
+
+        Route::group(["prefix" => "coupon", "as" => "coupon."],
+            function () {
+                Route::get("/", ["as" => "index", "uses" => "CouponController@index"]);
             });
     }
 );
@@ -627,7 +633,7 @@ Route::group(
         "prefix" => "health",
         "as" => "health."
     ],
-    function (){
+    function () {
         Route::get("dbversion", [
             "as" => "dbversion",
             "uses" => "HealthController@getDBVersion"

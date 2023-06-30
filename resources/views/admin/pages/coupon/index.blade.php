@@ -27,11 +27,7 @@
                 @include('admin.pages.coupon.layout.list')
             </div>
             <div class="fab-container">
-                <div class="fab green">
-                    <button act="link" href="{{route('admin.coupon.create')}}">
-                        <i class="fa fa-plus"></i>
-                    </button>
-                </div>
+                @include('admin.templates.buttons.fab-buttons', ['buttons' => ['create', 'download']])
             </div>
         </div>
         @include('admin.templates.pagination', [

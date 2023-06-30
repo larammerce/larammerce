@@ -1,28 +1,29 @@
 @foreach($coupons as $coupon)
     <div
-        class="col-lg-offset-1 col-lg-10 col-md-offset-0 col-md-12 col-sm-offset-0 col-sm-12 col-xs-offset-0 col-xs-12 list-row roles">
-        <div class="col-lg-1 col-md-2 col-sm-2 col-xs-6 col">
-            <div class="img-container" style="background-coupon: {{$coupon->hex_code}}"></div>
-        </div>
+            class="col-lg-offset-1 col-lg-10 col-md-offset-0 col-md-12 col-sm-offset-0 col-sm-12 col-xs-offset-0 col-xs-12 list-row roles">
         <div class="col-lg-1 col-md-1 col-sm-2 col-xs-6 col">
             <div class="label">شناسه</div>
             <div>{{$coupon->id}}#</div>
         </div>
         <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 col">
             <div class="label">عنوان</div>
-            <div>{{$coupon->title}}</div>
+            <div>{{$coupon->title}} - ({{$coupon->customer->user->full_name}})</div>
         </div>
         <div class="col-lg-2 col-md-2 col-sm-4 col-xs-6 col">
             <div class="label">مبلغ</div>
-            <div>{{$coupon->amount}}</div>
+            <div class="price-data">{{$coupon->amount}}</div>
         </div>
         <div class="col-lg-1 col-md-1 col-sm-4 col-xs-6 col">
             <div class="label">تاریخ استفاده</div>
-            <div>{{jDate::forge($coupon->used_at)->format("%Y/%m/%d %H:%i")}}</div>
+            @if($coupon->is_used)
+                <div>{{JDate::forge($coupon->used_at)->format("%Y/%m/%d %H:i")}}</div>
+            @else
+                <div>-</div>
+            @endif
         </div>
         <div class="col-lg-1 col-md-1 col-sm-4 col-xs-6 col">
             <div class="label">تاریخ اتقضا</div>
-            <div>{{jDate::forge($coupon->expire_at)->format("%Y/%m/%d %H:%i")}}</div>
+            <div>{{JDate::forge($coupon->expire_at)->format("%Y/%m/%d %H:i")}}</div>
         </div>
         <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 col">
             <div class="label">عملیات</div>

@@ -81,4 +81,9 @@ return [
         "importable_attributes_not_set" => "فیلد های قابل خروجی گرفتن تعریف نشده اند",
         "row_validation_failed" => "متاسفانه اطلاعات موجود در خط :row معتبر نمی‌باشد. :message"
     ],
+
+    "coupon" => [
+        "created_successfully" => "کوپن مورد نظر شما با موفقیت ایجاد گردید، در صورت تمایل آن را ویرایش نمایید.",
+        "updated_successfully" => "کوپن مورد نظر شما با موفقیت ویرایش گردید."
+    ]
 ];
