@@ -18,5 +18,9 @@
     "sass": "^1.34.1",
     "sass-loader": "^11.1.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "fs": "^0.0.1-security",
+    "json2xls": "^0.1.2",
+    "xlsx": "^0.18.5"
+  }
 }
