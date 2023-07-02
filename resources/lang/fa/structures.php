@@ -193,7 +193,7 @@ return [
             'email' => 'ایمیل',
             'password' => 'کلمه عبور',
             'is_system_user' => 'کاربر مدیر سیستم است',
-            'is_customer_user' => 'کاربر مشتی است',
+            'is_customer_user' => 'کاربر مشتری است',
             'created_at' => 'تاریخ ساخت',
             'updated_at' => 'تاریخ ویرایش',
             'gender' => 'جنسیت',
@@ -233,7 +233,10 @@ return [
             'representative_type' => 'نوع آشنایی با سیستم',
             'color_code' => 'کد رنگ',
             'models_count' => 'تعداد محصولات هم مدل',
-            'important_at' => 'تاریخ اعلام مهم بودن'
+            'important_at' => 'تاریخ اعلام مهم بودن',
+            'is_notified' => 'اطلاع رسانی شده است؟',
+            'client_ip' => 'آی پی مشتری',
+            'request_counts' => 'تعداد درخواست'
         ],
     'methods' =>
         [

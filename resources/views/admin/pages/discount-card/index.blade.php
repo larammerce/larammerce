@@ -32,12 +32,10 @@
                 @include('admin.pages.discount-card.layout.list')
             </div>
             <div class="fab-container">
-                <div class="fab green">
-                    <button act="link"
-                            href="{{route('admin.discount-card.create')}}?discount_group_id={{$discount_group->id}}">
-                        <i class="fa fa-plus"></i>
-                    </button>
-                </div>
+                @php
+                    $related_model_query_data = ["discount_group_id" => (isset($discount_group) ? $discount_group->id : $scope ?? null)];
+                @endphp
+                @include('admin.templates.buttons.fab-buttons', ['buttons' => ['create', 'download']])
             </div>
         </div>
         @include('admin.templates.pagination', [

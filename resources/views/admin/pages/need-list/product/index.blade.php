@@ -35,6 +35,11 @@
                 @include('admin.pages.need-list.product.layout.list')
             </div>
             <div class="fab-container">
+                @php
+                    $related_query_select_raw = "*, count(product_id) as request_counts";
+                    $related_query_group_by = ["product_id"];
+                    $related_query_extended_attributes = ["request_counts"];
+                @endphp
                 @include('admin.templates.buttons.fab-buttons', ['buttons' => ['download']])
             </div>
         </div>

@@ -23,8 +23,8 @@
             <div>{{TimeService::getDateTimeFrom($need_list->created_at)}}</div>
         </div>
         <div class="col-lg-1 col-md-3 col-sm-5 col-xs-6 col">
-            <div class="label">آخرین قیمت</div>
-            <div>{{\App\Utils\Common\Format::number($need_list->product->latest_price)}}</div>
+            <div class="label">تعداد درخواست</div>
+            <div>{{\App\Utils\Common\Format::number($need_list->request_counts)}}</div>
         </div>
         <div class="col-lg-3 col-md-9 col-sm-7 col-xs-12 col">
             <div class="label">عملیات</div>
