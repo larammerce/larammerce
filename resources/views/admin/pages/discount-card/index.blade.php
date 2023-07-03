@@ -35,7 +35,7 @@
                 @php
                     $related_model_query_data = ["discount_group_id" => (isset($discount_group) ? $discount_group->id : $scope ?? null)];
                 @endphp
-                @include('admin.templates.buttons.fab-buttons', ['buttons' => ['create', 'download']])
+                @include('admin.templates.buttons.fab-buttons', ['buttons' => ['create', 'download'], "url_parameters" => ["create" => "?discount_group_id={$discount_group->id}"]])
             </div>
         </div>
         @include('admin.templates.pagination', [
