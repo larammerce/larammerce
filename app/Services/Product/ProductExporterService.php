@@ -52,7 +52,7 @@ class ProductExporterService
         $product_ids = static::getProductIdsFromProductList($products);
         $p_attrs = PStructureService::getAllPAttrsByProductsIds($product_ids);
 
-        $key_ids = [];
+        $keys = $p_structure->attributeKeys()->get();
         $value_ids = [];
         $p_attr_product_id_map = [];
 
@@ -67,15 +67,11 @@ class ProductExporterService
 
             $p_attr_product_id_map[$p_attr->product_id][$p_attr->p_structure_attr_key_id][] = $p_attr;
 
-            if (!in_array($p_attr->p_structure_attr_key_id, $key_ids))
-                $key_ids[] = $p_attr->p_structure_attr_key_id;
-
             if (!in_array($p_attr->p_structure_attr_value_id, $value_ids))
                 $value_ids[] = $p_attr->p_structure_attr_value_id;
 
         }
 
-        $keys = PStructureService::getAllPStructureAttrKeysByIds($key_ids);
         $key_titles = array_map(function (PStructureAttrKey $key) {
             return $key->title;
         }, $keys->all());
