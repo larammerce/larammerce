@@ -24,26 +24,27 @@ class NeedListController extends BaseController
     /**
      * @role(super_user, acc_manager, stock_manager, cms_manager)
      */
-    public function showProducts(): Factory|View|Application
-    {
+    public function showProducts(): Factory|View|Application {
         parent::setPageAttribute();
-        $need_lists = NeedList::with(["product", "customer"])->paginate(NeedList::getPaginationCount());
+        $need_lists = NeedList::query()
+            ->selectRaw(DB::raw("*, count(product_id) as request_counts"))
+            ->groupBy(["product_id"])->with(["product", "customer"])
+            ->orderBy("created_at", "DESC")
+            ->paginate(NeedList::getPaginationCount());
         return view('admin.pages.need-list.product.index', compact('need_lists'));
     }
 
     /**
      * @role(super_user, acc_manager, stock_manager, cms_manager)
      */
-    public function showProduct(Request $request, Product $product): Factory|View|Application
-    {
+    public function showProduct(Request $request, Product $product): Factory|View|Application {
         parent::setPageAttribute("customers_p_{$product->id}");
         $customer_users = $product->needLists()->withPivot("created_at")
             ->paginate(CustomerUser::getPaginationCount());
         return view('admin.pages.need-list.customer-user.index', compact('product', 'customer_users'));
     }
 
-    public function getModel(): ?string
-    {
+    public function getModel(): ?string {
         return NeedList::class;
     }
 }

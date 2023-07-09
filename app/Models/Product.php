@@ -763,7 +763,7 @@ class Product extends BaseModel implements
     }
 
     private function sendNotificationToStockManagers(int $status): void {
-        if (config("cms.general.stock_manager_notification") === false)
+        if (config("cms.general.site.stock_manager_notification") === false)
             return;
 
         $stockManagers = SystemUser::where("is_stock_manager", true)->get();

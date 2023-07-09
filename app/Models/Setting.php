@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * @property integer id
@@ -52,8 +53,7 @@ class Setting extends Model
     protected static array $ONE_TO_ONE_RELATIONS = [];
     protected static array $EXPORTABLE_RELATIONS = [];
 
-    public function getDataAttribute(): ?AbstractSettingModel
-    {
+    public function getDataAttribute(): ?AbstractSettingModel {
         if (!isset($this->caches["data"]))
             try {
                 $this->caches["data"] = unserialize($this->value);
@@ -64,43 +64,35 @@ class Setting extends Model
         return $this->caches["data"];
     }
 
-    public function user(): BelongsTo
-    {
+    public function user(): BelongsTo {
         return $this->belongsTo(User::class, "user_id");
     }
 
-    public function scopeGlobalData($query)
-    {
+    public function scopeGlobalData($query) {
         return $query->whereNull("user_id");
     }
 
-    public function scopeLocalData($query)
-    {
+    public function scopeLocalData($query) {
         return $query->where("user_id", Auth::user()->id);
     }
 
-    public function scopeSystemSettings($query)
-    {
+    public function scopeSystemSettings($query) {
         return $query->where("is_system_setting", true);
     }
 
-    public function scopeNonSystemSettings($query)
-    {
+    public function scopeNonSystemSettings($query) {
         return $query->where("is_system_setting", false);
     }
 
-    public function scopeUserSettings($query)
-    {
+    public function scopeUserSettings($query) {
         return $query->where("user_id", null)->orWhere("user_id", "=", Auth::user()->id);
     }
 
-    public function scopeCMSRecords($query)
-    {
+    public function scopeCMSRecords($query) {
         return $query->globalData()->nonSystemSettings();
     }
 
-    public function scopeClassicSearch(Builder $builder, array $term): Builder
-    {
+    public function scopeClassicSearch(Builder $builder, array $term): Builder {
         $builder->userSettings()->nonSystemSettings();
         foreach ($term as $key => $value) {
             if ($value !== null && in_array($key, static::$SEARCHABLE_FIELDS)) {
@@ -110,13 +102,11 @@ class Setting extends Model
         return $builder;
     }
 
-    public static function getPaginationCount()
-    {
+    public static function getPaginationCount() {
         return self::$PAGINATION_COUNT;
     }
 
-    public static function getCMSRecord($key)
-    {
+    public static function getCMSRecord($key) {
         $cache_key = "CMSRecord:{$key}";
         $result = "";
         if (Cache::has($cache_key)) {
@@ -133,29 +123,27 @@ class Setting extends Model
         return $result;
     }
 
-    public static function getSearchableFields(): array
-    {
+    public static function getSearchableFields(): array {
         return static::$SEARCHABLE_FIELDS;
     }
 
-    public function getSearchUrl()
-    {
+    public function getSearchUrl() {
         return '';
     }
 
-    public static function getExportableAttributes(): array
-    {
+    public static function getExportableAttributes(array $to_merge = []): array {
         $model = new static();
-        return array_diff($model->getfillable(), $model->getHidden());
+        return [
+            ...array_diff(Schema::getColumnListing($model->getTable()), $model->getHidden()),
+            ...$to_merge
+        ];
     }
 
-    public static function getExportableRelations(): array
-    {
+    public static function getExportableRelations(): array {
         return static::$EXPORTABLE_RELATIONS;
     }
 
-    public static function getOneToOneRelations(): array
-    {
+    public static function getOneToOneRelations(): array {
         return static::$ONE_TO_ONE_RELATIONS;
     }
 }

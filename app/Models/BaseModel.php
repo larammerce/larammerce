@@ -79,8 +79,7 @@ abstract class BaseModel extends Model
     protected static array $IMPORTABLE_ATTRIBUTES = [];
     protected static array $EXPORTABLE_RELATIONS = [];
 
-    public function scopeExactSearch($builder, string $term): Builder
-    {
+    public function scopeExactSearch($builder, string $term): Builder {
         $builder->where(function ($q) use ($term) {
             foreach (static::$SEARCHABLE_FIELDS as $searchable_field) {
                 $q->orWhere($searchable_field, "=", $term);
@@ -90,8 +89,7 @@ abstract class BaseModel extends Model
         return $builder;
     }
 
-    public function scopeSearch(Builder $builder, string $term, int $exactness = 0): Builder
-    {
+    public function scopeSearch(Builder $builder, string $term, int $exactness = 0): Builder {
         $term = preg_replace("/[ ]+/", " ", $term);
         $termParts = explode(" ", $term);
         foreach (static::$SEARCHABLE_FIELDS as $fieldIndex => $searchableField) {
@@ -105,8 +103,7 @@ abstract class BaseModel extends Model
         return $builder;
     }
 
-    public function scopeClassicSearch(Builder $builder, array $term): Builder
-    {
+    public function scopeClassicSearch(Builder $builder, array $term): Builder {
         foreach ($term as $key => $value) {
             if ($value !== null && in_array($key, static::$SEARCHABLE_FIELDS)) {
                 $builder->where($key, 'LIKE', '%' . $value . '%');
@@ -117,8 +114,7 @@ abstract class BaseModel extends Model
 
     public abstract function getSearchUrl(): string;
 
-    public function toArray(): array
-    {
+    public function toArray(): array {
         $parentResponse = parent::toArray();
         foreach ($parentResponse as $key => $value) {
             if (is_string($value) and str_ends_with($key, "_at")) {
@@ -130,8 +126,7 @@ abstract class BaseModel extends Model
         return $parentResponse;
     }
 
-    protected static function boot(): void
-    {
+    protected static function boot(): void {
         parent::boot();
 
         if (AdminRequestService::isInAdminArea()) {
@@ -139,8 +134,7 @@ abstract class BaseModel extends Model
         }
     }
 
-    public static function getPaginationCount(): int
-    {
+    public static function getPaginationCount(): int {
         if (is_array(static::$PAGINATION_COUNT)) {
             $layoutMethod = LayoutService::getRecord(get_called_class())->getMethod();
             return static::$PAGINATION_COUNT[$layoutMethod];
@@ -148,34 +142,31 @@ abstract class BaseModel extends Model
         return intval(static::$PAGINATION_COUNT);
     }
 
-    public static function getSortableFields(): array
-    {
+    public static function getSortableFields(): array {
         return static::$SORTABLE_FIELDS;
     }
 
-    public static function getSearchableFields(): array
-    {
+    public static function getSearchableFields(): array {
         return static::$SEARCHABLE_FIELDS;
     }
 
-    public static function getImportableAttributes(): array
-    {
+    public static function getImportableAttributes(): array {
         return static::$IMPORTABLE_ATTRIBUTES;
     }
 
-    public static function getExportableRelations(): array
-    {
+    public static function getExportableRelations(): array {
         return static::$EXPORTABLE_RELATIONS;
     }
 
-    public static function getExportableAttributes(): array
-    {
+    public static function getExportableAttributes(array $to_merge = []): array {
         $model = new static();
-        return Schema::getColumnListing($model->getTable());
+        return [
+            ...array_diff(Schema::getColumnListing($model->getTable()), $model->getHidden()),
+            ...$to_merge
+        ];
     }
 
-    public function getAllowedInputs(): array
-    {
+    public function getAllowedInputs(): array {
         $result = [];
         if (AdminRequestService::isInAdminArea()) {
             $systemUser = get_system_user();
@@ -194,13 +185,11 @@ abstract class BaseModel extends Model
         return $result;
     }
 
-    public function isInputAllowed(string $input): bool
-    {
+    public function isInputAllowed(string $input): bool {
         return in_array($input, $this->getAllowedInputs());
     }
 
-    public function update(array $attributes = [], array $options = []): bool
-    {
+    public function update(array $attributes = [], array $options = []): bool {
         $allowed_attributes = [];
         $allowed_inputs = $this->getAllowedInputs();
         foreach ($attributes as $attr_key => $attr_value) {

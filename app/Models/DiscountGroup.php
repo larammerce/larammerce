@@ -72,8 +72,16 @@ class DiscountGroup extends BaseModel
         "steps_data" => "[]"
     ];
     private $extra_attributes = [];
+
     protected $casts = [
-        "expiration_date" => "datetime"
+        "expiration_date" => "datetime",
+        "is_assigned" => "bool",
+        "is_percentage" => "bool",
+        "is_active" => "bool",
+        "is_event" => "bool",
+        "is_multi" => "bool",
+        "has_expiration" => "bool",
+        "has_directory" => "bool",
     ];
 
     protected static array $SORTABLE_FIELDS = ["id", "title", "is_assigned", "is_active", "expiration_date"];

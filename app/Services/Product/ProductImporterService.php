@@ -7,11 +7,13 @@ use App\Exceptions\Product\ProductNotFoundException;
 use App\Models\PAttr;
 use App\Models\Product;
 use App\Models\PStructure;
+use App\Models\PStructureAttrKey;
 use App\Services\Directory\DirectoryService;
 use App\Services\PStructure\PStructureService;
 use Illuminate\Support\Facades\Schema;
 
-class ProductImporterService {
+class ProductImporterService
+{
     private const CASTS = [
         "latest_price" => "int",
         "latest_special_price" => "int",
@@ -58,8 +60,9 @@ class ProductImporterService {
         $product_table_columns = Schema::getColumnListing($tmp_product->getTable());
 
 
+        $key_order = 0;
         foreach ($data_array as $key_title => $value_title) {
-            if ($value_title == null or $key_title == null)
+            if ($key_title == null)
                 continue;
 
             if (in_array($key_title, $product_table_columns))
@@ -70,15 +73,17 @@ class ProductImporterService {
             if (key_exists($key_title, $keys_title_map))
                 $key = $keys_title_map[$key_title];
             else {
-                $key = PStructureService::findOrCreateKeyByTitle($key_title);
+                $key = PStructureService::findOrCreateKeyByTitle($key_title, $key_order++);
                 $keys_title_map[$key_title] = $key;
             }
 
             $exploded_value_titles = array_map(function (string $title) {
-                return trim($title);
+                return trim($title ?? "");
             }, explode(",", $value_title));
             $values = [];
             foreach ($exploded_value_titles as $exploded_value_title) {
+                if(strlen($exploded_value_title) == 0)
+                    continue;
                 if (key_exists($exploded_value_title, $values_title_map))
                     $value = $values_title_map[$exploded_value_title];
                 else {
@@ -99,6 +104,7 @@ class ProductImporterService {
 
     private static function getExtraPropertiesFromDataArray(array $data_array): array {
         $result = [];
+        $priority = 0;
         foreach ($data_array as $key => $value) {
             if ($value == null or $key == null)
                 continue;
@@ -107,7 +113,9 @@ class ProductImporterService {
                 $key = str_replace(["e:", "E:"], "", $key);
                 $result[] = [
                     "key" => $key,
-                    "value" => $value
+                    "value" => $value,
+                    "priority" => $priority++,
+                    "type" => 0
                 ];
             }
         }
@@ -157,8 +165,11 @@ class ProductImporterService {
             return $p_attr->p_structure_attr_value_id;
         }, $current_p_structure_attrs->all());
 
+        $key_ids = [];
         foreach ($p_structure_attributes as $p_structure_attribute) {
+            /** @var PStructureAttrKey $key */
             $key = $p_structure_attribute["key"];
+            $key_ids[] = $key->id;
             foreach ($p_structure_attribute["values"] as $value) {
                 $p_structure_value_ids[] = $value->id;
 
@@ -173,6 +184,8 @@ class ProductImporterService {
                 ProductService::detachAttributeFromProduct($product, $current_p_structure_attr->key, $current_p_structure_attr->value);
             }
         }
+
+        $p_structure->attributeKeys()->sync($key_ids);
 
         return $product;
     }

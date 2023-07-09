@@ -27,6 +27,14 @@ class LiveReportsController extends BaseController {
         ];
     }
 
+    private function getYesterdayRange(): array {
+        $now = Carbon::now()->subDay();
+        return [
+            $now->format("Y-m-d 00:00:00"),
+            $now->format("Y-m-d 23:59:59")
+        ];
+    }
+
     private function getPreviousYearMonthsRanges() {
         $now = Carbon::now();
         list($year, $month, $day) = JDateTime::toJalali($now->year, $now->month, $now->day);
@@ -119,6 +127,17 @@ class LiveReportsController extends BaseController {
 
     public function getDailySalesAmount(): JsonResponse {
         list($start_date, $end_date) = $this->getTodayRange();
+
+        $amount = Invoice::whereIn("payment_status", [PaymentStatus::SUBMITTED, PaymentStatus::CONFIRMED, PaymentStatus::PAID_OUT])
+            ->where("created_at", ">=", $start_date)
+            ->where("created_at", "<=", $end_date)
+            ->sum("sum");
+
+        return MessageFactory::jsonResponse([], 200, compact("amount"));
+    }
+
+    public function getYesterdaySalesAmount(): JsonResponse {
+        list($start_date, $end_date) = $this->getYesterdayRange();
 
         $amount = Invoice::whereIn("payment_status", [PaymentStatus::SUBMITTED, PaymentStatus::CONFIRMED, PaymentStatus::PAID_OUT])
             ->where("created_at", ">=", $start_date)

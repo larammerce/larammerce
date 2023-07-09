@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\DB;
  *
  * Accessors
  * @property boolean is_multi
+ * @property boolean is_event
  * @property boolean is_assigned
  * @property boolean is_percentage
  * @property DateTime expiration_date
@@ -159,20 +160,29 @@ class DiscountCard extends BaseModel
 
     public static function checkCode($discount_code, $guard = null)
     {
+
+        /** @var DiscountCard $discount_card */
         $discount_card = DiscountCard::where("code", $discount_code)->first();
+        $current_customer_user = get_customer_user($guard);
 
         if ($discount_card != null) {
             if (!$discount_card->is_active or !$discount_card->group->is_active) {
                 throw new InvalidDiscountCodeException("The discount code `{$discount_code}` is inactive.",
                     DiscountCardStatus::INACTIVE);
             }
-            if (($discount_card->invoices()->count() != 0 and !$discount_card->is_multi)) {
+
+            if (!$discount_card->is_event and !$discount_card->is_multi and $discount_card->invoices()->count() != 0) {
+                throw new InvalidDiscountCodeException("The discount code `{$discount_code}` is used.",
+                    DiscountCardStatus::IS_USED);
+            }
+
+            if ($discount_card->is_event and !$discount_card->is_multi and $discount_card->invoices()->where("customer_user_id", $current_customer_user->id)->count() > 0) {
                 throw new InvalidDiscountCodeException("The discount code `{$discount_code}` is used.",
                     DiscountCardStatus::IS_USED);
             }
 
             if (!$discount_card->group->is_event and $discount_card->customer_user_id != null) {
-                if ($discount_card->customer_user_id != get_customer_user($guard)->id) {
+                if ($discount_card->customer_user_id != $current_customer_user->id) {
                     throw new InvalidDiscountCodeException("The discount code `{$discount_code}` is not for you.",
                         DiscountCardStatus::NOT_FOR_YOU);
                 }

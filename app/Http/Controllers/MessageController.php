@@ -24,7 +24,7 @@ class MessageController extends Controller
      *     identifier="required|exists:web_forms",
      *     dynamic_rules=\App\Models\WebForm::getRules(request('identifier')) )
      * @param Request $request
-     * @return JsonResponse
+     * @return JsonResponse|\Illuminate\Http\RedirectResponse
      */
     public function saveMessage(Request $request)
     {
@@ -39,23 +39,24 @@ class MessageController extends Controller
                 else
                     $result[$formField->getIdentifier()] = $formField->getValue($request);
             }
-            WebFormMessage::create([
+            $web_form = WebFormMessage::create([
                 'web_form_id' => $webForm->id,
                 'data' => serialize($result),
             ]);
-            if (RequestService::isRequestAjax())
-                return response()->json(MessageFactory::create(['system_messages.web_form_message.sent'], 200));
+
             SystemMessageService::addSuccessMessage("system_messages.web_form_message.sent");
             if (config('mail-notifications.forms.new_form')) {
                 $subject = request('identifier');
                 $emailAddress = config('mail-notifications.forms.related_mail');
                 $template = "public.mail-receive-contact-form";
                 EmailService::send([
-                    "adminUrl" => config('app.url') . '/admin/web-form-message',
+                    "adminUrl" => route("admin.web-form-message.show", $web_form),
                     "data" => $result,
                 ], $template, $emailAddress, $emailAddress, $subject);
             }
         }
+        if (RequestService::isRequestAjax())
+            return response()->json(MessageFactory::create(['system_messages.web_form_message.sent'], 200));
         return redirect()->back();
     }
 }

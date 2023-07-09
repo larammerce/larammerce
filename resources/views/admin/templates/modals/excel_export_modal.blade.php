@@ -4,9 +4,34 @@
     $cached_attributes = \App\Utils\CMS\Setting\Excel\ExcelCacheService::getAttributes($related_model);
     $cached_relations = \App\Utils\CMS\Setting\Excel\ExcelCacheService::getRelations($related_model);
 @endphp
-<form method="get"  action="{{route('admin.excel.export')}}">
     <!-- Modal -->
-    <div id="excel-export-modal" class="modal fade" role="dialog" style="display: none">
+<div id="excel-export-modal" class="modal fade" role="dialog" style="display: none">
+    <form method="get" action="{{route('admin.excel.export')}}">
+        @if(isset($related_model_query_data))
+            @foreach($related_model_query_data as $related_model_query_key => $related_model_query_value)
+                <input type="hidden" name="query_data[{{$related_model_query_key}}]"
+                       value="{{$related_model_query_value}}">
+            @endforeach
+        @endif
+        @if(isset($related_model_raw_query))
+            <input type="hidden" name="raw_query" value="{{$related_model_raw_query}}">
+        @endif
+        @if(isset($related_query_select_raw))
+            <input type="hidden" name="raw_select" value="{{$related_query_select_raw}}">
+        @endif
+        @if(isset($related_query_extended_attributes))
+            @foreach($related_query_extended_attributes as $related_model_ex_attr_key => $related_model_ex_attr_value)
+                <input type="hidden" name="extended_attributes[{{$related_model_ex_attr_key}}]"
+                       value="{{$related_model_ex_attr_value}}">
+            @endforeach
+        @endif
+        @if(isset($related_query_group_by))
+            @foreach($related_query_group_by as $related_model_group_key => $related_model_group_value)
+                <input type="hidden" name="group_by[{{$related_model_group_key}}]"
+                       value="{{$related_model_group_value}}">
+            @endforeach
+        @endif
+
         <div class="modal-dialog modal-sm">
 
             <!-- Modal content-->
@@ -42,7 +67,8 @@
                                         <input class="checkbox-input" id="{{$exportable}}" type="checkbox" value="1"
                                                @if(in_array($exportable,$cached_attributes)) checked @endif/>
                                         <label class="checkbox-input-label" for="{{$exportable}}"></label>
-                                        <input class="checkbox-input-hidden" id="{{$exportable}}_hidden" type="hidden" value="0"/>
+                                        <input class="checkbox-input-hidden" id="{{$exportable}}_hidden" type="hidden"
+                                               value="0"/>
                                     </span>
                                 </div>
                                 <div class="col-lg-8 col-md-4 col-sm-6 col-xs-6">
@@ -50,6 +76,24 @@
                                 </div>
                             </div>
                         @endforeach
+                        @if(isset($related_query_extended_attributes))
+                            @foreach($related_query_extended_attributes as $related_model_ex_attr_key => $related_model_ex_attr_value)
+                                <div class="row">
+                                    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6">
+                                    <span class="material-switch pull-left ">
+                                        <input class="checkbox-input" id="{{$related_model_ex_attr_value}}" type="checkbox" value="1"
+                                               @if(in_array($related_model_ex_attr_value,$cached_attributes)) checked @endif/>
+                                        <label class="checkbox-input-label" for="{{$related_model_ex_attr_value}}"></label>
+                                        <input class="checkbox-input-hidden" id="{{$related_model_ex_attr_value}}_hidden" type="hidden"
+                                               value="0"/>
+                                    </span>
+                                    </div>
+                                    <div class="col-lg-8 col-md-4 col-sm-6 col-xs-6">
+                                        <p id="entity-">{{ trans("structures.attributes.{$related_model_ex_attr_value}") }}</p>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
                     </div>
 
                     <hr>
@@ -73,10 +117,13 @@
                             <div class="row">
                                 <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6">
                                     <span class="material-switch pull-left ">
-                                        <input class="checkbox-input" id="{{$relation}}" type="checkbox" value="1"
-                                               @if(in_array($relation,$cached_relations)) checked @endif/>
-                                        <label class="checkbox-input-label" for="{{$relation}}"></label>
-                                        <input class="checkbox-input-hidden" id="{{$relation}}_hidden" type="hidden" value="0"/>
+                                        <input class="checkbox-input" id="{{$relation["name"]}}" type="checkbox"
+                                               value="1"
+                                               @if(in_array($relation["name"],$cached_relations)) checked @endif/>
+                                        <label class="checkbox-input-label" for="{{$relation["name"]}}"></label>
+                                        <input class="checkbox-input-hidden" id="{{$relation["name"]}}_hidden"
+                                               type="hidden"
+                                               value="0"/>
                                     </span>
                                 </div>
                                 <div class="col-lg-8 col-md-4 col-sm-6 col-xs-6">
@@ -95,13 +142,14 @@
                     <button id="submit-export" type="submit" class="btn btn-sm btn-default btn-success">
                         دریافت
                     </button>
-                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal" onclick="window.rejectReq()">انصراف
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"
+                            onclick="window.rejectReq()">انصراف
                     </button>
                 </div>
             </div>
 
         </div>
-    </div>
-</form>
+    </form>
+</div>
 
 

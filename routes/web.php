@@ -414,6 +414,7 @@ Route::group(
 
             Route::group(["prefix" => "live-reports", "as" => "live-reports."], function () {
                 Route::get("daily-sales-amount", ["as" => "get-daily-sales-amount", "uses" => "LiveReportsController@getDailySalesAmount"]);
+                Route::get("yesterday-sales-amount", ["as" => "get-yesterday-sales-amount", "uses" => "LiveReportsController@getYesterdaySalesAmount"]);
                 Route::get("monthly-sales-amount", ["as" => "get-monthly-sales-amount", "uses" => "LiveReportsController@getMonthlySalesAmount"]);
                 Route::get("yearly-sales-amount", ["as" => "get-yearly-sales-amount", "uses" => "LiveReportsController@getYearlySalesAmount"]);
                 Route::get("previous-year-sales-amount", ["as" => "get-previous-year-sales-amount", "uses" => "LiveReportsController@getPreviousYearSalesAmount"]);
