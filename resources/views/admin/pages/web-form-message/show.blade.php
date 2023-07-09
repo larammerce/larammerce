@@ -23,7 +23,7 @@
                 @else
                     @if($value !=null)
                         <hr>
-                        <strong dir="rtl">{{trans(trans('validation.attributes.'.$key))}} : </strong>
+                        <strong dir="rtl">{{trans('validation.attributes.'.$key)}} : </strong>
                         <span dir="rtl">{{$value}}</span>
                     @endif
                 @endif
