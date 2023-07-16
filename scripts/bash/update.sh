@@ -109,21 +109,33 @@ if [[ $# -eq 0 ]] ; then
 fi
 
 # Parse the input parameters
+only_core=0
+only_theme=0
+
 for param in "$@"
 do
     case $param in
         --only-core*)
-        update_core "$@"
+        only_core=1
         shift
         ;;
         --only-theme*)
-        update_theme "$@"
+        only_theme=1
         shift
         ;;
         *)
         echo "Invalid option: $param"
-        echo "Usage: $0 [--only-core=core-path=... --core-repo=... --core-branch=... | --only-theme=theme-path=... --theme-repo=... --theme-branch=...]"
+        echo "Usage: $0 [--only-core --core-path=... --core-repo=... --core-branch=... | --only-theme --theme-path=... --theme-repo=... --theme-branch=...]"
         exit 1
         ;;
     esac
 done
+
+if ((only_core)); then
+    update_core "$@"
+elif ((only_theme)); then
+    update_theme "$@"
+else
+    update_core "$@"
+    update_theme "$@"
+fi
