@@ -96,7 +96,8 @@ update_theme() {
         exit 1
     fi
 
-    bash "${THEME_BASE_PATH}/deploy.sh"
+    cd "${THEME_BASE_PATH}" && bash "${THEME_BASE_PATH}/deploy.sh"
+    cd "${ECOMMERCE_BASE_PATH}" || exit
     echo "Theme Update successfully done!"
 }
 
