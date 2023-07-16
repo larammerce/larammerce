@@ -123,11 +123,6 @@ do
         only_theme=1
         shift
         ;;
-        *)
-        echo "Invalid option: $param"
-        echo "Usage: $0 [--only-core --core-path=... --core-repo=... --core-branch=... | --only-theme --theme-path=... --theme-repo=... --theme-branch=...]"
-        exit 1
-        ;;
     esac
 done
 
