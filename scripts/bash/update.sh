@@ -13,13 +13,13 @@ check_prerequisites() {
 }
 
 update_core() {
-    ECOMMERCE_BASE_PATH=${ECOMMERCE_BASE_PATH:-""}
+    export ECOMMERCE_BASE_PATH=${ECOMMERCE_BASE_PATH:-""}
     core_branch="master"
     for param in "$@"
     do
         case $param in
             --core-path=*)
-            ECOMMERCE_BASE_PATH="${param#*=}"
+            export ECOMMERCE_BASE_PATH="${param#*=}"
             shift
             ;;
             --core-repo=*)
