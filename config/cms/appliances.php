@@ -22,7 +22,7 @@ return [
                     "id" => "system_update",
                     "name" => "general.setting.system_update",
                     "icon" => "icon-update",
-                    "route" => "admin.setting.appliances"
+                    "route" => "admin.setting.upgrade.index"
                 ]
             ],
             [

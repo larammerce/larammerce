@@ -55,6 +55,9 @@ Route::group(
 
                 Route::get("representative", ["as" => "representative.edit", "uses" => "RepresentativeSettingController@edit"]);
                 Route::put("representative", ["as" => "representative.update", "uses" => "RepresentativeSettingController@update"]);
+
+                Route::get("upgrade", ["as" => "upgrade.index", "uses" => "UpgradeController@index"]);
+                Route::post("upgrade", ["as" => "upgrade.save-config", "uses" => "UpgradeController@saveConfig"]);
             });
         Route::resource("setting", "SettingController", ["as" => "admin"]);
 
