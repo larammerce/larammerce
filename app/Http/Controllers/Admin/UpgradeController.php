@@ -12,7 +12,8 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
-class UpgradeController extends BaseController {
+class UpgradeController extends BaseController
+{
 
     public function index(Request $request): Factory|View|Application {
         $record = SystemUpgradeSettingService::getRecord();
@@ -38,11 +39,18 @@ class UpgradeController extends BaseController {
         $record->setLarammerceThemeRepoAddress($larammerce_theme_repo_address);
 
         $domains = $this->extractDomains([$larammerce_repo_address, $larammerce_theme_repo_address]);
-        $public_key = SSHService::addSSHKey($domains);
+
+        if ($request->has("create_key")) {
+            $public_key = SSHService::addSSHKey($domains);
+        }
 
         try {
             SystemUpgradeSettingService::setRecord($record);
-            return History::redirectBack()->with("public_key", $public_key);
+            if (isset($public_key)) {
+                return History::redirectBack()->with("public_key", $public_key);
+            } else {
+                return History::redirectBack();
+            }
         } catch (NotValidSettingRecordException $e) {
             SystemMessageService::addErrorMessage('system_messages.system_upgrade.invalid_record');
             return History::redirectBack()->withInput();
