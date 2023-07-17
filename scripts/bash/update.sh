@@ -138,7 +138,9 @@ update_theme() {
     fi
 
     echo "Running theme deploy script..."
-    bash "${THEME_BASE_PATH}/deploy.sh" || { echo "Failed running theme deploy script. Please check your deploy.sh."; exit 1; }
+    pushd "${THEME_BASE_PATH}" >/dev/null || { echo "Failed changing directory to ${THEME_BASE_PATH}. Please check if the directory exists."; exit 1; }
+    bash deploy.sh || { echo "Failed running theme deploy script. Please check your deploy.sh."; popd >/dev/null; exit 1; }
+    popd >/dev/null || { echo "Failed returning to original directory. Please check your filesystem."; exit 1; }
     echo "Running theme deploy script...done!"
 
     echo "Theme Update successfully done!"
