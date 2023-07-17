@@ -103,7 +103,7 @@ update_theme() {
         exit 1
     fi
 
-    if [[ ! -z "${theme_repo}" && ! -d "${THEME_BASE_PATH}" ]]; then
+    if [[ ! -z "${theme_repo}" && (! -d "${THEME_BASE_PATH}" || -z "$(ls -A "${THEME_BASE_PATH}")") ]]; then
         echo "Cloning theme from repo ${theme_repo}..."
         git clone "${theme_repo}" "${THEME_BASE_PATH}" || { echo "Failed cloning theme from repo ${theme_repo}. Please check the repository URL."; exit 1; }
         git -C "${THEME_BASE_PATH}" checkout "${theme_branch}" || { echo "Failed checking out branch ${theme_branch}. Please check if the branch exists."; exit 1; }
