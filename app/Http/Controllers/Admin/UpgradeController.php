@@ -11,9 +11,10 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
-class UpgradeController extends BaseController
-{
+class UpgradeController extends BaseController {
 
     public function index(Request $request): Factory|View|Application {
         $record = SystemUpgradeSettingService::getRecord();
@@ -55,6 +56,56 @@ class UpgradeController extends BaseController
             SystemMessageService::addErrorMessage('system_messages.system_upgrade.invalid_record');
             return History::redirectBack()->withInput();
         }
+    }
+
+    public function doUpgrade(Request $request) {
+        $record = SystemUpgradeSettingService::getRecord();
+
+        $only_theme = $request->input('only_theme');
+        $only_core = $request->input('only_core');
+        $script_path = base_path('scripts/bash/upgrade.sh');
+
+        $command = [$script_path];
+
+        if ($only_core) {
+            $command[] = "--only-core";
+        }
+
+        if ($only_theme) {
+            $command[] = "--only-theme";
+        }
+
+        $command[] = "--theme-repo=" . $record->getLarammerceThemeRepoAddress();
+        $command[] = "--core-repo=" . $record->getLarammerceRepoAddress();
+        $command[] = "--core-path=" . base_path();
+
+        $process = new Process($command);
+        $process->setEnv(['PATH' => '/usr/local/bin:/usr/bin:/bin']);
+        $process->setEnv(['ECOMMERCE_BASE_PATH' => base_path()]);
+        $process->setTimeout(3600);
+        $process->start();
+
+        $response = response()->stream(function() use ($process) {
+            while ($process->isRunning()) {
+                echo 'data: ' . $process->getIncrementalOutput() . "\n\n";
+                ob_flush();
+                flush();
+                sleep(1);
+            }
+
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+
+            echo 'data: ' . $process->getIncrementalOutput() . "\n\n";
+        });
+
+        $response->headers->set('Content-Type', 'text/event-stream');
+        $response->headers->set('Cache-Control', 'no-cache');
+        $response->headers->set('Connection', 'keep-alive');
+        $response->headers->set('X-Accel-Buffering', 'no');
+
+        return $response;
     }
 
     private function extractDomains($repo_urls): array {
