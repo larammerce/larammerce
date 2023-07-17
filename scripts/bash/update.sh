@@ -13,13 +13,15 @@ check_prerequisites() {
 }
 
 update_core() {
-    export ECOMMERCE_BASE_PATH=${ECOMMERCE_BASE_PATH:-""}
+    ECOMMERCE_BASE_PATH=${ECOMMERCE_BASE_PATH:-""}
     core_branch="master"
+    core_repo=""
+
     for param in "$@"
     do
         case $param in
             --core-path=*)
-            export ECOMMERCE_BASE_PATH="${param#*=}"
+            ECOMMERCE_BASE_PATH="${param#*=}"
             shift
             ;;
             --core-repo=*)
@@ -38,23 +40,46 @@ update_core() {
         exit 1
     fi
 
-    if [[ ! -d "${ECOMMERCE_BASE_PATH}/.git" ]]; then
-        git -C "${ECOMMERCE_BASE_PATH}" init
+    if [[ ! -z "${core_repo}" && ! -d "${ECOMMERCE_BASE_PATH}/.git" ]]; then
+        echo "Initializing git..."
+        git -C "${ECOMMERCE_BASE_PATH}" init || { echo "Failed initializing git. Please check if the directory exists and you have the necessary permissions."; exit 1; }
     fi
 
-    git -C "${ECOMMERCE_BASE_PATH}" remote set-url origin "${core_repo}"
-    git -C "${ECOMMERCE_BASE_PATH}" fetch
-    git -C "${ECOMMERCE_BASE_PATH}" reset --hard origin/"${core_branch}"
-    composer install --working-dir="${ECOMMERCE_BASE_PATH}"
-    npm --prefix "${ECOMMERCE_BASE_PATH}" install "${ECOMMERCE_BASE_PATH}"
-    php "${ECOMMERCE_BASE_PATH}/artisan" migrate --force
-    npm --prefix "${ECOMMERCE_BASE_PATH}" run production
+    if [[ ! -z "${core_repo}" ]]; then
+        echo "Updating git remote origin..."
+        git -C "${ECOMMERCE_BASE_PATH}" remote set-url origin "${core_repo}" || { echo "Failed updating git remote origin. Please check the repository URL."; exit 1; }
+        echo "Updating git remote origin...done!"
+
+        echo "Fetching and resetting to the latest changes on branch ${core_branch}..."
+        git -C "${ECOMMERCE_BASE_PATH}" fetch || { echo "Failed fetching from git. Please check your network connection."; exit 1; }
+        git -C "${ECOMMERCE_BASE_PATH}" reset --hard origin/"${core_branch}" || { echo "Failed resetting to branch ${core_branch}. Please check if the branch exists."; exit 1; }
+        echo "Fetching and resetting to the latest changes on branch ${core_branch}...done!"
+    fi
+
+    echo "Installing composer packages..."
+    composer install --working-dir="${ECOMMERCE_BASE_PATH}" >/dev/null 2>&1 || { echo "Failed installing composer packages. Please check your composer.json file."; exit 1; }
+    echo "Installing composer packages...done!"
+
+    echo "Installing npm packages..."
+    npm --prefix "${ECOMMERCE_BASE_PATH}" install "${ECOMMERCE_BASE_PATH}" >/dev/null 2>&1 || { echo "Failed installing npm packages. Please check your package.json file."; exit 1; }
+    echo "Installing npm packages...done!"
+
+    echo "Running database migrations..."
+    php "${ECOMMERCE_BASE_PATH}/artisan" migrate --force || { echo "Failed running migrations. Please check your database connection and migration files."; exit 1; }
+    echo "Running database migrations...done!"
+
+    echo "Running npm production build..."
+    npm --prefix "${ECOMMERCE_BASE_PATH}" run production >/dev/null 2>&1 || { echo "Failed running npm production build. Please check your scripts in package.json."; exit 1; }
+    echo "Running npm production build...done!"
+
     echo "Core Update successfully done!"
 }
 
 update_theme() {
     THEME_BASE_PATH=${THEME_BASE_PATH:-"$ECOMMERCE_BASE_PATH/data/themes/default"}
     theme_branch="master"
+    theme_repo=""
+
     for param in "$@"
     do
         case $param in
@@ -78,36 +103,48 @@ update_theme() {
         exit 1
     fi
 
-    if [[ ! -d "${THEME_BASE_PATH}" ]]; then
-        git clone "${theme_repo}" "${THEME_BASE_PATH}"
-        git -C "${THEME_BASE_PATH}" checkout "${theme_branch}"
-    elif [[ ! -d "${THEME_BASE_PATH}/.git" ]]; then
-        git -C "${THEME_BASE_PATH}" init
+    if [[ ! -z "${theme_repo}" && ! -d "${THEME_BASE_PATH}" ]]; then
+        echo "Cloning theme from repo ${theme_repo}..."
+        git clone "${theme_repo}" "${THEME_BASE_PATH}" || { echo "Failed cloning theme from repo ${theme_repo}. Please check the repository URL."; exit 1; }
+        git -C "${THEME_BASE_PATH}" checkout "${theme_branch}" || { echo "Failed checking out branch ${theme_branch}. Please check if the branch exists."; exit 1; }
+        echo "Cloning theme from repo ${theme_repo}...done!"
+    elif [[ ! -z "${theme_repo}" && ! -d "${THEME_BASE_PATH}/.git" ]]; then
+        echo "Initializing git..."
+        git -C "${THEME_BASE_PATH}" init || { echo "Failed initializing git. Please check if the directory exists and you have the necessary permissions."; exit 1; }
     fi
 
-    git -C "${THEME_BASE_PATH}" remote set-url origin "${theme_repo}"
-    git -C "${THEME_BASE_PATH}" fetch
-    git -C "${THEME_BASE_PATH}" reset --hard origin/"${theme_branch}"
-    npm --prefix "${THEME_BASE_PATH}" install "${THEME_BASE_PATH}"
-    npm --prefix "${THEME_BASE_PATH}" run production
+    if [[ ! -z "${theme_repo}" ]]; then
+        echo "Updating git remote origin..."
+        git -C "${THEME_BASE_PATH}" remote set-url origin "${theme_repo}" || { echo "Failed updating git remote origin. Please check the repository URL."; exit 1; }
+        echo "Updating git remote origin...done!"
+
+        echo "Fetching and resetting to the latest changes on branch ${theme_branch}..."
+        git -C "${THEME_BASE_PATH}" fetch || { echo "Failed fetching from git. Please check your network connection."; exit 1; }
+        git -C "${THEME_BASE_PATH}" reset --hard origin/"${theme_branch}" || { echo "Failed resetting to branch ${theme_branch}. Please check if the branch exists."; exit 1; }
+        echo "Fetching and resetting to the latest changes on branch ${theme_branch}...done!"
+    fi
+
+    echo "Installing npm packages..."
+    npm --prefix "${THEME_BASE_PATH}" install "${THEME_BASE_PATH}" >/dev/null 2>&1 || { echo "Failed installing npm packages. Please check your package.json file."; exit 1; }
+    echo "Installing npm packages...done!"
+
+    echo "Running npm production build..."
+    npm --prefix "${THEME_BASE_PATH}" run production >/dev/null 2>&1 || { echo "Failed running npm production build. Please check your scripts in package.json."; exit 1; }
+    echo "Running npm production build...done!"
 
     if [[ ! -f "${THEME_BASE_PATH}/deploy.sh" ]]; then
         echo "There is no deploy.sh script in the theme project"
         exit 1
     fi
 
-    cd "${THEME_BASE_PATH}" && bash "${THEME_BASE_PATH}/deploy.sh"
-    cd "${ECOMMERCE_BASE_PATH}" || exit
+    echo "Running theme deploy script..."
+    bash "${THEME_BASE_PATH}/deploy.sh" || { echo "Failed running theme deploy script. Please check your deploy.sh."; exit 1; }
+    echo "Running theme deploy script...done!"
+
     echo "Theme Update successfully done!"
 }
 
 check_prerequisites
-
-# Check if no arguments were provided, if so, update both core and theme
-if [[ $# -eq 0 ]] ; then
-    echo "Please provide parameters for --only-core or --only-theme"
-    exit 0
-fi
 
 # Parse the input parameters
 only_core=0
