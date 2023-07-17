@@ -14,7 +14,8 @@ use Illuminate\Http\Request;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
-class UpgradeController extends BaseController {
+class UpgradeController extends BaseController
+{
 
     public function index(Request $request): Factory|View|Application {
         $record = SystemUpgradeSettingService::getRecord();
@@ -63,6 +64,7 @@ class UpgradeController extends BaseController {
 
         $only_theme = $request->input('only_theme');
         $only_core = $request->input('only_core');
+        $base_path = base_path();
         $script_path = base_path('scripts/bash/upgrade.sh');
 
         $command = [$script_path];
@@ -77,17 +79,27 @@ class UpgradeController extends BaseController {
 
         $command[] = "--theme-repo=" . $record->getLarammerceThemeRepoAddress();
         $command[] = "--core-repo=" . $record->getLarammerceRepoAddress();
-        $command[] = "--core-path=" . base_path();
+        $command[] = "--core-path=" . $base_path;
 
         $process = new Process($command);
-        $process->setEnv(['PATH' => '/usr/local/bin:/usr/bin:/bin']);
-        $process->setEnv(['ECOMMERCE_BASE_PATH' => base_path()]);
+        $process->setEnv(['PATH' => '/usr/local/bin:/usr/bin:/bin', 'ECOMMERCE_BASE_PATH' => $base_path]);
+        $process->setWorkingDirectory($base_path);
         $process->setTimeout(3600);
         $process->start();
 
-        $response = response()->stream(function() use ($process) {
+        $response = response()->stream(function () use ($process) {
             while ($process->isRunning()) {
-                echo 'data: ' . $process->getIncrementalOutput() . "\n\n";
+                $incremental_output = $process->getIncrementalOutput();
+                $incremental_error_output = $process->getIncrementalErrorOutput();
+
+                if (strlen($incremental_output) > 0) {
+                    echo 'data: ' . $incremental_output . "\n";
+                }
+
+                if (strlen($incremental_error_output) > 0) {
+                    echo 'data: ERROR: ' . $incremental_error_output . "\n";
+                }
+
                 ob_flush();
                 flush();
                 sleep(1);
@@ -97,7 +109,8 @@ class UpgradeController extends BaseController {
                 throw new ProcessFailedException($process);
             }
 
-            echo 'data: ' . $process->getIncrementalOutput() . "\n\n";
+            echo 'data: ' . $process->getIncrementalOutput() . "\n";
+            echo "data: END: \n\n";
         });
 
         $response->headers->set('Content-Type', 'text/event-stream');

@@ -1,9 +1,12 @@
 #!/bin/bash
 
+export UPGRADE_LOG="${ECOMMERCE_BASE_PATH}/storage/logs/upgrade.log"
+echo "" > "${UPGRADE_LOG}"
+
 check_prerequisites() {
-    command -v php >/dev/null 2>&1 || { echo >&2 "I require PHP but it's not installed. Please install it and run again."; exit 1; }
-    command -v composer >/dev/null 2>&1 || { echo >&2 "I require Composer but it's not installed. Please install it and run again."; exit 1; }
-    command -v npm >/dev/null 2>&1 || { echo >&2 "I require npm but it's not installed. Please install it and run again."; exit 1; }
+    command -v php >>"${UPGRADE_LOG}" 2>&1 || { echo >&2 "I require PHP but it's not installed. Please install it and run again."; exit 1; }
+    command -v composer >>"${UPGRADE_LOG}" 2>&1 || { echo >&2 "I require Composer but it's not installed. Please install it and run again."; exit 1; }
+    command -v npm >>"${UPGRADE_LOG}" 2>&1 || { echo >&2 "I require npm but it's not installed. Please install it and run again."; exit 1; }
 
     NODE_VERSION=$(node -v | cut -d'v' -f2)
     MAJOR_VERSION=$(echo $NODE_VERSION | cut -d'.' -f1)
@@ -13,7 +16,7 @@ check_prerequisites() {
 }
 
 update_core() {
-    ECOMMERCE_BASE_PATH=${ECOMMERCE_BASE_PATH:-""}
+    export ECOMMERCE_BASE_PATH=${ECOMMERCE_BASE_PATH:-""}
     core_branch="master"
     core_repo=""
 
@@ -21,7 +24,7 @@ update_core() {
     do
         case $param in
             --core-path=*)
-            ECOMMERCE_BASE_PATH="${param#*=}"
+            export ECOMMERCE_BASE_PATH="${param#*=}"
             shift
             ;;
             --core-repo=*)
@@ -57,11 +60,11 @@ update_core() {
     fi
 
     echo "Installing composer packages..."
-    composer install --working-dir="${ECOMMERCE_BASE_PATH}" >/dev/null 2>&1 || { echo "Failed installing composer packages. Please check your composer.json file."; exit 1; }
+    composer install --working-dir="${ECOMMERCE_BASE_PATH}" >>"${UPGRADE_LOG}" 2>&1 || { echo "Failed installing composer packages. Please check your composer.json file."; exit 1; }
     echo "Installing composer packages...done!"
 
     echo "Installing npm packages..."
-    npm --prefix "${ECOMMERCE_BASE_PATH}" install "${ECOMMERCE_BASE_PATH}" >/dev/null 2>&1 || { echo "Failed installing npm packages. Please check your package.json file."; exit 1; }
+    npm --prefix "${ECOMMERCE_BASE_PATH}" install "${ECOMMERCE_BASE_PATH}" >>"${UPGRADE_LOG}" 2>&1 || { echo "Failed installing npm packages. Please check your package.json file."; exit 1; }
     echo "Installing npm packages...done!"
 
     echo "Running database migrations..."
@@ -69,7 +72,7 @@ update_core() {
     echo "Running database migrations...done!"
 
     echo "Running npm production build..."
-    npm --prefix "${ECOMMERCE_BASE_PATH}" run production >/dev/null 2>&1 || { echo "Failed running npm production build. Please check your scripts in package.json."; exit 1; }
+    npm --prefix "${ECOMMERCE_BASE_PATH}" run production >>"${UPGRADE_LOG}" 2>&1 || { echo "Failed running npm production build. Please check your scripts in package.json."; exit 1; }
     echo "Running npm production build...done!"
 
     echo "Core Update successfully done!"
@@ -125,11 +128,11 @@ update_theme() {
     fi
 
     echo "Installing npm packages..."
-    npm --prefix "${THEME_BASE_PATH}" install "${THEME_BASE_PATH}" >/dev/null 2>&1 || { echo "Failed installing npm packages. Please check your package.json file."; exit 1; }
+    npm --prefix "${THEME_BASE_PATH}" install "${THEME_BASE_PATH}" >>"${UPGRADE_LOG}" 2>&1 || { echo "Failed installing npm packages. Please check your package.json file."; exit 1; }
     echo "Installing npm packages...done!"
 
     echo "Running npm production build..."
-    npm --prefix "${THEME_BASE_PATH}" run production >/dev/null 2>&1 || { echo "Failed running npm production build. Please check your scripts in package.json."; exit 1; }
+    npm --prefix "${THEME_BASE_PATH}" run production >>"${UPGRADE_LOG}" 2>&1 || { echo "Failed running npm production build. Please check your scripts in package.json."; exit 1; }
     echo "Running npm production build...done!"
 
     if [[ ! -f "${THEME_BASE_PATH}/deploy.sh" ]]; then
@@ -138,9 +141,9 @@ update_theme() {
     fi
 
     echo "Running theme deploy script..."
-    pushd "${THEME_BASE_PATH}" >/dev/null || { echo "Failed changing directory to ${THEME_BASE_PATH}. Please check if the directory exists."; exit 1; }
-    bash deploy.sh || { echo "Failed running theme deploy script. Please check your deploy.sh."; popd >/dev/null; exit 1; }
-    popd >/dev/null || { echo "Failed returning to original directory. Please check your filesystem."; exit 1; }
+    pushd "${THEME_BASE_PATH}" >>"${UPGRADE_LOG}" || { echo "Failed changing directory to ${THEME_BASE_PATH}. Please check if the directory exists."; exit 1; }
+    bash deploy.sh >>"${UPGRADE_LOG}" 2>&1 || { echo "Failed running theme deploy script. Please check your deploy.sh."; popd >>"${UPGRADE_LOG}"; exit 1; }
+    popd >>"${UPGRADE_LOG}" || { echo "Failed returning to original directory. Please check your filesystem."; exit 1; }
     echo "Running theme deploy script...done!"
 
     echo "Theme Update successfully done!"

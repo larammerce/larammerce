@@ -1,32 +1,23 @@
 if (window.PAGE_ID === "admin.pages.upgrade.index")
     require(["jquery"], function (jQuery) {
-        var csrfToken = window.csrf_token; // Make sure to initialize csrf_token globally
 
         function handleUpgrade(url) {
-            var outputElement = jQuery('#output');
-            outputElement.text(''); // Clear the output for a new process
+            const source = new EventSource(url);
 
-            jQuery.ajax({
-                url: url,
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken
-                },
-                success: function () {
-                    var eventSource = new EventSource(url);
-
-                    eventSource.onmessage = function (event) {
-                        outputElement.append(event.data + "\n");
-                    };
-
-                    eventSource.onerror = function (err) {
-                        console.error("EventSource failed:", err);
-                        eventSource.close();
-                    };
-                },
-                error: function (err) {
-                    console.error(err);
+            source.onmessage = function(event) {
+                // Close the connection if the server sends a specific end signal.
+                if (event.data.startsWith('END:')) {
+                    source.close();
+                    document.getElementById("output").innerHTML += "Process finished working.<br>";
+                }else{
+                    document.getElementById("output").innerHTML += event.data + "<br>";
                 }
-            });
+            };
+
+            source.onerror = function(event) {
+                source.close();
+                console.error("EventSource failed:", event);
+            };
         }
 
         jQuery('#upgradeThemeButton').click(function (event) {

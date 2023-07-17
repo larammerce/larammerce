@@ -58,54 +58,6 @@
             </div>
         </div>
     </div>
-
-    <script>
-        var csrfToken = window.csrf_token; // Make sure to initialize csrf_token globally
-
-        function handleUpgrade(url) {
-            var outputElement = $('#output');
-            outputElement.text(''); // Clear the output for a new process
-
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: {
-                    _method: 'PATCH',
-                },
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken
-                },
-                success: function() {
-                    var eventSource = new EventSource(url);
-
-                    eventSource.onmessage = function(event) {
-                        outputElement.append(event.data + "\n");
-                    };
-
-                    eventSource.onerror = function(err) {
-                        console.error("EventSource failed:", err);
-                        eventSource.close();
-                    };
-                },
-                error: function(err) {
-                    console.error(err);
-                    alert('An error occurred: ' + err.message);
-                }
-            });
-        }
-
-        $('#upgradeThemeButton').click(function() {
-            handleUpgrade('/admin/setting/upgrade?only_theme=1');
-        });
-
-        $('#upgradeCoreButton').click(function() {
-            handleUpgrade('/admin/setting/upgrade?only_core=1');
-        });
-
-        $('#upgradeAllButton').click(function() {
-            handleUpgrade('/admin/setting/upgrade');
-        });
-    </script>
 @endsection
 
 @section('form_footer')
