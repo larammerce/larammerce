@@ -18,7 +18,7 @@
 @section('form_body')
     <script>window.PAGE_ID = "admin.pages.upgrade.index";</script>
     <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
-        <span class="label">آدرس گیت لارامرس</span>
+        <span class="label">آدرس گیت هسته</span>
         <input class="form-control input-sm" name="larammerce_repo_address" value="{{ $larammerce_repo_address }}">
     </div>
     <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
