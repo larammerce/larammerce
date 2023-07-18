@@ -456,3 +456,25 @@
         </div>
     </div>
 </script>
+
+<script type="text/template" id="env-row-template">
+    <div class="row">
+        <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+            <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                <span class="label">کلید - <%= counter %></span>
+                <input class="form-control input-sm" type="text" dir="ltr" name="env_rows[][key]" value="<%= key %>">
+            </div>
+        </div>
+        <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
+            <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                    <span class="label">مقدار - <%= counter %>  -</span>
+                <input class="form-control input-sm" type="text" dir="ltr" name="env_rows[][value]" value="<%= value %>">
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+            <button class="btn btn-sm btn-danger delete-row" type="button">
+                <i class="fa fa-trash"></i>
+            </button>
+        </div>
+    </div>
+</script>

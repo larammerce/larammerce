@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Interfaces\FileHandlerInterface;
+use App\Services\Common\EnvFile\EnvFileHandler;
 use App\Utils\CMS\RobotTxt\RobotTxtService;
 use App\Utils\CMS\Setting\Logistic\LogisticService;
 use App\Utils\Modal\ModalRouter;
@@ -71,5 +73,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton('robotTxtService.auto', function ($app) {
             return new RobotTxtService('auto');
         });
+
+        $this->app->bind(FileHandlerInterface::class, EnvFileHandler::class);
     }
 }

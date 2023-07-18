@@ -42,6 +42,7 @@ return [
         "language" => 'زبان ها',
         "color_management" => "مدیریت رنگ‌ها",
         "representative" => "مدیریت معرفین",
+        "env_file" => "مدیریت فایل محیطی",
     ],
     "shop" => [
         "products" => "محصولات",
