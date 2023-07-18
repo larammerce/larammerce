@@ -28,15 +28,15 @@ class SSHService {
             openssl_pkey_export($res, $private_key);
 
             // Get public key
-            $pub_key = openssl_pkey_get_details($res);
-            $public_key = $pub_key["key"];
+            $public_key = openssl_pkey_get_public($res);
+            $public_key = $public_key["key"];
 
             $new_key_created = true;
         } else {
             // If a private key was provided, get the public key from it
             $private_key_resource = openssl_pkey_get_private($private_key);
-            $details = openssl_pkey_get_details($private_key_resource);
-            $public_key = $details['key'];
+            $public_key = openssl_pkey_get_public($private_key_resource);
+            $public_key = $public_key['key'];
         }
 
         // Prepare the private and public key files
