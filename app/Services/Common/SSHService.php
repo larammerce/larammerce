@@ -22,13 +22,13 @@ class SSHService {
                 "private_key_bits" => 2048,
                 "private_key_type" => OPENSSL_KEYTYPE_RSA,
             );
-            $res = openssl_pkey_new($config);
+            $private_key_resource = openssl_pkey_new($config);
 
             // Get private key
-            openssl_pkey_export($res, $private_key);
+            openssl_pkey_export($private_key_resource, $private_key);
 
             // Get public key
-            $pub_key = openssl_pkey_get_details($res);
+            $pub_key = openssl_pkey_get_details($private_key_resource);
             $public_key = $pub_key["key"];
 
             $new_key_created = true;
