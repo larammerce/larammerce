@@ -109,11 +109,11 @@ class DiscountCardController extends BaseController
 
     }
 
-    public function setDirectory(DiscountGroup $discount_group, DiscountCard $result, Request $request): void
+    public function setDirectory(DiscountGroup $discount_group, DiscountCard $result=null, Request $request): void
     {
-        if ($discount_group->has_directory)
+        if (($discount_group->has_directory) AND (!$result==null))
             $result->directories()->sync($request->get("directories"));
-
+        
     }
 
     /**
