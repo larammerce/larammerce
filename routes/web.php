@@ -61,6 +61,9 @@ Route::group(
             });
         Route::resource("setting", "SettingController", ["as" => "admin"]);
 
+        //Upgrade
+        Route::any("upgrade", ["as" => "upgrade", "uses" => "UpgradeController@doUpgrade"]);
+
         //Shop
         Route::group(["prefix" => "shop", "as" => "admin.shop."],
             function () {
