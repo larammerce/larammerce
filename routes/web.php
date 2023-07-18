@@ -58,6 +58,9 @@ Route::group(
 
                 Route::get("upgrade", ["as" => "upgrade.index", "uses" => "UpgradeController@index"]);
                 Route::post("upgrade", ["as" => "upgrade.save-config", "uses" => "UpgradeController@saveConfig"]);
+
+                Route::get("env-file", ["as" => "env-file.edit", "uses" => "EnvFileController@edit"]);
+                Route::put("env-file", ["as" => "env-file.update", "uses" => "EnvFileController@update"]);
             });
         Route::resource("setting", "SettingController", ["as" => "admin"]);
 

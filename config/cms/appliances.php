@@ -27,6 +27,14 @@ return [
             ],
             [
                 "properties" => [
+                    "id" => "env_file",
+                    "name" => "general.setting.env_file",
+                    "icon" => "icon-env-file",
+                    "route" => "admin.setting.env-file.edit"
+                ]
+            ],
+            [
+                "properties" => [
                     "id" => "setting_management",
                     "name" => "general.setting.setting_management",
                     "icon" => "icon-setting",
