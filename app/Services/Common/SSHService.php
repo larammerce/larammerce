@@ -42,6 +42,7 @@ class SSHService {
             $config_entry .= "\tIdentitiesOnly yes\n";
             $config_entry .= "\tStrictHostKeyChecking no\n";
             $config_entry .= "\tUserKnownHostsFile=/dev/null\n";
+            $config_entry .= "\tLogLevel=quiet\n";
             $config_entries[] = $config_entry;
         }
         $config_entry = implode("", $config_entries);
