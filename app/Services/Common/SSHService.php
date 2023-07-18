@@ -13,38 +13,22 @@ class SSHService {
             mkdir($ssh_path, 0700, true);
         }
 
-        $new_key_created = false;
-
-        if ($private_key == null) {
-            // Create the keypair
-            $config = array(
-                "digest_alg" => "sha256",
-                "private_key_bits" => 2048,
-                "private_key_type" => OPENSSL_KEYTYPE_RSA,
-            );
-            $private_key_resource = openssl_pkey_new($config);
-
-            // Get private key
-            openssl_pkey_export($private_key_resource, $private_key);
-
-            // Get public key
-            $pub_key = openssl_pkey_get_details($private_key_resource);
-            $public_key = $pub_key["key"];
-
-            $new_key_created = true;
-        } else {
-            // If a private key was provided, get the public key from it
-            $private_key_resource = openssl_pkey_get_private($private_key);
-            $details = openssl_pkey_get_details($private_key_resource);
-            $public_key = $details['key'];
-        }
-
         // Prepare the private and public key files
-        $private_key_path = "$ssh_path/larammerce_auto.pem";
-        $public_key_path = "$ssh_path/larammerce_auto.pub.pem";
+        $private_key_path = "$ssh_path/larammerce_auto";
+        $public_key_path = "$ssh_path/larammerce_auto.pub";
 
-        // Write the private key to a file
-        file_put_contents($private_key_path, $private_key);
+        // Delete any existing key files
+        @unlink($private_key_path);
+        @unlink($public_key_path);
+
+        // Run ssh-keygen
+        shell_exec("ssh-keygen -t rsa -b 2048 -f $private_key_path -q -N ''");
+
+        // Get the private key
+        $private_key = file_get_contents($private_key_path);
+
+        // Get the public key
+        $public_key = file_get_contents($public_key_path);
 
         // Set the private key file permissions to -rw------- (600)
         chmod($private_key_path, 0600);
