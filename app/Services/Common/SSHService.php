@@ -40,6 +40,8 @@ class SSHService {
             $config_entry .= "Host $domain\n";
             $config_entry .= "\tIdentityFile $private_key_path\n";
             $config_entry .= "\tIdentitiesOnly yes\n";
+            $config_entry .= "\tStrictHostKeyChecking no\n";
+            $config_entry .= "\tUserKnownHostsFile=/dev/null\n";
             $config_entries[] = $config_entry;
         }
         $config_entry = implode("", $config_entries);
