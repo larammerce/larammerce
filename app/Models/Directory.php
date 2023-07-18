@@ -9,6 +9,7 @@ use App\Models\Interfaces\ImageContract;
 use App\Models\Traits\Badgeable;
 use App\Models\Traits\Fileable;
 use App\Models\Traits\FullTextSearch;
+use App\Utils\CMS\AdminRequestService;
 use App\Utils\Common\ImageService;
 use App\Utils\Translation\Traits\Translatable;
 use Exception;
@@ -176,9 +177,11 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
     }
 
     protected static function booted(): void {
-        static::addGlobalScope("visible", function (Builder $builder) {
-            $builder->visible();
-        });
+        if(!AdminRequestService::isInAdminArea()){
+            static::addGlobalScope("visible", function (Builder $builder) {
+                $builder->visible();
+            });
+        }
     }
 
     public function scopeRoots(Builder $query): Builder {
