@@ -71,6 +71,6 @@
 
 @section('form_footer')
     <button type="submit" class="btn btn-default btn-sm">ذخیره</button>
-    <input type="submit" class="btn btn-danger btn-sm" name="create_key" value="ذخیره و ایجاد کلید دسترسی گیت">
     <input type="submit" class="btn btn-warning btn-sm" name="exit" value="ذخیره و خروج">
+    <input type="submit" class="btn btn-danger btn-sm" name="create_key" value="ذخیره و ایجاد کلید دسترسی گیت">
 @endsection
