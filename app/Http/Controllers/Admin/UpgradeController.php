@@ -142,12 +142,12 @@ class UpgradeController extends BaseController
             "/sbin:".
             "/bin:".
             "/opt/cpanel/composer/bin:".
-            "/opt/bin".
+            "/opt/bin:".
             "/usr/local/jdk/bin:".
             "/usr/kerberos/sbin:".
             "/usr/kerberos/bin:".
             "/usr/X11R6/bin:".
-            "/usr/local/bin:";
+            "/usr/local/bin";
     }
 
     public function getModel(): ?string {
