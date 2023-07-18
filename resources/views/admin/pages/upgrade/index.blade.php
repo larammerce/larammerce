@@ -52,6 +52,15 @@
                 <button id="upgradeAllButton" class="btn btn-primary btn-sm">به روز رسانی کلی</button>
             </div>
         </div>
+        <div class="row mt-15" id="updating-note" style="display: none">
+            <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
+            <div class="alert alert-warning" role="alert">
+                <h4 class="alert-heading">در حال به روز رسانی</h4>
+                <hr>
+                <p>لطفا تا پایان عملیات از بستن این صفحه خودداری نمایید.</p>
+            </div>
+            </div>
+        </div>
         <div class="row mt-15">
             <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
                 <pre id="output" dir="ltr"></pre>
