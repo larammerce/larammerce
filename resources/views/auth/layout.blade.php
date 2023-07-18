@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="/admin_dashboard/vendor/nanoscroller-rtl.css"/>
     <link rel="stylesheet" href="/admin_dashboard/vendor/switchery-rtl.css"/>
     <link rel="stylesheet" href="/admin_dashboard/vendor/bootstrap-switch-rtl.css"/>
-    <link rel="stylesheet" type="text/css" href="/admin_dashboard/css/app-23-06-16.css"/>
+    <link rel="stylesheet" type="text/css" href="/admin_dashboard/css/app-23-07-18r2.css"/>
 
     <link rel="apple-touch-icon" sizes="180x180" href="/admin_dashboard/{{get_identity()["fav"]}}/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/admin_dashboard/{{get_identity()["fav"]}}/favicon-32x32.png">
@@ -102,7 +102,7 @@
 @include('admin.templates.underscore_needle')
 @include('admin.templates.modals.confirm_modal')
 
-<script data-main="/admin_dashboard/js/all-23-06-16" src="/admin_dashboard/vendor/requirejs/require.js"></script>
+<script data-main="/admin_dashboard/js/all-23-07-18r2" src="/admin_dashboard/vendor/requirejs/require.js"></script>
 
 </body>
 </html>

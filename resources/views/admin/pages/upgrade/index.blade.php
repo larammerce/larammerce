@@ -18,7 +18,7 @@
 @section('form_body')
     <script>window.PAGE_ID = "admin.pages.upgrade.index";</script>
     <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
-        <span class="label">آدرس گیت لارامرس</span>
+        <span class="label">آدرس گیت هسته</span>
         <input class="form-control input-sm" name="larammerce_repo_address" value="{{ $larammerce_repo_address }}">
     </div>
     <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
@@ -52,6 +52,15 @@
                 <button id="upgradeAllButton" class="btn btn-primary btn-sm">به روز رسانی کلی</button>
             </div>
         </div>
+        <div class="row mt-15" id="updating-note" style="display: none">
+            <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
+            <div class="alert alert-warning" role="alert">
+                <h4 class="alert-heading">در حال به روز رسانی</h4>
+                <hr>
+                <p>لطفا تا پایان عملیات از بستن این صفحه خودداری نمایید.</p>
+            </div>
+            </div>
+        </div>
         <div class="row mt-15">
             <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
                 <pre id="output" dir="ltr"></pre>
@@ -62,6 +71,6 @@
 
 @section('form_footer')
     <button type="submit" class="btn btn-default btn-sm">ذخیره</button>
-    <input type="submit" class="btn btn-success btn-sm" name="create_key" value="ذخیره و ایجاد کلید دسترسی گیت">
     <input type="submit" class="btn btn-warning btn-sm" name="exit" value="ذخیره و خروج">
+    <input type="submit" class="btn btn-danger btn-sm" name="create_key" value="ذخیره و ایجاد کلید دسترسی گیت">
 @endsection

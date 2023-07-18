@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/admin_dashboard/vendor/jquery-ui/jquery-ui.css">
     <link rel="stylesheet" href="/admin_dashboard/vendor/persianDatepicker/css/persian-datepicker.min.css">
     <link rel="stylesheet" href="/admin_dashboard/vendor/jquery-toast/jquery.toast.min.css">
-    <link rel="stylesheet" type="text/css" href="/admin_dashboard/css/app-23-06-16.css"/>
+    <link rel="stylesheet" type="text/css" href="/admin_dashboard/css/app-23-07-18r2.css"/>
 
     <link rel="apple-touch-icon" sizes="180x180" href="/admin_dashboard/{{get_identity()["fav"]}}/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/admin_dashboard/{{get_identity()["fav"]}}/favicon-32x32.png">
@@ -164,7 +164,7 @@
     </div>
 </div>
 
-<script data-main="/admin_dashboard/js/all-23-06-16" src="/admin_dashboard/vendor/requirejs/require.js"></script>
+<script data-main="/admin_dashboard/js/all-23-07-18r2" src="/admin_dashboard/vendor/requirejs/require.js"></script>
 
 @yield('extra_javascript')
 

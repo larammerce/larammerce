@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="/admin_dashboard/vendor/bootstrap/dist/css/bootstrap-theme.min.css"/>
     <link rel="stylesheet" href="/admin_dashboard/vendor/bootstrap-rtl/dist/css/bootstrap-rtl.min.css"/>
     <link rel="stylesheet" href="/admin_dashboard/vendor/font-awesome/css/font-awesome.min.css"/>
-    <link rel="stylesheet" type="text/css" href="/admin_dashboard/css/app-23-06-16.css"/>
+    <link rel="stylesheet" type="text/css" href="/admin_dashboard/css/app-23-07-18r2.css"/>
 </head>
 <body class="page-reports">
 <header class="bs-docs-nav navbar navbar-static-top" id="top">
@@ -85,6 +85,6 @@
 </div>
 
 @include("admin.templates.underscore_needle")
-<script data-main="/admin_dashboard/js/all-23-06-16" src="/admin_dashboard/vendor/requirejs/require.js"></script>
+<script data-main="/admin_dashboard/js/all-23-07-18r2" src="/admin_dashboard/vendor/requirejs/require.js"></script>
 </body>
 </html>
