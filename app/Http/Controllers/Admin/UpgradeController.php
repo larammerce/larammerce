@@ -14,8 +14,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
-class UpgradeController extends BaseController
-{
+class UpgradeController extends BaseController {
 
     public function index(Request $request): Factory|View|Application {
         $record = SystemUpgradeSettingService::getRecord();
@@ -60,6 +59,9 @@ class UpgradeController extends BaseController
     }
 
     public function doUpgrade(Request $request) {
+        ini_set('output_buffering','off');
+        ini_set('zlib.output_compression','off');
+        ob_start();
         $record = SystemUpgradeSettingService::getRecord();
 
         $only_theme = $request->input('only_theme');
@@ -100,7 +102,10 @@ class UpgradeController extends BaseController
                     echo 'data: ERROR: ' . $incremental_error_output . "\n";
                 }
 
-                ob_flush();
+                if (ob_get_length()) {
+                    ob_flush();
+                }
+
                 flush();
                 sleep(1);
             }
@@ -133,20 +138,20 @@ class UpgradeController extends BaseController
         return array_unique($domains);
     }
 
-    private function getPathEnv(){
-        return "/usr/local/cpanel/3rdparty/lib/path-bin:".
-            "/usr/local/sbin:".
-            "/usr/local/bin:".
-            "/usr/sbin:".
-            "/usr/bin:".
-            "/sbin:".
-            "/bin:".
-            "/opt/cpanel/composer/bin:".
-            "/opt/bin:".
-            "/usr/local/jdk/bin:".
-            "/usr/kerberos/sbin:".
-            "/usr/kerberos/bin:".
-            "/usr/X11R6/bin:".
+    private function getPathEnv() {
+        return "/usr/local/cpanel/3rdparty/lib/path-bin:" .
+            "/usr/local/sbin:" .
+            "/usr/local/bin:" .
+            "/usr/sbin:" .
+            "/usr/bin:" .
+            "/sbin:" .
+            "/bin:" .
+            "/opt/cpanel/composer/bin:" .
+            "/opt/bin:" .
+            "/usr/local/jdk/bin:" .
+            "/usr/kerberos/sbin:" .
+            "/usr/kerberos/bin:" .
+            "/usr/X11R6/bin:" .
             "/usr/local/bin";
     }
 
