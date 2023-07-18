@@ -82,7 +82,7 @@ class UpgradeController extends BaseController
         $command[] = "--core-path=" . $base_path;
 
         $process = new Process($command);
-        $process->setEnv(['PATH' => '/usr/local/bin:/usr/bin:/bin:/opt/cpanel/composer/bin/:/usr/local/sbin:/usr/sbin', 'ECOMMERCE_BASE_PATH' => $base_path]);
+        $process->setEnv(['PATH' => getenv('PATH'), 'ECOMMERCE_BASE_PATH' => $base_path]);
         $process->setWorkingDirectory($base_path);
         $process->setTimeout(3600);
         $process->start();
