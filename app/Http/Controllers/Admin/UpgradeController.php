@@ -82,7 +82,7 @@ class UpgradeController extends BaseController
         $command[] = "--core-path=" . $base_path;
 
         $process = new Process($command);
-        $process->setEnv(['PATH' => getenv('PATH'), 'ECOMMERCE_BASE_PATH' => $base_path]);
+        $process->setEnv(['PATH' => $this->getPathEnv(), 'ECOMMERCE_BASE_PATH' => $base_path]);
         $process->setWorkingDirectory($base_path);
         $process->setTimeout(3600);
         $process->start();
@@ -131,6 +131,23 @@ class UpgradeController extends BaseController
         }
 
         return array_unique($domains);
+    }
+
+    private function getPathEnv(){
+        return "/usr/local/cpanel/3rdparty/lib/path-bin:".
+            "/usr/local/sbin:".
+            "/usr/local/bin:".
+            "/usr/sbin:".
+            "/usr/bin:".
+            "/sbin:".
+            "/bin:".
+            "/opt/cpanel/composer/bin:".
+            "/opt/bin".
+            "/usr/local/jdk/bin:".
+            "/usr/kerberos/sbin:".
+            "/usr/kerberos/bin:".
+            "/usr/X11R6/bin:".
+            "/usr/local/bin:";
     }
 
     public function getModel(): ?string {
