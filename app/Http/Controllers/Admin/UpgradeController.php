@@ -61,7 +61,6 @@ class UpgradeController extends BaseController {
     public function doUpgrade(Request $request) {
         ini_set('output_buffering','off');
         ini_set('zlib.output_compression','off');
-        ob_start();
         $record = SystemUpgradeSettingService::getRecord();
 
         $only_theme = $request->input('only_theme');
