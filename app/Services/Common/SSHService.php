@@ -33,38 +33,25 @@ class SSHService {
         // Set the private key file permissions to -rw------- (600)
         chmod($private_key_path, 0600);
 
-        // Prepare the config entry
-        $config_entry = "";
+        // Prepare the new config entry
+        $config_entries = [];
         foreach ($domains as $domain) {
-            $name = str_replace('.', '-', $domain);
-
-            $config_entry .= <<<EOT
-
-Host $name
-    Hostname $domain
-    IdentityFile $private_key_path
-    IdentitiesOnly yes
-
-EOT;
+            $config_entry = "\n# $domain\n";
+            $config_entry .= "Host $domain\n";
+            $config_entry .= "\tIdentityFile $private_key_path\n";
+            $config_entry .= "\tIdentitiesOnly yes\n";
+            $config_entries[] = $config_entry;
         }
+        $config_entry = implode("", $config_entries);
 
         // If the config file exists, read its content
         if (file_exists($config_file_path)) {
             $config_content = file_get_contents($config_file_path);
 
-            // Loop through each domain and remove the corresponding Host blocks if they exist
+            // If the config block for the host already exists, remove it
             foreach ($domains as $domain) {
-                // Remove Host blocks with the Hostname $domain
-                if (preg_match("/^Host[^\n]*\n(.*\n)*?Hostname $domain.*?\n(?=Host|$)/sm", $config_content)) {
-                    $pattern = "/^Host[^\n]*\n(.*\n)*?Hostname $domain.*?\n(?=Host|$)/sm";
-                    $config_content = preg_replace($pattern, '', $config_content);
-                }
-
-                // Remove Host blocks with the Host $domain
-                if (preg_match("/^Host $domain.*?\n(?=Host|$)/sm", $config_content)) {
-                    $pattern = "/^Host $domain.*?\n(?=Host|$)/sm";
-                    $config_content = preg_replace($pattern, '', $config_content);
-                }
+                $pattern = "/\n# $domain\nHost $domain(.|\n)*?(?=(Host|$))/";
+                $config_content = preg_replace($pattern, '', $config_content);
             }
 
             // Append the new config entry to the config file content
