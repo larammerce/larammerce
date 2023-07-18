@@ -94,7 +94,9 @@ class DiscountCardController extends BaseController
             }
         } else {
             $count = $request->has('count') ? intval($request->get('count')) : 1;
-            for ($i = 0; $i < $count; $i++) {
+            global $created_cards;
+            $created_cards = 0;
+            while ($created_cards < $count) {
                 $result = DiscountCard::create([
                     'prefix' => $discount_group->prefix,
                     'postfix' => $discount_group->postfix,
@@ -104,7 +106,6 @@ class DiscountCardController extends BaseController
                 $this->setDirectory($discount_group, $result, $request);
             }
         }
-
         return redirect()->route('admin.discount-group.show', $discount_group);
 
     }
@@ -112,8 +113,11 @@ class DiscountCardController extends BaseController
     public function setDirectory(DiscountGroup $discount_group, DiscountCard $result=null, Request $request): void
     {
         if (($discount_group->has_directory) AND (!$result==null))
-            $result->directories()->sync($request->get("directories"));
-        
+            {
+                $result->directories()->sync($request->get("directories"));
+                global $created_cards;
+                $created_cards++;
+            }
     }
 
     /**
