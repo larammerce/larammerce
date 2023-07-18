@@ -50,7 +50,7 @@ class SSHService {
 
             // If the config block for the host already exists, remove it
             foreach ($domains as $domain) {
-                $pattern = "/# $domain\nHost $domain\n\tIdentityFile (.|\n)*?(\n(?=#)|\z)/";
+                $pattern = "/(# $domain\n)?Host $domain\n\tIdentityFile (.|\n)*?(\n(?=#)|\z)/";
                 $config_content = preg_replace($pattern, '', $config_content);
             }
 
