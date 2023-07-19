@@ -9,6 +9,7 @@ use App\Models\Interfaces\ImageContract;
 use App\Models\Traits\Badgeable;
 use App\Models\Traits\Fileable;
 use App\Models\Traits\FullTextSearch;
+use App\Utils\CMS\AdminRequestService;
 use App\Utils\Common\ImageService;
 use App\Utils\Translation\Traits\Translatable;
 use Exception;
@@ -50,6 +51,7 @@ use Illuminate\Support\Facades\DB;
  * @property string notice
  * @property string metadata
  * @property integer depth
+ * @property boolean is_hidden
  *
  * @property Directory parentDirectory
  * @property Directory[] directories
@@ -83,12 +85,13 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
     protected $fillable = [
         "title", "url_part", "url_full", "is_internal_link", "is_anonymously_accessible", "has_web_page", "priority",
         "content_type", "directory_id", "show_in_navbar", "show_in_footer", "cover_image_path", "description",
-        "data_type", "show_in_app_navbar", "is_location_limited", "cmc_id", "depth",
+        "data_type", "show_in_app_navbar", "is_location_limited", "cmc_id", "depth", "is_hidden",
         "badges", "force_show_landing", "inaccessibility_type", "notice", "metadata"
     ];
 
     protected $casts = [
-        "force_show_landing" => "bool"
+        "force_show_landing" => "bool",
+        "is_hidden" => "bool",
     ];
 
     protected static array $TRANSLATABLE_FIELDS = [
@@ -173,6 +176,14 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
         return $this->belongsTo(CustomerMetaCategory::class, "cmc_id", "id");
     }
 
+    protected static function booted(): void {
+        if(!AdminRequestService::isInAdminArea()){
+            static::addGlobalScope("visible", function (Builder $builder) {
+                $builder->visible();
+            });
+        }
+    }
+
     public function scopeRoots(Builder $query): Builder {
         return $query->whereNull("directory_id");
     }
@@ -189,6 +200,10 @@ class Directory extends BaseModel implements ImageContract, HashContract, FileCo
 
         return $builder->whereRaw(DB::raw("not exists (select dsr1.directory_id from directory_system_role as dsr1 where dsr1.directory_id = directories.id)"))
             ->orWhereRaw(DB::raw("exists (select dsr2.directory_id from directory_system_role as dsr2 inner join system_user_system_role as susr1 on dsr2.system_role_id = susr1.system_role_id where dsr2.directory_id = directories.id and susr1.system_user_id={$system_user->id})"));
+    }
+
+    public function scopeVisible(Builder $builder): Builder {
+        return $builder->where("is_hidden", false);
     }
 
     public function scopeNavbar(Builder $builder): Builder {

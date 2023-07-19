@@ -110,6 +110,14 @@
         </span>
         </div>
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                <span class="material-switch pull-right"> این منو مخفی شود؟ &nbsp;
+                    <input id="is_hidden" name="is_hidden" type="checkbox" value="1"
+                           @if($directory->is_hidden) checked @endif/>
+                    <label for="is_hidden"></label>
+                    <input id="is_hidden_hidden" name="is_hidden" type="hidden" value="0"/>
+                </span>
+        </div>
+        <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
                 <span class="material-switch pull-right"> نمایش در منو &nbsp;
                     <input id="show_in_navbar" name="show_in_navbar" type="checkbox" value="1"
                            @if($directory->show_in_navbar) checked @endif/>
