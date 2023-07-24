@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Add to crontab -e
 # DB backup every hour: 0 * * * * /path/to/backup.sh --db-only
