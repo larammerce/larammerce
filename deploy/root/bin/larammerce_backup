@@ -72,15 +72,16 @@ done
 echo -e "\n"
 
 create_files_backup() {
-    FILENAME="${BACKUP_DIR}/${HOST}-${DATE}-files.tar.gz"
+    FILENAME="${BACKUP_DIR}/complete/${HOST}-${DATE}-files.tar.gz"
     echo -ne "Compressing files ..."
+    mkdir -p "${BACKUP_DIR}/complete"
     tar -czf ${FILENAME} --absolute-names /etc/httpd /etc/php-fpm.d ${PROJECT_DIRS} >> ${LOG_FILE} 2>&1
     echo -e "\e[32mCompressing files ... Done!\e[0m"
 }
 
 create_db_backup() {
     # Prepare the directory for database dumps
-    DB_DIR="${BACKUP_DIR}/databases"
+    DB_DIR="${BACKUP_DIR}/db-only/databases"
     mkdir -p ${DB_DIR}
 
     # Iterate over project directories
@@ -105,14 +106,14 @@ create_db_backup() {
         echo -e "\e[32mBacking up database ${DB_NAME} ... Done!\e[0m"
     done
     # Compress the database dumps into a tar.gz file
-    FILENAME="${BACKUP_DIR}/${HOST}-${DATE}-db.tar.gz"
-    tar -czf ${FILENAME} -C ${BACKUP_DIR} databases
+    FILENAME="${BACKUP_DIR}/db-only/${HOST}-${DATE}-db.tar.gz"
+    tar -czf ${FILENAME} -C "${BACKUP_DIR}/db-only" databases
     # Remove the raw .sql files after compression
     rm -rf ${DB_DIR}
 }
 
 cleanup_local() {
-    find ${BACKUP_DIR} -name "*-${1}.tar.gz" -mtime +${2} -delete
+    find "${BACKUP_DIR}/${1}" -name "*-${DATE}.tar.gz" -mtime +${2} -delete
 }
 
 cleanup_s3() {
@@ -120,7 +121,7 @@ cleanup_s3() {
 }
 
 push_s3() {
-    rclone sync ${BACKUP_DIR} ArvanS3://larammerce-backups/${HOST}/${1}/
+    rclone sync "${BACKUP_DIR}/${1}" ArvanS3://larammerce-backups/${HOST}/${1}/
 }
 
 test_config() {
@@ -141,25 +142,26 @@ test_config() {
 case $1 in
     --db-only)
         create_db_backup
-        cleanup_local db 24
-        push_s3 db
-        cleanup_s3 db 48
+        cleanup_local db-only 24
+        push_s3 db-only
+        cleanup_s3 db-only 48
         ;;
     --complete)
         create_files_backup
         create_db_backup
-        cleanup_local files 2
-        cleanup_local db 24
-        push_s3 files
-        push_s3 db
-        cleanup_s3 files 168
-        cleanup_s3 db 48
+        cleanup_local complete 2
+        cleanup_local db-only 24
+        push_s3 complete
+        push_s3 db-only
+        cleanup_s3 complete 168
+        cleanup_s3 db-only 48
         echo "Backup completed on ${HOST}" | sendmail -s ${SMTP_SERVER}:${SMTP_PORT} -f ${SMTP_USER} -xu ${SMTP_USER} -xp ${SMTP_PASS} -t ${EMAIL} -u "Backup completed"
         ;;
     --sync)
-        rclone sync ${BACKUP_DIR} ArvanS3://larammerce-backups/${HOST}/
-        cleanup_s3 files 168
-        cleanup_s3 db 48
+        rclone sync "${BACKUP_DIR}/complete" ArvanS3://larammerce-backups/${HOST}/complete/
+        rclone sync "${BACKUP_DIR}/db-only" ArvanS3://larammerce-backups/${HOST}/db-only/
+        cleanup_s3 complete 168
+        cleanup_s3 db-only 48
         ;;
     --test-config)
         test_config
