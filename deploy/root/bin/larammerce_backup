@@ -1,0 +1,173 @@
+#!/usr/bin/env bash
+
+# Add to crontab -e
+# DB backup every hour: 0 * * * * /path/to/backup.sh --db-only
+# Full backup daily: 0 0 * * * /path/to/backup.sh --complete
+# Test config: /path/to/backup.sh --test-config
+
+set -e
+
+# Config file to store SMTP settings
+CONFIG_FILE="/root/backup_config"
+
+# Check if config file exists, if not ask for details and create it
+if [[ ! -f ${CONFIG_FILE} ]]; then
+    echo "Please provide the SMTP server details for sending the error emails."
+    read -p 'SMTP Server: ' smtp_server
+    read -p 'SMTP Port: ' smtp_port
+    read -p 'SMTP User: ' smtp_user
+    read -s -p 'SMTP Password: ' smtp_password
+    echo
+    read -p 'Recipient Email: ' email
+
+    echo -e "${smtp_server}\n${smtp_port}\n${smtp_user}\n${smtp_password}\n${email}" > ${CONFIG_FILE}
+    chmod 600 ${CONFIG_FILE}
+fi
+
+# Check if ArvanS3 config exists, if not start the rclone config wizard
+if ! rclone config show ArvanS3 > /dev/null 2>&1; then
+    echo "ArvanS3 configuration not found in rclone. Starting the rclone configuration wizard."
+    rclone config
+fi
+
+# Read from the config file
+i=0
+while IFS= read -r line
+do
+  case $i in
+    0)  SMTP_SERVER="$line" ;;
+    1)  SMTP_PORT="$line" ;;
+    2)  SMTP_USER="$line" ;;
+    3)  SMTP_PASS="$line" ;;
+    4)  EMAIL="$line" ;;
+  esac
+  i=$((i+1))
+done < "${CONFIG_FILE}"
+
+# Other configs
+HOST=$(hostname)
+DATE=$(date +"%Y%m%d-%H")
+BACKUP_DIR="/backup"
+MYSQLDUMP_PATH="/usr/bin/mysqldump"
+LOG_FILE="${BACKUP_DIR}/backup_${DATE}.log"
+
+trap 'echo "Backup failed on ${HOST}" | sendmail -s ${SMTP_SERVER}:${SMTP_PORT} -f ${SMTP_USER} -xu ${SMTP_USER} -xp ${SMTP_PASS} -t ${EMAIL} -u "Backup failed"; cat ${LOG_FILE} | sendmail -s ${SMTP_SERVER}:${SMTP_PORT} -f ${SMTP_USER} -xu ${SMTP_USER} -xp ${SMTP_PASS} -t ${EMAIL} -u "Log File"; exit 1' ERR
+
+echo -e "Finding projects...\n"
+
+# Use find command to locate WordPress and Laravel project directories
+PROJECT_DIRS=$(find /var/www -maxdepth 3 \( -name .env -o -name wp-config.php \) -exec dirname {} \;)
+
+echo -e "Found projects are as listed below:\n"
+
+# Loop through the directories and identify the type of project (WordPress or Laravel)
+for DIR in ${PROJECT_DIRS}; do
+    if [[ -f ${DIR}/wp-config.php ]]; then
+        echo -e "\e[34m${DIR} [WordPress]\e[0m"
+    else
+        echo -e "\e[31m${DIR} [Laravel]\e[0m"
+    fi
+done
+
+echo -e "\n"
+
+create_files_backup() {
+    FILENAME="${BACKUP_DIR}/complete/${HOST}-${DATE}-files.tar.gz"
+    echo -ne "Compressing files ..."
+    mkdir -p "${BACKUP_DIR}/complete"
+    tar -czf ${FILENAME} --absolute-names /etc/httpd /etc/php-fpm.d ${PROJECT_DIRS} >> ${LOG_FILE} 2>&1
+    echo -e "\e[32mCompressing files ... Done!\e[0m"
+}
+
+create_db_backup() {
+    # Prepare the directory for database dumps
+    DB_DIR="${BACKUP_DIR}/db-only/databases"
+    mkdir -p ${DB_DIR}
+
+    # Iterate over project directories
+    for DIR in ${PROJECT_DIRS}; do
+        # If it's a WordPress project, extract the DB details
+        if [[ -f ${DIR}/wp-config.php ]]; then
+            DB_NAME=$(grep DB_NAME ${DIR}/wp-config.php | cut -d \' -f 4)
+            DB_USER=$(grep DB_USER ${DIR}/wp-config.php | cut -d \' -f 4)
+            DB_PASSWORD=$(grep DB_PASSWORD ${DIR}/wp-config.php | cut -d \' -f 4)
+            DB_HOST=$(grep DB_HOST ${DIR}/wp-config.php | cut -d \' -f 4)
+        # If it's a Laravel project, extract the DB details
+        else
+            DB_NAME=$(grep '^DB_DATABASE=' ${DIR}/.env | cut -d = -f 2)
+            DB_USER=$(grep '^DB_USERNAME=' ${DIR}/.env | cut -d = -f 2)
+            DB_PASSWORD=$(grep '^DB_PASSWORD=' ${DIR}/.env | cut -d = -f 2)
+            DB_HOST=$(grep '^DB_HOST=' ${DIR}/.env | cut -d = -f 2)
+        fi
+        # Perform the database dump for each database
+        echo -ne "Backing up database ${DB_NAME} ..."
+        DB_FILE="${DB_DIR}/${DB_NAME}-${DATE}.sql"
+        ${MYSQLDUMP_PATH} -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} > ${DB_FILE}
+        echo -e "\e[32mBacking up database ${DB_NAME} ... Done!\e[0m"
+    done
+    # Compress the database dumps into a tar.gz file
+    FILENAME="${BACKUP_DIR}/db-only/${HOST}-${DATE}-db.tar.gz"
+    tar -czf ${FILENAME} -C "${BACKUP_DIR}/db-only" databases
+    # Remove the raw .sql files after compression
+    rm -rf ${DB_DIR}
+}
+
+cleanup_local() {
+    find "${BACKUP_DIR}/${1}" -name "*-${DATE}.tar.gz" -mtime +${2} -delete
+}
+
+cleanup_s3() {
+    rclone delete --min-age ${2}h ArvanS3://larammerce-backups/${HOST}/${1}/
+}
+
+push_s3() {
+    rclone sync "${BACKUP_DIR}/${1}" ArvanS3://larammerce-backups/${HOST}/${1}/
+}
+
+test_config() {
+    echo "SMTP Server: ${SMTP_SERVER}:${SMTP_PORT}"
+    echo "SMTP User: ${SMTP_USER}"
+    echo "SMTP Password: ****"
+    echo "Recipient Email: ${EMAIL}"
+    echo "Sending test email..."
+    echo "Test email from ${HOST}" | sendmail -s ${SMTP_SERVER}:${SMTP_PORT} -f ${SMTP_USER} -xu ${SMTP_USER} -xp ${SMTP_PASS} -t ${EMAIL} -u "Test email"
+    echo -e "\e[32mTest email sent successfully!\e[0m"
+    echo "Testing S3 connection..."
+    echo "Test" > /tmp/testfile
+    rclone copy /tmp/testfile ArvanS3://larammerce-backups/testfile
+    echo -e "\e[32mS3 connection is good. Test file uploaded successfully!\e[0m"
+    rm /tmp/testfile
+}
+
+case $1 in
+    --db-only)
+        create_db_backup
+        cleanup_local db-only 24
+        push_s3 db-only
+        cleanup_s3 db-only 48
+        ;;
+    --complete)
+        create_files_backup
+        create_db_backup
+        cleanup_local complete 2
+        cleanup_local db-only 24
+        push_s3 complete
+        push_s3 db-only
+        cleanup_s3 complete 168
+        cleanup_s3 db-only 48
+        echo "Backup completed on ${HOST}" | sendmail -s ${SMTP_SERVER}:${SMTP_PORT} -f ${SMTP_USER} -xu ${SMTP_USER} -xp ${SMTP_PASS} -t ${EMAIL} -u "Backup completed"
+        ;;
+    --sync)
+        rclone sync "${BACKUP_DIR}/complete" ArvanS3://larammerce-backups/${HOST}/complete/
+        rclone sync "${BACKUP_DIR}/db-only" ArvanS3://larammerce-backups/${HOST}/db-only/
+        cleanup_s3 complete 168
+        cleanup_s3 db-only 48
+        ;;
+    --test-config)
+        test_config
+        ;;
+    *)
+        echo "Invalid option: $1"
+        exit 1
+        ;;
+esac
