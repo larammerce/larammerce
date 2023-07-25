@@ -89,7 +89,9 @@ class DiscountCardController extends BaseController
                         'code' => $request->has('code') ? $request->code : null,
                         'customer_user_id' => $user->customer_user->id,
                     ]);
-                    $this->setDirectory($discount_group, $result, $request);
+                    if(!is_null($result)){
+                        $this->setDirectory($discount_group, $result, $request);
+                    }
                 }
             }
         } else {
@@ -103,16 +105,18 @@ class DiscountCardController extends BaseController
                     'code' => $request->has('code') ? $request->code : null,
                     'discount_group_id' => $discount_group->id
                 ]);
-                $this->setDirectory($discount_group, $result, $request);
+                if(!is_null($result)){
+                    $this->setDirectory($discount_group, $result, $request);
+                }
             }
         }
         return redirect()->route('admin.discount-group.show', $discount_group);
 
     }
 
-    public function setDirectory(DiscountGroup $discount_group, DiscountCard $result=null, Request $request): void
+    public function setDirectory(DiscountGroup $discount_group, DiscountCard $result, Request $request): void
     {
-        if (($discount_group->has_directory) AND (!$result==null))
+        if ($discount_group->has_directory)
             {
                 $result->directories()->sync($request->get("directories"));
                 global $created_cards;
