@@ -94,12 +94,8 @@ class DiscountGroupController extends BaseController
      */
     public function softDelete(DiscountGroup $discount_group)
     {
-        if((!$discount_group->is_active)AND(((Carbon::now())->diffInDays($discount_group->updated_at))>7)){
-            $discount_group->delete();
-            return redirect()->back();
-        }else{
-            return redirect()->back();   
-        }
+        $discount_group->delete();
+        return redirect()->back();
     }
 
     /**
