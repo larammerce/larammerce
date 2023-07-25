@@ -13,6 +13,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Carbon\Carbon;
 
 /**
  * @package App\Http\Controllers\Admin
@@ -93,8 +94,12 @@ class DiscountGroupController extends BaseController
      */
     public function softDelete(DiscountGroup $discount_group)
     {
-        $discount_group->delete();
-        return redirect()->back();
+        if((!$discount_group->is_active)AND(((Carbon::now())->diffInDays($discount_group->updated_at))>7)){
+            $discount_group->delete();
+            return redirect()->back();
+        }else{
+            return redirect()->back();   
+        }
     }
 
     /**
