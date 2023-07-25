@@ -15,6 +15,8 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use stdClass;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 /**
  * Properties
  * @property integer id
@@ -50,6 +52,8 @@ use stdClass;
  */
 class DiscountGroup extends BaseModel
 {
+    use SoftDeletes;
+    
     protected $table = "discount_groups";
     protected $fillable = [
         "title",
