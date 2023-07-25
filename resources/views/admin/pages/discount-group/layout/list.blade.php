@@ -43,6 +43,9 @@
                    href="{{ route('admin.discount-group.product-filter.index', $discount_group) }}">
                     <i class="fa fa-cubes"></i>
                 </a>
+                <a class="btn btn-sm btn-danger virt-form" data-action="{{ route('admin.discount-group.softDelete', $discount_group) }}" data-method="DELETE" confirm>
+                    <i class="fa fa-remove"></i>
+                </a>
             </div>
         </div>
     </div>

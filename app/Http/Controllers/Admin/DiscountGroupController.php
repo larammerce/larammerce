@@ -91,6 +91,15 @@ class DiscountGroupController extends BaseController
     /**
      * @role(super_user, acc_manager)
      */
+    public function softDelete(DiscountGroup $discount_group)
+    {
+        $discount_group->delete();
+        return redirect()->back();
+    }
+
+    /**
+     * @role(super_user, acc_manager)
+     */
     public function indexProductFilter(DiscountGroup $discount_group): Response
     {
         parent::setPageAttribute($discount_group->id);
