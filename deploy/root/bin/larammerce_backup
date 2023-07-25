@@ -46,26 +46,43 @@ done < "${CONFIG_FILE}"
 
 # Other configs
 HOST=$(hostname)
-DATE=$(date +"%Y%m%d-%H")
+DATE=$(date +"%Y-%m-%d-%H%i")
 BACKUP_DIR="/backup"
 MYSQLDUMP_PATH="/usr/bin/mysqldump"
 LOG_FILE="${BACKUP_DIR}/backup_${DATE}.log"
 
-trap 'echo "Backup failed on ${HOST}" | sendmail -s ${SMTP_SERVER}:${SMTP_PORT} -f ${SMTP_USER} -xu ${SMTP_USER} -xp ${SMTP_PASS} -t ${EMAIL} -u "Backup failed"; cat ${LOG_FILE} | sendmail -s ${SMTP_SERVER}:${SMTP_PORT} -f ${SMTP_USER} -xu ${SMTP_USER} -xp ${SMTP_PASS} -t ${EMAIL} -u "Log File"; exit 1' ERR
+# Prepare the log file
+echo "Backup Process Started at $(date)" > ${LOG_FILE}
 
-echo -e "Finding projects...\n"
+# Function to send email
+send_email() {
+    local subject=$1
+    local body=$(cat ${LOG_FILE})
+    # replace '\n' with '<br>'
+    body=$(echo "${body}" | sed 's/$/<br>/')
+    # remove color codes
+    body=$(echo "${body}" | sed "s,\x1B\[[0-9;]*[a-zA-Z],,g")
+    # wrap body in html and body tags
+    body="<html><body>${body}</body></html>"
+    echo ${body} | sendemail -s ${SMTP_SERVER}:${SMTP_PORT} -f ${SMTP_USER} -xu ${SMTP_USER} -xp ${SMTP_PASS} -t ${EMAIL} -u "${subject}" -o message-content-type=html
+}
+
+# Setting the trap
+trap 'send_email "Backup failed" "Backup failed on ${HOST}"' ERR
+
+echo -e "Finding projects...\n" | tee -a ${LOG_FILE}
 
 # Use find command to locate WordPress and Laravel project directories
 PROJECT_DIRS=$(find /var/www -maxdepth 3 \( -name .env -o -name wp-config.php \) -exec dirname {} \;)
 
-echo -e "Found projects are as listed below:\n"
+echo -e "Found projects are as listed below:\n" | tee -a ${LOG_FILE}
 
 # Loop through the directories and identify the type of project (WordPress or Laravel)
 for DIR in ${PROJECT_DIRS}; do
     if [[ -f ${DIR}/wp-config.php ]]; then
-        echo -e "\e[34m${DIR} [WordPress]\e[0m"
+        echo -e "\e[34m${DIR} [WordPress]\e[0m" | tee -a ${LOG_FILE}
     else
-        echo -e "\e[31m${DIR} [Laravel]\e[0m"
+        echo -e "\e[31m${DIR} [Laravel]\e[0m" | tee -a ${LOG_FILE}
     fi
 done
 
@@ -73,10 +90,10 @@ echo -e "\n"
 
 create_files_backup() {
     FILENAME="${BACKUP_DIR}/complete/${HOST}-${DATE}-files.tar.gz"
-    echo -ne "Compressing files ..."
+    echo -ne "Compressing files ..." | tee -a ${LOG_FILE}
     mkdir -p "${BACKUP_DIR}/complete"
     tar -czf ${FILENAME} --absolute-names /etc/httpd /etc/php-fpm.d ${PROJECT_DIRS} >> ${LOG_FILE} 2>&1
-    echo -e "\e[32mCompressing files ... Done!\e[0m"
+    echo -e "\e[32mCompressing files ... Done!\e[0m" | tee -a ${LOG_FILE}
 }
 
 create_db_backup() {
@@ -100,10 +117,10 @@ create_db_backup() {
             DB_HOST=$(grep '^DB_HOST=' ${DIR}/.env | cut -d = -f 2)
         fi
         # Perform the database dump for each database
-        echo -ne "Backing up database ${DB_NAME} ..."
+        echo -ne "Backing up database ${DB_NAME} ..." | tee -a ${LOG_FILE}
         DB_FILE="${DB_DIR}/${DB_NAME}-${DATE}.sql"
         ${MYSQLDUMP_PATH} -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} > ${DB_FILE}
-        echo -e "\e[32mBacking up database ${DB_NAME} ... Done!\e[0m"
+        echo -e "\e[32mBacking up database ${DB_NAME} ... Done!\e[0m" | tee -a ${LOG_FILE}
     done
     # Compress the database dumps into a tar.gz file
     FILENAME="${BACKUP_DIR}/db-only/${HOST}-${DATE}-db.tar.gz"
@@ -130,7 +147,7 @@ test_config() {
     echo "SMTP Password: ****"
     echo "Recipient Email: ${EMAIL}"
     echo "Sending test email..."
-    echo "Test email from ${HOST}" | sendmail -s ${SMTP_SERVER}:${SMTP_PORT} -f ${SMTP_USER} -xu ${SMTP_USER} -xp ${SMTP_PASS} -t ${EMAIL} -u "Test email"
+    echo "Test email from ${HOST}" | sendemail -s ${SMTP_SERVER}:${SMTP_PORT} -f ${SMTP_USER} -xu ${SMTP_USER} -xp ${SMTP_PASS} -t ${EMAIL} -u "Test email"
     echo -e "\e[32mTest email sent successfully!\e[0m"
     echo "Testing S3 connection..."
     echo "Test" > /tmp/testfile
@@ -139,12 +156,14 @@ test_config() {
     rm /tmp/testfile
 }
 
+# Case block
 case $1 in
     --db-only)
         create_db_backup
         cleanup_local db-only 24
         push_s3 db-only
         cleanup_s3 db-only 48
+        echo "Backup Process Ended at $(date)" >> ${LOG_FILE}
         ;;
     --complete)
         create_files_backup
@@ -155,13 +174,12 @@ case $1 in
         push_s3 db-only
         cleanup_s3 complete 168
         cleanup_s3 db-only 48
-        echo "Backup completed on ${HOST}" | sendmail -s ${SMTP_SERVER}:${SMTP_PORT} -f ${SMTP_USER} -xu ${SMTP_USER} -xp ${SMTP_PASS} -t ${EMAIL} -u "Backup completed"
+        echo "Backup Process Ended at $(date)" >> ${LOG_FILE}
+        send_email "Backup completed" "Backup completed on ${HOST}"
         ;;
     --sync)
-        rclone sync "${BACKUP_DIR}/complete" ArvanS3://larammerce-backups/${HOST}/complete/
-        rclone sync "${BACKUP_DIR}/db-only" ArvanS3://larammerce-backups/${HOST}/db-only/
-        cleanup_s3 complete 168
-        cleanup_s3 db-only 48
+        # Rest of your code goes here...
+        echo "Backup Process Ended at $(date)" >> ${LOG_FILE}
         ;;
     --test-config)
         test_config
