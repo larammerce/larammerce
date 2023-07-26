@@ -14,7 +14,7 @@ use App\Models\Product;
 use App\Models\ProductFilter;
 use App\Models\ProductQuery;
 use App\Models\Rate;
-use App\Utils\CMS\ProductService;
+use App\Services\Product\ProductService;
 use App\Utils\Common\MessageFactory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;

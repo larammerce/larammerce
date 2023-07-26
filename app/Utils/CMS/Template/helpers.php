@@ -34,6 +34,7 @@ use App\Models\SystemUser;
 use App\Models\User;
 use App\Models\WebPage;
 use App\Models\WPPost;
+use App\Services\Invoice\NewInvoiceService;
 use App\Services\Setting\SettingService;
 use App\Utils\CMS\Cart\Provider as CartProvider;
 use App\Utils\CMS\File\ClipBoardService;
@@ -91,8 +92,10 @@ if (!function_exists("unparse_url")) {
 }
 
 if (!function_exists("get_all_extras_percentage")) {
-    function get_product_all_extras_percentage() {
-        return \App\Utils\CMS\ProductService::getAllExtrasPercentage();
+    function get_product_all_extras_percentage(): float {
+        /** @var NewInvoiceService $new_invoice_service */
+        $new_invoice_service = app(NewInvoiceService::class);
+        return $new_invoice_service->getProductAllExtrasPercentage();
     }
 }
 
@@ -620,7 +623,7 @@ if (!function_exists('custom_filter_product_ids')) {
 
 if (!function_exists('get_filter_data')) {
     function get_filter_data(array $product_ids): array {
-        return App\Utils\CMS\ProductService::getFilterData($product_ids);
+        return \App\Services\Product\ProductService::getFilterData($product_ids);
     }
 }
 

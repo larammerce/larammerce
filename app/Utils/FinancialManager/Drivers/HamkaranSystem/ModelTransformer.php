@@ -5,6 +5,7 @@ use App\Enums\Customer\Gender;
 use App\Models\Invoice;
 use App\Models\InvoiceRow;
 use App\Models\User;
+use App\Services\Invoice\NewInvoiceService;
 use App\Utils\CMS\ProductService;
 use App\Utils\FinancialManager\Models\Customer;
 use App\Utils\FinancialManager\Models\Product;
@@ -82,7 +83,9 @@ class ModelTransformer
 
     public static function productStdToModel(stdClass $stdProduct): Product|bool
     {
-        $ratio = ProductService::getPriceRatio();
+        /** @var NewInvoiceService $new_invoice_service */
+        $new_invoice_service = app(NewInvoiceService::class);
+        $ratio = $new_invoice_service->getProductPriceRatio();
         try {
             $product = new Product();
             $product->id = $stdProduct->Product ?? -1;

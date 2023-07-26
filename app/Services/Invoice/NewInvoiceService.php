@@ -21,6 +21,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use stdClass;
 
 class NewInvoiceService
 {
@@ -97,5 +98,55 @@ class NewInvoiceService
         $invoice = $this->getTheNew();
         $invoice->updateAddress($customer_address);
         $this->setTheNew($invoice);
+    }
+
+    public function getProductTollPercentage(): float {
+        return $this->setting_service->getCMSSettingAsFloat(CMSSettingKey::TOLL_PERCENTAGE);
+    }
+
+    public function getProductTaxPercentage(): float {
+        return $this->setting_service->getCMSSettingAsFloat(CMSSettingKey::TAX_PERCENTAGE);
+    }
+
+    public function getProductAllExtrasPercentage(): float {
+        return $this->getProductTaxPercentage() + $this->getProductTollPercentage();
+    }
+
+    public function getProductTollAmount(int $product_pure_price, int $count = 1): int {
+        return intval(($product_pure_price * $count) * $this->getProductTollPercentage() / 100);
+    }
+
+    public function getProductTaxAmount(int $product_pure_price, int $count = 1): int {
+        return intval(($product_pure_price * $count) * $this->getProductTaxPercentage() / 100);
+    }
+
+    public function getProductPurePrice(int $product_total_price): int {
+        if ($product_total_price === 0)
+            return $product_total_price;
+
+        $tax_and_toll_percentage = $this->getProductTaxPercentage() + $this->getProductTollPercentage();
+        return intval($product_total_price * 100 / (100 + $tax_and_toll_percentage)) + 1;
+    }
+
+    public function reverseCalculateProductTaxAndToll(int $product_total_price, int $count = 1): stdClass {
+        $result = new stdClass();
+        $result->price = $this->getProductPurePrice($product_total_price);
+        $result->tax = $this->getProductTaxAmount($result->price, $count);
+        $result->toll = intval($product_total_price - ($result->price + $result->tax));
+
+        return $result;
+    }
+
+    public function calculateProductTaxAndToll(int $pure_price, int $count = 1): stdClass {
+        $result = new stdClass();
+        $result->price = $pure_price;
+        $result->tax = $this->getProductTaxAmount($result->price, $count);
+        $result->toll = $this->getProductTollAmount($result->price, $count);
+
+        return $result;
+    }
+
+    public function getProductPriceRatio(): float {
+        return doubleval(env('SITE_PRICE_RATIO', '1.0'));
     }
 }

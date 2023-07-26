@@ -16,6 +16,7 @@ use App\Interfaces\RateOwnerInterface;
 use App\Interfaces\SeoSubjectInterface;
 use App\Interfaces\ShareSubjectInterface;
 use App\Services\Directory\DirectoryLocationService;
+use App\Services\Invoice\NewInvoiceService;
 use App\Services\Setting\SettingService;
 use App\Traits\Badgeable;
 use App\Traits\Fileable;
@@ -137,8 +138,6 @@ class Product extends BaseModel implements
 {
     use Rateable, Seoable, Fileable, FullTextSearch, Badgeable, Translatable;
 
-    private SettingService $setting_service;
-
     public $timestamps = true;
     protected $appends = ["is_liked", "is_needed", "main_photo", "secondary_photo", "fin_man_price",
         "status", "url", "is_main_model", "minimum_allowed_purchase_count", "maximum_allowed_purchase_count",
@@ -219,9 +218,13 @@ class Product extends BaseModel implements
 
     protected static string $TRANSLATION_EDIT_FORM = "admin.pages.product.translate";
 
+    private SettingService $setting_service;
+    private NewInvoiceService $new_invoice_service;
+
     public function __construct(array $attributes = []) {
         parent::__construct($attributes);
         $this->setting_service = app(SettingService::class);
+        $this->new_invoice_service = app(NewInvoiceService::class);
     }
 
     public function getIsLocationLimitedAttribute(): bool {
@@ -671,12 +674,14 @@ class Product extends BaseModel implements
         return $result;
     }
 
-    public function updateTaxAmount() {
+    public function updateTaxAmount(): void {
 
         $priceData = ConfigProvider::isTaxAddedToPrice() ?
-            ProductService::reverseCalculateTaxAndToll(
-                intval($this->latest_sell_price / ProductService::getPriceRatio())
-            ) : ProductService::calculateTaxAndToll($this->latest_sell_price / ProductService::getPriceRatio());
+            $this->new_invoice_service->reverseCalculateProductTaxAndToll(
+                intval($this->latest_sell_price / $this->new_invoice_service->getProductPriceRatio())
+            ) : $this->new_invoice_service->calculateProductTaxAndToll(
+                $this->latest_sell_price / $this->new_invoice_service->getProductPriceRatio()
+            );
 
         $this->pure_price = $priceData->price;
         $this->tax_amount = $priceData->tax;
@@ -936,7 +941,7 @@ class Product extends BaseModel implements
     }
 
     public function getStandardLatestPrice(): int {
-        return intval($this->latest_price / ProductService::getPriceRatio());
+        return intval($this->latest_price / $this->new_invoice_service->getProductPriceRatio());
     }
 
     public function isMainModel(): bool {

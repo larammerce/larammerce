@@ -387,7 +387,7 @@ class InvoiceController extends BaseController
         } else {
             $discount_amount = $discount_value;
         }
-        $discount_amount /= ProductService::getPriceRatio();
+        $discount_amount /= $this->new_invoice_service->getProductPriceRatio();
 
         if ($discount_amount === 0) {
             return response()->json(

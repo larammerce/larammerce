@@ -225,7 +225,7 @@ class Invoice extends BaseModel
             if ($discount_card->group->is_percentage)
                 $discount_percentage = $discount_value;
             else
-                $this->direct_discount = ($discount_value / ProductService::getPriceRatio());
+                $this->direct_discount = ($discount_value / $this->new_invoice_service->getProductPriceRatio());
         }
 
         $this->sum = 0;

@@ -10,7 +10,7 @@ use App\Models\PAttr;
 use App\Models\Product;
 use App\Models\ProductFilter;
 use App\Models\ShortLink;
-use App\Utils\CMS\ProductService;
+use App\Services\Product\ProductService;
 use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Application;

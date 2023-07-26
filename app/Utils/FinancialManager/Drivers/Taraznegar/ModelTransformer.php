@@ -110,7 +110,9 @@ class ModelTransformer
 
     public static function productStdToModel(stdClass $stdProduct): bool|Product
     {
-        $ratio = ProductService::getPriceRatio();
+        /** @var NewInvoiceService $new_invoice_service */
+        $new_invoice_service = app(NewInvoiceService::class);
+        $ratio = $new_invoice_service->getProductPriceRatio();
         try {
             $product = new Product();
             $product->id = $stdProduct->relation;
@@ -175,7 +177,7 @@ class ModelTransformer
             if ($invoice->has_shipment_cost) {
 
                 $standard_shipment_cost = $invoice->shipment_cost;
-                $shipment_cost_exploded = ProductService::reverseCalculateTaxAndToll($standard_shipment_cost);
+                $shipment_cost_exploded = $new_invoice_service->reverseCalculateProductTaxAndToll($standard_shipment_cost);
 
                 $addSub = new stdClass();
                 $addSub->AddSubID = $new_invoice_service->getShipmentProductCode();
