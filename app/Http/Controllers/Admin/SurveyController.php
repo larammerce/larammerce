@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\Setting\Survey\SurveyModel;
+use App\Utils\CMS\Setting\Survey\SurveyDataInterface;
 use App\Utils\CMS\Setting\Survey\SurveyService;
 use App\Utils\CMS\SystemMessageService;
 use App\Utils\Common\History;
@@ -40,7 +40,7 @@ class SurveyController extends BaseController
      */
     public function update(Request $request): RedirectResponse
     {
-        $record = new SurveyModel();
+        $record = new SurveyDataInterface();
         $record->setDefaultDelayDays($request->get("default_delay_days"));
         $record->setDefaultDelayHours($request->get("default_delay_hours"));
         $record->setDefaultSurveyUrl($request->get("default_survey_url"));

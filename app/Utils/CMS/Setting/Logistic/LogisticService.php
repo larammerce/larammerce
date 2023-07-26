@@ -15,7 +15,7 @@ use stdClass;
 use function config;
 
 /**
- * @method static LogisticModel getRecord(string $name = "", ?string $parent_id = null)
+ * @method static LogisticDataInterface getRecord(string $name = "", ?string $parent_id = null)
  */
 class LogisticService extends AbstractSettingService
 {
@@ -23,9 +23,9 @@ class LogisticService extends AbstractSettingService
     protected static int $SETTING_TYPE = SettingType::GLOBAL_SETTING;
     protected static string $DRIVER = DataSourceDriver::DATABASE;
 
-    public static function defaultRecord($name): LogisticModel
+    public static function defaultRecord($name): LogisticDataInterface
     {
-        return new LogisticModel();
+        return new LogisticDataInterface();
     }
 
     public static function selectDeliveryTableCell($cell_id, $invoice): bool

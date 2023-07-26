@@ -11,7 +11,7 @@ use App\Utils\CMS\Setting\AbstractSettingService;
 use Illuminate\Support\Facades\Log;
 
 /**
- * @method static ExcelCacheModel getRecord(string $name = "", ?string $parent_id = null)
+ * @method static ExcelCacheDataInterface getRecord(string $name = "", ?string $parent_id = null)
  */
 class ExcelCacheService extends AbstractSettingService
 {
@@ -19,9 +19,9 @@ class ExcelCacheService extends AbstractSettingService
     protected static int $SETTING_TYPE = SettingType::GLOBAL_SETTING;
     protected static string $DRIVER = DataSourceDriver::DATABASE;
 
-    public static function defaultRecord($name): ExcelCacheModel
+    public static function defaultRecord($name): ExcelCacheDataInterface
     {
-        return new ExcelCacheModel();
+        return new ExcelCacheDataInterface();
     }
 
     public static function getAttributes(string $model)

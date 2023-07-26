@@ -12,7 +12,7 @@ use App\Utils\SMSManager\Exceptions\SMSDriverInvalidConfigurationException;
 use App\Utils\SMSManager\Exceptions\SMSDriverNotConfiguredException;
 
 /**
- * @method static SMSDriverModel getRecord(string $name = "", ?string $parent_id = null)
+ * @method static SMSDriverDataInterface getRecord(string $name = "", ?string $parent_id = null)
  */
 class SMSDriverService extends AbstractSettingService
 {
@@ -23,9 +23,9 @@ class SMSDriverService extends AbstractSettingService
     /**
      * @throws SMSDriverInvalidConfigurationException
      */
-    public static function defaultRecord($name): SMSDriverModel
+    public static function defaultRecord($name): SMSDriverDataInterface
     {
-        $sms_driver_model = new SMSDriverModel();
+        $sms_driver_model = new SMSDriverDataInterface();
         $sms_driver_model->setDriverId($name);
         $driver_config = ConfigProvider::getDefaultConfig($name);
         $sms_driver_model->setConfigModel(serialize($driver_config));
@@ -35,9 +35,9 @@ class SMSDriverService extends AbstractSettingService
     /**
      * @throws NotValidSettingRecordException
      */
-    public static function updateRecord(string $driver_id, string $driver_config): SMSDriverModel
+    public static function updateRecord(string $driver_id, string $driver_config): SMSDriverDataInterface
     {
-        $sms_driver_model = new SMSDriverModel();
+        $sms_driver_model = new SMSDriverDataInterface();
         $sms_driver_model->setConfigModel($driver_config);
         $sms_driver_model->setDriverId($driver_id);
         SMSDriverService::setRecord($sms_driver_model);

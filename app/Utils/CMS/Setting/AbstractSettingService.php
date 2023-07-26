@@ -9,11 +9,11 @@
 namespace App\Utils\CMS\Setting;
 
 
+use App\Interfaces\SettingDataInterface;
 use App\Utils\CMS\Enums\DataSourceDriver;
 use App\Utils\CMS\Enums\SettingType;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
 use App\Utils\Common\ModelService;
-use Exception;
 use Illuminate\Support\Str;
 
 abstract class AbstractSettingService
@@ -30,27 +30,27 @@ abstract class AbstractSettingService
     /**
      * @throws NotValidSettingRecordException
      */
-    public static function setRecord(AbstractSettingModel $record, ?string $parent_id = null): void
+    public static function setRecord(SettingDataInterface $record, ?string $parent_id = null): void
     {
         if ($record->validate()) {
             if (static::$SETTING_TYPE == SettingType::LOCAL_SETTING)
-                SettingService::setLocal(static::getKey($record->getPrimaryKey(), $parent_id), $record, static::$DRIVER);
+                CMSSettingService::setLocal(static::getKey($record->getPrimaryKey(), $parent_id), $record, static::$DRIVER);
             else if (static::$SETTING_TYPE == SettingType::GLOBAL_SETTING)
-                SettingService::setGlobal(static::getKey($record->getPrimaryKey(), $parent_id), $record, static::$DRIVER);
+                CMSSettingService::setGlobal(static::getKey($record->getPrimaryKey(), $parent_id), $record, static::$DRIVER);
         } else {
             throw new NotValidSettingRecordException("The record {$record->getPrimaryKey()} is not valid!");
         }
     }
 
-    public static function getRecord(string $name = "", ?string $parent_id = null): ?AbstractSettingModel
+    public static function getRecord(string $name = "", ?string $parent_id = null): ?SettingDataInterface
     {
         if (static::validateName($name)) {
             $result = null;
             if (static::$SETTING_TYPE == SettingType::LOCAL_SETTING){
-                $result = SettingService::getLocal(static::getKey($name, $parent_id), static::$DRIVER);
+                $result = CMSSettingService::getLocal(static::getKey($name, $parent_id), static::$DRIVER);
             }
             else if (static::$SETTING_TYPE == SettingType::GLOBAL_SETTING){
-                $result = SettingService::getGlobal(static::getKey($name, $parent_id), static::$DRIVER);
+                $result = CMSSettingService::getGlobal(static::getKey($name, $parent_id), static::$DRIVER);
             }
 
             if ($result == null or $result->data == null) {

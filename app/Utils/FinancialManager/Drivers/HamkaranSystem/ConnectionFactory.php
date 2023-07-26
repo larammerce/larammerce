@@ -10,7 +10,7 @@ use phpseclib\Math\BigInteger;
 
 class ConnectionFactory
 {
-    private static function authenticate(Config $config, $renew = false): HamkaranAuthModel
+    private static function authenticate(Config $config, $renew = false): HamkaranAuthDataInterface
     {
         $auth_config = HamkaranAuthService::getRecord();
         if ($renew or $auth_config == null or $auth_config->getCreatedAt()->diffInMinutes(Carbon::now()) > 15) {
@@ -45,11 +45,11 @@ class ConnectionFactory
         return $auth_config;
     }
 
-    private static function readAuthConfig(Config $config): ?HamkaranAuthModel
+    private static function readAuthConfig(Config $config): ?HamkaranAuthDataInterface
     {
         $result = self::createBasic("/Services/Framework/AuthenticationService.svc/session", $config)->get();
         if (isset($result->id) and isset($result->rsa) and isset($result->rsa->M) and isset($result->rsa->E)) {
-            $auth_config = new HamkaranAuthModel($result->id, $result->rsa->M, $result->rsa->E);
+            $auth_config = new HamkaranAuthDataInterface($result->id, $result->rsa->M, $result->rsa->E);
             try {
                 HamkaranAuthService::setRecord($auth_config);
             } catch (NotValidSettingRecordException $e) {

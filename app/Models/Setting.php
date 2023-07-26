@@ -2,20 +2,19 @@
 
 namespace App\Models;
 
-use App\Utils\CMS\Setting\AbstractSettingModel;
+use App\Interfaces\SettingDataInterface;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 
 /**
  * @property integer id
  * @property string key
  * @property string value
- * @property AbstractSettingModel data
+ * @property SettingDataInterface data
  * @property integer user_id
  * @property boolean is_system_setting
  *
@@ -46,49 +45,54 @@ class Setting extends Model
         'id', 'key', 'value'
     ];
 
-    protected array $caches = [];
+    protected array $cached_attributes = [];
 
     protected static ?string $IMPORTANT_SEARCH_FIELD = null;
     protected static ?string $EXACT_SEARCH_ORDER_FIELD = null;
     protected static array $ONE_TO_ONE_RELATIONS = [];
     protected static array $EXPORTABLE_RELATIONS = [];
 
-    public function getDataAttribute(): ?AbstractSettingModel {
-        if (!isset($this->caches["data"]))
+    public function getDataAttribute(): ?SettingDataInterface {
+        if (!isset($this->cached_attributes["data"]))
             try {
-                $this->caches["data"] = unserialize($this->value);
+                $this->cached_attributes["data"] = unserialize($this->value);
             } catch (Exception $e) {
                 $this->delete();
                 return null;
             }
-        return $this->caches["data"];
+        return $this->cached_attributes["data"];
+    }
+
+    public function setDataAttribute(SettingDataInterface $data): void {
+        $this->cached_attributes["data"] = $data;
+        $this->value = serialize($data);
     }
 
     public function user(): BelongsTo {
         return $this->belongsTo(User::class, "user_id");
     }
 
-    public function scopeGlobalData($query) {
+    public function scopeGlobalData(Builder $query) {
         return $query->whereNull("user_id");
     }
 
-    public function scopeLocalData($query) {
+    public function scopeLocalData(Builde $query) {
         return $query->where("user_id", Auth::user()->id);
     }
 
-    public function scopeSystemSettings($query) {
+    public function scopeSystemSettings(Builder $query) {
         return $query->where("is_system_setting", true);
     }
 
-    public function scopeNonSystemSettings($query) {
+    public function scopeNonSystemSettings(Builder $query) {
         return $query->where("is_system_setting", false);
     }
 
-    public function scopeUserSettings($query) {
+    public function scopeUserSettings(Builder $query) {
         return $query->where("user_id", null)->orWhere("user_id", "=", Auth::user()->id);
     }
 
-    public function scopeCMSRecords($query) {
+    public function scopeCMSRecords(Builder $query) {
         return $query->globalData()->nonSystemSettings();
     }
 
@@ -104,23 +108,6 @@ class Setting extends Model
 
     public static function getPaginationCount() {
         return self::$PAGINATION_COUNT;
-    }
-
-    public static function getCMSRecord($key) {
-        $cache_key = "CMSRecord:{$key}";
-        $result = "";
-        if (Cache::has($cache_key)) {
-            $result = Cache::get($cache_key);
-        } else {
-            try {
-                $result = Setting::cmsRecords()->where("key", $key)->firstOrFail();
-                Cache::put($cache_key, $result, 1);
-            } catch (Exception $e) {
-                Cache::put($cache_key, null, 1);
-                throw $e;
-            }
-        }
-        return $result;
     }
 
     public static function getSearchableFields(): array {

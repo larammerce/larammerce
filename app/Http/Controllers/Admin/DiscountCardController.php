@@ -5,10 +5,10 @@
 namespace App\Http\Controllers\Admin;
 
 
+use App\Enums\Directory\DirectoryType;
 use App\Models\Directory;
 use App\Models\DiscountCard;
 use App\Models\DiscountGroup;
-use App\Models\Enums\DirectoryType;
 use App\Utils\Common\History;
 use App\Utils\Common\SMSService;
 use Illuminate\Contracts\Foundation\Application;

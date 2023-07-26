@@ -16,7 +16,7 @@ use App\Utils\Common\ModelService;
 use stdClass;
 
 /**
- * @method static SortModel getRecord(string $name = "", ?string $parent_id = null)
+ * @method static SortDataInterface getRecord(string $name = "", ?string $parent_id = null)
  */
 class SortService extends AbstractSettingService
 {
@@ -29,9 +29,9 @@ class SortService extends AbstractSettingService
         return ModelService::isValidModel($name);
     }
 
-    public static function defaultRecord($name): SortModel
+    public static function defaultRecord($name): SortDataInterface
     {
-        $default = new SortModel();
+        $default = new SortDataInterface();
         $default->setModelName(ModelService::className($name));
         $default->setField('id');
         $default->setMethod(SortMethod::ASCENDING);

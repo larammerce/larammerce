@@ -2,7 +2,7 @@
 
 namespace App\Utils\PaymentManager;
 
-use App\Models\Interfaces\AttachedFileContract;
+use App\Interfaces\AttachedFileInterface;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
 use App\Utils\CMS\Setting\PaymentDriver\PaymentDriverService;
 use App\Utils\PaymentManager\Drivers\Pep\Config;
@@ -59,7 +59,7 @@ class ConfigProvider
                 $driver_config = self::getConfig($driver_id);
                 $was_default = $driver_config->is_default;
                 foreach ($driver_config_data as $key => $value) {
-                    if ($driver_config instanceof AttachedFileContract
+                    if ($driver_config instanceof AttachedFileInterface
                     and $value instanceof UploadedFile)
                         $driver_config->setFilePath([$key => $value]);
                     else
@@ -99,7 +99,7 @@ class ConfigProvider
     {
         if (Provider::hasDriver($driver_id)) {
             $driver_config = self::getConfig($driver_id);
-            if ($driver_config instanceof AttachedFileContract) {
+            if ($driver_config instanceof AttachedFileInterface) {
                 $driver_config->removeFile();
                 PaymentDriverService::updateRecord($driver_id, serialize($driver_config));
             }

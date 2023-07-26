@@ -6,9 +6,11 @@
  * Time: 2:02 PM
  */
 
+use App\Enums\Directory\DirectoryType;
+use App\Enums\Invoice\PaymentStatus;
+use App\Enums\Setting\CMSSettingKey;
 use App\Models\Article;
 use App\Models\BaseModel;
-use App\Models\CartRow;
 use App\Models\City;
 use App\Models\Color;
 use App\Models\CustomerAddress;
@@ -17,13 +19,11 @@ use App\Models\CustomerUser;
 use App\Models\CustomerUserLegalInfo;
 use App\Models\Directory;
 use App\Models\District;
-use App\Models\Enums\DirectoryType;
-use App\Models\Enums\PaymentStatus;
 use App\Models\Gallery;
 use App\Models\GalleryItem;
 use App\Models\Invoice;
-use App\Models\Product;
 use App\Models\PAttr;
+use App\Models\Product;
 use App\Models\ProductFilter;
 use App\Models\ProductQuery;
 use App\Models\PStructureAttrKey;
@@ -33,9 +33,9 @@ use App\Models\State;
 use App\Models\SystemUser;
 use App\Models\User;
 use App\Models\WebPage;
-use App\Models\WP\WPPost;
+use App\Models\WPPost;
+use App\Services\Setting\SettingService;
 use App\Utils\CMS\Cart\Provider as CartProvider;
-use App\Utils\CMS\Enums\CMSSettingKey;
 use App\Utils\CMS\File\ClipBoardService;
 use App\Utils\CMS\File\EmptyClipBoardException;
 use App\Utils\CMS\File\InvalidTypeException;
@@ -1190,7 +1190,9 @@ if (!function_exists('get_minimum_purchase_free_shipment')) {
 }
 if (!function_exists('product_disable_on_min')) {
     function product_disable_on_min(): ?string {
-        return Product::shouldDisableOnMin();
+        /** @var SettingService $setting_service */
+        $setting_service = app(SettingService::class);
+        return $setting_service->getCMSSettingAsBool(CMSSettingKey::DISABLE_PRODUCT_ON_MIN);
     }
 }
 

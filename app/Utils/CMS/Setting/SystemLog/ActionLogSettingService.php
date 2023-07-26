@@ -9,7 +9,7 @@ use App\Utils\CMS\Enums\SettingType;
 use App\Utils\CMS\Setting\AbstractSettingService;
 
 /**
- * @method static ActionLogSettingModel getRecord(string $name = "", ?string $parent_id = null)
+ * @method static ActionLogSettingDataInterface getRecord(string $name = "", ?string $parent_id = null)
  */
 class ActionLogSettingService extends AbstractSettingService
 {
@@ -17,9 +17,9 @@ class ActionLogSettingService extends AbstractSettingService
     protected static int $SETTING_TYPE = SettingType::GLOBAL_SETTING;
     protected static string $DRIVER = DataSourceDriver::DATABASE;
 
-    public static function defaultRecord($name): ActionLogSettingModel
+    public static function defaultRecord($name): ActionLogSettingDataInterface
     {
-        return new ActionLogSettingModel();
+        return new ActionLogSettingDataInterface();
     }
 
     public static function isControllerEnabled(string $controller): bool

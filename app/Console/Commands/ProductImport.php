@@ -2,13 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\Directory\DirectoryType;
 use App\Models\Directory;
-use App\Models\Enums\DirectoryType;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
-use Ixudra\Curl\Facades\Curl;
 use JsonMachine\Exception\InvalidArgumentException;
-use JsonMachine\Items;
 use stdClass;
 
 class ProductImport extends Command

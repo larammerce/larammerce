@@ -16,7 +16,7 @@ use App\Utils\CMS\Setting\AbstractSettingService;
 use App\Utils\Common\ModelService;
 
 /**
- * @method static LayoutModel getRecord(string $name = "", ?string $parent_id = null)
+ * @method static LayoutDataInterface getRecord(string $name = "", ?string $parent_id = null)
  */
 class LayoutService extends AbstractSettingService
 {
@@ -45,9 +45,9 @@ class LayoutService extends AbstractSettingService
         ];
     }
 
-    public static function defaultRecord($name): LayoutModel
+    public static function defaultRecord($name): LayoutDataInterface
     {
-        $default = new LayoutModel();
+        $default = new LayoutDataInterface();
         $default->setModel(ModelService::className($name));
         $default->setMethod(LayoutType::LIST_ITEMS);
 

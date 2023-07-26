@@ -14,7 +14,7 @@ use App\Utils\FinancialManager\Models\BaseFinancialConfig;
 
 /**
  *
- * @method static FinancialDriverModel getRecord(string $name = "", ?string $parent_id = null)
+ * @method static FinancialDriverDataInterface getRecord(string $name = "", ?string $parent_id = null)
  *
  * Class ShipmentCostService
  * @package App\Utils\CMS\ShipmentCost
@@ -28,9 +28,9 @@ class FinancialDriverService extends AbstractSettingService
     /**
      * @throws FinancialDriverInvalidConfigurationException
      */
-    public static function defaultRecord($name): FinancialDriverModel
+    public static function defaultRecord($name): FinancialDriverDataInterface
     {
-        $financial_driver_model = new FinancialDriverModel();
+        $financial_driver_model = new FinancialDriverDataInterface();
         $financial_driver_model->setDriverId($name);
         $driver_config = ConfigProvider::getDefaultConfig($name);
         $financial_driver_model->setConfigModel($driver_config);
@@ -40,9 +40,9 @@ class FinancialDriverService extends AbstractSettingService
     /**
      * @throws NotValidSettingRecordException
      */
-    public static function updateRecord(string $driver_id, BaseFinancialConfig $driver_config): FinancialDriverModel
+    public static function updateRecord(string $driver_id, BaseFinancialConfig $driver_config): FinancialDriverDataInterface
     {
-        $financial_driver_model = new FinancialDriverModel();
+        $financial_driver_model = new FinancialDriverDataInterface();
         $financial_driver_model->setConfigModel($driver_config);
         $financial_driver_model->setDriverId($driver_id);
         FinancialDriverService::setRecord($financial_driver_model);

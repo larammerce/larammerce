@@ -9,7 +9,7 @@ use App\Utils\CMS\Enums\SettingType;
 use App\Utils\CMS\Setting\AbstractSettingService;
 
 /**
- * @method static ShipmentCostModel getRecord(string $name = "", ?string $parent_id = null)
+ * @method static ShipmentCostDataInterface getRecord(string $name = "", ?string $parent_id = null)
  */
 class ShipmentCostService extends AbstractSettingService
 {
@@ -17,8 +17,8 @@ class ShipmentCostService extends AbstractSettingService
     protected static int $SETTING_TYPE = SettingType::GLOBAL_SETTING;
     protected static string $DRIVER = DataSourceDriver::DATABASE;
 
-    public static function defaultRecord($name): ShipmentCostModel
+    public static function defaultRecord($name): ShipmentCostDataInterface
     {
-        return new ShipmentCostModel();
+        return new ShipmentCostDataInterface();
     }
 }

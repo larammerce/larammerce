@@ -9,7 +9,7 @@ use App\Utils\CMS\Enums\SettingType;
 use App\Utils\CMS\Setting\AbstractSettingService;
 
 /**
- * @method static HamkaranAuthModel getRecord(string $name = "", ?string $parent_id = null)
+ * @method static HamkaranAuthDataInterface getRecord(string $name = "", ?string $parent_id = null)
  */
 class HamkaranAuthService extends AbstractSettingService
 {

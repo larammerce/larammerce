@@ -2,15 +2,14 @@
 
 namespace App\Models;
 
-use App\Models\Interfaces\ImageContract;
+use App\Interfaces\ImageOwnerInterface;
 use App\Utils\Common\ImageService;
 use App\Utils\Translation\Traits\Translatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\View;
 
 
-class Modal extends BaseModel implements ImageContract
+class Modal extends BaseModel implements ImageOwnerInterface
 {
     use Translatable;
 

@@ -2,29 +2,29 @@
 
 namespace App\Models;
 
-use App\Models\Enums\ProductStatus;
-use App\Models\Exceptions\ProductPackageItemInvalidCountException;
-use App\Models\Exceptions\ProductPackageItemInvalidIdException;
-use App\Models\Exceptions\ProductPackageItemNotFoundException;
-use App\Models\Exceptions\ProductPackageNotExistsException;
-use App\Models\Interfaces\FileContract;
-use App\Models\Interfaces\FileContract as FileAbstractionContract;
-use App\Models\Interfaces\HashContract;
-use App\Models\Interfaces\ImageContract;
-use App\Models\Interfaces\PublishScheduleContract;
-use App\Models\Interfaces\RateContract as RateableContract;
-use App\Models\Interfaces\SeoContract as SeoableContract;
-use App\Models\Interfaces\ShareContract;
-use App\Models\Traits\Badgeable;
-use App\Models\Traits\Fileable;
-use App\Models\Traits\FullTextSearch;
-use App\Models\Traits\Rateable;
-use App\Models\Traits\Seoable;
+use App\Enums\Product\ProductStatus;
+use App\Enums\Setting\CMSSettingKey;
+use App\Exceptions\Product\ProductPackageItemInvalidCountException;
+use App\Exceptions\Product\ProductPackageItemInvalidIdException;
+use App\Exceptions\Product\ProductPackageItemNotFoundException;
+use App\Exceptions\Product\ProductPackageNotExistsException;
+use App\Interfaces\CMSExposedNodeInterface;
+use App\Interfaces\HashInterface;
+use App\Interfaces\ImageOwnerInterface;
+use App\Interfaces\PublishScheduleInterface;
+use App\Interfaces\RateOwnerInterface;
+use App\Interfaces\SeoSubjectInterface;
+use App\Interfaces\ShareSubjectInterface;
 use App\Services\Directory\DirectoryLocationService;
+use App\Services\Setting\SettingService;
+use App\Traits\Badgeable;
+use App\Traits\Fileable;
+use App\Traits\FullTextSearch;
+use App\Traits\Rateable;
+use App\Traits\Seoable;
 use App\Utils\CMS\AdminRequestService;
-use App\Utils\CMS\Enums\CMSSettingKey;
 use App\Utils\CMS\ProductService;
-use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationModel;
+use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationDataInterface;
 use App\Utils\Common\EmailService;
 use App\Utils\Common\ImageService;
 use App\Utils\Common\SMSService;
@@ -99,7 +99,7 @@ use Throwable;
  * @property integer maximum_allowed_purchase_count
  * @property integer minimum_allowed_purchase_count
  *
- * @property CustomerLocationModel[] location_limitations
+ * @property CustomerLocationDataInterface[] location_limitations
  * @property bool is_location_limited
  * @property bool can_deliver
  *
@@ -132,9 +132,12 @@ use Throwable;
  * @package App\Models
  */
 class Product extends BaseModel implements
-    FileAbstractionContract, ShareContract, PublishScheduleContract, ImageContract,
-    RateableContract, SeoableContract, HashContract {
+    CMSExposedNodeInterface, ShareSubjectInterface, PublishScheduleInterface, ImageOwnerInterface,
+    RateOwnerInterface, SeoSubjectInterface, HashInterface
+{
     use Rateable, Seoable, Fileable, FullTextSearch, Badgeable, Translatable;
+
+    private SettingService $setting_service;
 
     public $timestamps = true;
     protected $appends = ["is_liked", "is_needed", "main_photo", "secondary_photo", "fin_man_price",
@@ -216,6 +219,11 @@ class Product extends BaseModel implements
 
     protected static string $TRANSLATION_EDIT_FORM = "admin.pages.product.translate";
 
+    public function __construct(array $attributes = []) {
+        parent::__construct($attributes);
+        $this->setting_service = app(SettingService::class);
+    }
+
     public function getIsLocationLimitedAttribute(): bool {
         if (config("cms.general.site.enable_directory_location")) {
             return DirectoryLocationService::isProductLocationLimited($this);
@@ -250,11 +258,7 @@ class Product extends BaseModel implements
     public function getIsNewAttribute(): bool {
         if ($this->created_at === null)
             return false;
-        try {
-            $new_product_delay_days = intval(Setting::getCMSRecord(CMSSettingKey::NEW_PRODUCT_DELAY_DAYS)->value);
-        } catch (Exception $e) {
-            $new_product_delay_days = 0;
-        }
+        $new_product_delay_days = $this->setting_service->getCMSSettingAsInt(CMSSettingKey::NEW_PRODUCT_DELAY_DAYS);
         return Carbon::now()->lessThan($this->created_at->addDays($new_product_delay_days));
     }
 
@@ -719,7 +723,8 @@ class Product extends BaseModel implements
     }
 
     private function updateEnabledStatus(bool $do_save = true): bool {
-        $min_allowed_count = static::shouldDisableOnMin() ? $this->min_allowed_count : 0;
+        $min_allowed_count = $this->setting_service->getCMSSettingAsBool(CMSSettingKey::DISABLE_PRODUCT_ON_MIN) ?
+            $this->min_allowed_count : 0;
         if ($this->count > $min_allowed_count and $this->latest_price > 0)
             return $this->makeEnabled($do_save);
         return $this->makeDisabled($do_save);
@@ -909,7 +914,8 @@ class Product extends BaseModel implements
     // Todo : this method must be checked check
     public function getMaximumAllowedPurchaseCount() {
         try {
-            $min_allowed_count = static::shouldDisableOnMin() ? $this->min_allowed_count : 0;
+            $min_allowed_count = $this->setting_service->getCMSSettingAsBool(CMSSettingKey::DISABLE_PRODUCT_ON_MIN) ?
+                $this->min_allowed_count : 0;
             return max((config('cms.general.site.show_deactivated_products') ? 1 : 0),
                 min(($this->count - $min_allowed_count), $this->max_purchase_count));
         } catch (Exception $e) {
@@ -1017,7 +1023,7 @@ class Product extends BaseModel implements
     }
 
     /**
-     * @return Model|FileContract
+     * @return Model|CMSExposedNodeInterface
      */
     public function cloneFile() {
         if ($this->model_id == null)
@@ -1081,29 +1087,15 @@ class Product extends BaseModel implements
     public function toArray(): array {
         $parent_result = parent::toArray();
 
-        if (!static::shouldDisableOnMin() and $this->is_active and $this->count <= $this->min_allowed_count) {
+        if (
+            (!$this->setting_service->getCMSSettingAsBool(CMSSettingKey::DISABLE_PRODUCT_ON_MIN)) and
+            $this->is_active and
+            $this->count <= $this->min_allowed_count
+        ) {
             $parent_result["public_count"] = $this->count;
         }
 
         return $parent_result;
-    }
-
-    /**
-     * Checks if setting is loaded once, returns the result,
-     * else loads it in the static variable, then returns it.
-     *
-     * @return string
-     */
-    public static function shouldDisableOnMin() {
-        if (static::$DISABLE_ON_MIN !== null)
-            return static::$DISABLE_ON_MIN;
-        try {
-            static::$DISABLE_ON_MIN = strtolower(Setting::getCMSRecord(
-                    CMSSettingKey::DISABLE_PRODUCT_ON_MIN)->value) !== "false";
-        } catch (Exception $e) {
-            static::$DISABLE_ON_MIN = true; //The default value for disable on min is true.
-        }
-        return static::$DISABLE_ON_MIN;
     }
 
     public static function create(array $attributes = []) {

@@ -13,7 +13,7 @@ use App\Utils\PaymentManager\Exceptions\PaymentDriverNotConfiguredException;
 use App\Utils\PaymentManager\Exceptions\PaymentInvalidDriverException;
 
 /**
- * @method static PaymentDriverModel getRecord(string $name = "", ?string $parent_id = null)
+ * @method static PaymentDriverDataInterface getRecord(string $name = "", ?string $parent_id = null)
  */
 class PaymentDriverService extends AbstractSettingService
 {
@@ -24,9 +24,9 @@ class PaymentDriverService extends AbstractSettingService
     /**
      * @throws PaymentInvalidDriverException
      */
-    public static function defaultRecord($name): PaymentDriverModel
+    public static function defaultRecord($name): PaymentDriverDataInterface
     {
-        $payment_driver_model = new PaymentDriverModel();
+        $payment_driver_model = new PaymentDriverDataInterface();
         $payment_driver_model->setDriverId($name);
         $driver_config = ConfigProvider::getDefaultConfig($name);
         $payment_driver_model->setConfigModel(serialize($driver_config));
@@ -36,9 +36,9 @@ class PaymentDriverService extends AbstractSettingService
     /**
      * @throws NotValidSettingRecordException
      */
-    public static function updateRecord(string $driver_id, string $driver_config): PaymentDriverModel
+    public static function updateRecord(string $driver_id, string $driver_config): PaymentDriverDataInterface
     {
-        $payment_driver_model = new PaymentDriverModel();
+        $payment_driver_model = new PaymentDriverDataInterface();
         $payment_driver_model->setConfigModel($driver_config);
         $payment_driver_model->setDriverId($driver_id);
         PaymentDriverService::setRecord($payment_driver_model);

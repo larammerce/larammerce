@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\Invoice\ShipmentStatus;
 use App\Models\CustomerUser;
-use App\Models\Enums\ShipmentStatus;
 use App\Models\Invoice;
 use App\Utils\Common\History;
 use App\Utils\Common\RequestService;

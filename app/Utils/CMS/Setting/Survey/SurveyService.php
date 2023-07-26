@@ -9,7 +9,7 @@ use App\Utils\CMS\Enums\SettingType;
 use App\Utils\CMS\Setting\AbstractSettingService;
 
 /**
- * @method static SurveyModel getRecord(string $name = "", ?string $parent_id = null)
+ * @method static SurveyDataInterface getRecord(string $name = "", ?string $parent_id = null)
  */
 class SurveyService extends AbstractSettingService
 {
@@ -17,8 +17,8 @@ class SurveyService extends AbstractSettingService
     protected static int $SETTING_TYPE = SettingType::GLOBAL_SETTING;
     protected static string $DRIVER = DataSourceDriver::DATABASE;
 
-    public static function defaultRecord($name): SurveyModel
+    public static function defaultRecord($name): SurveyDataInterface
     {
-        return new SurveyModel();
+        return new SurveyDataInterface();
     }
 }

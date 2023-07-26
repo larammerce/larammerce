@@ -4,7 +4,7 @@ namespace App\Services\Directory;
 
 use App\Models\DirectoryLocation;
 use App\Models\Product;
-use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationModel;
+use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationDataInterface;
 use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationService;
 use Illuminate\Support\Collection;
 
@@ -33,7 +33,7 @@ class DirectoryLocationService {
                     $result[$record->directory_id] = [];
                 }
 
-                $result[$record->directory_id][] = new CustomerLocationModel($record->state, $record->city);
+                $result[$record->directory_id][] = new CustomerLocationDataInterface($record->state, $record->city);
             }
 
             static::$CACHE[$function_cache_key] = $result;
@@ -60,7 +60,7 @@ class DirectoryLocationService {
 
     /**
      * @param Product $product
-     * @return CustomerLocationModel[]
+     * @return CustomerLocationDataInterface[]
      */
     public static function getProductLocationLimitations(Product $product): array {
         $directory_locations = static::getAllMappedByDirectoryId();

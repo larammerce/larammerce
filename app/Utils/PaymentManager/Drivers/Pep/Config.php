@@ -2,10 +2,10 @@
 
 namespace App\Utils\PaymentManager\Drivers\Pep;
 
-use App\Models\Interfaces\AttachedFileContract;
+use App\Interfaces\AttachedFileInterface;
 use App\Utils\PaymentManager\Models\BasePaymentConfig;
 
-class Config extends BasePaymentConfig implements AttachedFileContract
+class Config extends BasePaymentConfig implements AttachedFileInterface
 {
     const LOGO_PATH = "/primary_data/payment_drivers/".Driver::DRIVER_ID."/logo.png";
     const HOST = 'https://pep.shaparak.ir';

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\Setting\CartNotification\CartNotificationModel;
+use App\Utils\CMS\Setting\CartNotification\CartNotificationDataInterface;
 use App\Utils\CMS\Setting\CartNotification\CartNotificationService;
 use App\Utils\CMS\SystemMessageService;
 use App\Utils\Common\History;
@@ -40,7 +40,7 @@ class CartNotificationController extends BaseController
      */
     public function update(Request $request): RedirectResponse
     {
-        $record = new CartNotificationModel();
+        $record = new CartNotificationDataInterface();
         $record->setIsActive($request->get("is_active"));
         $record->setDefaultDelayHours($request->get("default_delay_hours"));
         $record->setNotifyWithEmail($request->get("notify_with_email"));

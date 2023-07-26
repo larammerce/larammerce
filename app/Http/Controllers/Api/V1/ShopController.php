@@ -8,8 +8,8 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\Directory\DirectoryType;
 use App\Models\Directory;
-use App\Models\Enums\DirectoryType;
 use App\Models\Product;
 use App\Models\ProductFilter;
 use App\Models\ProductQuery;

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Models\Interfaces\SystemLogContract;
-use App\Models\Traits\Searchable;
+use App\Interfaces\SystemLogInterface;
+use App\Traits\Searchable;
 use App\Utils\CMS\Setting\Layout\LayoutService;
 use Illuminate\Database\Eloquent\Builder;
 use Jenssegers\Mongodb\Eloquent\Model;
@@ -24,7 +24,7 @@ use phpDocumentor\Reflection\Types\Integer;
  * @property integer related_model_id
  * @property string method_name
  */
-class ActionLog extends Model implements SystemLogContract
+class ActionLog extends Model implements SystemLogInterface
 {
     use Searchable;
 

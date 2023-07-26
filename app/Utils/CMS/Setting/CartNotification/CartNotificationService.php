@@ -9,7 +9,7 @@ use App\Utils\CMS\Enums\SettingType;
 use App\Utils\CMS\Setting\AbstractSettingService;
 
 /**
- * @method static CartNotificationModel getRecord(string $name = "", ?string $parent_id = null)
+ * @method static CartNotificationDataInterface getRecord(string $name = "", ?string $parent_id = null)
  */
 class CartNotificationService extends AbstractSettingService
 {
@@ -17,8 +17,8 @@ class CartNotificationService extends AbstractSettingService
     protected static int $SETTING_TYPE = SettingType::GLOBAL_SETTING;
     protected static string $DRIVER = DataSourceDriver::DATABASE;
 
-    public static function defaultRecord($name): CartNotificationModel
+    public static function defaultRecord($name): CartNotificationDataInterface
     {
-        return new CartNotificationModel();
+        return new CartNotificationDataInterface();
     }
 }

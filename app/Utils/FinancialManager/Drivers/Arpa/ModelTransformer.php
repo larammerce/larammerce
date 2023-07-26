@@ -9,11 +9,11 @@
 namespace App\Utils\FinancialManager\Drivers\Arpa;
 
 
-use App\Models\Enums\Gender;
+use App\Enums\Customer\Gender;
 use App\Models\Invoice;
 use App\Models\InvoiceRow;
 use App\Models\User;
-use App\Utils\CMS\InvoiceService;
+use App\Services\Invoice\NewInvoiceService;
 use App\Utils\CMS\ProductService;
 use App\Utils\FinancialManager\Models\Customer;
 use App\Utils\FinancialManager\Models\Product;
@@ -175,6 +175,8 @@ class ModelTransformer
     }
 
     public static function invoiceModelToStd(Invoice $invoice, $tax_added_to_price = true): stdClass|bool {
+        $new_invoice_service = app(NewInvoiceService::class);
+
         try {
             $pre_invoice_std = new stdClass();
             $customer_user = $invoice->customer;
@@ -240,14 +242,14 @@ class ModelTransformer
 
             $pre_invoice_std->addsubs = [];
             if ($invoice->has_shipment_cost) {
-                $standardShipmentCost = $invoice->shipment_cost;
-                $shipmentCostExploded = ProductService::reverseCalculateTaxAndToll($standardShipmentCost);
+                $standard_shipment_cost = $invoice->shipment_cost;
+                $shipment_cost_exploded = ProductService::reverseCalculateTaxAndToll($standard_shipment_cost);
 
                 $addSub = new stdClass();
-                $addSub->AddSubID = InvoiceService::getShipmentProductCode();
-                $addSub->TASAmount = $shipmentCostExploded->price;
-                $addSub->TASTaxAmount = $shipmentCostExploded->tax;
-                $addSub->TASTollAmount = $shipmentCostExploded->toll;
+                $addSub->AddSubID = $new_invoice_service->getShipmentProductCode();
+                $addSub->TASAmount = $shipment_cost_exploded->price;
+                $addSub->TASTaxAmount = $shipment_cost_exploded->tax;
+                $addSub->TASTollAmount = $shipment_cost_exploded->toll;
 
                 $pre_invoice_std->addsubs[] = $addSub;
             }

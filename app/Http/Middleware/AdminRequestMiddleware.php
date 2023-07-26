@@ -10,11 +10,11 @@ namespace App\Http\Middleware;
 
 use App\Utils\CMS\ActionLogService;
 use App\Utils\CMS\Appliance\ApplianceService;
-use App\Utils\CMS\Setting\Layout\LayoutModel;
+use App\Utils\CMS\Setting\Layout\LayoutDataInterface;
 use App\Utils\CMS\Setting\Layout\LayoutService;
-use App\Utils\CMS\Setting\Pagination\PaginationModel;
+use App\Utils\CMS\Setting\Pagination\PaginationDataInterface;
 use App\Utils\CMS\Setting\Pagination\PaginationService;
-use App\Utils\CMS\Setting\Sort\SortModel;
+use App\Utils\CMS\Setting\Sort\SortDataInterface;
 use App\Utils\CMS\Setting\Sort\SortService;
 use App\Utils\Reflection\Action;
 use App\Utils\Reflection\AnnotationBadKeyException;
@@ -85,7 +85,7 @@ class AdminRequestMiddleware
             $request->has(self::$sortFieldProperty) and
             $request->has(self::$sortMethodProperty)) {
 
-            $sortModel = new SortModel();
+            $sortModel = new SortDataInterface();
             $sortModel->setModelName($request->get(self::$sortModelProperty));
             $sortModel->setField($request->get(self::$sortFieldProperty));
             $sortModel->setMethod($request->get(self::$sortMethodProperty));
@@ -99,7 +99,7 @@ class AdminRequestMiddleware
         if ($request->has(self::$layoutMethodProperty) and
             $request->has(self::$layoutModelProperty)) {
 
-            $layoutModel = new LayoutModel();
+            $layoutModel = new LayoutDataInterface();
             $layoutModel->setModel($request->get(self::$layoutModelProperty));
             $layoutModel->setMethod($request->get(self::$layoutMethodProperty));
 
@@ -112,7 +112,7 @@ class AdminRequestMiddleware
         if ($request->has(self::$paginationModelProperty) and
             $request->has(self::$paginationPageProperty)) {
 
-            $paginationModel = new PaginationModel();
+            $paginationModel = new PaginationDataInterface();
             $paginationModel->setModel($request->get(self::$paginationModelProperty));
             $paginationModel->setPage($request->get(self::$paginationPageProperty));
 

@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Directory\DirectoryType;
 use App\Models\Article;
 use App\Models\Directory;
-use App\Models\Enums\DirectoryType;
 use App\Models\ModifiedUrl;
-use App\Models\Product;
 use App\Models\PAttr;
+use App\Models\Product;
 use App\Models\ProductFilter;
 use App\Models\ShortLink;
 use App\Utils\CMS\ProductService;

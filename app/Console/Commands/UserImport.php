@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Enums\Gender;
+use App\Enums\Customer\Gender;
 use App\Models\User;
 use Illuminate\Console\Command;
 
