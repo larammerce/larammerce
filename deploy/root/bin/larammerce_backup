@@ -46,7 +46,7 @@ done < "${CONFIG_FILE}"
 
 # Other configs
 HOST=$(hostname)
-DATE=$(date +"%Y-%m-%d-%H%i")
+DATE=$(date +"%Y-%m-%d-%H%M")
 BACKUP_DIR="/backup"
 MYSQLDUMP_PATH="/usr/bin/mysqldump"
 LOG_FILE="${BACKUP_DIR}/backup_${DATE}.log"
