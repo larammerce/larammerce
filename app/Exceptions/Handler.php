@@ -57,7 +57,7 @@ class Handler extends ExceptionHandler
             $error_code = $e->getStatusCode();
             if ($error_code === 503 and view()->exists('public.unreachable'))
                 $template = 'public.unreachable';
-            else {
+            else if (view()->exists('public.error')) {
                 $div_by = 100;
                 do {
                     if ($error_code > 0) {
@@ -69,6 +69,8 @@ class Handler extends ExceptionHandler
                         $template = "public.error";
                     }
                 } while (!view()->exists($template) and $error_code >= 0);
+            } else {
+                $template = "public.no-theme";
             }
             return response(h_view($template, [
                 'code' => $e->getStatusCode(),
