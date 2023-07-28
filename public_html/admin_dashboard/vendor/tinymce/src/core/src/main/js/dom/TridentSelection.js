@@ -427,7 +427,7 @@ define(
               tmpRng.moveToElementText(marker);
             } else if (container.canHaveHTML) {
               // Empty node selection for example <div>|</div>
-              // Setting innerHTML with a span marker then remove that marker seems to keep empty block elements open
+              // FeatureConfig innerHTML with a span marker then remove that marker seems to keep empty block elements open
               container.innerHTML = '<span>&#xFEFF;</span>';
               marker = container.firstChild;
               tmpRng.moveToElementText(marker);

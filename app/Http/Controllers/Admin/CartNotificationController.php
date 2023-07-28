@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Features\CartNotification\CartNotificationConfig;
+use App\Features\CartNotification\CartNotificationSettingData;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\Setting\CartNotification\CartNotificationDataInterface;
-use App\Utils\CMS\Setting\CartNotification\CartNotificationService;
 use App\Utils\CMS\SystemMessageService;
 use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
@@ -25,7 +25,7 @@ class CartNotificationController extends BaseController
      */
     public function edit(): Factory|View|Application
     {
-        $cart_notification_setting_record = CartNotificationService::getRecord();
+        $cart_notification_setting_record = CartNotificationConfig::getRecord();
         return view("admin.pages.cart-notification.edit")->with([
             "cart_notification" => $cart_notification_setting_record
         ]);
@@ -40,14 +40,14 @@ class CartNotificationController extends BaseController
      */
     public function update(Request $request): RedirectResponse
     {
-        $record = new CartNotificationDataInterface();
+        $record = new CartNotificationSettingData();
         $record->setIsActive($request->get("is_active"));
         $record->setDefaultDelayHours($request->get("default_delay_hours"));
         $record->setNotifyWithEmail($request->get("notify_with_email"));
         $record->setNotifyWithSMS($request->get("notify_with_sms"));
 
         try {
-            CartNotificationService::setRecord($record);
+            CartNotificationConfig::setRecord($record);
             return History::redirectBack();
         } catch (NotValidSettingRecordException $e) {
             SystemMessageService::addErrorMessage('system_messages.cart_notification.invalid_record');

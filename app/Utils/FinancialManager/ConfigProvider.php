@@ -2,8 +2,8 @@
 
 namespace App\Utils\FinancialManager;
 
+use App\Features\FinancialDriver\FinancialDriverConfig;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\Setting\FinancialDriver\FinancialDriverService;
 use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
 use App\Utils\FinancialManager\Models\BaseFinancialConfig;
 use App\Utils\Reflection\AnnotationBadKeyException;
@@ -27,7 +27,7 @@ class ConfigProvider
     public static function getConfig(string $driver_id): BaseFinancialConfig
     {
         if (count(self::$CACHED_DATA) == 0 or !array_key_exists($driver_id, self::$CACHED_DATA)) {
-            $payment_driver_setting_record = FinancialDriverService::getRecord($driver_id);
+            $payment_driver_setting_record = FinancialDriverConfig::getRecord($driver_id);
             self::$CACHED_DATA[$driver_id] = $payment_driver_setting_record->getConfigModel();
         }
         return self::$CACHED_DATA[$driver_id];
@@ -61,7 +61,7 @@ class ConfigProvider
                 foreach ($driver_config_data as $key => $value) {
                     $driver_config->$key = $value;
                 }
-                FinancialDriverService::updateRecord($driver_id, $driver_config);
+                FinancialDriverConfig::updateRecord($driver_id, $driver_config);
                 self::$CACHED_DATA[$driver_id] = $driver_config;
                 if (!$was_enabled and $driver_config->is_enabled)
                     $last_enabled_driver_id = $driver_id;
@@ -80,7 +80,7 @@ class ConfigProvider
         foreach ($other_drivers as $other_driver_id => $data) {
             $other_driver_config = self::getConfig($other_driver_id);
             $other_driver_config->is_enabled = false;
-            FinancialDriverService::updateRecord($other_driver_id, $other_driver_config);
+            FinancialDriverConfig::updateRecord($other_driver_id, $other_driver_config);
             self::$CACHED_DATA[$other_driver_id] = $other_driver_config;
         }
     }

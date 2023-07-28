@@ -17,7 +17,7 @@ The following sets up autocomplete for input fields where `options` is an object
 $(selector).autocomplete(options);
 ```
 ### General settings (local and Ajax) 
-| Setting | Default | Description |
+| FeatureConfig | Default | Description |
 | :--- | :--- | :--- |
 | `noCache` | `false` | Boolean value indicating whether to cache suggestion results |
 | `delimiter` | optional | String or RegExp, that splits input value and takes last part to as query for suggestions. Useful when for example you need to fill list of  comma separated values. |
@@ -55,7 +55,7 @@ $(selector).autocomplete(options);
 
 
 ### Local only settings
-| Setting | Default | Description |
+| FeatureConfig | Default | Description |
 | :--- | :--- | :--- |
 | `lookupLimit` | `no limit` | Number of maximum results to display for local lookup |
 | `lookup` | n/a | Callback function or lookup array for the suggestions. It may be array of strings or `suggestion` object literals |
@@ -63,7 +63,7 @@ $(selector).autocomplete(options);
 | `lookupFilter` | n/a | `function (suggestion, query, queryLowerCase) {}` filter function for local lookups. By default it does partial string match (case insensitive) |
 
 ### Ajax only settings
-| Setting | Default | Description |
+| FeatureConfig | Default | Description |
 | :--- | :--- | :--- |
 | `serviceUrl` | n/a | Server side URL or callback function that returns serviceUrl string |
 | `type` | `GET` | Ajax request type to get suggestions |

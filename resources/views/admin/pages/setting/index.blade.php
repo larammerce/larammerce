@@ -11,9 +11,9 @@
         <div class="toolbar">
             <ul>
                 @foreach(LayoutService::getLayoutMethods() as $layout_method)
-                    <li href="{{route('admin.null')}}?layout_model=Setting&layout_method={{$layout_method["method"]}}"
+                    <li href="{{route('admin.null')}}?layout_model=FeatureConfig&layout_method={{$layout_method["method"]}}"
                         act="link"
-                        @if($layout_method["method"] == LayoutService::getRecord("Setting")->getMethod()) class="active" @endif>
+                        @if($layout_method["method"] == LayoutService::getRecord("FeatureConfig")->getMethod()) class="active" @endif>
                         <i class="fa {{$layout_method["icon"]}}"></i>
                     </li>
                 @endforeach
@@ -21,7 +21,7 @@
         </div>
         <div class="inner-container has-toolbar has-pagination">
             <div class="view-port">
-                @include('admin.pages.setting.layout.'.LayoutService::getRecord("Setting")->getMethod())
+                @include('admin.pages.setting.layout.'.LayoutService::getRecord("FeatureConfig")->getMethod())
             </div>
             <div class="fab-container">
                 <div class="fab green">
@@ -32,7 +32,7 @@
             </div>
         </div>
         @include('admin.templates.pagination', [
-            "modelName" => "Setting",
+            "modelName" => "FeatureConfig",
             "lastPage" => $settings->lastPage(),
             "total" => $settings->total(),
             "count" => $settings->perPage(),

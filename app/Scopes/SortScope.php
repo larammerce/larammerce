@@ -8,7 +8,7 @@
 
 namespace App\Scopes;
 
-use App\Utils\CMS\Setting\Sort\SortService;
+use App\Features\Sort\SortConfig;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
@@ -23,7 +23,7 @@ class SortScope implements Scope
      * @return Builder
      */
     public function apply(Builder $builder, Model $model): Builder {
-        $record = SortService::getRecord(get_class($model));
+        $record = SortConfig::getRecord(get_class($model));
         if ($record) {
             return $builder->orderBy($record->getField(), $record->getMethod());
         }

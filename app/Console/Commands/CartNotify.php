@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Features\CartNotification\CartNotificationConfig;
 use App\Models\CartRow;
-use App\Utils\CMS\Setting\CartNotification\CartNotificationService;
 use App\Utils\Common\EmailService;
 use App\Utils\Common\SMSService;
 use Carbon\Carbon;
@@ -43,7 +43,7 @@ class CartNotify extends Command
      */
     public function handle()
     {
-        $cart_notification_config = CartNotificationService::getRecord();
+        $cart_notification_config = CartNotificationConfig::getRecord();
         if ($cart_notification_config->getIsActive()) {
             $delay_hours = $cart_notification_config->getDefaultDelayHours();
             $time_interval = 1;

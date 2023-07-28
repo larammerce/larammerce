@@ -15,6 +15,8 @@ use App\Enums\Invoice\PaymentType;
 use App\Enums\Invoice\ShipmentMethod;
 use App\Enums\Invoice\ShipmentStatus;
 use App\Exceptions\Discount\InvalidDiscountCodeException;
+use App\Features\Logistic\LogisticConfig;
+use App\Features\Survey\SurveyConfig;
 use App\Models\CustomerAddress;
 use App\Models\DiscountCard;
 use App\Models\Invoice;
@@ -23,8 +25,6 @@ use App\Services\Customer\CustomerAddressService;
 use App\Services\Invoice\NewInvoiceService;
 use App\Utils\CMS\Enums\ExportType;
 use App\Utils\CMS\ProductService;
-use App\Utils\CMS\Setting\Logistic\LogisticService;
-use App\Utils\CMS\Setting\Survey\SurveyService;
 use App\Utils\CMS\SystemMessageService;
 use App\Utils\Common\EmailService;
 use App\Utils\Common\MessageFactory;
@@ -202,8 +202,8 @@ class InvoiceController extends BaseController
         $invoice->is_legal = $request->get("is_legal");
         $invoice->shipment_method = $request->get("shipment_method");
 
-        if (LogisticService::isEnabled() and $request->has("logistics_enabled") and $request->get("logistics_enabled") == 1) {
-            if (!LogisticService::selectDeliveryTableCell($request->get("delivery_period"), $invoice))
+        if (LogisticConfig::isEnabled() and $request->has("logistics_enabled") and $request->get("logistics_enabled") == 1) {
+            if (!LogisticConfig::selectDeliveryTableCell($request->get("delivery_period"), $invoice))
                 return redirect()->back();
         }
 
@@ -427,7 +427,7 @@ class InvoiceController extends BaseController
     }
 
     public function showSurvey(Invoice $invoice): RedirectResponse {
-        $survey_config = SurveyService::getRecord();
+        $survey_config = SurveyConfig::getRecord();
         if (!is_string($survey_config->getDefaultSurveyUrl()) or !strlen($survey_config->getDefaultSurveyUrl()) > 0) {
             abort(404);
         }

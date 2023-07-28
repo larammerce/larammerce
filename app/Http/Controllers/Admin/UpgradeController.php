@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Features\SystemUpgrade\SystemUpgradeConfig;
 use App\Services\Common\SSHService;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\Setting\SystemUpgrade\SystemUpgradeSettingService;
 use App\Utils\CMS\SystemMessageService;
 use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
@@ -17,7 +17,7 @@ use Symfony\Component\Process\Process;
 class UpgradeController extends BaseController {
 
     public function index(Request $request): Factory|View|Application {
-        $record = SystemUpgradeSettingService::getRecord();
+        $record = SystemUpgradeConfig::getRecord();
         $larammerce_repo_address = $record->getLarammerceRepoAddress();
         $larammerce_theme_repo_address = $record->getLarammerceThemeRepoAddress();
         if ($request->session()->has("public_key")) {
@@ -35,7 +35,7 @@ class UpgradeController extends BaseController {
         $larammerce_repo_address = $request->get('larammerce_repo_address');
         $larammerce_theme_repo_address = $request->get('larammerce_theme_repo_address');
 
-        $record = SystemUpgradeSettingService::getRecord();
+        $record = SystemUpgradeConfig::getRecord();
         $record->setLarammerceRepoAddress($larammerce_repo_address);
         $record->setLarammerceThemeRepoAddress($larammerce_theme_repo_address);
 
@@ -46,7 +46,7 @@ class UpgradeController extends BaseController {
         }
 
         try {
-            SystemUpgradeSettingService::setRecord($record);
+            SystemUpgradeConfig::setRecord($record);
             if (isset($public_key)) {
                 return History::redirectBack()->with("public_key", $public_key);
             } else {
@@ -61,7 +61,7 @@ class UpgradeController extends BaseController {
     public function doUpgrade(Request $request) {
         ini_set('output_buffering','off');
         ini_set('zlib.output_compression','off');
-        $record = SystemUpgradeSettingService::getRecord();
+        $record = SystemUpgradeConfig::getRecord();
 
         $only_theme = $request->input('only_theme');
         $only_core = $request->input('only_core');

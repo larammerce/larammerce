@@ -16,7 +16,7 @@ Route::group(
     function () {
         Route::get("/", "AdminController@index");
 
-        //Setting
+        //FeatureConfig
         Route::group(["prefix" => "setting", "as" => "admin.setting."],
             function () {
                 Route::get("appliances", ["as" => "appliances", "uses" => "AdminController@settingAppliances"]);

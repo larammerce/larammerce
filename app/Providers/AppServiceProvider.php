@@ -2,12 +2,12 @@
 
 namespace App\Providers;
 
+use App\Features\Logistic\LogisticConfig;
 use App\Interfaces\FileHandlerInterface;
 use App\Interfaces\Repositories\SettingRepositoryInterface;
 use App\Repositories\Eloquent\SettingRepositoryEloquent;
 use App\Services\Common\EnvFile\EnvFileHandler;
 use App\Utils\CMS\RobotTxt\RobotTxtService;
-use App\Utils\CMS\Setting\Logistic\LogisticService;
 use App\Utils\Modal\ModalRouter;
 use App\Utils\Validation\ValidationRule;
 use Illuminate\Support\Facades\Blade;
@@ -52,7 +52,7 @@ class AppServiceProvider extends ServiceProvider
         Validator::extend('national_code', ValidationRule::class . '@nationalCode');
         Validator::extend('user_alphabet_rule', ValidationRule::class . '@alpha');
         Validator::extend('mobile_number', ValidationRule::class . '@mobileNumber');
-        Validator::extend('delivery_period', LogisticService::class . "@validateDeliveryPeriod");
+        Validator::extend('delivery_period', LogisticConfig::class . "@validateDeliveryPeriod");
     }
 
     /**

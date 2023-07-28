@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Utils\CMS\Setting\Logistic\LogisticService;
+use App\Features\Logistic\LogisticConfig;
 use App\Utils\Common\History;
-use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -23,8 +22,8 @@ class LogisticController extends BaseController
      */
     public function edit(): Factory|View|Application
     {
-        LogisticService::update();
-        $record = LogisticService::getRecord();
+        LogisticConfig::update();
+        $record = LogisticConfig::getRecord();
         $delivery_days = $record->getDeliveryDays();
         $delivery_hours = $record->getDeliveryHours();
         $delivery_table_cells = $record->getDeliveryTableCells();
@@ -64,7 +63,7 @@ class LogisticController extends BaseController
         $rows_available = $request->get('rows_available');
         $cells = json_decode($request->get('cells'), true);
         $hours = json_decode($request->get('hours'), true);
-        LogisticService::update($cells, $hours, $max_items_count, $max_total_price, $rows_offset, $rows_available);
+        LogisticConfig::update($cells, $hours, $max_items_count, $max_total_price, $rows_offset, $rows_available);
         return History::redirectBack();
     }
 
@@ -74,7 +73,7 @@ class LogisticController extends BaseController
     public function ajaxUpdateCells(Request $request): ?JsonResponse
     {
         if ($request->ajax()) {
-            $fresh_record = LogisticService::getRecord();
+            $fresh_record = LogisticConfig::getRecord();
             $fresh_delivery_table_cells = $fresh_record->getDeliveryTableCells();
             return response()->json(array('fresh_cells_array' => $fresh_delivery_table_cells));
         }

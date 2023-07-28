@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Features\Layout\LayoutConfig;
 use App\Interfaces\SystemLogInterface;
 use App\Traits\Searchable;
-use App\Utils\CMS\Setting\Layout\LayoutService;
 use Illuminate\Database\Eloquent\Builder;
 use Jenssegers\Mongodb\Eloquent\Model;
 use phpDocumentor\Reflection\Types\Integer;
@@ -52,7 +52,7 @@ class ActionLog extends Model implements SystemLogInterface
     public static function getPaginationCount(): int
     {
         if (is_array(static::$PAGINATION_COUNT)) {
-            $layoutMethod = LayoutService::getRecord(get_called_class())->getMethod();
+            $layoutMethod = LayoutConfig::getRecord(get_called_class())->getMethod();
             return static::$PAGINATION_COUNT[$layoutMethod];
         }
         return intval(static::$PAGINATION_COUNT);

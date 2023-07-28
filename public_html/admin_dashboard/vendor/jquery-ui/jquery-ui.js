@@ -4444,7 +4444,7 @@ var widgetsAccordion = $.widget( "ui.accordion", {
 
 		this._super( key, value );
 
-		// Setting collapsible: false while collapsed; open first panel
+		// FeatureConfig collapsible: false while collapsed; open first panel
 		if ( key === "collapsible" && !value && this.options.active === false ) {
 			this._activate( 0 );
 		}
@@ -12266,7 +12266,7 @@ $.widget( "ui.dialog", {
 			.hide()
 			.attr( {
 
-				// Setting tabIndex makes the div focusable
+				// FeatureConfig tabIndex makes the div focusable
 				tabIndex: -1,
 				role: "dialog"
 			} )
@@ -14190,7 +14190,7 @@ var widgetsSelectmenu = $.widget( "ui.selectmenu", [ $.ui.formResetMixin, {
 		}
 
 		// Support: IE
-		// Setting the text selection kills the button focus in IE, but
+		// FeatureConfig the text selection kills the button focus in IE, but
 		// restoring the focus doesn't kill the selection.
 		this.button.focus();
 	},
@@ -17572,7 +17572,7 @@ $.widget( "ui.tabs", {
 		if ( key === "collapsible" ) {
 			this._toggleClass( "ui-tabs-collapsible", null, value );
 
-			// Setting collapsible: false while collapsed; open first panel
+			// FeatureConfig collapsible: false while collapsed; open first panel
 			if ( !value && this.options.active === false ) {
 				this._activate( 0 );
 			}

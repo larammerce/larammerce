@@ -8,6 +8,7 @@ use App\Exceptions\Product\ProductPackageItemInvalidCountException;
 use App\Exceptions\Product\ProductPackageItemInvalidIdException;
 use App\Exceptions\Product\ProductPackageItemNotFoundException;
 use App\Exceptions\Product\ProductPackageNotExistsException;
+use App\Features\CustomerLocation\CustomerLocationSettingData;
 use App\Interfaces\CMSExposedNodeInterface;
 use App\Interfaces\HashInterface;
 use App\Interfaces\ImageOwnerInterface;
@@ -25,7 +26,6 @@ use App\Traits\Rateable;
 use App\Traits\Seoable;
 use App\Utils\CMS\AdminRequestService;
 use App\Utils\CMS\ProductService;
-use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationDataInterface;
 use App\Utils\Common\EmailService;
 use App\Utils\Common\ImageService;
 use App\Utils\Common\SMSService;
@@ -100,7 +100,7 @@ use Throwable;
  * @property integer maximum_allowed_purchase_count
  * @property integer minimum_allowed_purchase_count
  *
- * @property CustomerLocationDataInterface[] location_limitations
+ * @property CustomerLocationSettingData[] location_limitations
  * @property bool is_location_limited
  * @property bool can_deliver
  *

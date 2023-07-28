@@ -9,6 +9,8 @@
 use App\Enums\Directory\DirectoryType;
 use App\Enums\Invoice\PaymentStatus;
 use App\Enums\Setting\CMSSettingKey;
+use App\Features\Logistic\LogisticConfig;
+use App\Features\ShipmentCost\ShipmentCostConfig;
 use App\Models\Article;
 use App\Models\BaseModel;
 use App\Models\City;
@@ -28,7 +30,6 @@ use App\Models\ProductFilter;
 use App\Models\ProductQuery;
 use App\Models\PStructureAttrKey;
 use App\Models\PStructureAttrValue;
-use App\Models\Setting;
 use App\Models\State;
 use App\Models\SystemUser;
 use App\Models\User;
@@ -41,8 +42,6 @@ use App\Utils\CMS\File\ClipBoardService;
 use App\Utils\CMS\File\EmptyClipBoardException;
 use App\Utils\CMS\File\InvalidTypeException;
 use App\Utils\CMS\Platform\DetectService;
-use App\Utils\CMS\Setting\Logistic\LogisticService;
-use App\Utils\CMS\Setting\ShipmentCost\ShipmentCostService;
 use App\Utils\CMS\SystemMessageService;
 use App\Utils\Jalali\JDateTime;
 use App\Utils\PaymentManager\Provider;
@@ -1180,7 +1179,7 @@ if (!function_exists('get_breadcrumb')) {
 if (!function_exists('get_minimum_purchase_free_shipment')) {
     function get_minimum_purchase_free_shipment() {
         try {
-            return ShipmentCostService::getRecord()->getMinimumPurchaseFreeShipment();
+            return ShipmentCostConfig::getRecord()->getMinimumPurchaseFreeShipment();
         } catch (Exception $e) {
             Log::error('Message : ' . $e->getmessage());
             return 'not set';
@@ -1244,7 +1243,7 @@ if (!function_exists('h_view')) {
             $template = $template . "_mobile";
         elseif (request()->has("app") and request("app") and view()->exists($template . "_app"))
             $template = $template . "_app";
-        if (\App\Utils\CMS\Setting\Language\LanguageSettingService::isMultiLangSystem()) {
+        if (\App\Features\Language\LanguageConfig::isMultiLangSystem()) {
             $locale_template = $template . "___locale_" . app()->getLocale();
             if (\Illuminate\Support\Facades\View::exists($locale_template))
                 $template = $locale_template;
@@ -1255,13 +1254,13 @@ if (!function_exists('h_view')) {
 
 if (!function_exists("is_multi_lang")) {
     function is_multi_lang(): bool {
-        return \App\Utils\CMS\Setting\Language\LanguageSettingService::isMultiLangSystem();
+        return \App\Features\Language\LanguageConfig::isMultiLangSystem();
     }
 }
 
 if (!function_exists("is_rtl")) {
     function is_rtl() {
-        return \App\Utils\CMS\Setting\Language\LanguageSettingService::isRTLSystem();
+        return \App\Features\Language\LanguageConfig::isRTLSystem();
     }
 }
 
@@ -1283,7 +1282,7 @@ if (!function_exists('get_template_views')) {
 
 if (!function_exists("get_current_customer_location_title")) {
     function get_current_customer_location_title(): string {
-        $customer_location = \App\Utils\CMS\Setting\CustomerLocation\CustomerLocationService::getRecord();
+        $customer_location = \App\Features\CustomerLocation\CustomerLocationConfig::getRecord();
         if ($customer_location != null)
             return "{$customer_location->getState()->name}، {$customer_location->getCity()->name}";
         return "لطفا شهر و استان خود را مشخص کنید";
@@ -1292,7 +1291,7 @@ if (!function_exists("get_current_customer_location_title")) {
 
 if (!function_exists("get_current_customer_location_data")) {
     function get_current_customer_location_data(): ?array {
-        $customer_location = \App\Utils\CMS\Setting\CustomerLocation\CustomerLocationService::getRecord("");
+        $customer_location = \App\Features\CustomerLocation\CustomerLocationConfig::getRecord("");
         if ($customer_location != null)
             return [
                 "state_id" => $customer_location->getState()->id,
@@ -1393,7 +1392,7 @@ if (!function_exists("get_structure_sort_title")) {
 
 if (!function_exists("get_logistics_schedule")) {
     function get_logistics_schedule(bool $contains_disabled = true) {
-        $data = LogisticService::getPublicTableCells();
+        $data = LogisticConfig::getPublicTableCells();
         if (!$contains_disabled) {
             foreach ($data as $day_index => $day) {
                 $is_enabled = false;
@@ -1434,19 +1433,19 @@ if (!function_exists("get_max_transaction_amount")) {
 
 if (!function_exists("representative_get_options")) {
     function representative_get_options(): array {
-        return \App\Utils\CMS\Setting\Representative\RepresentativeSettingService::getOptions();
+        return \App\Features\Representative\RepresentativeConfig::getOptions();
     }
 }
 
 if (!function_exists("representative_is_enabled")) {
     function representative_is_enabled(): bool {
-        return \App\Utils\CMS\Setting\Representative\RepresentativeSettingService::isEnabled();
+        return \App\Features\Representative\RepresentativeConfig::isEnabled();
     }
 }
 
 if (!function_exists("representative_is_customer_representative_enabled")) {
     function representative_is_customer_representative_enabled(): bool {
-        return \App\Utils\CMS\Setting\Representative\RepresentativeSettingService::isCustomerRepresentativeEnabled();
+        return \App\Features\Representative\RepresentativeConfig::isCustomerRepresentativeEnabled();
     }
 }
 

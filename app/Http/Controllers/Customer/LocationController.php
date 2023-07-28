@@ -3,10 +3,10 @@
 
 namespace App\Http\Controllers\Customer;
 
+use App\Features\CustomerLocation\CustomerLocationConfig;
+use App\Features\CustomerLocation\CustomerLocationSettingData;
 use App\Models\City;
 use App\Models\State;
-use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationDataInterface;
-use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationService;
 use App\Utils\CMS\SystemMessageService;
 
 /**
@@ -22,7 +22,7 @@ class LocationController extends BaseController
     {
         $state = State::find(request()->get("state_id"));
         $city = City::find(request()->get("city_id"));
-        CustomerLocationService::setRecord(new CustomerLocationDataInterface($state, $city));
+        CustomerLocationConfig::setRecord(new CustomerLocationSettingData($state, $city));
         SystemMessageService::addSuccessMessage("system_messages.user.location_updated");
         return redirect()->back();
     }

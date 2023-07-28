@@ -8,14 +8,14 @@
 
 namespace App\Http\Middleware;
 
+use App\Features\Layout\LayoutConfig;
+use App\Features\Layout\LayoutSettingData;
+use App\Features\Pagination\PaginationConfig;
+use App\Features\Pagination\PaginationSettingData;
+use App\Features\Sort\SortConfig;
+use App\Features\Sort\SortSettingData;
 use App\Utils\CMS\ActionLogService;
 use App\Utils\CMS\Appliance\ApplianceService;
-use App\Utils\CMS\Setting\Layout\LayoutDataInterface;
-use App\Utils\CMS\Setting\Layout\LayoutService;
-use App\Utils\CMS\Setting\Pagination\PaginationDataInterface;
-use App\Utils\CMS\Setting\Pagination\PaginationService;
-use App\Utils\CMS\Setting\Sort\SortDataInterface;
-use App\Utils\CMS\Setting\Sort\SortService;
 use App\Utils\Reflection\Action;
 use App\Utils\Reflection\AnnotationBadKeyException;
 use App\Utils\Reflection\AnnotationBadScopeException;
@@ -85,12 +85,12 @@ class AdminRequestMiddleware
             $request->has(self::$sortFieldProperty) and
             $request->has(self::$sortMethodProperty)) {
 
-            $sortModel = new SortDataInterface();
+            $sortModel = new SortSettingData();
             $sortModel->setModelName($request->get(self::$sortModelProperty));
             $sortModel->setField($request->get(self::$sortFieldProperty));
             $sortModel->setMethod($request->get(self::$sortMethodProperty));
 
-            SortService::setRecord($sortModel);
+            SortConfig::setRecord($sortModel);
         }
     }
 
@@ -99,11 +99,11 @@ class AdminRequestMiddleware
         if ($request->has(self::$layoutMethodProperty) and
             $request->has(self::$layoutModelProperty)) {
 
-            $layoutModel = new LayoutDataInterface();
+            $layoutModel = new LayoutSettingData();
             $layoutModel->setModel($request->get(self::$layoutModelProperty));
             $layoutModel->setMethod($request->get(self::$layoutMethodProperty));
 
-            LayoutService::setRecord($layoutModel);
+            LayoutConfig::setRecord($layoutModel);
         }
     }
 
@@ -112,14 +112,14 @@ class AdminRequestMiddleware
         if ($request->has(self::$paginationModelProperty) and
             $request->has(self::$paginationPageProperty)) {
 
-            $paginationModel = new PaginationDataInterface();
+            $paginationModel = new PaginationSettingData();
             $paginationModel->setModel($request->get(self::$paginationModelProperty));
             $paginationModel->setPage($request->get(self::$paginationPageProperty));
 
             if ($request->has(self::$paginationParentIdProperty))
-                PaginationService::setRecord($paginationModel, $request->get(self::$paginationParentIdProperty));
+                PaginationConfig::setRecord($paginationModel, $request->get(self::$paginationParentIdProperty));
             else
-                PaginationService::setRecord($paginationModel);
+                PaginationConfig::setRecord($paginationModel);
         }
     }
 }

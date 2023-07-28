@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Features\Language\LanguageConfig;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\AdminRequestMiddleware;
 use App\Http\Middleware\CustomerGuestMiddleware;
@@ -17,7 +18,6 @@ use App\Http\Middleware\RuleMiddleware;
 use App\Http\Middleware\Translate;
 use App\Http\Middleware\VerifyCsrfToken;
 use App\Utils\CMS\AdminRequestService;
-use App\Utils\CMS\Setting\Language\LanguageSettingService;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 use Illuminate\Routing\Middleware\SubstituteBindings;
@@ -99,7 +99,7 @@ class Kernel extends HttpKernel
     {
         $new_request = $request;
         AdminRequestService::setInAdminArea($new_request);
-        $enabled_locales = LanguageSettingService::getEnabledLocalesFromEnvFile();
+        $enabled_locales = LanguageConfig::getEnabledLocalesFromEnvFile();
         if ($request->getMethod() == "GET" and !AdminRequestService::IsInAdminArea($request) and count($enabled_locales) > 1) {
             $request_segments = $request->segments();
             $locale = Arr::pull($request_segments, 0, "");

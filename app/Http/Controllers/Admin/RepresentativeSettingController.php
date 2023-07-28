@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Features\Representative\RepresentativeConfig;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\Setting\Representative\RepresentativeSettingService;
 use App\Utils\Common\History;
-use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -17,7 +16,7 @@ class RepresentativeSettingController extends BaseController
 
     public function edit(Request $request): Factory|View|Application
     {
-        $representative_setting = RepresentativeSettingService::getRecord();
+        $representative_setting = RepresentativeConfig::getRecord();
         return view("admin.pages.representative.edit", compact("representative_setting"));
     }
 
@@ -27,7 +26,7 @@ class RepresentativeSettingController extends BaseController
     public function update(Request $request): RedirectResponse
     {
         try {
-            RepresentativeSettingService::update(
+            RepresentativeConfig::update(
                 $request->get("is_enabled"),
                 $request->get("is_customer_representative_enabled"),
                 $request->get("options")

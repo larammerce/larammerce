@@ -6,13 +6,13 @@ use App\Enums\Invoice\PaymentType;
 use App\Enums\Invoice\ShipmentMethod;
 use App\Enums\Invoice\ShipmentStatus;
 use App\Enums\Product\PSAttrKeyShowType;
+use App\Features\Layout\LayoutConfig;
+use App\Features\Pagination\PaginationConfig;
+use App\Features\Sort\SortConfig;
 use App\Utils\CMS\Appliance\ApplianceService;
 use App\Utils\CMS\Enums\SortMethod;
 use App\Utils\CMS\File\ExploreService;
 use App\Utils\CMS\FormService;
-use App\Utils\CMS\Setting\Layout\LayoutService;
-use App\Utils\CMS\Setting\Pagination\PaginationService;
-use App\Utils\CMS\Setting\Sort\SortService;
 use App\Utils\CMS\Template\ContentTypes;
 use App\Utils\CMS\Template\TemplateService;
 use App\Utils\Common\ImageService;
@@ -270,10 +270,10 @@ return [
         'Image' => Intervention\Image\Facades\Image::class,
         'ApplianceService' => ApplianceService::class,
         'ExploreService' => ExploreService::class,
-        'LayoutService' => LayoutService::class,
-        'SortService' => SortService::class,
+        'LayoutConfig' => LayoutConfig::class,
+        'SortConfig' => SortConfig::class,
         'SortMethod' => SortMethod::class,
-        'PaginationService' => PaginationService::class,
+        'PaginationConfig' => PaginationConfig::class,
         'Directory' => Directory::class,
         'JDate' => JDate::class,
         'FormService' => FormService::class,

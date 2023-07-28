@@ -7435,7 +7435,7 @@ define(
 
     var never = constant(false);
     var always = constant(true);
-    
+
 
     return {
       noop: noop,
@@ -8114,11 +8114,11 @@ define(
   ],
 
   function (Arr) {
-    /* 
-     * NOTE: an `asyncValue` must have a `get` function which gets given a callback and calls 
+    /*
+     * NOTE: an `asyncValue` must have a `get` function which gets given a callback and calls
      * that callback with a value once it is ready
      *
-     * e.g 
+     * e.g
      * {
      *   get: function (callback) { callback(10); }
      * }
@@ -8202,12 +8202,12 @@ define(
   ],
 
   function (Fun, Option) {
-    /* The type signatures for Result 
+    /* The type signatures for Result
      * is :: this Result a -> a -> Bool
      * or :: this Result a -> Result a -> Result a
      * orThunk :: this Result a -> (_ -> Result a) -> Result a
      * map :: this Result a -> (a -> b) -> Result b
-     * each :: this Result a -> (a -> _) -> _ 
+     * each :: this Result a -> (a -> _) -> _
      * bind :: this Result a -> (a -> Result b) -> Result b
      * fold :: this Result a -> (_ -> b, a -> b) -> b
      * exists :: this Result a -> (a -> Bool) -> Bool
@@ -8222,7 +8222,7 @@ define(
 
     var value = function (o) {
       var is = function (v) {
-        return o === v;      
+        return o === v;
       };
 
       var or = function (opt) {
@@ -8260,7 +8260,7 @@ define(
       var toOption = function () {
         return Option.some(o);
       };
-     
+
       return {
         is: is,
         isValue: Fun.constant(true),
@@ -18193,7 +18193,7 @@ define(
 
     /** forge :: ([String], JsObj?) -> JsObj */
     var forge = function (parts, target) {
-      var o = target !== undefined ? target : Global;      
+      var o = target !== undefined ? target : Global;
       for (var i = 0; i < parts.length; ++i)
         o = step(o, parts[i]);
       return o;
@@ -18436,7 +18436,7 @@ define(
     var solaris = 'Solaris';
     var freebsd = 'FreeBSD';
 
-    // Though there is a bit of dupe with this and Browser, trying to 
+    // Though there is a bit of dupe with this and Browser, trying to
     // reuse code makes it much harder to follow and change.
     var isOS = function (name, current) {
       return function () {
@@ -18584,7 +18584,7 @@ define(
     var removeFromEnd = function (str, numChars) {
       return str.substring(0, str.length - numChars);
     };
- 
+
     return {
       addToStart: addToStart,
       addToEnd: addToEnd,
@@ -18682,7 +18682,7 @@ define(
     var ensureTrailing = function (str, prefix) {
       return endsWith(str, prefix) ? str : StrAppend.addToEnd(str, prefix);
     };
- 
+
     var contains = function(str, substr) {
       return str.indexOf(substr) !== -1;
     };
@@ -18713,7 +18713,7 @@ define(
       return checkRange(str, suffix, str.length - suffix.length);
     };
 
-   
+
     /** removes all leading and trailing spaces */
     var trim = function(str) {
       return str.replace(/^\s+|\s+$/g, '');
@@ -19625,7 +19625,7 @@ define(
               tmpRng.moveToElementText(marker);
             } else if (container.canHaveHTML) {
               // Empty node selection for example <div>|</div>
-              // Setting innerHTML with a span marker then remove that marker seems to keep empty block elements open
+              // FeatureConfig innerHTML with a span marker then remove that marker seems to keep empty block elements open
               container.innerHTML = '<span>&#xFEFF;</span>';
               marker = container.firstChild;
               tmpRng.moveToElementText(marker);
@@ -19968,7 +19968,7 @@ define(
   ],
 
   function (Arr, Fun, Obj, Option, BagUtils, Error, Object) {
-    
+
     return function (required, optional) {
       var everything = required.concat(optional);
       if (everything.length === 0) throw new Error('You must specify at least one required or optional field.');
@@ -20392,7 +20392,7 @@ define(
 
     var transferOne = function (source, destination, attr) {
       // NOTE: We don't want to clobber any existing attributes
-      if (has(source, attr) && !has(destination, attr)) set(destination, attr, get(source, attr));        
+      if (has(source, attr) && !has(destination, attr)) set(destination, attr, get(source, attr));
     };
 
     // Transfer attributes(attrs) from source to destination, unless they are already present

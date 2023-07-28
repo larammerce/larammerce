@@ -1,8 +1,8 @@
 <script>window.HAS_CHECKBOX_INPUT = true;</script>
 @php
     $related_model = request()->related_model?:$related_model;
-    $cached_attributes = \App\Utils\CMS\Setting\Excel\ExcelCacheService::getAttributes($related_model);
-    $cached_relations = \App\Utils\CMS\Setting\Excel\ExcelCacheService::getRelations($related_model);
+    $cached_attributes = \App\Services\FeatureConfig\FeatureConfig\Excel\ExcelCacheService::getAttributes($related_model);
+    $cached_relations = \App\Services\FeatureConfig\FeatureConfig\Excel\ExcelCacheService::getRelations($related_model);
 @endphp
     <!-- Modal -->
 <div id="excel-export-modal" class="modal fade" role="dialog" style="display: none">
@@ -81,10 +81,13 @@
                                 <div class="row">
                                     <div class="col-lg-4 col-md-4 col-sm-6 col-xs-6">
                                     <span class="material-switch pull-left ">
-                                        <input class="checkbox-input" id="{{$related_model_ex_attr_value}}" type="checkbox" value="1"
+                                        <input class="checkbox-input" id="{{$related_model_ex_attr_value}}"
+                                               type="checkbox" value="1"
                                                @if(in_array($related_model_ex_attr_value,$cached_attributes)) checked @endif/>
-                                        <label class="checkbox-input-label" for="{{$related_model_ex_attr_value}}"></label>
-                                        <input class="checkbox-input-hidden" id="{{$related_model_ex_attr_value}}_hidden" type="hidden"
+                                        <label class="checkbox-input-label"
+                                               for="{{$related_model_ex_attr_value}}"></label>
+                                        <input class="checkbox-input-hidden"
+                                               id="{{$related_model_ex_attr_value}}_hidden" type="hidden"
                                                value="0"/>
                                     </span>
                                     </div>

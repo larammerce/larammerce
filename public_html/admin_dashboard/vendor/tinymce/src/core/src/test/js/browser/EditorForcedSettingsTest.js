@@ -20,7 +20,7 @@ asynctest(
     }, {
       skin_url: '/project/src/skins/lightgray/dist/lightgray',
 
-      // Setting exposed as another forced setting
+      // FeatureConfig exposed as another forced setting
       inline: true,
 
       // Settings that are to be forced

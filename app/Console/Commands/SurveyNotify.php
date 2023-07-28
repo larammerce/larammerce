@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Features\Survey\SurveyConfig;
 use App\Models\Invoice;
-use App\Utils\CMS\Setting\Survey\SurveyService;
 use App\Utils\Common\SMSService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -43,7 +43,7 @@ class SurveyNotify extends Command
      */
     public function handle()
     {
-        $survey_config = SurveyService::getRecord();
+        $survey_config = SurveyConfig::getRecord();
         if (is_string($survey_config->getDefaultSurveyUrl()) and strlen($survey_config->getDefaultSurveyUrl()) > 0) {
             $un_notified_invoices = Invoice::where("is_active", true)->where("survey_notified_at", null)->get();
             $delay_days = $survey_config->getDefaultDelayDays();

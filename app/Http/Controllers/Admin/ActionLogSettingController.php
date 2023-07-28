@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 
+use App\Features\SystemLog\ActionLogConfig;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\Setting\SystemLog\ActionLogSettingService;
 use App\Utils\CMS\SystemMessageService;
 use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
@@ -22,7 +22,7 @@ class ActionLogSettingController extends BaseController
 {
     public function edit(): Factory|View|Application
     {
-        $record = ActionLogSettingService::getRecord();
+        $record = ActionLogConfig::getRecord();
         $is_enabled = $record->getIsEnabled();
         $log_period = $record->getLogPeriod();
         $enabled_controllers = $record->getEnabledControllers();
@@ -44,13 +44,13 @@ class ActionLogSettingController extends BaseController
         $log_period = $request->get('log_period');
         $enabled_controllers = json_decode($request->get('enabled_controllers'), true);
 
-        $record = ActionLogSettingService::getRecord();
+        $record = ActionLogConfig::getRecord();
         $record->setIsEnabled($is_enabled);
         $record->setLogPeriod($log_period);
         $record->setEnabledControllers($enabled_controllers);
         //dd($enabled_controllers);
         try {
-            ActionLogSettingService::setRecord($record);
+            ActionLogConfig::setRecord($record);
             return History::redirectBack();
         } catch (NotValidSettingRecordException $e) {
             SystemMessageService::addErrorMessage('system_messages.action_log_setting.invalid_record');

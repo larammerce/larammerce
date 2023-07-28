@@ -2,10 +2,10 @@
 
 namespace App\Services\Directory;
 
+use App\Features\CustomerLocation\CustomerLocationConfig;
+use App\Features\CustomerLocation\CustomerLocationSettingData;
 use App\Models\DirectoryLocation;
 use App\Models\Product;
-use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationDataInterface;
-use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationService;
 use Illuminate\Support\Collection;
 
 class DirectoryLocationService {
@@ -33,7 +33,7 @@ class DirectoryLocationService {
                     $result[$record->directory_id] = [];
                 }
 
-                $result[$record->directory_id][] = new CustomerLocationDataInterface($record->state, $record->city);
+                $result[$record->directory_id][] = new CustomerLocationSettingData($record->state, $record->city);
             }
 
             static::$CACHE[$function_cache_key] = $result;
@@ -60,7 +60,7 @@ class DirectoryLocationService {
 
     /**
      * @param Product $product
-     * @return CustomerLocationDataInterface[]
+     * @return CustomerLocationSettingData[]
      */
     public static function getProductLocationLimitations(Product $product): array {
         $directory_locations = static::getAllMappedByDirectoryId();
@@ -68,7 +68,7 @@ class DirectoryLocationService {
     }
 
     public static function canDeliverProduct(Product $product): bool {
-        $selected_location = CustomerLocationService::getRecord();
+        $selected_location = CustomerLocationConfig::getRecord();
 
         if(!static::isProductLocationLimited($product)){
             return true;

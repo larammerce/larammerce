@@ -3,10 +3,10 @@
 namespace App\Utils\CMS;
 
 use App\Exceptions\General\InvalidActionRequestException;
+use App\Features\SystemLog\ActionLogConfig;
 use App\Jobs\SaveSystemLog;
 use App\Models\ActionLog;
 use App\Models\User;
-use App\Utils\CMS\Setting\SystemLog\ActionLogSettingService;
 use App\Utils\Reflection\Action;
 use Exception;
 use Illuminate\Http\Request;
@@ -17,7 +17,7 @@ class ActionLogService
     public static function saveAction(Action $action, User $user, bool $is_allowed = true)
     {
         try {
-            if (ActionLogSettingService::isControllerEnabled($action->getClassName())) {
+            if (ActionLogConfig::isControllerEnabled($action->getClassName())) {
                 $request = $action->getRequest();
                 $action_log = new ActionLog();
                 if (isset($request) and $request instanceof Request) {

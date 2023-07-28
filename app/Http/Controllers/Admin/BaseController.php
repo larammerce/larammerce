@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Features\Pagination\PaginationConfig;
 use App\Http\Controllers\Controller;
-use App\Utils\CMS\Setting\Pagination\PaginationService;
 use Illuminate\Http\Request;
 
 /**
@@ -19,9 +19,9 @@ abstract class BaseController extends Controller
     public function setPageAttribute($parentId = null, ?string $model = null)
     {
         if ($this->getModel() !== null)
-            PaginationService::initiate($this->getModel(), $parentId);
+            PaginationConfig::initiate($this->getModel(), $parentId);
         else if ($model !== null)
-            PaginationService::initiate($model, $parentId);
+            PaginationConfig::initiate($model, $parentId);
     }
 
     public abstract function getModel(): ?string;

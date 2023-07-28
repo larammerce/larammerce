@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Utils\CMS\Setting\Logistic\LogisticService;
+use App\Features\Logistic\LogisticConfig;
 use Illuminate\Console\Command;
 
 class LogisticTableUpdate extends Command
@@ -38,6 +38,6 @@ class LogisticTableUpdate extends Command
      */
     public function handle()
     {
-        LogisticService::update();
+        LogisticConfig::update();
     }
 }

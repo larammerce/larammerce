@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Features\ShipmentCost\ShipmentCostConfig;
+use App\Features\ShipmentCost\ShipmentCostSettingData;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\Setting\ShipmentCost\ShipmentCostDataInterface;
-use App\Utils\CMS\Setting\ShipmentCost\ShipmentCostService;
 use App\Utils\CMS\SystemMessageService;
 use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
@@ -25,7 +25,7 @@ class ShipmentCostController extends BaseController
      */
     public function edit(): Factory|View|Application
     {
-        $shipment_cost_setting_record = ShipmentCostService::getRecord();
+        $shipment_cost_setting_record = ShipmentCostConfig::getRecord();
         return view("admin.pages.shipment-cost.edit")->with([
             "shipment_cost_model" => $shipment_cost_setting_record
         ]);
@@ -41,7 +41,7 @@ class ShipmentCostController extends BaseController
      */
     public function update(Request $request): RedirectResponse
     {
-        $record = new ShipmentCostDataInterface();
+        $record = new ShipmentCostSettingData();
         $record->setShipmentCost($request->get("shipment_cost"));
         $record->setMinimumPurchaseFreeShipment($request->get("minimum_purchase_free_shipment"));
         $items = $request->get("custom_states");
@@ -53,7 +53,7 @@ class ShipmentCostController extends BaseController
                     $record->putCustomState($item["state_id"], $item["shipment_cost"]);
             }
         try {
-            ShipmentCostService::setRecord($record);
+            ShipmentCostConfig::setRecord($record);
             return History::redirectBack();
         } catch (NotValidSettingRecordException $e) {
             SystemMessageService::addErrorMessage('system_messages.shipment_cost.invalid_record');

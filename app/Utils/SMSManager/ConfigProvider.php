@@ -2,10 +2,10 @@
 
 namespace App\Utils\SMSManager;
 
+use App\Features\SMSDriver\SMSDriverConfig;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\Setting\SMSDriver\SMSDriverService;
-use App\Utils\SMSManager\Drivers\File\Config as FileConfig;
 use App\Utils\SMSManager\Drivers\Farapayamak\Config as FaraparamakConfig;
+use App\Utils\SMSManager\Drivers\File\Config as FileConfig;
 use App\Utils\SMSManager\Drivers\Kavenegar\Config as KavenegarConfig;
 use App\Utils\SMSManager\Exceptions\SMSDriverInvalidConfigurationException;
 use App\Utils\SMSManager\Models\BaseSMSConfig;
@@ -26,7 +26,7 @@ class ConfigProvider
     {
         if (count(self::$CACHED_DATA) == 0 or !array_key_exists($driver_id, self::$CACHED_DATA))
         {
-            $sms_driver_setting_record = SMSDriverService::getRecord($driver_id);
+            $sms_driver_setting_record = SMSDriverConfig::getRecord($driver_id);
             self::$CACHED_DATA[$driver_id] = unserialize($sms_driver_setting_record->getConfigModel());
         }
         return self::$CACHED_DATA[$driver_id];
@@ -60,7 +60,7 @@ class ConfigProvider
                 foreach ($driver_config_data as $key => $value) {
                     $driver_config->$key = $value;
                 }
-                SMSDriverService::updateRecord($driver_id, serialize($driver_config));
+                SMSDriverConfig::updateRecord($driver_id, serialize($driver_config));
                 self::$CACHED_DATA[$driver_id] = $driver_config;
                 if (!$was_enabled and $driver_config->is_enabled)
                     $last_enabled_driver_id = $driver_id;
@@ -80,7 +80,7 @@ class ConfigProvider
         {
             $other_driver_config = self::getConfig($other_driver_id);
             $other_driver_config->is_enabled = false;
-            SMSDriverService::updateRecord($other_driver_id, serialize($other_driver_config));
+            SMSDriverConfig::updateRecord($other_driver_id, serialize($other_driver_config));
             self::$CACHED_DATA[$other_driver_id] = $other_driver_config;
         }
     }

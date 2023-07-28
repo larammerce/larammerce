@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Features\Language\LanguageConfig;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\Setting\Language\LanguageSettingService;
 use App\Utils\CMS\SystemMessageService;
 use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
@@ -24,7 +24,7 @@ class LanguageSettingController extends BaseController
      */
     public function edit(): Factory|View|Application
     {
-        $languages = LanguageSettingService::getAll();
+        $languages = LanguageConfig::getAll();
         return view("admin.pages.language.edit")->with([
             "languages" => $languages
         ]);
@@ -32,14 +32,14 @@ class LanguageSettingController extends BaseController
 
     /**
      * @rules(languages="required|array",
-     * dynamic_rules=\App\Utils\CMS\Setting\Language\LanguageSettingService::getRules(request('languages')))
+     * dynamic_rules=\App\Services\FeatureConfig\FeatureConfig\Language\LanguageConfig::getRules(request('languages')))
      * @role(super_user, cms_manager, acc_manager)
      */
     public function update(Request $request): RedirectResponse
     {
         $languages = $request->get("languages");
         try {
-            LanguageSettingService::setAll($languages);
+            LanguageConfig::setAll($languages);
             return History::redirectBack();
         } catch (NotValidSettingRecordException $e) {
             SystemMessageService::addErrorMessage('system_messages.language.invalid_record');

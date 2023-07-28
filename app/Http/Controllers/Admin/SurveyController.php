@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Features\Survey\SurveyConfig;
+use App\Features\Survey\SurveySettingData;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\Setting\Survey\SurveyDataInterface;
-use App\Utils\CMS\Setting\Survey\SurveyService;
 use App\Utils\CMS\SystemMessageService;
 use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
@@ -22,7 +22,7 @@ class SurveyController extends BaseController
 
     public function edit(): Factory|View|Application
     {
-        $survey_setting_record = SurveyService::getRecord();
+        $survey_setting_record = SurveyConfig::getRecord();
         return view("admin.pages.survey.edit")->with([
             "survey" => $survey_setting_record
         ]);
@@ -40,7 +40,7 @@ class SurveyController extends BaseController
      */
     public function update(Request $request): RedirectResponse
     {
-        $record = new SurveyDataInterface();
+        $record = new SurveySettingData();
         $record->setDefaultDelayDays($request->get("default_delay_days"));
         $record->setDefaultDelayHours($request->get("default_delay_hours"));
         $record->setDefaultSurveyUrl($request->get("default_survey_url"));
@@ -55,7 +55,7 @@ class SurveyController extends BaseController
             }
 
         try {
-            SurveyService::setRecord($record);
+            SurveyConfig::setRecord($record);
             return History::redirectBack();
         } catch (NotValidSettingRecordException $e) {
             SystemMessageService::addErrorMessage('system_messages.survey.invalid_record');

@@ -1,7 +1,7 @@
 <?php
 return [
     "appliances" => [
-        "setting" => "Setting",
+        "setting" => "FeatureConfig",
         "shop" => "Shop",
         "directory" => "File management",
         "analytic" => "Analysis",
@@ -16,7 +16,7 @@ return [
         "p_structure_attr_key_management" => "Product templates ID",
         "tag_management" => "Tags",
         "state_management" => "province",
-        "setting_management" => "Setting",
+        "setting_management" => "FeatureConfig",
         "gallery_management" => "Galleries",
         "web_form_management" => "Forms",
         "web_page_management" => "Web pages",

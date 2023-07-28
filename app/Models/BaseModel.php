@@ -8,9 +8,9 @@
 
 namespace App\Models;
 
+use App\Features\Layout\LayoutConfig;
 use App\Scopes\SortScope;
 use App\Utils\CMS\AdminRequestService;
-use App\Utils\CMS\Setting\Layout\LayoutService;
 use App\Utils\Jalali\JDate;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -135,7 +135,7 @@ abstract class BaseModel extends Model
 
     public static function getPaginationCount(): int {
         if (is_array(static::$PAGINATION_COUNT)) {
-            $layoutMethod = LayoutService::getRecord(get_called_class())->getMethod();
+            $layoutMethod = LayoutConfig::getRecord(get_called_class())->getMethod();
             return static::$PAGINATION_COUNT[$layoutMethod];
         }
         return intval(static::$PAGINATION_COUNT);

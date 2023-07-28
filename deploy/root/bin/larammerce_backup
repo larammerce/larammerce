@@ -67,7 +67,7 @@ send_email() {
     echo ${body} | sendemail -s ${SMTP_SERVER}:${SMTP_PORT} -f "Larammerce Backup Daemon <${SMTP_USER}>" -xu ${SMTP_USER} -xp ${SMTP_PASS} -t ${EMAIL} -u "${subject}" -o message-content-type=html
 }
 
-# Setting the trap
+# FeatureConfig the trap
 trap 'send_email "Backup failed on ${HOST}"' ERR
 
 echo -e "$(date +"%Y-%m-%d %H:%M:%S"): Finding projects...\n" | tee -a ${LOG_FILE}

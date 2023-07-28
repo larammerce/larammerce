@@ -1109,7 +1109,7 @@ define 'dropzone', ['jquery', 'underscore', 'tools'], (jQuery, _, tools) ->
         return
       file.upload =
         progress: 0
-        # Setting the total upload size to file.size for the beginning
+        # FeatureConfig the total upload size to file.size for the beginning
         # It's actual different than the size to be transmitted.
         total: file.size
         bytesSent: 0
@@ -1364,7 +1364,7 @@ define 'dropzone', ['jquery', 'underscore', 'tools'], (jQuery, _, tools) ->
       url = resolveOption @options.url, files
       xhr.open method, url, true
 
-      # Setting the timeout after open because of IE11 issue: https://gitlab.com/meno/dropzone/issues/8
+      # FeatureConfig the timeout after open because of IE11 issue: https://gitlab.com/meno/dropzone/issues/8
       xhr.timeout = resolveOption @options.timeout, files
 
       # Has to be after `.open()`. See https://github.com/enyo/dropzone/issues/179

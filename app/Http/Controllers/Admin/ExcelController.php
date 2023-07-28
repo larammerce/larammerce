@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Utils\CMS\Setting\Excel\ExcelCacheService;
-use App\Utils\CMS\Setting\Excel\ModelExport;
-use App\Utils\CMS\Setting\Excel\ModelImport;
+use App\Features\Excel\ExcelCacheConfig;
+use App\Features\Excel\ModelExport;
+use App\Features\Excel\ModelImport;
 use App\Utils\CMS\SystemMessageService;
 use App\Utils\Common\History;
+use App\Utils\Excel\Facades\Excel;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use App\Utils\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 /**
@@ -28,7 +28,7 @@ class ExcelController extends BaseController
         $relations = json_decode($request->get('exporting_relations'), true);
         if (count($fields ?? []) > 0 || count($relations ?? []) > 0) {
             $model_name = $request->get('model_name');
-            ExcelCacheService::update($model_name, $fields, $relations);
+            ExcelCacheConfig::update($model_name, $fields, $relations);
             $file_name = get_model_entity_name($model_name) . '.xlsx';
             return Excel::download(
                 new ModelExport(

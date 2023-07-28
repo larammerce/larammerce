@@ -10,12 +10,12 @@ namespace App\Services\Invoice;
 
 
 use App\Enums\Setting\CMSSettingKey;
+use App\Features\ShipmentCost\ShipmentCostConfig;
 use App\Models\CustomerAddress;
 use App\Models\Invoice;
 use App\Services\Setting\SettingService;
 use App\Utils\CMS\AdminRequestService;
 use App\Utils\CMS\Cart\Provider as CartProvider;
-use App\Utils\CMS\Setting\ShipmentCost\ShipmentCostService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -62,7 +62,7 @@ class NewInvoiceService
 
     public function getStandardShipmentCost($state_id = 0): int {
         try {
-            $shipment_cost_model = ShipmentCostService::getRecord();
+            $shipment_cost_model = ShipmentCostConfig::getRecord();
             $custom_states = $shipment_cost_model->getCustomStates();
             if ($state_id !== 0 and array_key_exists($state_id, $custom_states))
                 return $custom_states[$state_id]["shipment_cost"];
@@ -74,7 +74,7 @@ class NewInvoiceService
 
     public function getMinimumPurchaseFreeShipment(): int {
         try {
-            return ShipmentCostService::getRecord()->getMinimumPurchaseFreeShipment();
+            return ShipmentCostConfig::getRecord()->getMinimumPurchaseFreeShipment();
         } catch (Exception $e) {
             return 1000000000;
         }
