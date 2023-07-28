@@ -6,6 +6,8 @@ use App\Exceptions\Setting\CMSRecordNotFoundException;
 use App\Interfaces\Repositories\SettingRepositoryInterface;
 use App\Models\Setting;
 use Exception;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
 class SettingRepositoryEloquent implements SettingRepositoryInterface
@@ -29,5 +31,20 @@ class SettingRepositoryEloquent implements SettingRepositoryInterface
             }
         }
         return $result;
+    }
+
+    public function getAllCMSRecords(): array|Collection {
+        $cache_key = "SettingRepositoryEloquent.getAllCMSRecords";
+        if (Cache::tags(static::CACHE_TAGS)->has($cache_key)) {
+            $result = Cache::tags(static::CACHE_TAGS)->get($cache_key);
+        } else {
+            $result = Setting::cmsRecords()->get();
+            Cache::tags(static::CACHE_TAGS)->put($cache_key, $result, 1);
+        }
+        return $result;
+    }
+
+    public function getAllCMSRecordsPaginated(): LengthAwarePaginator {
+        return Setting::cmsRecords()->paginate(Setting::getPaginationCount());
     }
 }

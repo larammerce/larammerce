@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Interfaces\Repositories\SettingRepositoryInterface;
 use App\Models\Setting;
 use App\Utils\Common\History;
 use App\Utils\Common\RequestService;
@@ -17,14 +18,21 @@ use Illuminate\Http\Request;
  */
 class SettingController extends BaseController
 {
+    private SettingRepositoryInterface $setting_repository;
+
+    public function __construct(SettingRepositoryInterface $setting_repository) {
+        parent::__construct();
+
+        $this->setting_repository = $setting_repository;
+    }
+
     /**
      * @role(super_user, cms_manager)
      */
     public function index(): Factory|View|Application
     {
         parent::setPageAttribute();
-        $settings = Setting::with(['user'])->userSettings()->nonSystemSettings()->orderBy("key", "ASC")
-            ->paginate(Setting::getPaginationCount());
+        $settings = $this->setting_repository->getAllCMSRecordsPaginated();
         return view('admin.pages.setting.index', compact('settings'));
     }
 

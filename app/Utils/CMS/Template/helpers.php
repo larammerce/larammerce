@@ -406,13 +406,9 @@ if (!function_exists('directory_url')) {
 
 if (!function_exists('is_directory_group_manual')) {
     function is_directory_group_manual(): bool {
-        $settingVal = null;
-        try {
-            $settingVal = Setting::getCMSRecord('is_directory_group_manual');
-        } catch (Exception $e) {
-            return false;
-        }
-        return $settingVal->value !== "false";
+        /** @var SettingService $setting_service */
+        $setting_service = app(SettingService::class);
+        return $setting_service->getCMSSettingAsBool('is_directory_group_manual');
     }
 }
 
@@ -1213,22 +1209,17 @@ if (!function_exists('get_inquiry_call_number')) {
      * @deprecated
      */
     function get_inquiry_call_number(): string {
-        try {
-            return Setting::getCMSRecord(CMSSettingKey::INQUIRY_CALL_NUMBER)->value;
-        } catch (Exception $e) {
-            Log::error('Message : ' . $e->getmessage());
-            return 'not set';
-        }
+        /** @var SettingService $setting_service */
+        $setting_service = app(SettingService::class);
+        return $setting_service->getCMSSettingAsString(CMSSettingKey::INQUIRY_CALL_NUMBER);
     }
 }
 
 if (!function_exists('customer_can_edit_profile')) {
     function customer_can_edit_profile(): bool {
-        try {
-            return strtolower(Setting::getCMSRecord(CMSSettingKey::CUSTOMER_CAN_EDIT_PROFILE)->value) === "true";
-        } catch (Exception $e) {
-            return true;
-        }
+        /** @var SettingService $setting_service */
+        $setting_service = app(SettingService::class);
+        return $setting_service->getCMSSettingAsBool(CMSSettingKey::CUSTOMER_CAN_EDIT_PROFILE);
     }
 }
 
@@ -1276,12 +1267,9 @@ if (!function_exists("is_rtl")) {
 
 if (!function_exists('get_cms_setting')) {
     function get_cms_setting(string $key): string {
-        try {
-            $setting = Setting::getCMSRecord($key);
-            return $setting->value;
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return "";
-        }
+        /** @var SettingService $setting_service */
+        $setting_service = app(SettingService::class);
+        return $setting_service->getCMSSettingAsString($key);
     }
 }
 

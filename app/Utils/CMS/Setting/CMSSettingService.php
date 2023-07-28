@@ -78,9 +78,9 @@ class CMSSettingService {
         if (!isset(static::$CACHED_RECORDS[static::LOCAL_KEY][$key])) {
             if ($driver == DataSourceDriver::DATABASE) {
                 try {
-                    static::$CACHED_RECORDS[static::LOCAL_KEY][$key] = Setting::localData()->systemSettings()->where("key", $key)->firstOrFail();
+                    static::$CACHED_RECORDS[static::LOCAL_KEY][$key] = Setting::personalItems()->systemSettings()->where("key", $key)->firstOrFail();
                 } catch (Exception $e) {
-                    Setting::localData()->systemSettings()->where("key", $key)->delete();
+                    Setting::personalItems()->systemSettings()->where("key", $key)->delete();
                     //Log::error("CMSSettingService.getLocal.DATABASE." . $e->getMessage());
                     static::$CACHED_RECORDS[static::LOCAL_KEY][$key] = null;
                 }

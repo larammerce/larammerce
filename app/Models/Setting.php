@@ -20,8 +20,8 @@ use Illuminate\Support\Facades\Schema;
  *
  * @property User user
  *
- * @method static Builder globalData()
- * @method static Builder localData()
+ * @method static Builder globalItems()
+ * @method static Builder personalItems()
  * @method static Builder systemSettings()
  * @method static Builder nonSystemSettings()
  * @method static Builder userSettings()
@@ -72,32 +72,32 @@ class Setting extends Model
         return $this->belongsTo(User::class, "user_id");
     }
 
-    public function scopeGlobalData(Builder $query) {
+    public function scopeGlobalItems(Builder $query): Builder {
         return $query->whereNull("user_id");
     }
 
-    public function scopeLocalData(Builde $query) {
+    public function scopePersonalItems(Builder $query): Builder {
         return $query->where("user_id", Auth::user()->id);
     }
 
-    public function scopeSystemSettings(Builder $query) {
+    public function scopeSystemSettings(Builder $query): Builder {
         return $query->where("is_system_setting", true);
     }
 
-    public function scopeNonSystemSettings(Builder $query) {
+    public function scopeNonSystemSettings(Builder $query): Builder {
         return $query->where("is_system_setting", false);
     }
 
-    public function scopeUserSettings(Builder $query) {
-        return $query->where("user_id", null)->orWhere("user_id", "=", Auth::user()->id);
+    public function scopeUserSettings(Builder $query): Builder {
+        return $query->where("user_id", "=", Auth::user()->id);
     }
 
-    public function scopeCMSRecords(Builder $query) {
-        return $query->globalData()->nonSystemSettings();
+    public function scopeCMSRecords(Builder $query): Builder {
+        return $query->globalItems()->nonSystemSettings();
     }
 
     public function scopeClassicSearch(Builder $builder, array $term): Builder {
-        $builder->userSettings()->nonSystemSettings();
+        $builder->globalItems()->nonSystemSettings();
         foreach ($term as $key => $value) {
             if ($value !== null && in_array($key, static::$SEARCHABLE_FIELDS)) {
                 $builder->where($key, 'LIKE', '%' . $value . '%');
@@ -106,7 +106,7 @@ class Setting extends Model
         return $builder;
     }
 
-    public static function getPaginationCount() {
+    public static function getPaginationCount(): int {
         return self::$PAGINATION_COUNT;
     }
 
@@ -114,7 +114,7 @@ class Setting extends Model
         return static::$SEARCHABLE_FIELDS;
     }
 
-    public function getSearchUrl() {
+    public function getSearchUrl(): string {
         return '';
     }
 
