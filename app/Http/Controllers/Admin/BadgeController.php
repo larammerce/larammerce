@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
+use App\Helpers\RequestHelper;
 use App\Models\Badge;
-use App\Utils\Common\History;
-use App\Utils\Common\RequestService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -21,7 +21,7 @@ class BadgeController extends BaseController
      */
     public function index(): View|Factory|JsonResponse|Application
     {
-        if (RequestService::isRequestAjax()) {
+        if (RequestHelper::isRequestAjax()) {
             return response()->json(Badge::all());
         }
 
@@ -69,7 +69,7 @@ class BadgeController extends BaseController
             $badge->setImagePath();
         }
 
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     public function destroy(Badge $badge): RedirectResponse
@@ -78,7 +78,7 @@ class BadgeController extends BaseController
             $badge->removeImage();
         }
         $badge->delete();
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
 

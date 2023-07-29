@@ -86,11 +86,11 @@ class ConfigProvider
     }
 
     /**
-     * @throws \App\Utils\Reflection\AnnotationNotFoundException
-     * @throws \App\Utils\Reflection\AnnotationSyntaxException
+     * @throws \App\Libraries\Reflection\AnnotationNotFoundException
+     * @throws \App\Libraries\Reflection\AnnotationSyntaxException
      * @throws SMSDriverInvalidConfigurationException
-     * @throws \App\Utils\Reflection\AnnotationBadScopeException
-     * @throws \App\Utils\Reflection\AnnotationBadKeyException
+     * @throws \App\Libraries\Reflection\AnnotationBadScopeException
+     * @throws \App\Libraries\Reflection\AnnotationBadKeyException
      * @throws \ReflectionException
      */
     public static function getRules($drivers): array

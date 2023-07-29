@@ -8,8 +8,8 @@
 
 namespace App\Http\Middleware;
 
-use App\Utils\Common\RequestService;
-use App\Utils\Reflection\Action;
+use App\Helpers\RequestHelper;
+use App\Libraries\Reflection\Action;
 use Closure;
 
 /**
@@ -24,14 +24,14 @@ class JsonMiddleware
      * @param  \Illuminate\Http\Request $request
      * @param  \Closure $next
      * @return mixed
-     * @throws \App\Utils\Reflection\AnnotationBadKeyException
-     * @throws \App\Utils\Reflection\AnnotationBadScopeException
-     * @throws \App\Utils\Reflection\AnnotationSyntaxException
+     * @throws \App\Libraries\Reflection\AnnotationBadKeyException
+     * @throws \App\Libraries\Reflection\AnnotationBadScopeException
+     * @throws \App\Libraries\Reflection\AnnotationSyntaxException
      * @throws \ReflectionException
      */
     public function handle($request, Closure $next)
     {
-        if (!RequestService::isRequestAjax($request)) {
+        if (!RequestHelper::isRequestAjax($request)) {
             return response()->json(Action::withRequest($request));
         }
         return $next($request);

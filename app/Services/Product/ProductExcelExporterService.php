@@ -2,13 +2,13 @@
 
 namespace App\Services\Product;
 
+use App\Libraries\Excel\Concerns\FromCollection;
+use App\Libraries\Excel\Concerns\ShouldAutoSize;
+use App\Libraries\Excel\Concerns\WithEvents;
+use App\Libraries\Excel\Concerns\WithHeadings;
+use App\Libraries\Excel\Events\AfterSheet;
 use App\Models\PStructure;
 use Illuminate\Support\Collection;
-use App\Utils\Excel\Concerns\FromCollection;
-use App\Utils\Excel\Concerns\ShouldAutoSize;
-use App\Utils\Excel\Concerns\WithEvents;
-use App\Utils\Excel\Concerns\WithHeadings;
-use App\Utils\Excel\Events\AfterSheet;
 
 class ProductExcelExporterService implements WithHeadings, FromCollection, ShouldAutoSize, WithEvents {
 

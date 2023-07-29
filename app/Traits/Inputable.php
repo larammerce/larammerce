@@ -2,11 +2,11 @@
 
 namespace App\Traits;
 
-use App\Utils\Reflection\AnnotationBadKeyException;
-use App\Utils\Reflection\AnnotationBadScopeException;
-use App\Utils\Reflection\AnnotationNotFoundException;
-use App\Utils\Reflection\AnnotationSyntaxException;
-use App\Utils\Reflection\ReflectiveProperty;
+use App\Libraries\Reflection\AnnotationBadKeyException;
+use App\Libraries\Reflection\AnnotationBadScopeException;
+use App\Libraries\Reflection\AnnotationNotFoundException;
+use App\Libraries\Reflection\AnnotationSyntaxException;
+use App\Libraries\Reflection\ReflectiveProperty;
 use Illuminate\Support\Str;
 use ReflectionException;
 
@@ -18,10 +18,10 @@ trait Inputable
 {
     /**
      * @throws AnnotationSyntaxException
-     * @throws AnnotationBadScopeException
+     * @throws \App\Libraries\Reflection\AnnotationBadScopeException
      * @throws AnnotationBadKeyException
      * @throws ReflectionException
-     * @throws AnnotationNotFoundException
+     * @throws \App\Libraries\Reflection\AnnotationNotFoundException
      */
     public function __get(string $name)
     {
@@ -34,9 +34,9 @@ trait Inputable
 
     /**
      * @throws AnnotationSyntaxException
-     * @throws AnnotationNotFoundException
+     * @throws \App\Libraries\Reflection\AnnotationNotFoundException
      * @throws AnnotationBadKeyException
-     * @throws AnnotationBadScopeException
+     * @throws \App\Libraries\Reflection\AnnotationBadScopeException
      * @throws ReflectionException
      */
     public function getInputType($name){
@@ -51,10 +51,10 @@ trait Inputable
     }
 
     /**
-     * @throws AnnotationSyntaxException
-     * @throws AnnotationNotFoundException
+     * @throws \App\Libraries\Reflection\AnnotationSyntaxException
+     * @throws \App\Libraries\Reflection\AnnotationNotFoundException
      * @throws AnnotationBadKeyException
-     * @throws AnnotationBadScopeException
+     * @throws \App\Libraries\Reflection\AnnotationBadScopeException
      * @throws ReflectionException
      */
     public function getInputData(): array
@@ -72,7 +72,7 @@ trait Inputable
 
     /**
      * @throws AnnotationSyntaxException
-     * @throws AnnotationNotFoundException
+     * @throws \App\Libraries\Reflection\AnnotationNotFoundException
      * @throws AnnotationBadKeyException
      * @throws AnnotationBadScopeException
      * @throws ReflectionException

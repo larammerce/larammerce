@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
+use App\Helpers\SystemMessageHelper;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\SystemMessageService;
-use App\Utils\Common\History;
 use App\Utils\PaymentManager\ConfigProvider;
 use App\Utils\PaymentManager\Exceptions\PaymentInvalidDriverException;
 use Illuminate\Contracts\Foundation\Application;
@@ -43,12 +43,12 @@ class PaymentDriverController extends BaseController
             $request->file("drivers")) : $request->get("drivers");
         try {
             ConfigProvider::setAll($drivers);
-            return History::redirectBack();
+            return HistoryHelper::redirectBack();
         } catch (NotValidSettingRecordException $e) {
-            SystemMessageService::addErrorMessage('system_messages.payment_driver.invalid_record');
+            SystemMessageHelper::addErrorMessage('system_messages.payment_driver.invalid_record');
             return redirect()->back()->withInput();
         } catch (PaymentInvalidDriverException $e) {
-            SystemMessageService::addErrorMessage('system_messages.payment_driver.invalid_driver');
+            SystemMessageHelper::addErrorMessage('system_messages.payment_driver.invalid_driver');
             return redirect()->back()->withInput();
         }
     }
@@ -61,10 +61,10 @@ class PaymentDriverController extends BaseController
         try {
             ConfigProvider::removeFile($driver_id);
         } catch (NotValidSettingRecordException $e) {
-            SystemMessageService::addErrorMessage('system_messages.payment_driver.invalid_record');
+            SystemMessageHelper::addErrorMessage('system_messages.payment_driver.invalid_record');
             return back()->withInput();
         } catch (PaymentInvalidDriverException $e) {
-            SystemMessageService::addErrorMessage('system_messages.payment_driver.invalid_driver');
+            SystemMessageHelper::addErrorMessage('system_messages.payment_driver.invalid_driver');
             return back()->withInput();
         }
         return back();

@@ -3,12 +3,12 @@
 namespace App\Features\Excel;
 
 
-use App\Utils\Excel\Concerns\FromQuery;
-use App\Utils\Excel\Concerns\ShouldAutoSize;
-use App\Utils\Excel\Concerns\WithEvents;
-use App\Utils\Excel\Concerns\WithHeadings;
-use App\Utils\Excel\Concerns\WithMapping;
-use App\Utils\Excel\Events\AfterSheet;
+use App\Libraries\Excel\Concerns\FromQuery;
+use App\Libraries\Excel\Concerns\ShouldAutoSize;
+use App\Libraries\Excel\Concerns\WithEvents;
+use App\Libraries\Excel\Concerns\WithHeadings;
+use App\Libraries\Excel\Concerns\WithMapping;
+use App\Libraries\Excel\Events\AfterSheet;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\DB;

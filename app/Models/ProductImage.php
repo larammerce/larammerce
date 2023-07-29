@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Interfaces\ImageOwnerInterface;
-use App\Utils\Translation\Traits\Translatable;
+use App\Libraries\Translation\Traits\Translatable;
 
 /**
  *

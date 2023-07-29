@@ -9,10 +9,10 @@
 namespace App\Features\Sort;
 
 use App\Common\BaseFeatureConfig;
+use App\Helpers\EloquentModelHelper;
 use App\Utils\CMS\Enums\DataSourceDriver;
 use App\Utils\CMS\Enums\SettingType;
 use App\Utils\CMS\Enums\SortMethod;
-use App\Utils\Common\ModelService;
 use stdClass;
 
 /**
@@ -26,13 +26,13 @@ class SortConfig extends BaseFeatureConfig
 
     protected static function validateName($name): bool
     {
-        return ModelService::isValidModel($name);
+        return EloquentModelHelper::isValidModel($name);
     }
 
     public static function defaultRecord($name): SortSettingData
     {
         $default = new SortSettingData();
-        $default->setModelName(ModelService::className($name));
+        $default->setModelName(EloquentModelHelper::className($name));
         $default->setField('id');
         $default->setMethod(SortMethod::ASCENDING);
 
@@ -44,7 +44,7 @@ class SortConfig extends BaseFeatureConfig
         $current = self::getRecord($name);
         if (static::validateName($name)) {
             $sortable_fields = null;
-            $name = ModelService::model($name);
+            $name = EloquentModelHelper::model($name);
             eval("\$sortable_fields = ${name}::getSortableFields();");
             return array_map(function ($sortableField) use ($current) {
                 $result = new stdClass();

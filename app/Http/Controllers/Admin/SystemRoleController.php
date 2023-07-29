@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
+use App\Helpers\RequestHelper;
 use App\Models\SystemRole;
-use App\Utils\Common\History;
-use App\Utils\Common\RequestService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -25,7 +25,7 @@ class SystemRoleController extends BaseController
     {
         parent::setPageAttribute();
 
-        if (RequestService::isRequestAjax()) {
+        if (RequestHelper::isRequestAjax()) {
             return response()->json(SystemRole::all());
         }
 
@@ -67,7 +67,7 @@ class SystemRoleController extends BaseController
     public function update(Request $request, SystemRole $system_role): RedirectResponse
     {
         $system_role->update($request->all());
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**

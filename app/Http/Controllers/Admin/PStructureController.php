@@ -2,20 +2,19 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
+use App\Helpers\RequestHelper;
+use App\Helpers\ResponseHelper;
+use App\Libraries\Excel\Facades\Excel;
 use App\Models\PAttr;
 use App\Models\PStructure;
 use App\Services\Product\ProductExcelExporterService;
 use App\Services\Product\ProductExcelImporterService;
-use App\Utils\Common\History;
-use App\Utils\Common\MessageFactory;
-use App\Utils\Common\RequestService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use App\Utils\Excel\Facades\Excel;
-use Matrix\Exception;
 
 /**
  * @package App\Http\Controllers\Admin
@@ -63,7 +62,7 @@ class PStructureController extends BaseController
      */
     public function update(Request $request, PStructure $p_structure): RedirectResponse {
         $p_structure->update($request->all());
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**
@@ -90,8 +89,8 @@ class PStructureController extends BaseController
      */
     public function attachAttributeKey(Request $request, PStructure $p_structure): JsonResponse|RedirectResponse {
         $p_structure->attributeKeys()->attach($request->get('id'));
-        if (RequestService::isRequestAjax()) {
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax()) {
+            return response()->json(ResponseHelper::create(
                 ['messages.p_structure.attribute_key_attached'], 200,
                 compact('p_structure')
             ), 200);
@@ -106,8 +105,8 @@ class PStructureController extends BaseController
     public function detachAttributeKey(Request $request, PStructure $p_structure): JsonResponse|RedirectResponse {
         $p_structure->attributeKeys()->detach($request->get('id'));
         PAttr::clean($p_structure->products, $request->get('id'));
-        if (RequestService::isRequestAjax()) {
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax()) {
+            return response()->json(ResponseHelper::create(
                 ['messages.p_structure.attribute_key_detached'], 200,
                 compact('p_structure')
             ), 200);

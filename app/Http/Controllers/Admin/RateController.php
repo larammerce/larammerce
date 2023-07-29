@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
 use App\Models\Rate;
-use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -45,7 +45,7 @@ class RateController extends BaseController
     {
         $rate->update($request->all());
         $rate->save();
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**

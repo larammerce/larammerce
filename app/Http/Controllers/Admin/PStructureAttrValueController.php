@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
 use App\Models\PStructureAttrKey;
 use App\Models\PStructureAttrValue;
-use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -82,7 +82,7 @@ class PStructureAttrValueController extends BaseController
         $p_structure_attr_value->update($request->all());
         if ($request->hasFile('image'))
             $p_structure_attr_value->setImagePath();
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**

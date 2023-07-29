@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
+use App\Helpers\RequestHelper;
 use App\Models\Modal;
-use App\Utils\Common\History;
-use App\Utils\Common\RequestService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -21,7 +21,7 @@ class ModalController extends BaseController
      */
     public function index(): View|Factory|JsonResponse|Application
     {
-        if (RequestService::isRequestAjax()) {
+        if (RequestHelper::isRequestAjax()) {
             return response()->json(Modal::all());
         }
 
@@ -72,7 +72,7 @@ class ModalController extends BaseController
             $modal->setImagePath();
         }
 
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     public function destroy(Modal $modal): RedirectResponse
@@ -81,7 +81,7 @@ class ModalController extends BaseController
             $modal->removeImage();
         }
         $modal->delete();
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
 

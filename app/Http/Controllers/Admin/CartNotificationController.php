@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Features\CartNotification\CartNotificationConfig;
 use App\Features\CartNotification\CartNotificationSettingData;
+use App\Helpers\HistoryHelper;
+use App\Helpers\SystemMessageHelper;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\SystemMessageService;
-use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -48,9 +48,9 @@ class CartNotificationController extends BaseController
 
         try {
             CartNotificationConfig::setRecord($record);
-            return History::redirectBack();
+            return HistoryHelper::redirectBack();
         } catch (NotValidSettingRecordException $e) {
-            SystemMessageService::addErrorMessage('system_messages.cart_notification.invalid_record');
+            SystemMessageHelper::addErrorMessage('system_messages.cart_notification.invalid_record');
             return redirect()->back()->withInput();
         }
 

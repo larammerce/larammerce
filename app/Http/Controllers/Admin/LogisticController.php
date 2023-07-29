@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Features\Logistic\LogisticConfig;
-use App\Utils\Common\History;
+use App\Helpers\HistoryHelper;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -64,7 +64,7 @@ class LogisticController extends BaseController
         $cells = json_decode($request->get('cells'), true);
         $hours = json_decode($request->get('hours'), true);
         LogisticConfig::update($cells, $hours, $max_items_count, $max_total_price, $rows_offset, $rows_available);
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**

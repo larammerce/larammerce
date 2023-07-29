@@ -2,7 +2,7 @@
 
 namespace App\Exceptions;
 
-use App\Utils\CMS\AdminRequestService;
+use App\Helpers\AdminRequestHelper;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Request;
@@ -53,7 +53,7 @@ class Handler extends ExceptionHandler
             Log::error("http_request:token_mismatch_exception:ip:" . $request->ip());
             return redirect()->back();
         }
-        if ($e instanceof HttpException and !AdminRequestService::isInAdminArea()) {
+        if ($e instanceof HttpException and !AdminRequestHelper::isInAdminArea()) {
             $error_code = $e->getStatusCode();
             if ($error_code === 503 and view()->exists('public.unreachable'))
                 $template = 'public.unreachable';

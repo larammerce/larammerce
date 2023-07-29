@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
+use App\Helpers\RequestHelper;
+use App\Helpers\ResponseHelper;
 use App\Models\Tag;
-use App\Utils\Common\History;
-use App\Utils\Common\MessageFactory;
-use App\Utils\Common\RequestService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\View\Factory;
@@ -49,8 +49,8 @@ class TagController extends BaseController
     public function store(Request $request): JsonResponse|RedirectResponse
     {
         $item = Tag::create($request->all());
-        if (RequestService::isRequestAjax($request)) {
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax($request)) {
+            return response()->json(ResponseHelper::create(
                 ['messages.tag.tag_added'], 200, compact('item')
             ), 200);
         }
@@ -74,7 +74,7 @@ class TagController extends BaseController
     public function update(Request $request, Tag $tag): RedirectResponse
     {
         $tag->update($request->all());
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**
@@ -93,8 +93,8 @@ class TagController extends BaseController
     public function query(Request $request): \Response|Response|JsonResponse|Application|ResponseFactory
     {
         $collection = Tag::where('name', 'like', '%' . $request->input('query') . '%')->get();
-        if (RequestService::isRequestAjax()) {
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax()) {
+            return response()->json(ResponseHelper::create(
                 [], 200, compact('collection')
             ), 200);
         }

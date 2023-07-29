@@ -6,12 +6,12 @@ use App\Exceptions\Product\ProductPackageItemInvalidCountException;
 use App\Exceptions\Product\ProductPackageItemInvalidIdException;
 use App\Exceptions\Product\ProductPackageItemNotFoundException;
 use App\Exceptions\Product\ProductPackageNotExistsException;
+use App\Helpers\HistoryHelper;
+use App\Helpers\RequestHelper;
+use App\Helpers\ResponseHelper;
+use App\Helpers\SystemMessageHelper;
 use App\Models\Product;
 use App\Models\ProductPackage;
-use App\Utils\CMS\SystemMessageService;
-use App\Utils\Common\History;
-use App\Utils\Common\MessageFactory;
-use App\Utils\Common\RequestService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -45,18 +45,18 @@ class ProductPackageController extends BaseController
         try {
             if ($product->is_package and $request->has('product_items'))
                 $product->syncPackageItems($request->get('product_items'));
-            return History::redirectBack();
+            return HistoryHelper::redirectBack();
         } catch (ProductPackageNotExistsException $exception) {
-            SystemMessageService::addErrorMessage('system_messages.product_package.not_exists');
+            SystemMessageHelper::addErrorMessage('system_messages.product_package.not_exists');
             return redirect()->back()->withInput();
         } catch (ProductPackageItemNotFoundException $exception) {
-            SystemMessageService::addErrorMessage('system_messages.product_package.item_not_found');
+            SystemMessageHelper::addErrorMessage('system_messages.product_package.item_not_found');
             return redirect()->back()->withInput();
         } catch (ProductPackageItemInvalidIdException $exception) {
-            SystemMessageService::addErrorMessage('system_messages.product_package.item_invalid_id');
+            SystemMessageHelper::addErrorMessage('system_messages.product_package.item_invalid_id');
             return redirect()->back()->withInput();
         } catch (ProductPackageItemInvalidCountException $exception) {
-            SystemMessageService::addErrorMessage('system_messages.product_package.item_invalid_count');
+            SystemMessageHelper::addErrorMessage('system_messages.product_package.item_invalid_count');
             return redirect()->back()->withInput();
         }
     }
@@ -69,14 +69,14 @@ class ProductPackageController extends BaseController
     {
         if (!$product->is_package) {
             $product->productPackages()->attach($request->get('id'));
-            if (RequestService::isRequestAjax()) {
-                return response()->json(MessageFactory::create(
+            if (RequestHelper::isRequestAjax()) {
+                return response()->json(ResponseHelper::create(
                     ['messages.product_package.product_attached'], 200, compact('product')
                 ), 200);
             }
         } else {
-            if (RequestService::isRequestAjax()) {
-                return response()->json(MessageFactory::create(
+            if (RequestHelper::isRequestAjax()) {
+                return response()->json(ResponseHelper::create(
                     ['messages.product_package.product_not_attached'], 400, compact('product')
                 ), 400);
             }
@@ -92,14 +92,14 @@ class ProductPackageController extends BaseController
     {
         if (!$product->is_package) {
             $product->productPackages()->detach($request->get('id'));
-            if (RequestService::isRequestAjax()) {
-                return response()->json(MessageFactory::create(
+            if (RequestHelper::isRequestAjax()) {
+                return response()->json(ResponseHelper::create(
                     ['messages.product_package.product_detached'], 200, compact('product')
                 ), 200);
             }
         } else {
-            if (RequestService::isRequestAjax()) {
-                return response()->json(MessageFactory::create(
+            if (RequestHelper::isRequestAjax()) {
+                return response()->json(ResponseHelper::create(
                     ['messages.product_package.product_not_detached'], 400, compact('product')
                 ), 400);
             }

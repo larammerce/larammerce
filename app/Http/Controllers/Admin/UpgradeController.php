@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Features\SystemUpgrade\SystemUpgradeConfig;
-use App\Services\Common\SSHService;
+use App\Helpers\HistoryHelper;
+use App\Helpers\SSHHelper;
+use App\Helpers\SystemMessageHelper;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\SystemMessageService;
-use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -42,19 +42,19 @@ class UpgradeController extends BaseController {
         $domains = $this->extractDomains([$larammerce_repo_address, $larammerce_theme_repo_address]);
 
         if ($request->has("create_key")) {
-            $public_key = SSHService::addSSHKey($domains);
+            $public_key = SSHHelper::addSSHKey($domains);
         }
 
         try {
             SystemUpgradeConfig::setRecord($record);
             if (isset($public_key)) {
-                return History::redirectBack()->with("public_key", $public_key);
+                return HistoryHelper::redirectBack()->with("public_key", $public_key);
             } else {
-                return History::redirectBack();
+                return HistoryHelper::redirectBack();
             }
         } catch (NotValidSettingRecordException $e) {
-            SystemMessageService::addErrorMessage('system_messages.system_upgrade.invalid_record');
-            return History::redirectBack()->withInput();
+            SystemMessageHelper::addErrorMessage('system_messages.system_upgrade.invalid_record');
+            return HistoryHelper::redirectBack()->withInput();
         }
     }
 

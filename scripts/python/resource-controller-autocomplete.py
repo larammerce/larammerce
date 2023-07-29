@@ -1,5 +1,5 @@
 import re
-namespace = "namespace App\\Http\\Controllers\\Admin"
+namespace = "namespace Larammerce\\Http\\Controllers\\Admin"
 path = "app/Http/Controllers/Admin"
 
 
@@ -8,10 +8,10 @@ variable_name = lambda s: '$' + s[:1].lower() + s[1:] if s else ''
 def write_header_to_controller(cf, mn):
 	cf.write("<?php\n\n")
 	cf.write(namespace+";\n\n")
-	cf.write("use App\\Models\\{};\n".format(mn))
+	cf.write("use Larammerce\\Models\\{};\n".format(mn))
 	cf.write("use Illuminate\\Http\\Request;\n\n")
-	cf.write("use App\\Http\\Requests;\n")
-	cf.write("use App\\Http\\Controllers\\Controller;\n\n")
+	cf.write("use Larammerce\\Http\\Requests;\n")
+	cf.write("use Larammerce\\Http\\Controllers\\Controller;\n\n")
 
 def generate_class_definition(cf, mn):
 	cf.write("class {}Controller extends Controller\n".format(mn))

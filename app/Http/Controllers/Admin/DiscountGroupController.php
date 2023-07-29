@@ -4,9 +4,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
 use App\Models\DiscountGroup;
 use App\Models\ProductFilter;
-use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -75,7 +75,7 @@ class DiscountGroupController extends BaseController
     public function update(Request $request, DiscountGroup $discount_group)
     {
         $discount_group->update($request->all());
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**
@@ -85,7 +85,7 @@ class DiscountGroupController extends BaseController
     {
         $discount_group->is_active = !($discount_group->is_active);
         $discount_group->save();
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**

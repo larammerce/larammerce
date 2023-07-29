@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Helpers\ImageHelper;
 use App\Interfaces\ImageOwnerInterface;
-use App\Utils\Common\ImageService;
-use App\Utils\Translation\Traits\Translatable;
+use App\Libraries\Translation\Traits\Translatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\View;
 
@@ -59,7 +59,7 @@ class Modal extends BaseModel implements ImageOwnerInterface
     }
 
     public function setImagePath() {
-        $tmpImage = ImageService::saveImage($this->getImageCategoryName());
+        $tmpImage = ImageHelper::saveImage($this->getImageCategoryName());
         $this->image_path = $tmpImage->destinationPath . '/' . $tmpImage->name;
         $this->save();
     }

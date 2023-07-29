@@ -6,11 +6,11 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Enums\Directory\DirectoryType;
+use App\Helpers\HistoryHelper;
+use App\Helpers\SMSHelper;
 use App\Models\Directory;
 use App\Models\DiscountCard;
 use App\Models\DiscountGroup;
-use App\Utils\Common\History;
-use App\Utils\Common\SMSService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -131,7 +131,7 @@ class DiscountCardController extends BaseController
     {
         $discount_card->is_active = !($discount_card->is_active);
         $discount_card->save();
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**
@@ -145,7 +145,7 @@ class DiscountCardController extends BaseController
                     $template = "sms-discount-percent";
                 else
                     $template = "sms-discount-toman";
-                SMSService::send($template, $discount_card->customer->main_phone,
+                SMSHelper::send($template, $discount_card->customer->main_phone,
                     [
                         "discountCardGroupValue" => $discount_card->group->value,
                         "discountCardCode" => $discount_card->code,
@@ -159,7 +159,7 @@ class DiscountCardController extends BaseController
                 Log::error("discount_card.notify_customer.{$discount_card->customer->id} : " . $e->getMessage());
             }
         }
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     public function getModel(): ?string

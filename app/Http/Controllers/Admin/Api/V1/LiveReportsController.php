@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Admin\Api\V1;
 
 use App\Enums\Directory\DirectoryType;
 use App\Enums\Invoice\PaymentStatus;
+use App\Helpers\ResponseHelper;
+use App\Libraries\Jalali\JDateTime;
 use App\Models\Directory;
 use App\Models\Invoice;
 use App\Models\User;
-use App\Utils\Common\MessageFactory;
-use App\Utils\Jalali\JDateTime;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -133,7 +133,7 @@ class LiveReportsController extends BaseController {
             ->where("created_at", "<=", $end_date)
             ->sum("sum");
 
-        return MessageFactory::jsonResponse([], 200, compact("amount"));
+        return ResponseHelper::jsonResponse([], 200, compact("amount"));
     }
 
     public function getYesterdaySalesAmount(): JsonResponse {
@@ -144,7 +144,7 @@ class LiveReportsController extends BaseController {
             ->where("created_at", "<=", $end_date)
             ->sum("sum");
 
-        return MessageFactory::jsonResponse([], 200, compact("amount"));
+        return ResponseHelper::jsonResponse([], 200, compact("amount"));
     }
 
     public function getMonthlySalesAmount(): JsonResponse {
@@ -155,7 +155,7 @@ class LiveReportsController extends BaseController {
             ->where("created_at", "<=", $end_date)
             ->sum("sum");
 
-        return MessageFactory::jsonResponse([], 200, compact("amount"));
+        return ResponseHelper::jsonResponse([], 200, compact("amount"));
     }
 
     public function getYearlySalesAmount(): JsonResponse {
@@ -166,7 +166,7 @@ class LiveReportsController extends BaseController {
             ->where("created_at", "<=", $end_date)
             ->sum("sum");
 
-        return MessageFactory::jsonResponse([], 200, compact("amount"));
+        return ResponseHelper::jsonResponse([], 200, compact("amount"));
     }
 
     public function getPreviousYearSalesAmount(): JsonResponse {
@@ -177,7 +177,7 @@ class LiveReportsController extends BaseController {
             ->where("created_at", "<=", $end_date)
             ->sum("sum");
 
-        return MessageFactory::jsonResponse([], 200, compact("amount"));
+        return ResponseHelper::jsonResponse([], 200, compact("amount"));
     }
 
     public function getOverallBarChartData(): JsonResponse {
@@ -222,7 +222,7 @@ class LiveReportsController extends BaseController {
                 ->count();
         }
 
-        return MessageFactory::jsonResponse([], 200, compact("labels", "datasets"));
+        return ResponseHelper::jsonResponse([], 200, compact("labels", "datasets"));
     }
 
     public function getOverallSalesBarChartData(): JsonResponse {
@@ -248,36 +248,36 @@ class LiveReportsController extends BaseController {
                 ->sum("sum");
         }
 
-        return MessageFactory::jsonResponse([], 200, compact("labels", "datasets"));
+        return ResponseHelper::jsonResponse([], 200, compact("labels", "datasets"));
     }
 
     public function getMonthlyCategoriesSales(): JsonResponse {
         list($start_date, $end_date) = $this->getCurrentMonthRange();
         $rows = $this->getCategoriesSalesAmount($start_date, $end_date);
-        return MessageFactory::jsonResponse([], 200, compact("rows"));
+        return ResponseHelper::jsonResponse([], 200, compact("rows"));
     }
 
     public function getYearlyCategoriesSales(): JsonResponse {
         list($start_date, $end_date) = $this->getCurrentYearRange();
         $rows = $this->getCategoriesSalesAmount($start_date, $end_date);
-        return MessageFactory::jsonResponse([], 200, compact("rows"));
+        return ResponseHelper::jsonResponse([], 200, compact("rows"));
     }
 
     public function getPreviousYearCategoriesSales(): JsonResponse {
         list($start_date, $end_date) = $this->getPreviousYearRange();
         $rows = $this->getCategoriesSalesAmount($start_date, $end_date);
-        return MessageFactory::jsonResponse([], 200, compact("rows"));
+        return ResponseHelper::jsonResponse([], 200, compact("rows"));
     }
 
     public function getLatestCustomers(): JsonResponse {
         $rows = User::where("is_customer_user", true)->orderBy("created_at", "desc")->limit(10)->get();
-        return MessageFactory::jsonResponse([], 200, compact("rows"));
+        return ResponseHelper::jsonResponse([], 200, compact("rows"));
     }
 
     public function getLatestPayedOrders(): JsonResponse {
         $rows = Invoice::with(["customer.user"])->whereIn("payment_status", [PaymentStatus::SUBMITTED, PaymentStatus::CONFIRMED, PaymentStatus::PAID_OUT])
             ->orderBy("created_at", "desc")->limit(10)->get();
-        return MessageFactory::jsonResponse([], 200, compact("rows"));
+        return ResponseHelper::jsonResponse([], 200, compact("rows"));
     }
 
     public function getCategoriesAvailability(): JsonResponse {
@@ -314,7 +314,7 @@ class LiveReportsController extends BaseController {
             $datasets[$raw_result->is_active]["data"][$curr_index] = $raw_result->count;
         }
 
-        return MessageFactory::jsonResponse([], 200, compact("labels", "datasets"));
+        return ResponseHelper::jsonResponse([], 200, compact("labels", "datasets"));
     }
 
     public function getOverallCreatedProductsPerCategory() {
@@ -368,7 +368,7 @@ class LiveReportsController extends BaseController {
             }
         }
 
-        return MessageFactory::jsonResponse([], 200, compact("labels", "datasets"));
+        return ResponseHelper::jsonResponse([], 200, compact("labels", "datasets"));
     }
 
     public function getModel(): ?string {

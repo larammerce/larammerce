@@ -14,7 +14,6 @@ use App\Models\Setting;
 use App\Utils\CMS\Enums\DataSourceDriver;
 use App\Utils\CMS\Enums\SettingType;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\Common\ModelService;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -32,7 +31,7 @@ abstract class BaseFeatureConfig
     private static array $CACHED_RECORDS = [];
 
     protected static function getKey($name, $parent_id = null): string {
-        return Str::snake(ModelService::className($name)) . static::$KEY_POSTFIX . (($parent_id == null) ? '' : "_{$parent_id}");
+        return Str::snake(\App\Helpers\EloquentModelHelper::className($name)) . static::$KEY_POSTFIX . (($parent_id == null) ? '' : "_{$parent_id}");
     }
 
     /**

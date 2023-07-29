@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
+use App\Helpers\RequestHelper;
 use App\Models\Color;
-use App\Utils\Common\History;
-use App\Utils\Common\RequestService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -25,7 +25,7 @@ class ColorController extends BaseController
     {
         parent::setPageAttribute();
 
-        if (RequestService::isRequestAjax())
+        if (RequestHelper::isRequestAjax())
             return response()->json(Color::all());
 
         $colors = Color::paginate(Color::getPaginationCount());
@@ -78,7 +78,7 @@ class ColorController extends BaseController
         $color->update($request->all());
         if ($request->hasFile('image'))
             $color->setImagePath();
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**

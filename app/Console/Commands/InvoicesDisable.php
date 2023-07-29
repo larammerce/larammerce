@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Helpers\SMSHelper;
 use App\Models\Invoice;
-use App\Utils\Common\SMSService;
 use Illuminate\Console\Command;
 
 class InvoicesDisable extends Command
@@ -60,7 +60,7 @@ class InvoicesDisable extends Command
      */
     public function notifyCustomer(Invoice $invoice)
     {
-        SMSService::send(
+        SMSHelper::send(
             "sms-invoice-disabled",
             $invoice->customer->main_phone,
             [

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
+use App\Helpers\RequestHelper;
 use App\Interfaces\Repositories\SettingRepositoryInterface;
 use App\Models\Setting;
-use App\Utils\Common\History;
-use App\Utils\Common\RequestService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -51,7 +51,7 @@ class SettingController extends BaseController
     public function store(Request $request): RedirectResponse
     {
         if ($request->has('is_private'))
-            RequestService::setAttr('user_id', auth('web')->id());
+            RequestHelper::setAttr('user_id', auth('web')->id());
         Setting::create($request->all());
         return redirect()->route('admin.setting.index');
     }
@@ -71,9 +71,9 @@ class SettingController extends BaseController
      */
     public function update(Request $request, Setting $setting): RedirectResponse
     {
-        RequestService::setAttr('user_id', $request->get('is_private') ? auth('web')->id() : null);
+        RequestHelper::setAttr('user_id', $request->get('is_private') ? auth('web')->id() : null);
         $setting->update($request->all());
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**

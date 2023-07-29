@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
+use App\Libraries\Reflection\ReflectiveNamespace;
 use App\Models\User;
-use App\Utils\Common\History;
-use App\Utils\Reflection\ReflectiveNamespace;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\View\Factory;
@@ -23,7 +23,7 @@ class AdminController extends BaseController
 
     public function nullMethod(): RedirectResponse
     {
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     public function index(): RedirectResponse
@@ -68,7 +68,7 @@ class AdminController extends BaseController
                     'scope' => 'scope_classic_search'
                 ]);
             } catch (InvalidArgumentException $e) {
-                return History::redirectBack();
+                return HistoryHelper::redirectBack();
             }
 
         } else {

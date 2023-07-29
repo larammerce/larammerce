@@ -5,10 +5,10 @@ namespace App\Utils\PaymentManager;
 
 use App\Enums\Invoice\PaymentStatus;
 use App\Enums\Invoice\ShipmentStatus;
+use App\Helpers\EmailHelper;
+use App\Helpers\SystemMessageHelper;
 use App\Models\Invoice;
 use App\Models\Payment;
-use App\Utils\CMS\SystemMessageService;
-use App\Utils\Common\EmailService;
 use App\Utils\FinancialManager\Factory as FinManFactory;
 use App\Utils\PaymentManager\Exceptions\PaymentCallbackInvalidParametersException;
 use App\Utils\PaymentManager\Exceptions\PaymentConnectionException;
@@ -63,7 +63,7 @@ class PaymentController extends BaseController
                 return abort(400, "system_messages.payment.invalid_invoice");
 
             if ($invoice->shipment_status > ShipmentStatus::WAITING_TO_CONFIRM) {
-                SystemMessageService::addWarningMessage("system_messages.payment.invoice_not_payable");
+                SystemMessageHelper::addWarningMessage("system_messages.payment.invoice_not_payable");
                 throw new PaymentInvoiceProblemException("The payment in status " .
                     "{$invoice->shipment_status} can not be payed", $invoice->id);
             }
@@ -71,7 +71,7 @@ class PaymentController extends BaseController
             if (!$driver->isSuccessful($payment->amount, $payment->id, $payment_data)) {
                 $payment->payment_data = $payment_data;
                 $payment->save();
-                SystemMessageService::addWarningMessage('system_messages.payment.failed');
+                SystemMessageHelper::addWarningMessage('system_messages.payment.failed');
                 throw new PaymentInvoiceProblemException("The payment is not successful.",
                     $invoice->id);
             }
@@ -90,14 +90,14 @@ class PaymentController extends BaseController
                 $invoice->payment_status = PaymentStatus::FAILED;
                 $invoice->payment_id = $paymentTrackingCode;
                 $invoice->save();
-                SystemMessageService::addErrorMessage("system_messages.payment.failed");
+                SystemMessageHelper::addErrorMessage("system_messages.payment.failed");
                 throw new PaymentInvoiceProblemException($e->getMessage(), $invoice->id);
             } catch (PaymentInvalidParametersException $e) {
             }
 
             if ($driver->getStatus($payment->amount, $payment->id, $payment->payment_data) !==
                 PaymentStatus::CONFIRMED) {
-                SystemMessageService::addWarningMessage("system_messages.payment.not_verified");
+                SystemMessageHelper::addWarningMessage("system_messages.payment.not_verified");
                 throw new PaymentInvoiceProblemException("The payment is not verified",
                     $invoice->id);
             }
@@ -117,13 +117,13 @@ class PaymentController extends BaseController
                     $driver->finalizePayment($payment->amount, $payment->id, $payment->payment_data);
                 $payment->save();
 
-                SystemMessageService::addSuccessMessage("system_messages.payment.successful");
+                SystemMessageHelper::addSuccessMessage("system_messages.payment.successful");
 
                 if (config('mail-notifications.invoices.new_invoice_payment')) {
                     $subject = 'سفارش جدید';
                     $emailAddress = config('mail-notifications.invoices.related_mail');
                     $template = "public.mail-new-invoice-payment-notification";
-                    EmailService::send([
+                    EmailHelper::send([
                         "data" => Invoice::find($invoice->id),
                     ], $template, $emailAddress, $emailAddress, $subject);
                 }
@@ -139,13 +139,13 @@ class PaymentController extends BaseController
                     $invoice->payment_id = $paymentTrackingCode;
                     $invoice->save();
 
-                    SystemMessageService::addErrorMessage("system_messages.payment.reject_failed");
+                    SystemMessageHelper::addErrorMessage("system_messages.payment.reject_failed");
                     throw new PaymentInvoiceProblemException($e->getMessage(), $invoice->id);
                 }
 
                 if ($driver->getStatus($payment->amount, $payment->id, $payment->payment_data) !==
                     PaymentStatus::CHARGED_BACK) {
-                    SystemMessageService::addWarningMessage("system_messages.payment.reject_failed");
+                    SystemMessageHelper::addWarningMessage("system_messages.payment.reject_failed");
                     throw new PaymentInvoiceProblemException("The payment is not rejected",
                         $invoice->id);
                 }
@@ -154,7 +154,7 @@ class PaymentController extends BaseController
                 $invoice->payment_status = PaymentStatus::CHARGED_BACK;
                 $invoice->save();
 
-                SystemMessageService::addWarningMessage("system_messages.payment.rejected");
+                SystemMessageHelper::addWarningMessage("system_messages.payment.rejected");
             }
 
             return redirect()->route('customer.invoice.show-checkout', $invoice);

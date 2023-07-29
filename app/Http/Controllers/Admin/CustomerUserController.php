@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
+use App\Helpers\RequestHelper;
+use App\Helpers\SystemMessageHelper;
 use App\Models\CustomerUser;
 use App\Models\User;
-use App\Utils\CMS\SystemMessageService;
-use App\Utils\Common\History;
-use App\Utils\Common\RequestService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -49,15 +49,15 @@ class CustomerUserController extends BaseController
      */
     public function store(Request $request): RedirectResponse|Response
     {
-        RequestService::setAttr('is_initiated', true);
-        RequestService::setAttr('is_active', false);
+        RequestHelper::setAttr('is_initiated', true);
+        RequestHelper::setAttr('is_active', false);
         $customer = CustomerUser::create($request->all());
         $customer->user->update(['is_customer_user' => true]);
 
         if ($customer->user->saveFinManCustomer())
             $customer->update(['is_active' => true]);
         else
-            SystemMessageService::addErrorMessage("messages.customer_user.activation_failed");
+            SystemMessageHelper::addErrorMessage("messages.customer_user.activation_failed");
 
         return redirect()->route('admin.customer-user.edit');
     }
@@ -89,7 +89,7 @@ class CustomerUserController extends BaseController
     {
         $customer_user->update($request->all());
         $customer_user->user->updateFinManCustomer();
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**
@@ -109,8 +109,8 @@ class CustomerUserController extends BaseController
         if ($customer_user->user->saveFinManCustomer())
             $customer_user->update(['is_active' => true]);
         else
-            SystemMessageService::addErrorMessage("messages.customer_user.activation_failed");
-        return History::redirectBack();
+            SystemMessageHelper::addErrorMessage("messages.customer_user.activation_failed");
+        return HistoryHelper::redirectBack();
     }
 
 

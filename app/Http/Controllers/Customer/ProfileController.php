@@ -9,11 +9,12 @@
 namespace App\Http\Controllers\Customer;
 
 
+use App\Helpers\HistoryHelper;
+use App\Helpers\RequestHelper;
+use App\Helpers\SystemMessageHelper;
 use App\Jobs\SendEmail;
-use App\Utils\CMS\SystemMessageService;
-use App\Utils\Common\History;
-use App\Utils\Common\RequestService;
-use App\Utils\OneTimeCode\{GenerateCodeNotPossibleException, Provider as OneTimeCodeProvider};
+use App\Libraries\OneTimeCode\{Provider as OneTimeCodeProvider};
+use App\Libraries\OneTimeCode\GenerateCodeNotPossibleException;
 use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -32,7 +33,7 @@ class ProfileController extends BaseController
     {
         $customerUser = get_customer_user();
         if ($customerUser->wasLegalPerson()) {
-            SystemMessageService::addErrorMessage("system_messages.user.type_change_not_available");
+            SystemMessageHelper::addErrorMessage("system_messages.user.type_change_not_available");
             return redirect()->back();
         }
 
@@ -41,7 +42,7 @@ class ProfileController extends BaseController
             $is_legal_person = session()->get("is_legal_person");
 
         session()->put("is_legal_person", !$is_legal_person);
-        SystemMessageService::addSuccessMessage("system_messages.user.type_changed");
+        SystemMessageHelper::addSuccessMessage("system_messages.user.type_changed");
         return redirect()->back();
     }
 
@@ -71,11 +72,11 @@ class ProfileController extends BaseController
      */
     public function update(Request $request): RedirectResponse
     {
-        RequestService::setAttr('birthday_str',
+        RequestHelper::setAttr('birthday_str',
             $request->get('birthday_year') . '/' . $request->get('birthday_month') . '/' .
             $request->get('birthday_day')
         );
-        RequestService::setAttr('is_initiated', true);
+        RequestHelper::setAttr('is_initiated', true);
 
         $user_exceptions = ['main_phone'];
         $customer_exceptions = [];
@@ -98,7 +99,7 @@ class ProfileController extends BaseController
             $user->save();
             $user->customerUser->save();
         } else {
-            SystemMessageService::addErrorMessage("system_messages.user.edit.error_occurred");
+            SystemMessageHelper::addErrorMessage("system_messages.user.edit.error_occurred");
             return redirect()->route('customer.profile.show-edit-profile')->withInput();
         }
 
@@ -116,14 +117,14 @@ class ProfileController extends BaseController
             if ($result) {
                 $user->customerUser->legalInfo->fill(['is_active', true]);
             } else {
-                SystemMessageService::addErrorMessage("system_messages.user.edit.error_occurred");
+                SystemMessageHelper::addErrorMessage("system_messages.user.edit.error_occurred");
                 return redirect()->route('customer.profile.show-edit-profile')->withInput();
             }
             $user->customerUser->legalInfo->save();
         }
 
-        SystemMessageService::addSuccessMessage('system_messages.user.profile_updated');
-        return History::redirectBack(redirect()->route('customer.profile.index'));
+        SystemMessageHelper::addSuccessMessage('system_messages.user.profile_updated');
+        return HistoryHelper::redirectBack(redirect()->route('customer.profile.index'));
     }
 
     public function showChangePassword()
@@ -143,7 +144,7 @@ class ProfileController extends BaseController
         $user->password = bcrypt($request->get("new_password"));
         $user->save();
 
-        SystemMessageService::addSuccessMessage('system_messages.user.password_changed');
+        SystemMessageHelper::addSuccessMessage('system_messages.user.password_changed');
         return redirect()->route('customer.profile.index');
     }
 
@@ -162,9 +163,9 @@ class ProfileController extends BaseController
             );
             $this->dispatch($job);
 
-            SystemMessageService::addInfoMessage("system_messages.user.confirm_email_sent");
+            SystemMessageHelper::addInfoMessage("system_messages.user.confirm_email_sent");
         } catch (GenerateCodeNotPossibleException $e) {
-            SystemMessageService::addErrorMessage('system_messages.one_time_code.repeated_request',
+            SystemMessageHelper::addErrorMessage('system_messages.one_time_code.repeated_request',
                 OneTimeCodeProvider::formatRemainingTimeByKey($user->id));
         }
     }

@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
+use App\Helpers\RequestHelper;
+use App\Helpers\ResponseHelper;
 use App\Models\Article;
 use App\Models\Directory;
 use App\Utils\CMS\File\ExploreService;
-use App\Utils\CMS\SiteMap\Provider as SiteMapProvider;
-use App\Utils\Common\History;
-use App\Utils\Common\MessageFactory;
-use App\Utils\Common\RequestService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -120,7 +119,7 @@ class ArticleController extends BaseController
 
         $article->updateReview();
 
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**
@@ -129,7 +128,7 @@ class ArticleController extends BaseController
     public function destroy(Article $article): RedirectResponse
     {
         $article->delete();
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**
@@ -159,8 +158,8 @@ class ArticleController extends BaseController
     public function attachTag(Request $request, Article $article): RedirectResponse|JsonResponse
     {
         $article->tags()->attach($request->get('id'));
-        if (RequestService::isRequestAjax()) {
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax()) {
+            return response()->json(ResponseHelper::create(
                 ['messages.article.tag_attached'], 200, compact('article')
             ), 200);
         }
@@ -174,8 +173,8 @@ class ArticleController extends BaseController
     public function detachTag(Request $request, Article $article): JsonResponse|RedirectResponse
     {
         $article->tags()->detach($request->get('id'));
-        if (RequestService::isRequestAjax()) {
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax()) {
+            return response()->json(ResponseHelper::create(
                 ['messages.article.tag_detached'], 200, compact('article')
             ), 200);
         }

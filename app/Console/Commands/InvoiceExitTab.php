@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Enums\Invoice\ShipmentStatus;
+use App\Helpers\SMSHelper;
 use App\Models\Invoice;
-use App\Utils\Common\SMSService;
 use App\Utils\FinancialManager\ConfigProvider;
 use App\Utils\FinancialManager\Factory;
 use App\Utils\FinancialManager\Provider;
@@ -85,7 +85,7 @@ class InvoiceExitTab extends Command
             $this->output->write("[<fg=yellow>no-notify</>]");
             return;
         }
-        SMSService::send(
+        SMSHelper::send(
             'sms-invoice-exit-tab',
             $invoice->customer->main_phone,
             [

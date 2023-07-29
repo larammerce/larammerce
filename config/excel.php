@@ -1,6 +1,6 @@
 <?php
 
-use App\Utils\Excel\Excel;
+use App\Libraries\Excel\Excel;
 
 return [
     'exports' => [
@@ -200,13 +200,13 @@ return [
     |
     | Possible value binders:
     |
-    | [x] App\Utils\Excel\DefaultValueBinder::class
+    | [x] App\Libraries\Excel\DefaultValueBinder::class
     | [x] PhpOffice\PhpSpreadsheet\Cell\StringValueBinder::class
     | [x] PhpOffice\PhpSpreadsheet\Cell\AdvancedValueBinder::class
     |
     */
     'value_binder' => [
-        'default' => App\Utils\Excel\DefaultValueBinder::class,
+        'default' => \App\Libraries\Excel\DefaultValueBinder::class,
     ],
 
     'cache' => [

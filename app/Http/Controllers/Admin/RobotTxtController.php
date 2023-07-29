@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Helpers\HistoryHelper;
 use App\Models\SystemUser;
-use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -41,7 +40,7 @@ class RobotTxtController extends BaseController
             }
             File::put(RobotTxtController::$FILE_PATH, $data);
         }
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     private static function patchAuthorSign($sign, $data): string
@@ -73,7 +72,7 @@ class RobotTxtController extends BaseController
                 $data = static::patchAuthorSign($system_user->user->username, $data);
         }
         file_put_contents(RobotTxtController::$FILE_PATH, $data);
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**
@@ -113,7 +112,7 @@ class RobotTxtController extends BaseController
     {
         if (File::exists(RobotTxtController::$FILE_PATH) and
             File::delete(RobotTxtController::$FILE_PATH))
-            return History::redirectBack();
+            return HistoryHelper::redirectBack();
         return redirect()->back()->with('error');
     }
 

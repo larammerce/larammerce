@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Utils\Reflection\Action;
-use App\Utils\Reflection\ReflectiveNamespace;
+use App\Libraries\Reflection\Action;
+use App\Libraries\Reflection\ReflectiveNamespace;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Container\BindingResolutionException;

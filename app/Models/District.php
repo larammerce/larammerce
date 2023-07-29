@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
+use App\Libraries\Translation\Traits\Translatable;
 use App\Traits\Taggable;
-use App\Utils\Translation\Traits\Translatable;
 
 /**
  * @property integer id

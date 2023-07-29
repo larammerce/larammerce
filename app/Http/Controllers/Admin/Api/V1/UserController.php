@@ -4,11 +4,11 @@
 
 namespace App\Http\Controllers\Admin\Api\V1;
 
+use App\Helpers\ResponseHelper;
 use App\Models\CustomerUser;
 use App\Models\CustomerUserLegalInfo;
 use App\Models\SystemUser;
 use App\Models\User;
-use App\Utils\Common\MessageFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -43,7 +43,7 @@ class UserController extends BaseController
             $collection = $collection->get()->merge($customerUsers)->merge($systemUsers);
         }
 
-        return response()->json(MessageFactory::create(
+        return response()->json(ResponseHelper::create(
             [], 200, compact('collection')
         ), 200);
     }

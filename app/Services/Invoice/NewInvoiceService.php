@@ -11,10 +11,10 @@ namespace App\Services\Invoice;
 
 use App\Enums\Setting\CMSSettingKey;
 use App\Features\ShipmentCost\ShipmentCostConfig;
+use App\Helpers\AdminRequestHelper;
 use App\Models\CustomerAddress;
 use App\Models\Invoice;
 use App\Services\Setting\SettingService;
-use App\Utils\CMS\AdminRequestService;
 use App\Utils\CMS\Cart\Provider as CartProvider;
 use Exception;
 use Illuminate\Http\Request;
@@ -93,7 +93,7 @@ class NewInvoiceService
     }
 
     public function updateAddress(CustomerAddress $customer_address): void {
-        if (AdminRequestService::isInAdminArea())
+        if (AdminRequestHelper::isInAdminArea())
             return;
         $invoice = $this->getTheNew();
         $invoice->updateAddress($customer_address);

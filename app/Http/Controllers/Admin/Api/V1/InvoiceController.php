@@ -4,8 +4,8 @@
 
 namespace App\Http\Controllers\Admin\Api\V1;
 
+use App\Helpers\ResponseHelper;
 use App\Models\Invoice;
-use App\Utils\Common\MessageFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -23,7 +23,7 @@ class InvoiceController extends BaseController
     {
         $collection = Invoice::search($request->get('query'))->get();
 
-        return response()->json(MessageFactory::create(
+        return response()->json(ResponseHelper::create(
             [], 200, compact('collection')
         ), 200);
     }

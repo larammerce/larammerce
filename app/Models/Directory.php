@@ -3,15 +3,15 @@
 namespace App\Models;
 
 use App\Enums\Directory\DirectoryType;
+use App\Helpers\AdminRequestHelper;
+use App\Helpers\ImageHelper;
 use App\Interfaces\CMSExposedNodeInterface;
 use App\Interfaces\HashInterface;
 use App\Interfaces\ImageOwnerInterface;
+use App\Libraries\Translation\Traits\Translatable;
 use App\Traits\Badgeable;
 use App\Traits\Fileable;
 use App\Traits\FullTextSearch;
-use App\Utils\CMS\AdminRequestService;
-use App\Utils\Common\ImageService;
-use App\Utils\Translation\Traits\Translatable;
 use Exception;
 use Faker\Provider\DateTime;
 use Illuminate\Database\Eloquent\Builder;
@@ -177,7 +177,7 @@ class Directory extends BaseModel implements ImageOwnerInterface, HashInterface,
     }
 
     protected static function booted(): void {
-        if(!AdminRequestService::isInAdminArea()){
+        if(!AdminRequestHelper::isInAdminArea()){
             static::addGlobalScope("visible", function (Builder $builder) {
                 $builder->visible();
             });
@@ -365,7 +365,7 @@ class Directory extends BaseModel implements ImageOwnerInterface, HashInterface,
     }
 
     public function setImagePath(): void {
-        $tmp_image = ImageService::saveImage($this->getImageCategoryName());
+        $tmp_image = ImageHelper::saveImage($this->getImageCategoryName());
         $this->cover_image_path = $tmp_image->destinationPath . "/" . $tmp_image->name;
         $this->save();
     }

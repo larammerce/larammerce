@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Interfaces\TagInterface as TaggableContract;
+use App\Libraries\Translation\Traits\Translatable;
 use App\Traits\Taggable;
-use App\Utils\Translation\Traits\Translatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**

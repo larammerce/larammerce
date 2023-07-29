@@ -8,8 +8,8 @@
 
 namespace App\Http\Controllers\Customer;
 
+use App\Helpers\SystemMessageHelper;
 use App\Models\Product;
-use App\Utils\CMS\SystemMessageService;
 use Illuminate\Http\Request;
 
 class RatingController extends BaseController
@@ -23,9 +23,9 @@ class RatingController extends BaseController
     public function product(Request $request, Product $product)
     {
         if ($product->submitRating($request->get('value'), $request->get('comment')))
-            SystemMessageService::addSuccessMessage("system_messages.rating.submitted");
+            SystemMessageHelper::addSuccessMessage("system_messages.rating.submitted");
         else
-            SystemMessageService::addErrorMessage("system_messages.rating.failed");
+            SystemMessageHelper::addErrorMessage("system_messages.rating.failed");
 
         return redirect()->to($product->getFrontUrl());
     }

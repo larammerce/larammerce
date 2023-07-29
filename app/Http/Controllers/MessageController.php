@@ -4,14 +4,12 @@
 namespace App\Http\Controllers;
 
 
+use App\Helpers\EmailHelper;
+use App\Helpers\RequestHelper;
+use App\Helpers\ResponseHelper;
+use App\Helpers\SystemMessageHelper;
 use App\Models\WebForm;
 use App\Models\WebFormMessage;
-use App\Utils\CMS\SystemMessageService;
-use App\Utils\Common\EmailService;
-use App\Utils\Common\FileUploadService;
-use App\Utils\Common\MessageFactory;
-use App\Utils\Common\RequestService;
-
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -44,19 +42,19 @@ class MessageController extends Controller
                 'data' => serialize($result),
             ]);
 
-            SystemMessageService::addSuccessMessage("system_messages.web_form_message.sent");
+            SystemMessageHelper::addSuccessMessage("system_messages.web_form_message.sent");
             if (config('mail-notifications.forms.new_form')) {
                 $subject = request('identifier');
                 $emailAddress = config('mail-notifications.forms.related_mail');
                 $template = "public.mail-receive-contact-form";
-                EmailService::send([
+                EmailHelper::send([
                     "adminUrl" => route("admin.web-form-message.show", $web_form),
                     "data" => $result,
                 ], $template, $emailAddress, $emailAddress, $subject);
             }
         }
-        if (RequestService::isRequestAjax())
-            return response()->json(MessageFactory::create(['system_messages.web_form_message.sent'], 200));
+        if (RequestHelper::isRequestAjax())
+            return response()->json(ResponseHelper::create(['system_messages.web_form_message.sent'], 200));
         return redirect()->back();
     }
 }

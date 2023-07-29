@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
 use App\Models\User;
-use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -86,7 +86,7 @@ class UserController extends BaseController
         if (($oldCustomerUser != $isCustomerUser) and $isCustomerUser)
             return redirect()->to(route('admin.customer-user.create') . "?id={$user->id}");
 
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**

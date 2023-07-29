@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Features\Excel\ExcelCacheConfig;
 use App\Features\Excel\ModelExport;
 use App\Features\Excel\ModelImport;
-use App\Utils\CMS\SystemMessageService;
-use App\Utils\Common\History;
-use App\Utils\Excel\Facades\Excel;
+use App\Helpers\HistoryHelper;
+use App\Helpers\SystemMessageHelper;
+use App\Libraries\Excel\Facades\Excel;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -53,8 +53,8 @@ class ExcelController extends BaseController
         if ($related_model::getImportableAttributes() != null) {
             return view('admin.pages.excel.import', compact('related_model'));
         } else {
-            SystemMessageService::addErrorMessage('messages.excel.importable_attributes_not_set');
-            return History::redirectBack();
+            SystemMessageHelper::addErrorMessage('messages.excel.importable_attributes_not_set');
+            return HistoryHelper::redirectBack();
         }
 
     }

@@ -3,13 +3,13 @@
 namespace App\Features\Language;
 
 use App\Common\BaseFeatureConfig;
+use App\Libraries\Reflection\AnnotationBadKeyException;
+use App\Libraries\Reflection\AnnotationBadScopeException;
+use App\Libraries\Reflection\AnnotationNotFoundException;
+use App\Libraries\Reflection\AnnotationSyntaxException;
 use App\Utils\CMS\Enums\DataSourceDriver;
 use App\Utils\CMS\Enums\SettingType;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\Reflection\AnnotationBadKeyException;
-use App\Utils\Reflection\AnnotationBadScopeException;
-use App\Utils\Reflection\AnnotationNotFoundException;
-use App\Utils\Reflection\AnnotationSyntaxException;
 use Illuminate\Support\Str;
 use ReflectionException;
 
@@ -90,10 +90,10 @@ class LanguageConfig extends BaseFeatureConfig
 
 
     /**
-     * @throws AnnotationNotFoundException
+     * @throws \App\Libraries\Reflection\AnnotationNotFoundException
      * @throws AnnotationSyntaxException
      * @throws AnnotationBadScopeException
-     * @throws AnnotationBadKeyException
+     * @throws \App\Libraries\Reflection\AnnotationBadKeyException
      * @throws ReflectionException
      */
     public static function getRules($languages): array

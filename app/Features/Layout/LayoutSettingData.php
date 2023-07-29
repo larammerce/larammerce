@@ -9,8 +9,8 @@
 namespace App\Features\Layout;
 
 
+use App\Helpers\EloquentModelHelper;
 use App\Interfaces\SettingDataInterface;
-use App\Utils\Common\ModelService;
 use JetBrains\PhpStorm\ArrayShape;
 
 class LayoutSettingData implements SettingDataInterface
@@ -61,7 +61,7 @@ class LayoutSettingData implements SettingDataInterface
 
     public function validate(): bool
     {
-        return ModelService::isValidModel($this->getModel());
+        return EloquentModelHelper::isValidModel($this->getModel());
     }
 
     public function getPrimaryKey(): string

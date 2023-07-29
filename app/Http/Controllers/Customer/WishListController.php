@@ -9,9 +9,8 @@
 namespace App\Http\Controllers\Customer;
 
 
-use App\Models\CustomerUser;
+use App\Helpers\SystemMessageHelper;
 use App\Models\Product;
-use App\Utils\CMS\SystemMessageService;
 
 class WishListController extends BaseController
 {
@@ -27,7 +26,7 @@ class WishListController extends BaseController
     {
         $customer = get_customer_user();
         $customer->wishList()->syncWithoutDetaching([$product->id]);
-        SystemMessageService::addSuccessMessage("system_messages.wish_list.attached");
+        SystemMessageHelper::addSuccessMessage("system_messages.wish_list.attached");
         return redirect()->to($product->getFrontUrl());
     }
 
@@ -35,7 +34,7 @@ class WishListController extends BaseController
     {
         $customer = get_customer_user();
         $customer->wishList()->detach($product->id);
-        SystemMessageService::addSuccessMessage("system_messages.wish_list.detached");
+        SystemMessageHelper::addSuccessMessage("system_messages.wish_list.detached");
         return redirect()->back();
     }
 }

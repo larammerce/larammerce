@@ -3,9 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Features\CartNotification\CartNotificationConfig;
+use App\Helpers\EmailHelper;
+use App\Helpers\SMSHelper;
 use App\Models\CartRow;
-use App\Utils\Common\EmailService;
-use App\Utils\Common\SMSService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -79,7 +79,7 @@ class CartNotify extends Command
         if ($customer != null) {
             if ($with_sms) {
                 $product_titles = $cart_row->product->title . " و ...";
-                SMSService::send("sms-customer-cart", $customer->main_phone,
+                SMSHelper::send("sms-customer-cart", $customer->main_phone,
                     [],
                     [
                         "customerName" => $customer->user->name,
@@ -89,7 +89,7 @@ class CartNotify extends Command
             }
             if ($with_email) {
                 $customer_full_name = $customer->user->full_name;
-                EmailService::send([
+                EmailHelper::send([
                     "cartRows" => [$cart_row],
                     "customerFullName" => $customer_full_name,
                 ],

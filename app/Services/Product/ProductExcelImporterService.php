@@ -3,14 +3,13 @@
 namespace App\Services\Product;
 
 use App\Jobs\Product\ProductImportFromDataArray;
+use App\Libraries\Excel\Concerns\ToModel;
+use App\Libraries\Excel\Concerns\WithHeadingRow;
+use App\Libraries\Excel\Concerns\WithValidation;
+use App\Libraries\Excel\Imports\HeadingRowFormatter;
 use App\Models\PStructure;
 use App\Validations\ProductValidation;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use App\Utils\Excel\Concerns\ToModel;
-use App\Utils\Excel\Concerns\WithHeadingRow;
-use App\Utils\Excel\Concerns\WithValidation;
-use App\Utils\Excel\Imports\HeadingRowFormatter;
 
 class ProductExcelImporterService implements ToModel, WithHeadingRow, WithValidation {
 

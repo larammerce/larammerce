@@ -9,13 +9,13 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Enums\Directory\DirectoryType;
+use App\Helpers\ResponseHelper;
 use App\Models\Directory;
 use App\Models\Product;
 use App\Models\ProductFilter;
 use App\Models\ProductQuery;
 use App\Models\Rate;
 use App\Services\Product\ProductService;
-use App\Utils\Common\MessageFactory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -35,7 +35,7 @@ class ShopController extends BaseController
         $directory = Directory::find(request()->get("directory_id"));
         $products_ids = $directory->leafProducts()->mainModels()->visible()->pluck("products.id")->toArray();
         $filter_data = ProductService::getFilterData($products_ids);
-        return MessageFactory::jsonResponse([], 200, [
+        return ResponseHelper::jsonResponse([], 200, [
             "price_range" => $filter_data["priceRange"],
             "keys" => $filter_data["keys"],
             "colors" => $filter_data["colors"]

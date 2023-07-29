@@ -5,8 +5,8 @@
 namespace App\Http\Controllers\Admin;
 
 
+use App\Helpers\HistoryHelper;
 use App\Models\ProductFilter;
-use App\Utils\Common\History;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -72,7 +72,7 @@ class ProductFilterController extends BaseController
     {
         $data = $request->except(["identifier"]);
         $product_filter->update($data);
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**
@@ -81,7 +81,7 @@ class ProductFilterController extends BaseController
     public function destroy(ProductFilter $product_filter): Response
     {
         $product_filter->delete();
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
 

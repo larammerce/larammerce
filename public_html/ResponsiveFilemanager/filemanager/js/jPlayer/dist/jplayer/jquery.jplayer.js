@@ -247,7 +247,7 @@
 		return { browser: match[1] || "", version: match[2] || "0" };
 	};
 
-	// Platform sniffer for detecting mobile devices
+	// PlatformDetector sniffer for detecting mobile devices
 	$.jPlayer.uaPlatform = function( userAgent ) {
 		var ua = userAgent.toLowerCase();
 

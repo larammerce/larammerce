@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
+use App\Helpers\RequestHelper;
+use App\Helpers\ResponseHelper;
 use App\Models\PStructureAttrKey;
-use App\Utils\Common\History;
-use App\Utils\Common\MessageFactory;
-use App\Utils\Common\RequestService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -45,8 +45,8 @@ class PStructureAttrKeyController extends BaseController
     public function store(Request $request): JsonResponse|RedirectResponse
     {
         $p_structure_attr_key = PStructureAttrKey::create($request->all());
-        if (RequestService::isRequestAjax($request)) {
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax($request)) {
+            return response()->json(ResponseHelper::create(
                 ['messages.p_structure_attr_key.key_added'], 200, compact('p_structure_attr_key')
             ), 200);
         }
@@ -69,7 +69,7 @@ class PStructureAttrKeyController extends BaseController
     public function update(Request $request, PStructureAttrKey $p_structure_attr_key): RedirectResponse
     {
         $p_structure_attr_key->update($request->all());
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**
@@ -88,8 +88,8 @@ class PStructureAttrKeyController extends BaseController
     public function query(Request $request)
     {
         $collection = PStructureAttrKey::where('title', 'like', '%' . $request->input('query') . '%')->get();
-        if (RequestService::isRequestAjax()) {
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax()) {
+            return response()->json(ResponseHelper::create(
                 [], 200, compact('collection')
             ), 200);
         }

@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Features\Survey\SurveyConfig;
+use App\Helpers\SMSHelper;
 use App\Models\Invoice;
-use App\Utils\Common\SMSService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use function GuzzleHttp\Psr7\str;
@@ -72,7 +72,7 @@ class SurveyNotify extends Command
      */
     public function notifyCustomer(Invoice $invoice)
     {
-        SMSService::send("sms-invoice-survey", $invoice->customer->main_phone, [
+        SMSHelper::send("sms-invoice-survey", $invoice->customer->main_phone, [
             "tracking_code" => $invoice->tracking_code
         ], [
             "customer_name" => $invoice->customer->user->name,

@@ -9,6 +9,10 @@ use App\Exceptions\Product\ProductPackageItemInvalidIdException;
 use App\Exceptions\Product\ProductPackageItemNotFoundException;
 use App\Exceptions\Product\ProductPackageNotExistsException;
 use App\Features\CustomerLocation\CustomerLocationSettingData;
+use App\Helpers\AdminRequestHelper;
+use App\Helpers\EmailHelper;
+use App\Helpers\ImageHelper;
+use App\Helpers\SMSHelper;
 use App\Interfaces\CMSExposedNodeInterface;
 use App\Interfaces\HashInterface;
 use App\Interfaces\ImageOwnerInterface;
@@ -16,6 +20,7 @@ use App\Interfaces\PublishScheduleInterface;
 use App\Interfaces\RateOwnerInterface;
 use App\Interfaces\SeoSubjectInterface;
 use App\Interfaces\ShareSubjectInterface;
+use App\Libraries\Translation\Traits\Translatable;
 use App\Services\Directory\DirectoryLocationService;
 use App\Services\Invoice\NewInvoiceService;
 use App\Services\Setting\SettingService;
@@ -24,15 +29,10 @@ use App\Traits\Fileable;
 use App\Traits\FullTextSearch;
 use App\Traits\Rateable;
 use App\Traits\Seoable;
-use App\Utils\CMS\AdminRequestService;
 use App\Utils\CMS\ProductService;
-use App\Utils\Common\EmailService;
-use App\Utils\Common\ImageService;
-use App\Utils\Common\SMSService;
 use App\Utils\FinancialManager\ConfigProvider;
 use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
 use App\Utils\FinancialManager\Factory;
-use App\Utils\Translation\Traits\Translatable;
 use Carbon\Carbon;
 use DateTime;
 use Exception;
@@ -289,11 +289,11 @@ class Product extends BaseModel implements
     }
 
     public function getMainPhotoAttribute(): string {
-        return ImageService::getImage($this, "preview");
+        return ImageHelper::getImage($this, "preview");
     }
 
     public function getSecondaryPhotoAttribute(): string {
-        return ImageService::getImage($this->getSecondaryPhoto(), "preview");
+        return ImageHelper::getImage($this->getSecondaryPhoto(), "preview");
     }
 
     public function getFinManPriceAttribute(): int {
@@ -322,10 +322,10 @@ class Product extends BaseModel implements
 
     public function getHasDiscountAttribute(): bool {
         try {
-            return (!AdminRequestService::isInAdminArea() and ($this->attributes["has_discount"] ?? false) and
+            return (!AdminRequestHelper::isInAdminArea() and ($this->attributes["has_discount"] ?? false) and
                     (($this->attributes["latest_special_price"] != 0) or
                         ($this->is_package and $this->productPackage->getLatestSpecialPrice() != 0))) or
-                (AdminRequestService::isInAdminArea() and ($this->attributes["has_discount"] ?? false));
+                (AdminRequestHelper::isInAdminArea() and ($this->attributes["has_discount"] ?? false));
         } catch (Exception $e) {
             return false;
         }
@@ -333,7 +333,7 @@ class Product extends BaseModel implements
 
     public function getLatestPriceAttribute(): int {
         try {
-            if ($this->has_discount and !AdminRequestService::isInAdminArea())
+            if ($this->has_discount and !AdminRequestHelper::isInAdminArea())
                 return ($this->is_package and $this->attributes["latest_price"] == 0) ?
                     $this->productPackage->getLatestSpecialPrice() : $this->attributes["latest_special_price"];
             else
@@ -372,7 +372,7 @@ class Product extends BaseModel implements
     }
 
     public function getPreviousPriceAttribute(): int {
-        if ($this->has_discount and !AdminRequestService::isInAdminArea())
+        if ($this->has_discount and !AdminRequestHelper::isInAdminArea())
             return $this->is_package ? $this->productPackage->getLatestPrice() :
                 $this->attributes["latest_price"];
         else
@@ -767,7 +767,7 @@ class Product extends BaseModel implements
             //TODO: change notify system for all notifications
             foreach ($this->needLists as $customerUser) {
                 $this->needLists()->detach($customerUser->id);
-                SMSService::send("sms-need-list-available", $customerUser->main_phone, [], [
+                SMSHelper::send("sms-need-list-available", $customerUser->main_phone, [], [
                     "customerName" => $customerUser->user->name,
                     "productTitle" => $this->title,
                 ]);
@@ -808,7 +808,7 @@ class Product extends BaseModel implements
                     }
 
                     if ($template != null and $subject != null) {
-                        EmailService::send([
+                        EmailHelper::send([
                             "productTitle" => $productTitle,
                             "productDirectoryTitle" => $productDirectoryTitle,
                             "adminUrl" => $adminUrl,

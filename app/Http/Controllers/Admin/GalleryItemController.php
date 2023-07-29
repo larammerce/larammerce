@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
 use App\Models\Gallery;
 use App\Models\GalleryItem;
-use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\View\Factory;
@@ -90,7 +90,7 @@ class GalleryItemController extends BaseController
         if ($request->hasFile('image'))
             $gallery_item->setImagePath();
 
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**

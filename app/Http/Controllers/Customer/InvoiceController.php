@@ -17,6 +17,10 @@ use App\Enums\Invoice\ShipmentStatus;
 use App\Exceptions\Discount\InvalidDiscountCodeException;
 use App\Features\Logistic\LogisticConfig;
 use App\Features\Survey\SurveyConfig;
+use App\Helpers\EmailHelper;
+use App\Helpers\ResponseHelper;
+use App\Helpers\SMSHelper;
+use App\Helpers\SystemMessageHelper;
 use App\Models\CustomerAddress;
 use App\Models\DiscountCard;
 use App\Models\Invoice;
@@ -25,10 +29,6 @@ use App\Services\Customer\CustomerAddressService;
 use App\Services\Invoice\NewInvoiceService;
 use App\Utils\CMS\Enums\ExportType;
 use App\Utils\CMS\ProductService;
-use App\Utils\CMS\SystemMessageService;
-use App\Utils\Common\EmailService;
-use App\Utils\Common\MessageFactory;
-use App\Utils\Common\SMSService;
 use App\Utils\PaymentManager\ConfigProvider;
 use App\Utils\PaymentManager\Exceptions\PaymentConnectionException;
 use App\Utils\PaymentManager\Exceptions\PaymentInvalidDriverException;
@@ -66,7 +66,7 @@ class InvoiceController extends BaseController
         $customer = get_customer_user();
 
         if ($customer->national_code == null) {
-            SystemMessageService::addWarningMessage("messages.customer_user.no_national_code");
+            SystemMessageHelper::addWarningMessage("messages.customer_user.no_national_code");
             return redirect()->route("customer.profile.show-edit-profile");
         }
 
@@ -82,7 +82,7 @@ class InvoiceController extends BaseController
 
         foreach (get_cart() as $row) {
             if (!$row->product->can_deliver) {
-                SystemMessageService::addWarningMessage(
+                SystemMessageHelper::addWarningMessage(
                     "system_messages.cart.cant_deliver",
                     [
                         "product_title" => $row->product->title
@@ -93,7 +93,7 @@ class InvoiceController extends BaseController
 
             if ($row->product->hasCustomerMetaCategory() and
                 $row->customerMetaItem === null) {
-                SystemMessageService::addWarningMessage(
+                SystemMessageHelper::addWarningMessage(
                     "system_messages.cart.fill_meta",
                     [
                         "product_title" => $row->product->title
@@ -104,7 +104,7 @@ class InvoiceController extends BaseController
 
             if ($row->product === null) {
                 $fault_flag = true;
-                SystemMessageService::addWarningMessage(
+                SystemMessageHelper::addWarningMessage(
                     "system_messages.cart.product_not_found",
                     ["product_id" => $row->product_id]);
                 continue;
@@ -112,7 +112,7 @@ class InvoiceController extends BaseController
 
             if (!$row->product->is_active) {
                 $fault_flag = true;
-                SystemMessageService::addWarningMessage(
+                SystemMessageHelper::addWarningMessage(
                     "system_messages.cart.product_not_active",
                     [
                         "product_title" => $row->product->title
@@ -122,7 +122,7 @@ class InvoiceController extends BaseController
 
             if ($row->product->getMaximumAllowedPurchaseCount() < $row->count) {
                 $fault_flag = true;
-                SystemMessageService::addWarningMessage(
+                SystemMessageHelper::addWarningMessage(
                     "system_messages.cart.product_max_count_not_allowed",
                     [
                         "product_title" => $row->product->title,
@@ -133,7 +133,7 @@ class InvoiceController extends BaseController
 
             if ($row->product->getMinimumAllowedPurchaseCount() > $row->count) {
                 $fault_flag = true;
-                SystemMessageService::addWarningMessage(
+                SystemMessageHelper::addWarningMessage(
                     "system_messages.cart.product_min_count_not_allowed",
                     [
                         "product_title" => $row->product->title,
@@ -153,7 +153,7 @@ class InvoiceController extends BaseController
         $this->new_invoice_service->setTheNew($invoice);
 
         if ($invoice->sum < $this->new_invoice_service->getMinimumPurchase()) {
-            SystemMessageService::addWarningMessage("system_messages.cart.minimum_purchase_error",
+            SystemMessageHelper::addWarningMessage("system_messages.cart.minimum_purchase_error",
                 ["minimum_purchase" => $this->new_invoice_service->getMinimumPurchase()]);
             $fault_flag = true;
         }
@@ -162,13 +162,13 @@ class InvoiceController extends BaseController
             return redirect()->route("customer.cart.show");
 
         if ($invoice->is_shippable)
-            SystemMessageService::addInfoMessage("system_messages.invoice.cart_submitted");
+            SystemMessageHelper::addInfoMessage("system_messages.invoice.cart_submitted");
         return redirect()->route("customer.invoice.show-shipment");
     }
 
     public function showShipment(): Application|Factory|View|RedirectResponse {
         if (!$this->new_invoice_service->hasNew(NewInvoiceType::CART_SUBMISSION)) {
-            SystemMessageService::addWarningMessage("system_messages.invoice.no_invoice");
+            SystemMessageHelper::addWarningMessage("system_messages.invoice.no_invoice");
             return redirect()->route("customer.cart.show");
         }
 
@@ -192,7 +192,7 @@ class InvoiceController extends BaseController
      */
     public function saveShipment(Request $request): RedirectResponse {
         if (!$this->new_invoice_service->hasNew(NewInvoiceType::CART_SUBMISSION)) {
-            SystemMessageService::addWarningMessage("system_messages.invoice.no_invoice");
+            SystemMessageHelper::addWarningMessage("system_messages.invoice.no_invoice");
             return redirect()->route("customer.cart.show");
         }
 
@@ -217,7 +217,7 @@ class InvoiceController extends BaseController
 
     public function showPayment(): Application|Factory|View|RedirectResponse {
         if (!$this->new_invoice_service->hasNew(NewInvoiceType::SHIPMENT)) {
-            SystemMessageService::addWarningMessage("system_messages.invoice.no_invoice");
+            SystemMessageHelper::addWarningMessage("system_messages.invoice.no_invoice");
             return redirect()->route("customer.cart.show");
         }
 
@@ -236,7 +236,7 @@ class InvoiceController extends BaseController
         $customer_user = get_customer_user();
 
         if (!$this->new_invoice_service->hasNew(NewInvoiceType::SHIPMENT)) {
-            SystemMessageService::addWarningMessage("system_messages.invoice.no_invoice");
+            SystemMessageHelper::addWarningMessage("system_messages.invoice.no_invoice");
             return redirect()->route("customer.cart.show");
         }
 
@@ -256,7 +256,7 @@ class InvoiceController extends BaseController
 
         if ($invoice->createFinManRelation()) {
 
-            SMSService::send("sms-invoice-submitted", $customer_user->main_phone,
+            SMSHelper::send("sms-invoice-submitted", $customer_user->main_phone,
                 [
                     "trackingCode" => $invoice->tracking_code
                 ],
@@ -269,7 +269,7 @@ class InvoiceController extends BaseController
                 $emailAddress = config('mail-notifications.invoices.related_mail');
                 // set blade template
                 $template = "public.mail-new-invoice-notification";
-                EmailService::send([
+                EmailHelper::send([
                     "data" => Invoice::find($invoice->id),
                 ], $template, $emailAddress, $emailAddress, $subject);
             }
@@ -277,33 +277,33 @@ class InvoiceController extends BaseController
             if ($invoice->payment_type == PaymentType::ONLINE) {
                 try {
                     if ($invoice->sum >= ConfigProvider::getMaxTransactionAmount()) {
-                        SystemMessageService::addWarningMessage("system_messages.invoice.maximum_order_ceiling");
+                        SystemMessageHelper::addWarningMessage("system_messages.invoice.maximum_order_ceiling");
                         return redirect(route('customer.invoice.index'));
                     }
                     Provider::initiatePayment($invoice);
                     return redirect()->to(Provider::getPaymentRedirectionUrl());
                 } catch (PaymentConnectionException|PaymentInvalidParametersException $e) {
                     Log::error("InvoiceController:savePayment:{$e->getMessage()}");
-                    SystemMessageService::addErrorMessage("system_messages.invoice.payment_initiation_failed");
+                    SystemMessageHelper::addErrorMessage("system_messages.invoice.payment_initiation_failed");
                 } catch (PaymentInvalidDriverException $e) {
                     Log::error("InvoiceController:savePayment:{$e->getMessage()}");
-                    SystemMessageService::addErrorMessage("system_messages.payment.bad_driver_passed");
+                    SystemMessageHelper::addErrorMessage("system_messages.payment.bad_driver_passed");
                 }
             }
         } else {
-            SystemMessageService::addWarningMessage("system_messages.invoice.save_fin_man_error");
+            SystemMessageHelper::addWarningMessage("system_messages.invoice.save_fin_man_error");
         }
         return redirect()->route("customer.invoice.show-checkout", $invoice);
     }
 
     public function showCheckout(?Invoice $invoice): Application|Factory|View|RedirectResponse {
         if ($invoice->customer_user_id != get_customer_user()->id) {
-            SystemMessageService::addErrorMessage("system_messages.invoice.not_owner");
+            SystemMessageHelper::addErrorMessage("system_messages.invoice.not_owner");
             return redirect()->route("customer.invoice.index");
         }
 
         if ($invoice == null) {
-            SystemMessageService::addWarningMessage("system_messages.invoice.no_invoice");
+            SystemMessageHelper::addWarningMessage("system_messages.invoice.no_invoice");
             return redirect()->route("customer.cart.show");
         }
 
@@ -323,7 +323,7 @@ class InvoiceController extends BaseController
                         $pdf = PDF::loadView("public.invoice-checkout-pdf", compact("invoice"));
                         return $pdf->download("invoice{$invoice->id}.pdf");
                     } catch (Throwable $exception) {
-                        SystemMessageService::addErrorMessage("system_messages.invoice.pdf_export_failed");
+                        SystemMessageHelper::addErrorMessage("system_messages.invoice.pdf_export_failed");
                     }
                 }
         }
@@ -342,12 +342,12 @@ class InvoiceController extends BaseController
         if ($invoice->payment_type == PaymentType::ONLINE) {
             if ($invoice->payment_status == PaymentStatus::SUBMITTED or
                 $invoice->payment_status == PaymentStatus::CONFIRMED) {
-                SystemMessageService::addWarningMessage("system_messages.invoice.is_payed");
+                SystemMessageHelper::addWarningMessage("system_messages.invoice.is_payed");
                 return redirect()->route("customer.invoice.show-checkout", $invoice);
             }
         } else if ($invoice->payment_type == PaymentType::CASH) {
             if ($invoice->shipment_status >= ShipmentStatus::PREPARING_TO_SEND) {
-                SystemMessageService::addWarningMessage("system_messages.invoice.must_pay_cash");
+                SystemMessageHelper::addWarningMessage("system_messages.invoice.must_pay_cash");
                 return redirect()->route("customer.invoice.show-checkout", $invoice);
             }
         }
@@ -356,10 +356,10 @@ class InvoiceController extends BaseController
             return redirect()->to(Provider::getPaymentRedirectionUrl());
         } catch (PaymentConnectionException|PaymentInvalidParametersException $e) {
             Log::error("InvoiceController:payOnline:{$e->getMessage()}");
-            SystemMessageService::addErrorMessage("system_messages.invoice.payment_initiation_failed");
+            SystemMessageHelper::addErrorMessage("system_messages.invoice.payment_initiation_failed");
         } catch (PaymentInvalidDriverException $e) {
             Log::error("InvoiceController:payOnline:{$e->getMessage()}");
-            SystemMessageService::addErrorMessage("system_messages.payment.bad_driver_passed");
+            SystemMessageHelper::addErrorMessage("system_messages.payment.bad_driver_passed");
         }
         return redirect()->route("customer.invoice.show-checkout", $invoice);
     }
@@ -373,7 +373,7 @@ class InvoiceController extends BaseController
             $discount_card = DiscountCard::checkCode($discount_code);
         } catch (InvalidDiscountCodeException $e) {
             return response()->json(
-                MessageFactory::create(["system_messages.invoice.discount_card_status." . $e->getCode()], 400, [])
+                ResponseHelper::create(["system_messages.invoice.discount_card_status." . $e->getCode()], 400, [])
                 , 400);
         }
 
@@ -391,14 +391,14 @@ class InvoiceController extends BaseController
 
         if ($discount_amount === 0) {
             return response()->json(
-                MessageFactory::create(["system_messages.invoice.discount_card_status." . DiscountCardStatus::NOT_MATCH],
+                ResponseHelper::create(["system_messages.invoice.discount_card_status." . DiscountCardStatus::NOT_MATCH],
                     400, []), 400);
         }
 
         $this->new_invoice_service->setTheNew($invoice);
 
         return response()->json(
-            MessageFactory::create(
+            ResponseHelper::create(
                 ["system_messages.invoice.discount_card_status.0"],
                 200, [
                 "discount_amount" => $discount_amount,
@@ -416,11 +416,11 @@ class InvoiceController extends BaseController
             $invoice->customPush();
             if ($invoice->rows()->count() > 0) {
                 if ($invoice->createFinManRelation())
-                    SystemMessageService::addSuccessMessage("system_messages.invoice.enabled");
+                    SystemMessageHelper::addSuccessMessage("system_messages.invoice.enabled");
                 else
-                    SystemMessageService::addWarningMessage("system_messages.invoice.not_enabled");
+                    SystemMessageHelper::addWarningMessage("system_messages.invoice.not_enabled");
             } else
-                SystemMessageService::addWarningMessage("system_messages.invoice.is_empty");
+                SystemMessageHelper::addWarningMessage("system_messages.invoice.is_empty");
         }
 
         return redirect()->back();

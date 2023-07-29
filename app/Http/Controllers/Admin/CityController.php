@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
+use App\Helpers\RequestHelper;
 use App\Models\City;
 use App\Models\State;
-use App\Utils\Common\History;
-use App\Utils\Common\RequestService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -29,7 +29,7 @@ class CityController extends BaseController
         if (request()->has('state_id')) {
             $state = State::find(request()->get('state_id'));
             parent::setPageAttribute($state->id);
-            if (RequestService::isRequestAjax())
+            if (RequestHelper::isRequestAjax())
                 return response()->json($state->cities);
             $cities = $state->cities()->with('state')->paginate(City::getPaginationCount());
         } else {
@@ -83,7 +83,7 @@ class CityController extends BaseController
     public function update(Request $request, City $city): RedirectResponse
     {
         $city->update($request->all());
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**

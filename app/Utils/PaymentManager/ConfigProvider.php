@@ -3,7 +3,7 @@
 namespace App\Utils\PaymentManager;
 
 use App\Features\PaymentDriver\PaymentDriverConfig;
-use App\Interfaces\AttachedFileInterface;
+use App\Interfaces\FileOwnerInterface;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
 use App\Utils\PaymentManager\Drivers\Pep\Config;
 use App\Utils\PaymentManager\Exceptions\PaymentInvalidDriverException;
@@ -59,7 +59,7 @@ class ConfigProvider
                 $driver_config = self::getConfig($driver_id);
                 $was_default = $driver_config->is_default;
                 foreach ($driver_config_data as $key => $value) {
-                    if ($driver_config instanceof AttachedFileInterface
+                    if ($driver_config instanceof FileOwnerInterface
                     and $value instanceof UploadedFile)
                         $driver_config->setFilePath([$key => $value]);
                     else
@@ -99,7 +99,7 @@ class ConfigProvider
     {
         if (Provider::hasDriver($driver_id)) {
             $driver_config = self::getConfig($driver_id);
-            if ($driver_config instanceof AttachedFileInterface) {
+            if ($driver_config instanceof FileOwnerInterface) {
                 $driver_config->removeFile();
                 PaymentDriverConfig::updateRecord($driver_id, serialize($driver_config));
             }
@@ -107,11 +107,11 @@ class ConfigProvider
     }
 
     /**
-     * @throws \App\Utils\Reflection\AnnotationNotFoundException
-     * @throws \App\Utils\Reflection\AnnotationSyntaxException
+     * @throws \App\Libraries\Reflection\AnnotationNotFoundException
+     * @throws \App\Libraries\Reflection\AnnotationSyntaxException
      * @throws PaymentInvalidDriverException
-     * @throws \App\Utils\Reflection\AnnotationBadScopeException
-     * @throws \App\Utils\Reflection\AnnotationBadKeyException
+     * @throws \App\Libraries\Reflection\AnnotationBadScopeException
+     * @throws \App\Libraries\Reflection\AnnotationBadKeyException
      * @throws \ReflectionException
      */
     public static function getRules($drivers): array

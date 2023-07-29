@@ -1,9 +1,8 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Utils\Common\NewsletterService;
+use App\Helpers\NewsletterHelper;
 use Illuminate\Http\Request;
-
 use Throwable;
 
 class NewsletterController extends Controller
@@ -21,7 +20,7 @@ class NewsletterController extends Controller
             'email' => $request->get('email'),
             'fields' => []
         ];
-        NewsletterService::subscribe($subscriber);
+        NewsletterHelper::subscribe($subscriber);
         return redirect()->back();
     }
 }

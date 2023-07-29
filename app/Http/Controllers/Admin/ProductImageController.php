@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
+use App\Helpers\ImageHelper;
+use App\Helpers\RequestHelper;
+use App\Helpers\ResponseHelper;
 use App\Models\ProductImage;
-use App\Utils\Common\History;
-use App\Utils\Common\ImageService;
-use App\Utils\Common\MessageFactory;
-use App\Utils\Common\RequestService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -27,7 +27,7 @@ class ProductImageController extends BaseController
     public function store(Request $request): JsonResponse|RedirectResponse
     {
         try {
-            $tmp_image = ImageService::saveImage('product');
+            $tmp_image = ImageHelper::saveImage('product');
             $model = new ProductImage();
             $model->real_name = $tmp_image->name;
             $model->path = $tmp_image->destinationPath;
@@ -35,14 +35,14 @@ class ProductImageController extends BaseController
             $model->product_id = $request->get('product_id');
             $model->save();
 
-            if (RequestService::isRequestAjax())
-                return response()->json(MessageFactory::create(
+            if (RequestHelper::isRequestAjax())
+                return response()->json(ResponseHelper::create(
                     ['messages.product_image.image_uploaded'], 200, compact('model')
                 ), 200);
 
             return redirect()->route('admin.pages.product-image.index');
         } catch (Exception $e) {
-            return response()->json(MessageFactory::create(
+            return response()->json(ResponseHelper::create(
                 ['messages.product_image.image_not_uploaded', $e->getMessage()], 500
             ), 500);
         }
@@ -54,11 +54,11 @@ class ProductImageController extends BaseController
     public function update(Request $request, ProductImage $product_image): JsonResponse|RedirectResponse
     {
         $product_image->update($request->all());
-        if (RequestService::isRequestAjax())
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax())
+            return response()->json(ResponseHelper::create(
                 ['messages.product_image.image_edited'], 200
             ), 200);
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**
@@ -67,8 +67,8 @@ class ProductImageController extends BaseController
     public function destroy(ProductImage $product_image): JsonResponse|RedirectResponse
     {
         $product_image->delete();
-        if (RequestService::isRequestAjax())
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax())
+            return response()->json(ResponseHelper::create(
                 ['messages.product_image.image_deleted'], 200
             ), 200);
         return back();
@@ -82,8 +82,8 @@ class ProductImageController extends BaseController
         $product_image->product->images()->update(["is_main" => false]);
         $product_image->is_main = true;
         $product_image->save();
-        if (RequestService::isRequestAjax())
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax())
+            return response()->json(ResponseHelper::create(
                 ['messages.product_image.main_image_changed'], 200
             ), 200);
         return redirect()->route('admin.product.edit', $product_image->product);
@@ -97,8 +97,8 @@ class ProductImageController extends BaseController
         $product_image->product->images()->update(["is_secondary" => false]);
         $product_image->is_secondary = true;
         $product_image->save();
-        if (RequestService::isRequestAjax())
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax())
+            return response()->json(ResponseHelper::create(
                 ['messages.product_image.secondary_image_changed'], 200
             ), 200);
         return redirect()->route('admin.product.edit', $product_image->product);

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Utils\Common\History;
+use App\Helpers\HistoryHelper;
 use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -46,7 +46,7 @@ class ModelTranslationController extends BaseController
                 'entity_name' => $entity_name
             ]);
         } catch (Exception $e) {
-            return History::redirectBack();
+            return HistoryHelper::redirectBack();
         }
     }
 
@@ -74,7 +74,7 @@ class ModelTranslationController extends BaseController
         $translatable_object->save();
         $defaultResponse = redirect()->route("admin." . str_to_dashed(get_model_entity_name($related_model)) . ".edit",
             $translatable_object);
-        return History::redirectBack($defaultResponse);
+        return HistoryHelper::redirectBack($defaultResponse);
     }
 
     public function getModel(): ?string

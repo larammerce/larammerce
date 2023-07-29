@@ -29,7 +29,7 @@
         </div>
         <div class="col-lg-1 col-md-3 col-sm-5 col-xs-3 col">
             <div class="label">آخرین قیمت</div>
-            <div>{{\App\Utils\Common\Format::number($product->latest_price)}}</div>
+            <div>{{format_price($product->latest_price)}}</div>
         </div>
         <div class="col-lg-3 col-md-9 col-sm-7 col-xs-9 col">
             <div class="label">عملیات</div>

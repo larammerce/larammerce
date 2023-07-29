@@ -4,9 +4,9 @@
 namespace App\Http\Controllers\Admin;
 
 
+use App\Helpers\HistoryHelper;
 use App\Models\CustomerMetaCategory;
 use App\Models\Directory;
-use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -73,7 +73,7 @@ class CustomerMetaCategoryController extends BaseController
     {
         $customer_meta_category->data_object = array_values($request->get("data_object"));
         $customer_meta_category->update($request->all());
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**
@@ -82,7 +82,7 @@ class CustomerMetaCategoryController extends BaseController
     public function destroy(CustomerMetaCategory $customer_meta_category): RedirectResponse
     {
         $customer_meta_category->delete();
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**
@@ -91,7 +91,7 @@ class CustomerMetaCategoryController extends BaseController
     public function clone(Request $request, Directory $directory): RedirectResponse
     {
         if (!$directory->hasCustomerMetaCategory())
-            return History::redirectBack();
+            return HistoryHelper::redirectBack();
         $customer_meta_category = $directory->customerMetaCategory;
         $customer_meta_category->update(["parent_id" => $customer_meta_category->id]);
         $new_customer_meta_category = $customer_meta_category->replicate();

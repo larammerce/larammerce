@@ -3,13 +3,13 @@
 namespace App\Utils\FinancialManager;
 
 use App\Features\FinancialDriver\FinancialDriverConfig;
+use App\Libraries\Reflection\AnnotationBadKeyException;
+use App\Libraries\Reflection\AnnotationBadScopeException;
+use App\Libraries\Reflection\AnnotationNotFoundException;
+use App\Libraries\Reflection\AnnotationSyntaxException;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
 use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
 use App\Utils\FinancialManager\Models\BaseFinancialConfig;
-use App\Utils\Reflection\AnnotationBadKeyException;
-use App\Utils\Reflection\AnnotationBadScopeException;
-use App\Utils\Reflection\AnnotationNotFoundException;
-use App\Utils\Reflection\AnnotationSyntaxException;
 use ReflectionException;
 
 class ConfigProvider
@@ -86,10 +86,10 @@ class ConfigProvider
     }
 
     /**
-     * @throws AnnotationNotFoundException
+     * @throws \App\Libraries\Reflection\AnnotationNotFoundException
      * @throws AnnotationSyntaxException
      * @throws FinancialDriverInvalidConfigurationException
-     * @throws AnnotationBadScopeException
+     * @throws \App\Libraries\Reflection\AnnotationBadScopeException
      * @throws AnnotationBadKeyException
      * @throws ReflectionException
      */

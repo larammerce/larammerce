@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\FormHelper;
+use App\Helpers\HistoryHelper;
 use App\Models\Gallery;
-use App\Utils\CMS\FormService;
-use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -42,7 +42,7 @@ class GalleryController extends BaseController
     {
         $fields = json_decode(request('fields'));
         if ($fields != null)
-            FormService::convertFormInputToKeys($fields);
+            FormHelper::convertFormInputToKeys($fields);
         Gallery::create(request()->all());
         return redirect()->route('admin.gallery.index');
     }
@@ -72,9 +72,9 @@ class GalleryController extends BaseController
     {
         $fields = json_decode(request('fields'));
         if ($fields != null)
-            FormService::convertFormInputToKeys($fields);
+            FormHelper::convertFormInputToKeys($fields);
         $gallery->update(request()->all());
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**

@@ -4,8 +4,8 @@
 
 namespace App\Http\Controllers\Admin\Api\V1;
 
+use App\Helpers\ResponseHelper;
 use App\Models\Product;
-use App\Utils\Common\MessageFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -24,7 +24,7 @@ class ProductController extends BaseController
         $collection = Product::search($request->get('query'))
             ->visible()->get();
 
-        return response()->json(MessageFactory::create(
+        return response()->json(ResponseHelper::create(
             [], 200, compact('collection')
         ), 200);
     }

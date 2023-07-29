@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 
-use App\Features\SystemLog\ActionLogConfig;
+use App\Features\ActionLog\ActionLogConfig;
+use App\Helpers\HistoryHelper;
+use App\Helpers\SystemMessageHelper;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\SystemMessageService;
-use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -51,10 +51,10 @@ class ActionLogSettingController extends BaseController
         //dd($enabled_controllers);
         try {
             ActionLogConfig::setRecord($record);
-            return History::redirectBack();
+            return HistoryHelper::redirectBack();
         } catch (NotValidSettingRecordException $e) {
-            SystemMessageService::addErrorMessage('system_messages.action_log_setting.invalid_record');
-            return History::redirectBack()->withInput();
+            SystemMessageHelper::addErrorMessage('system_messages.action_log_setting.invalid_record');
+            return HistoryHelper::redirectBack()->withInput();
         }
     }
 

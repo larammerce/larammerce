@@ -9,8 +9,8 @@
 namespace App\Features\Sort;
 
 
+use App\Helpers\EloquentModelHelper;
 use App\Interfaces\SettingDataInterface;
-use App\Utils\Common\ModelService;
 use JetBrains\PhpStorm\ArrayShape;
 
 class SortSettingData implements SettingDataInterface
@@ -74,7 +74,7 @@ class SortSettingData implements SettingDataInterface
 
     public function validate(): bool
     {
-        return ModelService::isValidModelByField($this->getModelName(), $this->getField());
+        return EloquentModelHelper::isValidModelByField($this->getModelName(), $this->getField());
     }
 
     public function getPrimaryKey(): string

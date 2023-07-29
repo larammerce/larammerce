@@ -9,9 +9,9 @@
 namespace App\Models;
 
 use App\Features\Layout\LayoutConfig;
+use App\Helpers\AdminRequestHelper;
+use App\Libraries\Jalali\JDate;
 use App\Scopes\SortScope;
-use App\Utils\CMS\AdminRequestService;
-use App\Utils\Jalali\JDate;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
@@ -128,7 +128,7 @@ abstract class BaseModel extends Model
     protected static function boot(): void {
         parent::boot();
 
-        if (AdminRequestService::isInAdminArea()) {
+        if (AdminRequestHelper::isInAdminArea()) {
             static::addGlobalScope(new SortScope());
         }
     }
@@ -167,7 +167,7 @@ abstract class BaseModel extends Model
 
     public function getAllowedInputs(): array {
         $result = [];
-        if (AdminRequestService::isInAdminArea()) {
+        if (AdminRequestHelper::isInAdminArea()) {
             $systemUser = get_system_user();
             if ($systemUser !== null) {
                 foreach (static::$ROLE_PROPERTY_ACCESS as $role => $fillable) {

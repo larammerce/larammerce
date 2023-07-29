@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
 use App\Models\Invoice;
 use App\Models\InvoiceRow;
-use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\View\Factory;
@@ -76,7 +76,7 @@ class InvoiceRowController extends BaseController
     public function update(Request $request, InvoiceRow $invoice_row): RedirectResponse
     {
         $invoice_row->update($request->all());
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**

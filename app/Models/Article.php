@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\ImageHelper;
 use App\Interfaces\CMSExposedNodeInterface as FileAbstractionContract;
 use App\Interfaces\HashInterface;
 use App\Interfaces\ImageOwnerInterface;
@@ -9,11 +10,10 @@ use App\Interfaces\PublishScheduleInterface;
 use App\Interfaces\RateOwnerInterface as RateableContract;
 use App\Interfaces\SeoSubjectInterface as SeoableContract;
 use App\Interfaces\ShareSubjectInterface;
+use App\Libraries\Translation\Traits\Translatable;
 use App\Traits\Fileable;
 use App\Traits\Rateable;
 use App\Traits\Seoable;
-use App\Utils\Common\ImageService;
-use App\Utils\Translation\Traits\Translatable;
 use DateTime;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -135,7 +135,7 @@ class Article extends BaseModel implements
     }
 
     public function setImagePath() {
-        $tmpImage = ImageService::saveImage($this->getImageCategoryName());
+        $tmpImage = ImageHelper::saveImage($this->getImageCategoryName());
         $this->image_path = $tmpImage->destinationPath . '/' . $tmpImage->name;
         $this->save();
     }

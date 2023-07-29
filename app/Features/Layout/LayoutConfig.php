@@ -10,10 +10,10 @@ namespace App\Features\Layout;
 
 
 use App\Common\BaseFeatureConfig;
+use App\Helpers\EloquentModelHelper;
 use App\Utils\CMS\Enums\DataSourceDriver;
 use App\Utils\CMS\Enums\LayoutType;
 use App\Utils\CMS\Enums\SettingType;
-use App\Utils\Common\ModelService;
 
 /**
  * @method static LayoutSettingData getRecord(string $name = "", ?string $parent_id = null)
@@ -26,7 +26,7 @@ class LayoutConfig extends BaseFeatureConfig
 
     protected static function validateName($name): bool
     {
-        return ModelService::isValidModel($name);
+        return EloquentModelHelper::isValidModel($name);
     }
 
     public static function getLayoutMethods(): array
@@ -48,7 +48,7 @@ class LayoutConfig extends BaseFeatureConfig
     public static function defaultRecord($name): LayoutSettingData
     {
         $default = new LayoutSettingData();
-        $default->setModel(ModelService::className($name));
+        $default->setModel(EloquentModelHelper::className($name));
         $default->setMethod(LayoutType::LIST_ITEMS);
 
         return $default;

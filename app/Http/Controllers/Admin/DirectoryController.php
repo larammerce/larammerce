@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\Directory\DirectoryType;
+use App\Helpers\HistoryHelper;
+use App\Helpers\RequestHelper;
+use App\Helpers\ResponseHelper;
 use App\Jobs\ActionDirectoryChildrenBadges;
 use App\Jobs\UpdateProductsSpecialPrice;
 use App\Models\Directory;
 use App\Models\Product;
 use App\Utils\CMS\File\ExploreService;
-use App\Utils\Common\History;
-use App\Utils\Common\MessageFactory;
-use App\Utils\Common\RequestService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -129,7 +129,7 @@ class DirectoryController extends BaseController
         if ($request->hasFile('image'))
             $directory->setImagePath();
 
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**
@@ -162,8 +162,8 @@ class DirectoryController extends BaseController
     public function attachRole(Request $request, Directory $directory): JsonResponse|RedirectResponse
     {
         $directory->systemRoles()->attach($request->get('id'));
-        if (RequestService::isRequestAjax()) {
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax()) {
+            return response()->json(ResponseHelper::create(
                 ['messages.directory.role_attached'], 200, compact('directory')
             ), 200);
         }
@@ -177,8 +177,8 @@ class DirectoryController extends BaseController
     public function detachRole(Request $request, Directory $directory): JsonResponse|RedirectResponse
     {
         $directory->systemRoles()->detach($request->get('id'));
-        if (RequestService::isRequestAjax()) {
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax()) {
+            return response()->json(ResponseHelper::create(
                 ['messages.directory.role_detached'], 200, compact('directory')
             ), 200);
         }
@@ -202,7 +202,7 @@ class DirectoryController extends BaseController
         $job = new ActionDirectoryChildrenBadges($directory, $badge_id, ActionDirectoryChildrenBadges::ATTACH);
         dispatch($job);
 
-        if (RequestService::isRequestAjax()) {
+        if (RequestHelper::isRequestAjax()) {
             if ($directory->content_type == \App\Enums\Directory\DirectoryType::PRODUCT) {
                 $action_success_message = "messages.directory.badge_attached_to_products";
             } elseif ($directory->content_type == \App\Enums\Directory\DirectoryType::BLOG) {
@@ -210,7 +210,7 @@ class DirectoryController extends BaseController
             } else {
                 $action_success_message = "messages.directory.badge_attached";
             }
-            return response()->json(MessageFactory::create(
+            return response()->json(ResponseHelper::create(
                 [$action_success_message], 200, compact('directory')
             ), 200);
         }
@@ -233,7 +233,7 @@ class DirectoryController extends BaseController
         $job = new ActionDirectoryChildrenBadges($directory, $badge_id, ActionDirectoryChildrenBadges::DETACH);
         dispatch($job);
 
-        if (RequestService::isRequestAjax()) {
+        if (RequestHelper::isRequestAjax()) {
             if ($directory->content_type == \App\Enums\Directory\DirectoryType::PRODUCT) {
                 $action_success_message = "messages.directory.badge_detached_from_products";
             } elseif ($directory->content_type == \App\Enums\Directory\DirectoryType::BLOG) {
@@ -241,13 +241,13 @@ class DirectoryController extends BaseController
             } else {
                 $action_success_message = "messages.directory.badge_detached";
             }
-            return response()->json(MessageFactory::create(
+            return response()->json(ResponseHelper::create(
                 [$action_success_message], 200, compact('directory')
             ), 200);
         }
 
-        if (RequestService::isRequestAjax()) {
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax()) {
+            return response()->json(ResponseHelper::create(
                 ['messages.directory.badge_detached'], 200, compact('directory')
             ), 200);
         }
@@ -341,7 +341,7 @@ class DirectoryController extends BaseController
     {
         $job = new UpdateProductsSpecialPrice($directory, request()->get("descent_percentage"));
         dispatch($job);
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**

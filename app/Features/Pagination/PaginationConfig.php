@@ -10,10 +10,10 @@ namespace App\Features\Pagination;
 
 
 use App\Common\BaseFeatureConfig;
+use App\Helpers\EloquentModelHelper;
+use App\Helpers\RequestHelper;
 use App\Utils\CMS\Enums\DataSourceDriver;
 use App\Utils\CMS\Enums\SettingType;
-use App\Utils\Common\ModelService;
-use App\Utils\Common\RequestService;
 
 /**
  * @method static PaginationSettingData getRecord(string $name = "", ?string $parent_id = null)
@@ -27,7 +27,7 @@ class PaginationConfig extends BaseFeatureConfig
     public static function defaultRecord($name): PaginationSettingData
     {
         $default = new PaginationSettingData();
-        $default->setModel(ModelService::className($name));
+        $default->setModel(EloquentModelHelper::className($name));
         $default->setPage(1);
 
         return $default;
@@ -36,7 +36,7 @@ class PaginationConfig extends BaseFeatureConfig
     public static function initiate($name, $parent_id = null)
     {
         if (self::validateName($name)) {
-            RequestService::setAttr('page', self::getRecord($name, $parent_id)->getPage());
+            RequestHelper::setAttr('page', self::getRecord($name, $parent_id)->getPage());
         }
     }
 }

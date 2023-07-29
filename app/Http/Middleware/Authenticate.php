@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Utils\Common\RequestService;
+use App\Helpers\RequestHelper;
 use Closure;
 
 class Authenticate
@@ -18,7 +18,7 @@ class Authenticate
     public function handle($request, Closure $next, $guard = null)
     {
         if (auth($guard)->guest()) {
-            if (RequestService::isRequestAjax($request)) {
+            if (RequestHelper::isRequestAjax($request)) {
                 return response('Unauthorized.', 401);
             }
 

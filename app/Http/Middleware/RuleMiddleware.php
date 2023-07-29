@@ -2,13 +2,13 @@
 
 namespace App\Http\Middleware;
 
-use App\Utils\Common\MessageFactory;
-use App\Utils\Common\RequestService;
-use App\Utils\Reflection\Action;
-use App\Utils\Reflection\AnnotationBadKeyException;
-use App\Utils\Reflection\AnnotationBadScopeException;
-use App\Utils\Reflection\AnnotationNotFoundException;
-use App\Utils\Reflection\AnnotationSyntaxException;
+use App\Helpers\RequestHelper;
+use App\Helpers\ResponseHelper;
+use App\Libraries\Reflection\Action;
+use App\Libraries\Reflection\AnnotationBadKeyException;
+use App\Libraries\Reflection\AnnotationBadScopeException;
+use App\Libraries\Reflection\AnnotationNotFoundException;
+use App\Libraries\Reflection\AnnotationSyntaxException;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -23,8 +23,8 @@ class RuleMiddleware
      * @param Closure $next
      * @return mixed
      * @throws AnnotationBadKeyException
-     * @throws AnnotationBadScopeException
-     * @throws AnnotationSyntaxException
+     * @throws \App\Libraries\Reflection\AnnotationBadScopeException
+     * @throws \App\Libraries\Reflection\AnnotationSyntaxException
      * @throws ReflectionException
      */
     public function handle($request, Closure $next)
@@ -50,9 +50,9 @@ class RuleMiddleware
 
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
-            if (RequestService::isRequestAjax($request)) {
+            if (RequestHelper::isRequestAjax($request)) {
                 return response()->json(
-                    MessageFactory::createWithValidationMessages(
+                    ResponseHelper::createWithValidationMessages(
                         $validator->messages()->toArray(),
                         400, [
                         "request_data" => $request->all()

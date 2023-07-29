@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
+use App\Helpers\RequestHelper;
+use App\Helpers\ResponseHelper;
 use App\Models\SystemUser;
-use App\Utils\Common\History;
-use App\Utils\Common\MessageFactory;
-use App\Utils\Common\RequestService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -68,7 +68,7 @@ class SystemUserController extends BaseController
         $system_user->update($request->all());
         if ($request->hasFile('image'))
             $system_user->setImagePath();
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**
@@ -109,8 +109,8 @@ class SystemUserController extends BaseController
     public function attachRole(Request $request, SystemUser $system_user): JsonResponse|RedirectResponse
     {
         $system_user->roles()->attach($request->get('id'));
-        if (RequestService::isRequestAjax()) {
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax()) {
+            return response()->json(ResponseHelper::create(
                 ['messages.system_user.role_attached'], 200, compact('system_user')
             ), 200);
         }
@@ -124,8 +124,8 @@ class SystemUserController extends BaseController
     public function detachRole(Request $request, SystemUser $system_user): JsonResponse|RedirectResponse
     {
         $system_user->roles()->detach($request->get('id'));
-        if (RequestService::isRequestAjax()) {
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax()) {
+            return response()->json(ResponseHelper::create(
                 ['messages.system_user.role_detached'], 200, compact('system_user')
             ), 200);
         }

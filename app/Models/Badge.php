@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use App\Helpers\ImageHelper;
 use App\Interfaces\ImageOwnerInterface;
 use App\Interfaces\TagInterface as TaggableContract;
+use App\Libraries\Translation\Traits\Translatable;
 use App\Traits\Taggable;
-use App\Utils\Common\ImageService;
-use App\Utils\Translation\Traits\Translatable;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
 
@@ -74,7 +74,7 @@ class Badge extends BaseModel implements ImageOwnerInterface, TaggableContract
 
     public function setImagePath()
     {
-        $tmpImage = ImageService::saveImage($this->getImageCategoryName());
+        $tmpImage = ImageHelper::saveImage($this->getImageCategoryName());
         $this->image_path = $tmpImage->destinationPath . '/' . $tmpImage->name;
         $this->save();
     }

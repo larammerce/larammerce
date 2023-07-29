@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\SystemMessageHelper;
 use App\Models\ActionLog;
 use App\Models\User;
-use App\Utils\CMS\SystemMessageService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\RedirectResponse;
@@ -48,7 +48,7 @@ class ActionLogController extends BaseController
                 compact('action_logs', 'user'));
         } catch (Exception $exception) {
             Log::error("action_log.index.exception : " . $exception->getMessage());
-            SystemMessageService::addErrorMessage('system_messages.action_log.unable_to_retrieve_data');
+            SystemMessageHelper::addErrorMessage('system_messages.action_log.unable_to_retrieve_data');
             return redirect()->back()->withInput();
         }
     }

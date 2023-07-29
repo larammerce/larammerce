@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
 use App\Models\CustomerAddress;
 use App\Models\CustomerUser;
-use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -87,7 +87,7 @@ class CustomerAddressController extends BaseController
     public function update(Request $request, CustomerAddress $customer_address): RedirectResponse
     {
         $customer_address->update($request->all());
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**

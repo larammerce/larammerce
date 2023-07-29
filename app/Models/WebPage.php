@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use App\Helpers\ImageHelper;
+use App\Helpers\RequestHelper;
 use App\Interfaces\ImageOwnerInterface;
 use App\Interfaces\SeoSubjectInterface as SeoableContract;
+use App\Libraries\Translation\Traits\Translatable;
 use App\Traits\Seoable;
 use App\Utils\CMS\Template\Contents\Audio;
 use App\Utils\CMS\Template\Contents\File;
@@ -16,9 +19,6 @@ use App\Utils\CMS\Template\ContentTypes;
 use App\Utils\CMS\Template\Directives;
 use App\Utils\CMS\Template\RelativeBladeType;
 use App\Utils\CMS\Template\TemplateService;
-use App\Utils\Common\ImageService;
-use App\Utils\Common\RequestService;
-use App\Utils\Translation\Traits\Translatable;
 use DateTime;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -168,7 +168,7 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
 
     public function setImagePath()
     {
-        $tmpImage = ImageService::saveImage($this->getImageCategoryName());
+        $tmpImage = ImageHelper::saveImage($this->getImageCategoryName());
         $this->image_path = $tmpImage->destinationPath . '/' . $tmpImage->name;
         $this->save();
     }
@@ -202,12 +202,12 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
             foreach ($data as $content_id => $values) {
                 if (key_exists($content_id, $this->contents)) {
                     foreach ($values as $attr_name => $attr_value) {
-                        $attr_value_type = RequestService::getType($attr_value);
-                        if ($attr_value_type === RequestService::FILE_ATTRIBUTE) {
-                            $tmp_image = ImageService::saveImage("not_categorized", file: $attr_value);
+                        $attr_value_type = RequestHelper::getType($attr_value);
+                        if ($attr_value_type === RequestHelper::FILE_ATTRIBUTE) {
+                            $tmp_image = ImageHelper::saveImage("not_categorized", file: $attr_value);
                             $this->contents[$content_id]->{Str::camel("set_" . $attr_name)}(
                                 $tmp_image->destinationPath . '/' . $tmp_image->name);
-                        } else if ($attr_value_type === RequestService::TEXT_ATTRIBUTE) {
+                        } else if ($attr_value_type === RequestHelper::TEXT_ATTRIBUTE) {
                             $this->contents[$content_id]->{Str::camel("set_" . $attr_name)}($attr_value);
                         }
                     }

@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use App\Helpers\ImageHelper;
 use App\Interfaces\ImageOwnerInterface;
 use App\Interfaces\TagInterface as TaggableContract;
 use App\Traits\Taggable;
 use App\Utils\CMS\Enums\UserHome;
-use App\Utils\Common\ImageService;
 use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
 use App\Utils\FinancialManager\Factory as FinFactory;
 use DateTime;
@@ -137,7 +137,7 @@ class User extends BaseModel implements
     }
 
     public function setImagePath() {
-        $tmpImage = ImageService::saveImage($this->getImageCategoryName());
+        $tmpImage = ImageHelper::saveImage($this->getImageCategoryName());
         $this->image_path = $tmpImage->destinationPath . '/' . $tmpImage->name;
         $this->save();
     }

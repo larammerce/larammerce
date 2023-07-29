@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Modal;
+use App\Helpers\HistoryHelper;
 use App\Models\ModalRoute;
-use App\Utils\Common\History;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Response;
@@ -29,7 +28,7 @@ class ModalRouteController extends BaseController
     public function store(Request $request): RedirectResponse
     {
         ModalRoute::create($request->all());
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     public function edit(Request $request, ModalRoute $modal_route)
@@ -44,13 +43,13 @@ class ModalRouteController extends BaseController
     public function update(Request $request, ModalRoute $modal_route): RedirectResponse|Response
     {
         $modal_route->update($request->all());
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     public function destroy(ModalRoute $modal_route): RedirectResponse
     {
         $modal_route->delete();
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
 

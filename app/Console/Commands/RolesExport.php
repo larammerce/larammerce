@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Libraries\Reflection\ReflectiveNamespace;
 use App\Models\SystemUser;
-use App\Utils\Reflection\ReflectiveNamespace;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Command\Command as CommandAlias;

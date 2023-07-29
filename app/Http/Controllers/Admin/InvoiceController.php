@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\Invoice\ShipmentStatus;
+use App\Helpers\HistoryHelper;
+use App\Helpers\RequestHelper;
+use App\Helpers\SMSHelper;
 use App\Models\CustomerUser;
 use App\Models\Invoice;
-use App\Utils\Common\History;
-use App\Utils\Common\RequestService;
-use App\Utils\Common\SMSService;
 use App\Utils\ShipmentService\Factory as ShipmentFactory;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -106,7 +106,7 @@ class InvoiceController extends BaseController
     public function update(Request $request, Invoice $invoice): RedirectResponse
     {
         $invoice->update($request->all());
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**
@@ -136,7 +136,7 @@ class InvoiceController extends BaseController
     {
         if ($invoice->shipment_status == ShipmentStatus::WAREHOUSE_EXIT_TAB)
             return view('admin.pages.invoice.shipment-sending')->with(['invoice' => $invoice]);
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**
@@ -146,14 +146,14 @@ class InvoiceController extends BaseController
      */
     public function setShipmentSending(Request $request, Invoice $invoice): RedirectResponse
     {
-        RequestService::setAttr('shipment_status', ShipmentStatus::SENDING);
-        RequestService::setAttr('shipment_data',
+        RequestHelper::setAttr('shipment_status', ShipmentStatus::SENDING);
+        RequestHelper::setAttr('shipment_data',
             ShipmentFactory::driver($request->get('shipment_driver'))->parseData($request->all())
         );
 
         $invoice->update($request->all());
         if ($request->has('notify_customer'))
-            SMSService::send(
+            SMSHelper::send(
                 'sms-invoice-sending',
                 $invoice->customer->main_phone,
                 [
@@ -173,7 +173,7 @@ class InvoiceController extends BaseController
     {
         if ($invoice->shipment_status == ShipmentStatus::SENDING)
             return view('admin.pages.invoice.shipment-delivered')->with(['invoice' => $invoice]);
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**
@@ -183,7 +183,7 @@ class InvoiceController extends BaseController
     {
         $invoice->update(['shipment_status' => ShipmentStatus::DELIVERED]);
         if ($request->has('notify_customer'))
-            SMSService::send(
+            SMSHelper::send(
                 'sms-invoice-delivered',
                 $invoice->customer->main_phone,
                 [
@@ -202,7 +202,7 @@ class InvoiceController extends BaseController
     {
         if ($invoice->shipment_status == ShipmentStatus::PREPARING_TO_SEND)
             return view('admin.pages.invoice.shipment-exit-tab')->with(['invoice' => $invoice]);
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**
@@ -212,7 +212,7 @@ class InvoiceController extends BaseController
     {
         $invoice->update(['shipment_status' => ShipmentStatus::WAREHOUSE_EXIT_TAB]);
         if ($request->has('notify_customer'))
-            SMSService::send(
+            SMSHelper::send(
                 'sms-invoice-exit-tab',
                 $invoice->customer->main_phone,
                 [

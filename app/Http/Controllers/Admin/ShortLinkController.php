@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
 use App\Models\ShortLink;
 use App\Models\ShortLinkStatistic;
-use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -69,7 +69,7 @@ class ShortLinkController extends BaseController
     public function update(Request $request, ShortLink $short_link): RedirectResponse
     {
         $short_link->update($request->all());
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**
@@ -78,7 +78,7 @@ class ShortLinkController extends BaseController
     public function destroy(ShortLink $short_link): RedirectResponse
     {
         $short_link->delete();
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**

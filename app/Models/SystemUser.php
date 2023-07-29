@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Utils\Common\ImageService;
+use App\Helpers\ImageHelper;
 use DateTime;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -94,7 +94,7 @@ class SystemUser extends BaseModel
 
     public function setImagePath()
     {
-        $tmpImage = ImageService::saveImage($this->getImageCategoryName());
+        $tmpImage = ImageHelper::saveImage($this->getImageCategoryName());
         $this->main_image_path = $tmpImage->destinationPath . '/' . $tmpImage->name;
         $this->save();
     }

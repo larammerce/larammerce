@@ -63,8 +63,8 @@
                                                         {{ $cart_row->product->title }}
                                                     </td>
                                                     <td class="text-center"
-                                                    >{{\App\Utils\Common\Format::number($cart_row->product->latest_price) }}</td>
-                                                    <td class="text-center">{{\App\Utils\Common\Format::number($cart_row->product->latest_price * $cart_row->count)}}</td>
+                                                    >{{format_price($cart_row->product->latest_price) }}</td>
+                                                    <td class="text-center">{{format_price($cart_row->product->latest_price * $cart_row->count)}}</td>
                                                 </tr>
                                             @endforeach
                                             </tbody>

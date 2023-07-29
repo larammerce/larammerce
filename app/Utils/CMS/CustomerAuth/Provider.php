@@ -4,19 +4,13 @@
 namespace App\Utils\CMS\CustomerAuth;
 
 
+use App\Helpers\SMSHelper;
+use App\Helpers\SystemMessageHelper;
 use App\Jobs\SendEmail;
-use App\Utils\CMS\SystemMessageService;
-use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
-use App\Models\{
-    CustomerUser,
-    User
-};
-use App\Utils\Common\SMSService;
-use App\Utils\OneTimeCode\{
-    GenerateCodeNotPossibleException,
-    Provider as OneTimeCodeProvider,
-    SecurityLevelException
-};
+use App\Libraries\OneTimeCode\{Provider as OneTimeCodeProvider};
+use App\Libraries\OneTimeCode\GenerateCodeNotPossibleException;
+use App\Libraries\OneTimeCode\SecurityLevelException;
+use App\Models\{CustomerUser, User};
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Hash;
 
@@ -46,7 +40,7 @@ class Provider
         $oneTimeCode = OneTimeCodeProvider::getCode($value);
         switch ($type) {
             case AuthType::MOBILE:
-                SMSService::send("sms-auth-code", $value,
+                SMSHelper::send("sms-auth-code", $value,
                     compact("oneTimeCode"));
                 break;
             case AuthType::EMAIL:
@@ -68,7 +62,7 @@ class Provider
      * @param $value
      * @param $code
      * @return CustomerUser|null
-     * @throws SecurityLevelException
+     * @throws \App\Libraries\OneTimeCode\SecurityLevelException
      * @throws BadValidationCodePassed
      */
     public static function validateByCode($type, $value, $code)
@@ -170,7 +164,7 @@ class Provider
     public static function login(CustomerUser $customer_user): void
     {
         auth('web')->login($customer_user->user);
-        SystemMessageService::addInfoMessage("system_messages.user.login_message",
+        SystemMessageHelper::addInfoMessage("system_messages.user.login_message",
             ["name" => $customer_user->user->full_name]);
         $customer = get_customer_user();
         foreach (get_local_cart() as $cart_row) {

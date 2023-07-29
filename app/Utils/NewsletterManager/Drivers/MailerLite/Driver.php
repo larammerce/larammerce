@@ -2,9 +2,9 @@
 
 namespace App\Utils\NewsletterManager\Drivers\MailerLite;
 
-use Exception;
-use App\Utils\CMS\SystemMessageService;
+use App\Helpers\SystemMessageHelper;
 use App\Utils\NewsletterManager\BaseDriver;
+use Exception;
 use Illuminate\Support\Facades\Log;
 use MailerLiteApi\MailerLite;
 
@@ -35,12 +35,12 @@ class Driver implements BaseDriver
         try {
             if (isset($result)) {
                 if (isset($result->error))
-                    SystemMessageService::addErrorMessage("system_messages.newsletter.dataNotEnough");
+                    SystemMessageHelper::addErrorMessage("system_messages.newsletter.dataNotEnough");
                 elseif (isset($result->sent)) {
                     if ($result->sent == 0)
-                        SystemMessageService::addSuccessMessage("system_messages.newsletter.subscribe");
+                        SystemMessageHelper::addSuccessMessage("system_messages.newsletter.subscribe");
                 } else
-                    SystemMessageService::addErrorMessage("system_messages.newsletter.unsubscribe");
+                    SystemMessageHelper::addErrorMessage("system_messages.newsletter.unsubscribe");
             }
         } catch (Exception $e) {
             Log::error('errorLog for newsletter subscribe : ' . $e->getMessage());

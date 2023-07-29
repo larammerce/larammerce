@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
+use App\Helpers\SystemMessageHelper;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\SystemMessageService;
-use App\Utils\Common\History;
 use App\Utils\SMSManager\ConfigProvider;
 use App\Utils\SMSManager\Exceptions\SMSDriverInvalidConfigurationException;
 use Illuminate\Contracts\Foundation\Application;
@@ -41,12 +41,12 @@ class SMSDriverController extends BaseController
         $drivers = $request->get("drivers");
         try {
             ConfigProvider::setAll($drivers);
-            return History::redirectBack();
+            return HistoryHelper::redirectBack();
         } catch (NotValidSettingRecordException $e) {
-            SystemMessageService::addErrorMessage('system_messages.sms_driver.invalid_record');
+            SystemMessageHelper::addErrorMessage('system_messages.sms_driver.invalid_record');
             return redirect()->back()->withInput();
         } catch (SMSDriverInvalidConfigurationException $e) {
-            SystemMessageService::addErrorMessage('system_messages.sms_driver.invalid_driver');
+            SystemMessageHelper::addErrorMessage('system_messages.sms_driver.invalid_driver');
             return redirect()->back()->withInput();
         }
     }

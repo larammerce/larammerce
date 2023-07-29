@@ -121,7 +121,7 @@ return [
     | Defines the translatable trait path which used for check if a model use the trait.
     |
     */
-    "translation_trait" => "App\\Utils\\Translation\\Traits\\Translatable",
+    "translation_trait" => "App\\Libraries\\Translation\\Traits\\Translatable",
 
     /*
     |--------------------------------------------------------------------------
@@ -167,7 +167,7 @@ return [
      *
      */
     "rule_factory" => [
-        "format" => \App\Utils\Translation\Validation\RuleFactory::FORMAT_ARRAY,
+        "format" => \App\Libraries\Translation\Validation\RuleFactory::FORMAT_ARRAY,
         "prefix" => "%",
         "suffix" => "%",
     ],

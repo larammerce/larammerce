@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 
+use App\Helpers\HistoryHelper;
 use App\Models\ProductQuery;
-use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\View\Factory;
@@ -72,7 +72,7 @@ class ProductQueryController extends BaseController
     {
         $data = $request->except(["identifier"]);
         $product_query->update($data);
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**
@@ -81,7 +81,7 @@ class ProductQueryController extends BaseController
     public function destroy(ProductQuery $product_query): RedirectResponse
     {
         $product_query->delete();
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
 

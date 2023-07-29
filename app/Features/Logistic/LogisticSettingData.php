@@ -5,7 +5,7 @@ namespace App\Features\Logistic;
 
 
 use App\Interfaces\SettingDataInterface;
-use App\Utils\Jalali\JDate;
+use App\Libraries\Jalali\JDate;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use JetBrains\PhpStorm\ArrayShape;

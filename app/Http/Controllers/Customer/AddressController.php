@@ -11,10 +11,10 @@ namespace App\Http\Controllers\Customer;
 
 use App\Features\CustomerLocation\CustomerLocationConfig;
 use App\Features\CustomerLocation\CustomerLocationSettingData;
+use App\Helpers\HistoryHelper;
+use App\Helpers\SystemMessageHelper;
 use App\Models\CustomerAddress;
 use App\Services\Customer\CustomerAddressService;
-use App\Utils\CMS\SystemMessageService;
-use App\Utils\Common\History;
 use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -54,7 +54,7 @@ class AddressController extends BaseController
             $defaultResponse = redirect()->route('customer.cart.show');
         }
 
-        return History::redirectBack($defaultResponse);
+        return HistoryHelper::redirectBack($defaultResponse);
     }
 
     /**
@@ -80,7 +80,7 @@ class AddressController extends BaseController
         //TODO: not safe, any user can edit others addresses.
         $customer_address->update($request->all());
 
-        return History::redirectBack(redirect()->route('customer.profile.index'));
+        return HistoryHelper::redirectBack(redirect()->route('customer.profile.index'));
     }
 
     /**
@@ -112,7 +112,7 @@ class AddressController extends BaseController
         $address = CustomerAddress::find(request()->get("address_id"));
         $this->customer_address_service->setAddressAsMain($address);
         CustomerLocationConfig::setRecord(new CustomerLocationSettingData($address->state, $address->city));
-        SystemMessageService::addSuccessMessage("system_messages.user.location_updated");
+        SystemMessageHelper::addSuccessMessage("system_messages.user.location_updated");
         return redirect()->back();
     }
 }

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
 use App\Models\Product;
 use App\Models\ProductPrice;
-use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -59,7 +59,7 @@ class ProductPriceController extends BaseController
     public function destroy(ProductPrice $product_price): RedirectResponse
     {
         $product_price->delete();
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
 

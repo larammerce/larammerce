@@ -2,20 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
+use App\Helpers\RequestHelper;
+use App\Helpers\ResponseHelper;
 use App\Models\Directory;
 use App\Models\Product;
-use App\Models\PAttr;
 use App\Models\ProductFilter;
 use App\Models\PStructure;
 use App\Models\PStructureAttrKey;
 use App\Models\PStructureAttrValue;
 use App\Services\Product\ProductService;
 use App\Utils\CMS\File\ExploreService;
-use App\Utils\CMS\FormService;
-use App\Utils\CMS\SiteMap\Provider as SiteMapProvider;
-use App\Utils\Common\History;
-use App\Utils\Common\MessageFactory;
-use App\Utils\Common\RequestService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -134,7 +131,7 @@ class ProductController extends BaseController
     {
         $product->update($request->all());
         $product->updateReview();
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**
@@ -163,8 +160,8 @@ class ProductController extends BaseController
     {
         $value = PStructureAttrValue::find($request->get('id'));
         ProductService::attachAttributeToProduct($product, $key, $value);
-        if (RequestService::isRequestAjax()) {
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax()) {
+            return response()->json(ResponseHelper::create(
                 ['messages.product.attribute_attached'], 200, compact('product')
             ), 200);
         }
@@ -179,8 +176,8 @@ class ProductController extends BaseController
     {
         $value = PStructureAttrValue::find($request->get('id'));
         ProductService::detachAttributeFromProduct($product, $key, $value);
-        if (RequestService::isRequestAjax()) {
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax()) {
+            return response()->json(ResponseHelper::create(
                 ['messages.product.attribute_detached'], 200, compact('product')
             ), 200);
         }
@@ -205,8 +202,8 @@ class ProductController extends BaseController
     public function attachColor(Request $request, Product $product): JsonResponse|RedirectResponse
     {
         $product->colors()->attach($request->get('id'));
-        if (RequestService::isRequestAjax()) {
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax()) {
+            return response()->json(ResponseHelper::create(
                 ['messages.product.color_attached'], 200, compact('product')
             ), 200);
         }
@@ -220,8 +217,8 @@ class ProductController extends BaseController
     public function detachColor(Request $request, Product $product): JsonResponse|RedirectResponse
     {
         $product->colors()->detach($request->get('id'));
-        if (RequestService::isRequestAjax()) {
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax()) {
+            return response()->json(ResponseHelper::create(
                 ['messages.product.color_detached'], 200, compact('product')
             ), 200);
         }
@@ -247,8 +244,8 @@ class ProductController extends BaseController
     public function attachTag(Request $request, Product $product): JsonResponse|RedirectResponse
     {
         $product->tags()->attach($request->get('id'));
-        if (RequestService::isRequestAjax()) {
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax()) {
+            return response()->json(ResponseHelper::create(
                 ['messages.product.tag_attached'], 200, compact('product')
             ), 200);
         }
@@ -262,8 +259,8 @@ class ProductController extends BaseController
     public function detachTag(Request $request, Product $product): JsonResponse|RedirectResponse
     {
         $product->tags()->detach($request->get('id'));
-        if (RequestService::isRequestAjax()) {
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax()) {
+            return response()->json(ResponseHelper::create(
                 ['messages.product.tag_detached'], 200, compact('product')
             ), 200);
         }
@@ -283,8 +280,8 @@ class ProductController extends BaseController
     public function attachBadge(Request $request, Product $product)
     {
         $product->badges()->attach($request->get('id'));
-        if (RequestService::isRequestAjax()) {
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax()) {
+            return response()->json(ResponseHelper::create(
                 ['messages.product.badge_attached'], 200, compact('product')
             ), 200);
         }
@@ -303,8 +300,8 @@ class ProductController extends BaseController
     public function detachBadge(Request $request, Product $product)
     {
         $product->badges()->detach($request->get('id'));
-        if (RequestService::isRequestAjax()) {
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax()) {
+            return response()->json(ResponseHelper::create(
                 ['messages.product.badge_detached'], 200, compact('product')
             ), 200);
         }

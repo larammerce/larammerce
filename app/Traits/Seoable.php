@@ -9,8 +9,8 @@
 namespace App\Traits;
 
 
+use App\Helpers\EloquentModelHelper;
 use App\Models\Review;
-use App\Utils\Common\ModelService;
 
 /**
  * @property Review review
@@ -48,13 +48,13 @@ trait Seoable
      */
     public function getAdminEditUrl()
     {
-        $modelName = ModelService::className(get_class($this), true);
+        $modelName = EloquentModelHelper::className(get_class($this), true);
         return route("admin.{$modelName}.edit", $this);
     }
 
     public function getType()
     {
-        $modelName = ModelService::className(get_class($this), true);
+        $modelName = EloquentModelHelper::className(get_class($this), true);
         return trans("general.reviewable.{$modelName}");
     }
 

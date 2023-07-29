@@ -4,11 +4,11 @@ namespace App\Repositories\Eloquent;
 
 use App\Exceptions\Setting\CMSRecordNotFoundException;
 use App\Exceptions\Setting\SettingNotFoundException;
+use App\Helpers\CacheHelper;
 use App\Interfaces\Repositories\SettingRepositoryInterface;
 use App\Interfaces\SettingDataInterface;
 use App\Models\Setting;
 use App\Models\User;
-use App\Services\Common\CacheService;
 use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -21,9 +21,9 @@ class SettingRepositoryEloquent implements SettingRepositoryInterface
     const CACHE_TAGS = ["settings"];
     const CACHE_TTL = 60 * 60 * 24;
 
-    private CacheService $cache_service;
+    private CacheHelper $cache_service;
 
-    public function __construct(CacheService $cache_service) {
+    public function __construct(CacheHelper $cache_service) {
         $this->cache_service = $cache_service;
     }
 

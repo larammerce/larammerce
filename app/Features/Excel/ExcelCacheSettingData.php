@@ -5,7 +5,7 @@ namespace App\Features\Excel;
 
 
 use App\Interfaces\SettingDataInterface;
-use App\Utils\Reflection\ReflectiveNamespace;
+use App\Libraries\Reflection\ReflectiveNamespace;
 use JetBrains\PhpStorm\ArrayShape;
 
 class ExcelCacheSettingData implements SettingDataInterface

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Features\Representative\RepresentativeConfig;
+use App\Helpers\HistoryHelper;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\Common\History;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -32,7 +32,7 @@ class RepresentativeSettingController extends BaseController
                 $request->get("options")
             );
 
-            return History::redirectBack();
+            return HistoryHelper::redirectBack();
         } catch (NotValidSettingRecordException $e) {
             return redirect()->back()->withInput();
         }

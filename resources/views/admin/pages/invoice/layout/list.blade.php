@@ -24,7 +24,7 @@
         </div>
         <div class="col-lg-2 col-md-2 col-sm-2 col-xs-6 col">
             <div class="label">مجموع قیمت</div>
-            <div>{{\App\Utils\Common\Format::number($invoice->sum)}}</div>
+            <div>{{format_price($invoice->sum)}}</div>
         </div>
         <div class="col-lg-2 col-md-2 col-sm-2 col-xs-6 col">
             <div class="label">عملیات</div>

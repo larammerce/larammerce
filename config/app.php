@@ -9,15 +9,15 @@ use App\Enums\Product\PSAttrKeyShowType;
 use App\Features\Layout\LayoutConfig;
 use App\Features\Pagination\PaginationConfig;
 use App\Features\Sort\SortConfig;
+use App\Helpers\FormHelper;
+use App\Helpers\ImageHelper;
+use App\Helpers\TimeHelper;
+use App\Libraries\Jalali\JDate;
 use App\Utils\CMS\Appliance\ApplianceService;
 use App\Utils\CMS\Enums\SortMethod;
 use App\Utils\CMS\File\ExploreService;
-use App\Utils\CMS\FormService;
 use App\Utils\CMS\Template\ContentTypes;
 use App\Utils\CMS\Template\TemplateService;
-use App\Utils\Common\ImageService;
-use App\Utils\Common\TimeService;
-use App\Utils\Jalali\JDate;
 
 return [
 
@@ -201,13 +201,13 @@ return [
         Riverskies\Laravel\MobileDetect\MobileDetectServiceProvider::class,
         Stevebauman\Location\LocationServiceProvider::class,
         Jenssegers\Mongodb\MongodbServiceProvider::class,
-        App\Utils\Excel\ExcelServiceProvider::class,
+        \App\Libraries\Excel\ExcelServiceProvider::class,
 
         /*
          * Larammerce
          */
-        \App\Utils\Migrator\GeneratorsServiceProvider::class,
-        \App\Utils\Translation\TranslationServiceProvider::class
+        \App\Libraries\Migrator\GeneratorsServiceProvider::class,
+        \App\Libraries\Translation\TranslationServiceProvider::class
     ],
 
     /*
@@ -276,9 +276,9 @@ return [
         'PaginationConfig' => PaginationConfig::class,
         'Directory' => Directory::class,
         'JDate' => JDate::class,
-        'FormService' => FormService::class,
-        'ImageService' => ImageService::class,
-        'TimeService' => TimeService::class,
+        'FormHelper' => FormHelper::class,
+        'ImageHelper' => ImageHelper::class,
+        'TimeHelper' => TimeHelper::class,
         'TemplateService' => TemplateService::class,
         'ContentTypes' => ContentTypes::class,
         'PaymentStatus' => PaymentStatus::class,
@@ -288,7 +288,7 @@ return [
         'Gender' => Gender::class,
         'PSAttrKeyShowType' => PSAttrKeyShowType::class,
         'Location' => Stevebauman\Location\Facades\Location::class,
-        'Excel' => App\Utils\Excel\Facades\Excel::class,
+        'Excel' => \App\Libraries\Excel\Facades\Excel::class,
     ],
 
 ];

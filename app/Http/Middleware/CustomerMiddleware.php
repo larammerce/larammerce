@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use App\Utils\Common\MessageFactory;
-use App\Utils\Common\RequestService;
+use App\Helpers\RequestHelper;
+use App\Helpers\ResponseHelper;
 use Closure;
 
 class CustomerMiddleware
@@ -11,14 +11,14 @@ class CustomerMiddleware
     public function handle($request, Closure $next, $guard = null)
     {
         if (auth($guard)->guest()) {
-            if (RequestService::isRequestAjax($request)) {
-                return MessageFactory::jsonResponse(["auth.not_logged_in"], 401);
+            if (RequestHelper::isRequestAjax($request)) {
+                return ResponseHelper::jsonResponse(["auth.not_logged_in"], 401);
             }
             return redirect()->guest(route('customer-auth.show-auth',
                 config("auth.default_type.customer")));
         } else if (!auth($guard)->user()->is_customer_user) {
-            if (RequestService::isRequestAjax($request)) {
-                return MessageFactory::jsonResponse(["auth.forbidden"], 403);
+            if (RequestHelper::isRequestAjax($request)) {
+                return ResponseHelper::jsonResponse(["auth.forbidden"], 403);
             }
             return abort(403);
         }

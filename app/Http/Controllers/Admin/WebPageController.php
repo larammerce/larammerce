@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\HistoryHelper;
+use App\Helpers\RequestHelper;
+use App\Helpers\ResponseHelper;
 use App\Models\WebPage;
 use App\Utils\CMS\Template\Directives;
 use App\Utils\CMS\Template\TemplateModel;
 use App\Utils\CMS\Template\TemplateService;
-use App\Utils\Common\History;
-use App\Utils\Common\MessageFactory;
-use App\Utils\Common\RequestService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -97,7 +97,7 @@ class WebPageController extends BaseController
 
         $web_page->updateReview();
 
-        return History::redirectBack();
+        return HistoryHelper::redirectBack();
     }
 
     /**
@@ -127,8 +127,8 @@ class WebPageController extends BaseController
     public function attachTag(Request $request, WebPage $web_page): JsonResponse|RedirectResponse
     {
         $web_page->tags()->attach($request->get('id'));
-        if (RequestService::isRequestAjax()) {
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax()) {
+            return response()->json(ResponseHelper::create(
                 ['messages.web_page.tag_attached'], 200, compact('web_page')
             ), 200);
         }
@@ -142,8 +142,8 @@ class WebPageController extends BaseController
     public function detachTag(Request $request, WebPage $web_page): JsonResponse|RedirectResponse
     {
         $web_page->tags()->detach($request->get('id'));
-        if (RequestService::isRequestAjax()) {
-            return response()->json(MessageFactory::create(
+        if (RequestHelper::isRequestAjax()) {
+            return response()->json(ResponseHelper::create(
                 ['messages.web_page.tag_detached'], 200, compact('web_page')
             ), 200);
         }

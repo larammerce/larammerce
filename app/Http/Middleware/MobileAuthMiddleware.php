@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Helpers\SystemMessageHelper;
 use App\Utils\CMS\CustomerAuth\SessionService as CustomerAuthSessionService;
-use App\Utils\CMS\SystemMessageService;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -23,7 +23,7 @@ class MobileAuthMiddleware
         if (CustomerAuthSessionService::hasVal($phone_number))
             return $next($request);
 
-        SystemMessageService::addErrorMessage("system_messages.user.no_mobile_auth");
+        SystemMessageHelper::addErrorMessage("system_messages.user.no_mobile_auth");
         return redirect()->route('customer-auth.show-auth', 'mobile');
     }
 }

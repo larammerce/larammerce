@@ -3,10 +3,9 @@
 
 namespace App\Console\Commands;
 
+use App\Helpers\ImageHelper;
 use App\Jobs\ImageResizer;
-use App\Models\Product;
 use App\Models\ProductImage;
-use App\Utils\Common\ImageService;
 use Illuminate\Console\Command;
 
 class ProductFixImages extends Command
@@ -36,11 +35,11 @@ class ProductFixImages extends Command
         $product_images = $product->images;*/
 
         $product_images = ProductImage::all();
-        $config = ImageService::getImageConfig('product');
+        $config = ImageHelper::getImageConfig('product');
 
         $counter = 0;
         foreach ($product_images as $product_image) {
-            $original_path = ImageService::getImage($product_image, 'original');
+            $original_path = ImageHelper::getImage($product_image, 'original');
             $path_parts = explode("/", $original_path);
             unset($path_parts[4]);
             $destination_path = join("/", $path_parts);
@@ -49,7 +48,7 @@ class ProductFixImages extends Command
             foreach ($config as $key => $value) {
 
                 if ($key != 'ratio') {
-                    $image_path = ImageService::getImage($product_image, $key);
+                    $image_path = ImageHelper::getImage($product_image, $key);
                     if (strpos($image_path, $key) === false) {
                         $this->info($image_path);
                         $job = new ImageResizer(
