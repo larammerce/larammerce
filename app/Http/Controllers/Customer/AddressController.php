@@ -11,7 +11,7 @@ namespace App\Http\Controllers\Customer;
 
 use App\Models\CustomerAddress;
 use App\Services\Customer\CustomerAddressService;
-use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationDataInterface;
+use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationModel;
 use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationService;
 use App\Utils\CMS\SystemMessageService;
 use App\Utils\Common\History;
@@ -111,7 +111,7 @@ class AddressController extends BaseController
     public function setMain(): RedirectResponse {
         $address = CustomerAddress::find(request()->get("address_id"));
         $this->customer_address_service->setAddressAsMain($address);
-        CustomerLocationService::setRecord(new CustomerLocationDataInterface($address->state, $address->city));
+        CustomerLocationService::setRecord(new CustomerLocationModel($address->state, $address->city));
         SystemMessageService::addSuccessMessage("system_messages.user.location_updated");
         return redirect()->back();
     }

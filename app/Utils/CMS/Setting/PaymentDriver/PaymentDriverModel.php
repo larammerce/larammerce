@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Utils\CMS\Setting\FinancialDriver;
+
+namespace App\Utils\CMS\Setting\PaymentDriver;
 
 use App\Interfaces\SettingDataInterface;
-use App\Utils\FinancialManager\Kernel;
-use App\Utils\FinancialManager\Models\BaseFinancialConfig;
+use App\Utils\PaymentManager\Kernel;
 use JetBrains\PhpStorm\ArrayShape;
 
-class FinancialDriverDataInterface implements SettingDataInterface
+class PaymentDriverModel implements SettingDataInterface
 {
-    private BaseFinancialConfig $config_model;
+    private string $config_model;
     private string $driver_id;
 
     public function hasConfigModel(): bool
@@ -17,12 +17,12 @@ class FinancialDriverDataInterface implements SettingDataInterface
         return isset($this->config_model);
     }
 
-    public function getConfigModel(): BaseFinancialConfig
+    public function getConfigModel(): string
     {
         return $this->config_model;
     }
 
-    public function setConfigModel(BaseFinancialConfig $model)
+    public function setConfigModel(string $model)
     {
         $this->config_model = $model;
     }
@@ -42,10 +42,10 @@ class FinancialDriverDataInterface implements SettingDataInterface
         return json_encode($this);
     }
 
-    public function unserialize($data)
+    public function unserialize($data): void
     {
         $tmp_data = json_decode($data);
-        $this->config_model = unserialize($tmp_data->config_model);
+        $this->config_model = $tmp_data->config_model;
         $this->driver_id = $tmp_data->driver_id;
     }
 
@@ -53,7 +53,7 @@ class FinancialDriverDataInterface implements SettingDataInterface
     public function jsonSerialize(): array
     {
         return [
-            'config_model' => serialize($this->config_model),
+            'config_model' => $this->config_model,
             'driver_id' => $this->driver_id
         ];
     }

@@ -4,7 +4,7 @@ namespace App\Utils\CMS\Setting\Representative;
 
 use App\Interfaces\SettingDataInterface;
 
-class RepresentativeSettingDataInterface implements SettingDataInterface
+class RepresentativeSettingModel implements SettingDataInterface
 {
     private bool $is_enabled;
     private bool $is_customer_representative_enabled;

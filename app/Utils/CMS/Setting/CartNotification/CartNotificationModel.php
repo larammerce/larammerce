@@ -6,7 +6,7 @@ namespace App\Utils\CMS\Setting\CartNotification;
 use App\Interfaces\SettingDataInterface;
 use JetBrains\PhpStorm\ArrayShape;
 
-class CartNotificationDataInterface implements SettingDataInterface
+class CartNotificationModel implements SettingDataInterface
 {
     private int $default_delay_hours;
     private bool $is_active;

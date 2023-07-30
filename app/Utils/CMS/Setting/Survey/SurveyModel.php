@@ -9,7 +9,7 @@ use App\Models\State;
 use JetBrains\PhpStorm\ArrayShape;
 use stdClass;
 
-class SurveyDataInterface implements SettingDataInterface
+class SurveyModel implements SettingDataInterface
 {
     private int $default_delay_hours;
     private int $default_delay_days;

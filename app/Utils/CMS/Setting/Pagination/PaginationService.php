@@ -11,22 +11,22 @@ namespace App\Utils\CMS\Setting\Pagination;
 
 use App\Utils\CMS\Enums\DataSourceDriver;
 use App\Utils\CMS\Enums\SettingType;
-use App\Utils\CMS\Setting\AbstractSettingService;
+use App\Utils\CMS\Setting\BaseCMSConfigManager;
 use App\Utils\Common\ModelService;
 use App\Utils\Common\RequestService;
 
 /**
- * @method static PaginationDataInterface getRecord(string $name = "", ?string $parent_id = null)
+ * @method static PaginationModel getRecord(string $name = "", ?string $parent_id = null)
  */
-class PaginationService extends AbstractSettingService
+class PaginationService extends BaseCMSConfigManager
 {
     protected static string $KEY_POSTFIX = '_pagination';
     protected static int $SETTING_TYPE = SettingType::LOCAL_SETTING;
     protected static string $DRIVER = DataSourceDriver::SESSION;
 
-    public static function defaultRecord($name): PaginationDataInterface
+    public static function defaultRecord($name): PaginationModel
     {
-        $default = new PaginationDataInterface();
+        $default = new PaginationModel();
         $default->setModel(ModelService::className($name));
         $default->setPage(1);
 

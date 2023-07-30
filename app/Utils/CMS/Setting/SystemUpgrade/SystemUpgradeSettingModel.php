@@ -5,8 +5,9 @@ namespace App\Utils\CMS\Setting\SystemUpgrade;
 
 use App\Interfaces\SettingDataInterface;
 
-class SystemUpgradeSettingDataInterface implements SettingDataInterface {
 
+class SystemUpgradeSettingModel implements SettingDataInterface
+{
     private string $larammerce_repo_address;
 
     private string $larammerce_branch_name;

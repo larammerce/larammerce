@@ -11,7 +11,7 @@ use Illuminate\Support\Arr;
 use JetBrains\PhpStorm\ArrayShape;
 use stdClass;
 
-class LogisticDataInterface implements SettingDataInterface
+class LogisticModel implements SettingDataInterface
 {
     private int $max_items_count;
     private int $max_total_price;

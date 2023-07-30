@@ -1,13 +1,12 @@
 <?php
 
-
-namespace App\Utils\CMS\Setting\PaymentDriver;
+namespace App\Utils\CMS\Setting\SMSDriver;
 
 use App\Interfaces\SettingDataInterface;
-use App\Utils\PaymentManager\Kernel;
+use App\Utils\SMSManager\Kernel;
 use JetBrains\PhpStorm\ArrayShape;
 
-class PaymentDriverDataInterface implements SettingDataInterface
+class SMSDriverModel implements SettingDataInterface
 {
     private string $config_model;
     private string $driver_id;
@@ -42,7 +41,7 @@ class PaymentDriverDataInterface implements SettingDataInterface
         return json_encode($this);
     }
 
-    public function unserialize($data): void
+    public function unserialize(string $data): void
     {
         $tmp_data = json_decode($data);
         $this->config_model = $tmp_data->config_model;

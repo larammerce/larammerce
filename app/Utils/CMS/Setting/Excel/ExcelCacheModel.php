@@ -8,7 +8,7 @@ use App\Interfaces\SettingDataInterface;
 use App\Utils\Reflection\ReflectiveNamespace;
 use JetBrains\PhpStorm\ArrayShape;
 
-class ExcelCacheDataInterface implements SettingDataInterface
+class ExcelCacheModel implements SettingDataInterface
 {
 
     private array $models;

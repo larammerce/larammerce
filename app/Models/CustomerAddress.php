@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationDataInterface;
+use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationModel;
 use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationService;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -69,7 +69,7 @@ class CustomerAddress extends BaseModel
     }
 
     public function setAsCurrentLocation() {
-        CustomerLocationService::setRecord(new CustomerLocationDataInterface($this->state, $this->city));
+        CustomerLocationService::setRecord(new CustomerLocationModel($this->state, $this->city));
     }
 
 

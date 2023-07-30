@@ -6,7 +6,7 @@ namespace App\Utils\CMS\Setting\FinancialDriver;
 use App\Utils\CMS\Enums\DataSourceDriver;
 use App\Utils\CMS\Enums\SettingType;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\Setting\AbstractSettingService;
+use App\Utils\CMS\Setting\BaseCMSConfigManager;
 use App\Utils\FinancialManager\ConfigProvider;
 use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
 use App\Utils\FinancialManager\Exceptions\FinancialDriverNotConfiguredException;
@@ -14,12 +14,12 @@ use App\Utils\FinancialManager\Models\BaseFinancialConfig;
 
 /**
  *
- * @method static FinancialDriverDataInterface getRecord(string $name = "", ?string $parent_id = null)
+ * @method static FinancialDriverModel getRecord(string $name = "", ?string $parent_id = null)
  *
  * Class ShipmentCostService
  * @package App\Utils\CMS\ShipmentCost
  */
-class FinancialDriverService extends AbstractSettingService
+class FinancialDriverService extends BaseCMSConfigManager
 {
     protected static string $KEY_POSTFIX = '_financial_driver_config';
     protected static int $SETTING_TYPE = SettingType::GLOBAL_SETTING;
@@ -28,9 +28,9 @@ class FinancialDriverService extends AbstractSettingService
     /**
      * @throws FinancialDriverInvalidConfigurationException
      */
-    public static function defaultRecord($name): FinancialDriverDataInterface
+    public static function defaultRecord($name): FinancialDriverModel
     {
-        $financial_driver_model = new FinancialDriverDataInterface();
+        $financial_driver_model = new FinancialDriverModel();
         $financial_driver_model->setDriverId($name);
         $driver_config = ConfigProvider::getDefaultConfig($name);
         $financial_driver_model->setConfigModel($driver_config);
@@ -40,9 +40,9 @@ class FinancialDriverService extends AbstractSettingService
     /**
      * @throws NotValidSettingRecordException
      */
-    public static function updateRecord(string $driver_id, BaseFinancialConfig $driver_config): FinancialDriverDataInterface
+    public static function updateRecord(string $driver_id, BaseFinancialConfig $driver_config): FinancialDriverModel
     {
-        $financial_driver_model = new FinancialDriverDataInterface();
+        $financial_driver_model = new FinancialDriverModel();
         $financial_driver_model->setConfigModel($driver_config);
         $financial_driver_model->setDriverId($driver_id);
         FinancialDriverService::setRecord($financial_driver_model);

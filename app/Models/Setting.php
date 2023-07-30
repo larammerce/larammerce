@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Interfaces\SettingDataInterface;
 use Exception;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,18 +22,19 @@ use Illuminate\Support\Facades\Schema;
  * @property User user
  *
  * @method static Builder globalItems()
- * @method static Builder personalItems()
+ * @method static Builder personalItems(User|Authenticatable $user)
  * @method static Builder systemSettings()
  * @method static Builder nonSystemSettings()
  * @method static Builder userSettings()
  * @method static Builder cmsRecords()
  * @method static static create(array $attributes)
+ * @method static static find(int $id)
+ * @method static Builder where(string $string, string $key)
  *
  * Class Setting
  * @package App\Models
  */
-class Setting extends Model
-{
+class Setting extends Model {
     protected $table = 'settings';
 
     protected $fillable = [
@@ -76,8 +78,8 @@ class Setting extends Model
         return $query->whereNull("user_id");
     }
 
-    public function scopePersonalItems(Builder $query): Builder {
-        return $query->where("user_id", Auth::user()->id);
+    public function scopePersonalItems(Builder $query, User|Authenticatable $user): Builder {
+        return $query->where("user_id", $user->id);
     }
 
     public function scopeSystemSettings(Builder $query): Builder {

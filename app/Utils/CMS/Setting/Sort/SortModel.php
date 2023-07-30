@@ -13,7 +13,7 @@ use App\Interfaces\SettingDataInterface;
 use App\Utils\Common\ModelService;
 use JetBrains\PhpStorm\ArrayShape;
 
-class SortDataInterface implements SettingDataInterface
+class SortModel implements SettingDataInterface
 {
     private string $model_name;
     private string $field;

@@ -10,9 +10,9 @@ namespace App\Services\Invoice;
 
 
 use App\Enums\Setting\CMSSettingKey;
+use App\Helpers\CMSSettingHelper;
 use App\Models\CustomerAddress;
 use App\Models\Invoice;
-use App\Services\Setting\SettingService;
 use App\Utils\CMS\AdminRequestService;
 use App\Utils\CMS\Cart\Provider as CartProvider;
 use App\Utils\CMS\Setting\ShipmentCost\ShipmentCostService;
@@ -26,9 +26,9 @@ use stdClass;
 class NewInvoiceService
 {
     private Request $request;
-    private SettingService $setting_service;
+    private CMSSettingHelper $setting_service;
 
-    public function __construct(Request $request, SettingService $setting_service) {
+    public function __construct(Request $request, CMSSettingHelper $setting_service) {
         $this->request = $request;
         $this->setting_service = $setting_service;
     }

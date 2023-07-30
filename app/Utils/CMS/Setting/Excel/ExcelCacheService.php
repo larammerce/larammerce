@@ -7,21 +7,21 @@ namespace App\Utils\CMS\Setting\Excel;
 use App\Utils\CMS\Enums\DataSourceDriver;
 use App\Utils\CMS\Enums\SettingType;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\Setting\AbstractSettingService;
+use App\Utils\CMS\Setting\BaseCMSConfigManager;
 use Illuminate\Support\Facades\Log;
 
 /**
- * @method static ExcelCacheDataInterface getRecord(string $name = "", ?string $parent_id = null)
+ * @method static ExcelCacheModel getRecord(string $name = "", ?string $parent_id = null)
  */
-class ExcelCacheService extends AbstractSettingService
+class ExcelCacheService extends BaseCMSConfigManager
 {
     protected static string $KEY_POSTFIX = 'excel_cache_config';
     protected static int $SETTING_TYPE = SettingType::GLOBAL_SETTING;
     protected static string $DRIVER = DataSourceDriver::DATABASE;
 
-    public static function defaultRecord($name): ExcelCacheDataInterface
+    public static function defaultRecord($name): ExcelCacheModel
     {
-        return new ExcelCacheDataInterface();
+        return new ExcelCacheModel();
     }
 
     public static function getAttributes(string $model)

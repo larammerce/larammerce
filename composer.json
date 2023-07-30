@@ -62,9 +62,7 @@
       "Database\\Seeders\\": "database/seeders/"
     },
     "files": [
-      "app/Utils/Common/helpers.php",
-      "app/Utils/CMS/Template/helpers.php",
-      "app/Utils/CMS/Platform/helpers.php"
+      "helpers.php"
     ]
   },
   "autoload-dev": {

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\Setting\ShipmentCost\ShipmentCostDataInterface;
+use App\Utils\CMS\Setting\ShipmentCost\ShipmentCostModel;
 use App\Utils\CMS\Setting\ShipmentCost\ShipmentCostService;
 use App\Utils\CMS\SystemMessageService;
 use App\Utils\Common\History;
@@ -41,7 +41,7 @@ class ShipmentCostController extends BaseController
      */
     public function update(Request $request): RedirectResponse
     {
-        $record = new ShipmentCostDataInterface();
+        $record = new ShipmentCostModel();
         $record->setShipmentCost($request->get("shipment_cost"));
         $record->setMinimumPurchaseFreeShipment($request->get("minimum_purchase_free_shipment"));
         $items = $request->get("custom_states");

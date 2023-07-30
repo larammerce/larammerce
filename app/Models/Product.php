@@ -8,6 +8,7 @@ use App\Exceptions\Product\ProductPackageItemInvalidCountException;
 use App\Exceptions\Product\ProductPackageItemInvalidIdException;
 use App\Exceptions\Product\ProductPackageItemNotFoundException;
 use App\Exceptions\Product\ProductPackageNotExistsException;
+use App\Helpers\CMSSettingHelper;
 use App\Interfaces\CMSExposedNodeInterface;
 use App\Interfaces\HashInterface;
 use App\Interfaces\ImageOwnerInterface;
@@ -17,7 +18,6 @@ use App\Interfaces\SeoSubjectInterface;
 use App\Interfaces\ShareSubjectInterface;
 use App\Services\Directory\DirectoryLocationService;
 use App\Services\Invoice\NewInvoiceService;
-use App\Services\Setting\SettingService;
 use App\Traits\Badgeable;
 use App\Traits\Fileable;
 use App\Traits\FullTextSearch;
@@ -25,7 +25,7 @@ use App\Traits\Rateable;
 use App\Traits\Seoable;
 use App\Utils\CMS\AdminRequestService;
 use App\Utils\CMS\ProductService;
-use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationDataInterface;
+use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationModel;
 use App\Utils\Common\EmailService;
 use App\Utils\Common\ImageService;
 use App\Utils\Common\SMSService;
@@ -100,7 +100,7 @@ use Throwable;
  * @property integer maximum_allowed_purchase_count
  * @property integer minimum_allowed_purchase_count
  *
- * @property CustomerLocationDataInterface[] location_limitations
+ * @property CustomerLocationModel[] location_limitations
  * @property bool is_location_limited
  * @property bool can_deliver
  *
@@ -218,12 +218,12 @@ class Product extends BaseModel implements
 
     protected static string $TRANSLATION_EDIT_FORM = "admin.pages.product.translate";
 
-    private SettingService $setting_service;
+    private CMSSettingHelper $setting_service;
     private NewInvoiceService $new_invoice_service;
 
     public function __construct(array $attributes = []) {
         parent::__construct($attributes);
-        $this->setting_service = app(SettingService::class);
+        $this->setting_service = app(CMSSettingHelper::class);
         $this->new_invoice_service = app(NewInvoiceService::class);
     }
 
