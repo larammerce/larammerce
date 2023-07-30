@@ -4,6 +4,7 @@ namespace App\Services\Customer;
 
 use App\Models\CustomerAddress;
 use App\Services\Invoice\NewInvoiceService;
+use App\Utils\CMS\AdminRequestService;
 
 class CustomerAddressService
 {
@@ -23,7 +24,12 @@ class CustomerAddressService
             $customer_address->is_main = true;
             $customer_address->save();
             $customer_address->setAsCurrentLocation();
-            $this->new_invoice_service->updateAddress($customer_address);
+
+            if (!AdminRequestService::isInAdminArea()){
+                $invoice = $this->new_invoice_service->getTheNew();
+                $invoice->updateAddress($customer_address);
+                $this->new_invoice_service->setTheNew($invoice);
+            }
         }
         return true;
     }
