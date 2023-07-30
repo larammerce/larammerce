@@ -1447,6 +1447,12 @@ if (!function_exists("representative_is_enabled")) {
     }
 }
 
+if (!function_exists("representative_is_forced")) {
+    function representative_is_forced(): bool {
+        return \App\Utils\CMS\Setting\Representative\RepresentativeSettingService::isForced();
+    }
+}
+
 if (!function_exists("representative_is_customer_representative_enabled")) {
     function representative_is_customer_representative_enabled(): bool {
         return \App\Utils\CMS\Setting\Representative\RepresentativeSettingService::isCustomerRepresentativeEnabled();
