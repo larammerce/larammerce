@@ -13,7 +13,7 @@ use App\Interfaces\SettingDataInterface;
 use App\Utils\Common\ModelService;
 use JetBrains\PhpStorm\ArrayShape;
 
-class LayoutDataInterface implements SettingDataInterface
+class LayoutModel implements SettingDataInterface
 {
     private string $model;
     private string $method;

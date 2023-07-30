@@ -8,7 +8,7 @@ use App\Interfaces\SettingDataInterface;
 use App\Utils\Reflection\ReflectiveNamespace;
 use JetBrains\PhpStorm\ArrayShape;
 
-class ActionLogSettingDataInterface implements SettingDataInterface
+class ActionLogSettingModel implements SettingDataInterface
 {
     private int $is_enabled;
     private int $log_period;

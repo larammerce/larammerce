@@ -3,8 +3,8 @@
 namespace App\Helpers;
 
 class CacheHelper {
-    public static function getCacheKey(callable $function, array $parameters): string {
-        $key = is_array($function) ? implode('_', $function) : $function;
+    public static function getCacheKey(string|array $callable, array $parameters): string {
+        $key = is_array($callable) ? implode('_', $callable) : $callable;
         foreach ($parameters as $param) {
             $key .= "_" . serialize($param);
         }

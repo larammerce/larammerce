@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Services\Setting;
+namespace App\Helpers;
 
 use App\Exceptions\Setting\CMSRecordNotFoundException;
 use App\Interfaces\Repositories\SettingRepositoryInterface;
 
-class SettingService
+class CMSSettingHelper
 {
     private SettingRepositoryInterface $setting_repository;
 

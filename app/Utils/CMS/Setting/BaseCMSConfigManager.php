@@ -9,6 +9,7 @@
 namespace App\Utils\CMS\Setting;
 
 
+use App\Helpers\CMSFeatureConfigHelper;
 use App\Interfaces\SettingDataInterface;
 use App\Utils\CMS\Enums\DataSourceDriver;
 use App\Utils\CMS\Enums\SettingType;
@@ -16,7 +17,7 @@ use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
 use App\Utils\Common\ModelService;
 use Illuminate\Support\Str;
 
-abstract class AbstractSettingService
+abstract class BaseCMSConfigManager
 {
     protected static string $KEY_POSTFIX = '_setting';
     protected static int $SETTING_TYPE = SettingType::LOCAL_SETTING;
@@ -34,9 +35,9 @@ abstract class AbstractSettingService
     {
         if ($record->validate()) {
             if (static::$SETTING_TYPE == SettingType::LOCAL_SETTING)
-                CMSSettingService::setLocal(static::getKey($record->getPrimaryKey(), $parent_id), $record, static::$DRIVER);
+                CMSFeatureConfigHelper::setLocal(static::getKey($record->getPrimaryKey(), $parent_id), $record, static::$DRIVER);
             else if (static::$SETTING_TYPE == SettingType::GLOBAL_SETTING)
-                CMSSettingService::setGlobal(static::getKey($record->getPrimaryKey(), $parent_id), $record, static::$DRIVER);
+                CMSFeatureConfigHelper::setGlobal(static::getKey($record->getPrimaryKey(), $parent_id), $record, static::$DRIVER);
         } else {
             throw new NotValidSettingRecordException("The record {$record->getPrimaryKey()} is not valid!");
         }
@@ -47,10 +48,10 @@ abstract class AbstractSettingService
         if (static::validateName($name)) {
             $result = null;
             if (static::$SETTING_TYPE == SettingType::LOCAL_SETTING){
-                $result = CMSSettingService::getLocal(static::getKey($name, $parent_id), static::$DRIVER);
+                $result = CMSFeatureConfigHelper::getLocal(static::getKey($name, $parent_id), static::$DRIVER);
             }
             else if (static::$SETTING_TYPE == SettingType::GLOBAL_SETTING){
-                $result = CMSSettingService::getGlobal(static::getKey($name, $parent_id), static::$DRIVER);
+                $result = CMSFeatureConfigHelper::getGlobal(static::getKey($name, $parent_id), static::$DRIVER);
             }
 
             if ($result == null or $result->data == null) {

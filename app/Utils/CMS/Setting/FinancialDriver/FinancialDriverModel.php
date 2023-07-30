@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Utils\CMS\Setting\SMSDriver;
+namespace App\Utils\CMS\Setting\FinancialDriver;
 
 use App\Interfaces\SettingDataInterface;
-use App\Utils\SMSManager\Kernel;
+use App\Utils\FinancialManager\Kernel;
+use App\Utils\FinancialManager\Models\BaseFinancialConfig;
 use JetBrains\PhpStorm\ArrayShape;
 
-class SMSDriverDataInterface implements SettingDataInterface
+class FinancialDriverModel implements SettingDataInterface
 {
-    private string $config_model;
+    private BaseFinancialConfig $config_model;
     private string $driver_id;
 
     public function hasConfigModel(): bool
@@ -16,12 +17,12 @@ class SMSDriverDataInterface implements SettingDataInterface
         return isset($this->config_model);
     }
 
-    public function getConfigModel(): string
+    public function getConfigModel(): BaseFinancialConfig
     {
         return $this->config_model;
     }
 
-    public function setConfigModel(string $model)
+    public function setConfigModel(BaseFinancialConfig $model)
     {
         $this->config_model = $model;
     }
@@ -41,10 +42,10 @@ class SMSDriverDataInterface implements SettingDataInterface
         return json_encode($this);
     }
 
-    public function unserialize(string $data): void
+    public function unserialize($data)
     {
         $tmp_data = json_decode($data);
-        $this->config_model = $tmp_data->config_model;
+        $this->config_model = unserialize($tmp_data->config_model);
         $this->driver_id = $tmp_data->driver_id;
     }
 
@@ -52,7 +53,7 @@ class SMSDriverDataInterface implements SettingDataInterface
     public function jsonSerialize(): array
     {
         return [
-            'config_model' => $this->config_model,
+            'config_model' => serialize($this->config_model),
             'driver_id' => $this->driver_id
         ];
     }

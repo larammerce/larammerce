@@ -9,7 +9,7 @@ use App\Models\City;
 use App\Models\State;
 use JetBrains\PhpStorm\ArrayShape;
 
-class CustomerLocationDataInterface implements SettingDataInterface
+class CustomerLocationModel implements SettingDataInterface
 {
     private State $state;
     private City $city;
@@ -76,7 +76,7 @@ class CustomerLocationDataInterface implements SettingDataInterface
         return "";
     }
 
-    public function equals(CustomerLocationDataInterface $model): bool {
+    public function equals(CustomerLocationModel $model): bool {
         return $this->city->id === $model->city->id and
             $this->state->id === $model->state->id;
     }

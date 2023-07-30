@@ -6,20 +6,20 @@ namespace App\Utils\CMS\Setting\SystemLog;
 
 use App\Utils\CMS\Enums\DataSourceDriver;
 use App\Utils\CMS\Enums\SettingType;
-use App\Utils\CMS\Setting\AbstractSettingService;
+use App\Utils\CMS\Setting\BaseCMSConfigManager;
 
 /**
- * @method static ActionLogSettingDataInterface getRecord(string $name = "", ?string $parent_id = null)
+ * @method static ActionLogSettingModel getRecord(string $name = "", ?string $parent_id = null)
  */
-class ActionLogSettingService extends AbstractSettingService
+class ActionLogSettingService extends BaseCMSConfigManager
 {
     protected static string $KEY_POSTFIX = 'action_log_config';
     protected static int $SETTING_TYPE = SettingType::GLOBAL_SETTING;
     protected static string $DRIVER = DataSourceDriver::DATABASE;
 
-    public static function defaultRecord($name): ActionLogSettingDataInterface
+    public static function defaultRecord($name): ActionLogSettingModel
     {
-        return new ActionLogSettingDataInterface();
+        return new ActionLogSettingModel();
     }
 
     public static function isControllerEnabled(string $controller): bool

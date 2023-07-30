@@ -12,7 +12,7 @@ namespace App\Utils\CMS\Setting\Pagination;
 use App\Interfaces\SettingDataInterface;
 use JetBrains\PhpStorm\ArrayShape;
 
-class PaginationDataInterface implements SettingDataInterface
+class PaginationModel implements SettingDataInterface
 {
     private string $model;
     private int $page;

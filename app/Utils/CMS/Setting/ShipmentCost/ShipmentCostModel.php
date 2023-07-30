@@ -9,7 +9,7 @@ use App\Models\State;
 use JetBrains\PhpStorm\ArrayShape;
 use stdClass;
 
-class ShipmentCostDataInterface implements SettingDataInterface
+class ShipmentCostModel implements SettingDataInterface
 {
     private int $shipment_cost;
     private int $minimum_purchase_free_shipment;

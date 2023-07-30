@@ -6,7 +6,7 @@ namespace App\Utils\CMS\Setting\Logistic;
 
 use App\Utils\CMS\Enums\DataSourceDriver;
 use App\Utils\CMS\Enums\SettingType;
-use App\Utils\CMS\Setting\AbstractSettingService;
+use App\Utils\CMS\Setting\BaseCMSConfigManager;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -15,17 +15,17 @@ use stdClass;
 use function config;
 
 /**
- * @method static LogisticDataInterface getRecord(string $name = "", ?string $parent_id = null)
+ * @method static LogisticModel getRecord(string $name = "", ?string $parent_id = null)
  */
-class LogisticService extends AbstractSettingService
+class LogisticService extends BaseCMSConfigManager
 {
     protected static string $KEY_POSTFIX = 'logistic_config';
     protected static int $SETTING_TYPE = SettingType::GLOBAL_SETTING;
     protected static string $DRIVER = DataSourceDriver::DATABASE;
 
-    public static function defaultRecord($name): LogisticDataInterface
+    public static function defaultRecord($name): LogisticModel
     {
-        return new LogisticDataInterface();
+        return new LogisticModel();
     }
 
     public static function selectDeliveryTableCell($cell_id, $invoice): bool

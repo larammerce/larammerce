@@ -9,6 +9,7 @@ use App\Interfaces\SettingDataInterface;
 use App\Models\Setting;
 use App\Models\User;
 use Exception;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -57,7 +58,8 @@ class SettingRepositoryEloquent implements SettingRepositoryInterface {
         return Setting::cmsRecords()->paginate(Setting::getPaginationCount());
     }
 
-    public function create(string $key, string $value, ?User $user = null, bool $is_system_setting = false): Setting {
+    public function create(string $key, string $value, Authenticatable|User|null $user = null, bool $is_system_setting = false): Setting {
+        $this->clearCache();
         $setting = new Setting();
         $setting->key = $key;
         $setting->value = $value;
@@ -68,7 +70,8 @@ class SettingRepositoryEloquent implements SettingRepositoryInterface {
         return $setting;
     }
 
-    public function createWithSettingDataInterface(string $key, SettingDataInterface $data, ?User $user = null, bool $is_system_setting = false): Setting {
+    public function createWithSettingDataInterface(string $key, SettingDataInterface $data, Authenticatable|User|null $user = null, bool $is_system_setting = false): Setting {
+        $this->clearCache();
         $setting = new Setting();
         $setting->key = $key;
         $setting->data = $data;
@@ -79,20 +82,22 @@ class SettingRepositoryEloquent implements SettingRepositoryInterface {
         return $setting;
     }
 
-    public function update(Setting $setting, string $key, string $value, ?User $user = null, bool $is_system_setting = false): Setting {
+    public function update(Setting $setting, string $key, string $value, Authenticatable|User|null $user = null, bool $is_system_setting = false): Setting {
+        $this->clearCache();
         $setting->key = $key;
         $setting->value = $value;
-        $setting->user_id = $user->id;
+        $setting->user_id = $user?->id;
         $setting->is_system_setting = $is_system_setting;
         $setting->save();
 
         return $setting;
     }
 
-    public function updateWithSettingDataInterface(Setting $setting, string $key, SettingDataInterface $data, ?User $user = null, bool $is_system_setting = false): Setting {
+    public function updateWithSettingDataInterface(Setting $setting, string $key, SettingDataInterface $data, Authenticatable|User|null $user = null, bool $is_system_setting = false): Setting {
+        $this->clearCache();
         $setting->key = $key;
         $setting->data = $data;
-        $setting->user_id = $user->id;
+        $setting->user_id = $user?->id;
         $setting->is_system_setting = $is_system_setting;
         $setting->save();
 
@@ -100,34 +105,81 @@ class SettingRepositoryEloquent implements SettingRepositoryInterface {
     }
 
     public function delete(Setting $setting): bool {
+        $this->clearCache();
         return $setting->delete();
     }
 
     public function find(int $id): ?Setting {
-        return Setting::find($id);
+        $cache_key = CacheHelper::getCacheKey([static::class, __FUNCTION__], func_get_args());
+        if (Cache::tags(static::CACHE_TAGS)->has($cache_key)) {
+            $result = Cache::tags(static::CACHE_TAGS)->get($cache_key);
+        } else {
+            $result = Setting::find($id);
+            Cache::tags(static::CACHE_TAGS)->put($cache_key, $result, static::CACHE_TTL);
+        }
+        return $result;
     }
 
     public function findByKey(string $key): ?Setting {
-        /** @var Setting $setting */
-        $setting = Setting::where("key", $key)->first();
-
-        return $setting;
+        $cache_key = CacheHelper::getCacheKey([static::class, __FUNCTION__], func_get_args());
+        if (Cache::tags(static::CACHE_TAGS)->has($cache_key)) {
+            /** @var Setting $result */
+            $result = Cache::tags(static::CACHE_TAGS)->get($cache_key);
+        } else {
+            /** @var Setting $result */
+            $result = Setting::where("key", $key)->first();
+            Cache::tags(static::CACHE_TAGS)->put($cache_key, $result, static::CACHE_TTL);
+        }
+        return $result;
     }
 
     public function findGlobalSystemSetting(string $key): ?Setting {
-        /** @var Setting $setting */
-        $setting = Setting::globalItems()->systemSettings()->where("key", $key)->first();
-
-        return $setting;
+        $cache_key = CacheHelper::getCacheKey([static::class, __FUNCTION__], func_get_args());
+        if (Cache::tags(static::CACHE_TAGS)->has($cache_key)) {
+            /** @var Setting $result */
+            $result = Cache::tags(static::CACHE_TAGS)->get($cache_key);
+        } else {
+            /** @var Setting $result */
+            $result = Setting::globalItems()->systemSettings()->where("key", $key)->first();
+            Cache::tags(static::CACHE_TAGS)->put($cache_key, $result, static::CACHE_TTL);
+        }
+        return $result;
     }
 
-    public function updateGlobalSystemSetting(Setting $setting, Setting $key, Setting $value): Setting {
-        $setting->key = $key;
-        $setting->value = $value;
-        $setting->user_id = null;
-        $setting->is_system_setting = true;
-        $setting->save();
+    public function updateGlobalSystemSetting(Setting $setting, string $key, string $value): Setting {
+        return $this->update($setting, $key, $value, null, true);
+    }
 
-        return $setting;
+    public function updateGlobalSystemSettingWithDataInterface(Setting $setting, string $key, SettingDataInterface $data): Setting {
+        return $this->updateWithSettingDataInterface($setting, $key, $data, null, true);
+    }
+
+    public function createGlobalSystemSettingWithDataInterface(string $key, SettingDataInterface $data): Setting {
+        return $this->createWithSettingDataInterface($key, $data, null, true);
+    }
+
+    public function findPersonalSystemSetting(string $key, Authenticatable|User $user): ?Setting {
+        $cache_key = CacheHelper::getCacheKey([static::class, __FUNCTION__], func_get_args());
+        if (Cache::tags(static::CACHE_TAGS)->has($cache_key)) {
+            /** @var Setting $result */
+            $result = Cache::tags(static::CACHE_TAGS)->get($cache_key);
+        } else {
+            /** @var Setting $result */
+            $result = Setting::personalItems($user)->systemSettings()->where("key", $key)->first();
+            Cache::tags(static::CACHE_TAGS)->put($cache_key, $result, static::CACHE_TTL);
+        }
+        return $result;
+    }
+
+    public function updatePersonalSystemSetting(Setting $setting, string $key, string $value, Authenticatable|User $user): Setting {
+        return $this->update($setting, $key, $value, $user, true);
+    }
+
+    public function updatePersonalSystemSettingWithDataInterface(Setting $setting, string $key, SettingDataInterface $data, Authenticatable|User $user): Setting {
+        return $this->updateWithSettingDataInterface($setting, $key, $data, $user, true);
+    }
+
+    public function createPersonalSystemSettingWithDataInterface(string $key, SettingDataInterface $data, Authenticatable|User $user): Setting {
+        return $this->createWithSettingDataInterface($key, $data, $user, true);
     }
 }
