@@ -222,9 +222,9 @@ class Product extends BaseModel implements
     private NewInvoiceService $new_invoice_service;
 
     public function __construct(array $attributes = []) {
-        parent::__construct($attributes);
         $this->setting_service = app(CMSSettingHelper::class);
         $this->new_invoice_service = app(NewInvoiceService::class);
+        parent::__construct($attributes);
     }
 
     public function getIsLocationLimitedAttribute(): bool {

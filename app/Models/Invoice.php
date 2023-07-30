@@ -72,8 +72,7 @@ use Illuminate\Support\Facades\DB;
  * Class Invoice
  * @package App\Models
  */
-class Invoice extends BaseModel
-{
+class Invoice extends BaseModel {
     protected $table = 'invoices';
     protected $fillable = [
         'payment_type', 'customer_user_id', 'customer_address', 'sum', 'payment_status', 'payment_id', 'has_paper',
@@ -98,8 +97,8 @@ class Invoice extends BaseModel
     private NewInvoiceService $new_invoice_service;
 
     public function __construct(array $attributes = []) {
-        parent::__construct($attributes);
         $this->new_invoice_service = app(NewInvoiceService::class);
+        parent::__construct($attributes);
     }
 
     public function getStatusAttribute(): int {
