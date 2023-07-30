@@ -46,8 +46,7 @@ use Illuminate\View\View;
 use niklasravnsborg\LaravelPdf\Facades\Pdf;
 use Throwable;
 
-class InvoiceController extends BaseController
-{
+class InvoiceController extends BaseController {
     private NewInvoiceService $new_invoice_service;
     private CustomerAddressService $customer_address_service;
 
@@ -211,6 +210,22 @@ class InvoiceController extends BaseController
 
         $customer_address = CustomerAddress::find($request->get("customer_address_id"));
         $this->customer_address_service->setAddressAsMain($customer_address);
+
+        $fault_flag = false;
+        foreach ($invoice->rows as $row) {
+            if (!$row->product->can_deliver) {
+                SystemMessageService::addWarningMessage(
+                    "system_messages.cart.cant_deliver",
+                    [
+                        "product_title" => $row->product->title
+                    ]);
+                $fault_flag = true;
+            }
+        }
+
+        if ($fault_flag) {
+            return redirect()->back();
+        }
 
         return redirect()->route("customer.invoice.show-payment");
     }
