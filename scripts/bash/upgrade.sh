@@ -32,7 +32,7 @@ check_prerequisites() {
 
 update_core() {
   export ECOMMERCE_BASE_PATH=${ECOMMERCE_BASE_PATH:-""}
-  core_branch="master"
+  core_branch="production"
   core_repo=""
 
   for param in "$@"; do

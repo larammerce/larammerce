@@ -19,12 +19,25 @@ class UpgradeController extends BaseController {
     public function index(Request $request): Factory|View|Application {
         $record = SystemUpgradeSettingService::getRecord();
         $larammerce_repo_address = $record->getLarammerceRepoAddress();
+        $larammerce_branch_name = $record->getLarammerceBranchName();
         $larammerce_theme_repo_address = $record->getLarammerceThemeRepoAddress();
+        $larammerce_theme_branch_name = $record->getLarammerceThemeBranchName();
         if ($request->session()->has("public_key")) {
             $public_key = $request->session()->get("public_key");
-            return view("admin.pages.upgrade.index", compact("larammerce_theme_repo_address", "larammerce_repo_address", "public_key"));
+            return view("admin.pages.upgrade.index", compact(
+                "larammerce_theme_branch_name",
+                "larammerce_theme_repo_address",
+                "larammerce_branch_name",
+                "larammerce_repo_address",
+                "public_key"
+            ));
         }
-        return view("admin.pages.upgrade.index", compact("larammerce_theme_repo_address", "larammerce_repo_address"));
+        return view("admin.pages.upgrade.index", compact(
+            "larammerce_theme_branch_name",
+            "larammerce_theme_repo_address",
+            "larammerce_branch_name",
+            "larammerce_repo_address",
+        ));
     }
 
     /**
@@ -33,11 +46,15 @@ class UpgradeController extends BaseController {
      */
     public function saveConfig(Request $request) {
         $larammerce_repo_address = $request->get('larammerce_repo_address');
+        $larammerce_branch_name = $request->get('larammerce_branch_name');
         $larammerce_theme_repo_address = $request->get('larammerce_theme_repo_address');
+        $larammerce_theme_branch_name = $request->get('larammerce_theme_branch_name');
 
         $record = SystemUpgradeSettingService::getRecord();
         $record->setLarammerceRepoAddress($larammerce_repo_address);
         $record->setLarammerceThemeRepoAddress($larammerce_theme_repo_address);
+        $record->setLarammerceBranchName($larammerce_branch_name);
+        $record->setLarammerceThemeBranchName($larammerce_theme_branch_name);
 
         $domains = $this->extractDomains([$larammerce_repo_address, $larammerce_theme_repo_address]);
 
@@ -59,8 +76,8 @@ class UpgradeController extends BaseController {
     }
 
     public function doUpgrade(Request $request) {
-        ini_set('output_buffering','off');
-        ini_set('zlib.output_compression','off');
+        ini_set('output_buffering', 'off');
+        ini_set('zlib.output_compression', 'off');
         $record = SystemUpgradeSettingService::getRecord();
 
         $only_theme = $request->input('only_theme');
@@ -81,6 +98,15 @@ class UpgradeController extends BaseController {
         $command[] = "--theme-repo=" . $record->getLarammerceThemeRepoAddress();
         $command[] = "--core-repo=" . $record->getLarammerceRepoAddress();
         $command[] = "--core-path=" . $base_path;
+
+        if (strlen($record->getLarammerceBranchName()) > 0) {
+            $command[] = "--core-branch=" . $record->getLarammerceBranchName();
+        }
+
+        if (strlen($record->getLarammerceThemeBranchName()) > 0) {
+            $command[] = "--theme-branch=" . $record->getLarammerceThemeBranchName();
+        }
+
 
         $process = new Process($command);
         $process->setEnv(['PATH' => $this->getPathEnv(), 'ECOMMERCE_BASE_PATH' => $base_path]);
