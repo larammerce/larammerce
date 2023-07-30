@@ -27,6 +27,8 @@ use Illuminate\Support\Facades\Schema;
  * @method static Builder userSettings()
  * @method static Builder cmsRecords()
  * @method static static create(array $attributes)
+ * @method static static find(int $id)
+ * @method static Builder where(string $string, string $key)
  *
  * Class Setting
  * @package App\Models

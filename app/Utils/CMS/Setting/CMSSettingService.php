@@ -18,10 +18,19 @@ use Illuminate\Support\Facades\Log;
 
 class CMSSettingService {
 
-    private const GLOBAL_KEY="globals";
-    private const LOCAL_KEY="locals";
-
-    private static array $CACHED_RECORDS = [];
+    public static function getGlobal($key, string $driver = DataSourceDriver::DATABASE): ?Setting {
+            if ($driver == DataSourceDriver::DATABASE) {
+                try {
+                    return Setting::globalData()->systemSettings()->where("key", $key)->firstOrFail();
+                } catch (Exception $e) {
+                    //Log::error("CMSSettingService.getGlobal.DATABASE." . $e->getMessage());
+                    static::$CACHED_RECORDS[static::GLOBAL_KEY][$key] = null;
+                }
+            } else if ($driver == DataSourceDriver::SESSION) {
+                static::$CACHED_RECORDS[static::GLOBAL_KEY][$key] = null;
+                die('session can not be global ! :) go read more about sessions :D');
+            }
+    }
 
     public static function setGlobal(string $key, SettingDataInterface $value, string $driver = DataSourceDriver::DATABASE): void {
         if ($driver == DataSourceDriver::DATABASE) {
@@ -55,23 +64,6 @@ class CMSSettingService {
             Log::info("CMSSettingService.setLocal.SESSION.key.{$key}.value.{$value}");
             request()->session()->put($key, $value);
         }
-    }
-
-    public static function getGlobal($key, string $driver = DataSourceDriver::DATABASE): ?Setting {
-        if (!isset(static::$CACHED_RECORDS[static::GLOBAL_KEY][$key])) {
-            if ($driver == DataSourceDriver::DATABASE) {
-                try {
-                    static::$CACHED_RECORDS[static::GLOBAL_KEY][$key] = Setting::globalData()->systemSettings()->where("key", $key)->firstOrFail();
-                } catch (Exception $e) {
-                    //Log::error("CMSSettingService.getGlobal.DATABASE." . $e->getMessage());
-                    static::$CACHED_RECORDS[static::GLOBAL_KEY][$key] = null;
-                }
-            } else if ($driver == DataSourceDriver::SESSION) {
-                static::$CACHED_RECORDS[static::GLOBAL_KEY][$key] = null;
-                die('session can not be global ! :) go read more about sessions :D');
-            }
-        }
-        return static::$CACHED_RECORDS[static::GLOBAL_KEY][$key];
     }
 
     public static function getLocal($key, string $driver = DataSourceDriver::DATABASE): ?Setting {
