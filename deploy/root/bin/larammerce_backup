@@ -52,7 +52,7 @@ MYSQLDUMP_PATH="/usr/bin/mysqldump"
 LOG_FILE="${BACKUP_DIR}/backup_${DATE}.log"
 
 # Prepare the log file
-echo "Backup Process Started at $(date)" > ${LOG_FILE}
+echo "Backup Process Started for ${HOST} at $(date)" > ${LOG_FILE}
 
 # Function to send email
 send_email() {
@@ -64,18 +64,18 @@ send_email() {
     body=$(echo "${body}" | sed "s,\x1B\[[0-9;]*[a-zA-Z],,g")
     # wrap body in html and body tags
     body="<html><body>${body}</body></html>"
-    echo ${body} | sendemail -s ${SMTP_SERVER}:${SMTP_PORT} -f ${SMTP_USER} -xu ${SMTP_USER} -xp ${SMTP_PASS} -t ${EMAIL} -u "${subject}" -o message-content-type=html
+    echo ${body} | sendemail -s ${SMTP_SERVER}:${SMTP_PORT} -f "Larammerce Backup Daemon <${SMTP_USER}>" -xu ${SMTP_USER} -xp ${SMTP_PASS} -t ${EMAIL} -u "${subject}" -o message-content-type=html
 }
 
 # Setting the trap
-trap 'send_email "Backup failed" "Backup failed on ${HOST}"' ERR
+trap 'send_email "Backup failed on ${HOST}"' ERR
 
-echo -e "Finding projects...\n" | tee -a ${LOG_FILE}
+echo -e "$(date +"%Y-%m-%d %H:%M:%S"): Finding projects...\n" | tee -a ${LOG_FILE}
 
 # Use find command to locate WordPress and Laravel project directories
 PROJECT_DIRS=$(find /var/www -maxdepth 3 \( -name .env -o -name wp-config.php \) -exec dirname {} \;)
 
-echo -e "Found projects are as listed below:\n" | tee -a ${LOG_FILE}
+echo -e "$(date +"%Y-%m-%d %H:%M:%S"): Found projects are as listed below:\n" | tee -a ${LOG_FILE}
 
 # Loop through the directories and identify the type of project (WordPress or Laravel)
 for DIR in ${PROJECT_DIRS}; do
@@ -90,10 +90,10 @@ echo -e "\n"
 
 create_files_backup() {
     FILENAME="${BACKUP_DIR}/complete/${HOST}-${DATE}-files.tar.gz"
-    echo -ne "Compressing files ..." | tee -a ${LOG_FILE}
+    echo -ne "$(date +"%Y-%m-%d %H:%M:%S"): Compressing files ..." | tee -a ${LOG_FILE}
     mkdir -p "${BACKUP_DIR}/complete"
-    tar -czf ${FILENAME} --absolute-names /etc/httpd /etc/php-fpm.d ${PROJECT_DIRS} >> ${LOG_FILE} 2>&1
-    echo -e "\e[32mCompressing files ... Done!\e[0m" | tee -a ${LOG_FILE}
+    tar --ignore-failed-read -czf ${FILENAME} --absolute-names /etc/httpd /etc/php-fpm.d ${PROJECT_DIRS} >> ${LOG_FILE} 2>&1
+    echo -e "\e[32m Done!\e[0m" | tee -a ${LOG_FILE}
 }
 
 create_db_backup() {
@@ -117,10 +117,10 @@ create_db_backup() {
             DB_HOST=$(grep '^DB_HOST=' ${DIR}/.env | cut -d = -f 2)
         fi
         # Perform the database dump for each database
-        echo -ne "Backing up database ${DB_NAME} ..." | tee -a ${LOG_FILE}
+        echo -ne "$(date +"%Y-%m-%d %H:%M:%S"): Backing up database ${DB_NAME} ..." | tee -a ${LOG_FILE}
         DB_FILE="${DB_DIR}/${DB_NAME}-${DATE}.sql"
         ${MYSQLDUMP_PATH} -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_NAME} > ${DB_FILE}
-        echo -e "\e[32mBacking up database ${DB_NAME} ... Done!\e[0m" | tee -a ${LOG_FILE}
+        echo -e "\e[32m Done!\e[0m" | tee -a ${LOG_FILE}
     done
     # Compress the database dumps into a tar.gz file
     FILENAME="${BACKUP_DIR}/db-only/${HOST}-${DATE}-db.tar.gz"
@@ -175,7 +175,7 @@ case $1 in
         cleanup_s3 complete 168
         cleanup_s3 db-only 48
         echo "Backup Process Ended at $(date)" >> ${LOG_FILE}
-        send_email "Backup completed" "Backup completed on ${HOST}"
+        send_email "Backup completed on ${HOST}"
         ;;
     --sync)
         # Rest of your code goes here...
