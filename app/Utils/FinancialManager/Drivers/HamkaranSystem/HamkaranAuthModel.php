@@ -7,7 +7,7 @@ namespace App\Utils\FinancialManager\Drivers\HamkaranSystem;
 use App\Interfaces\SettingDataInterface;
 use Carbon\Carbon;
 
-class HamkaranAuthDataInterface implements SettingDataInterface
+class HamkaranAuthModel implements SettingDataInterface
 {
     private string $id;
     private string $m;

@@ -15,7 +15,7 @@ use ReflectionException;
 
 /**
  *
- * @method static LanguageSettingDataInterface getRecord($name)
+ * @method static LanguageSettingModel getRecord($name)
  */
 class LanguageSettingService extends BaseCMSConfigManager
 {
@@ -24,20 +24,20 @@ class LanguageSettingService extends BaseCMSConfigManager
     protected static string $DRIVER = DataSourceDriver::DATABASE;
     private static array $CACHED_DATA = [];
 
-    public static function defaultRecord($name): LanguageSettingDataInterface
+    public static function defaultRecord($name): LanguageSettingModel
     {
         if ($name == config("translation.fallback_locale")) {
-            return new LanguageSettingDataInterface($name, true, true);
+            return new LanguageSettingModel($name, true, true);
         }
-        return new LanguageSettingDataInterface($name, false, false);
+        return new LanguageSettingModel($name, false, false);
     }
 
     /**
      * @throws NotValidSettingRecordException
      */
-    public static function updateRecord(string $lang_id, bool $is_enabled, bool $is_default): LanguageSettingDataInterface
+    public static function updateRecord(string $lang_id, bool $is_enabled, bool $is_default): LanguageSettingModel
     {
-        $language_model = new LanguageSettingDataInterface($lang_id, $is_enabled, $is_default);
+        $language_model = new LanguageSettingModel($lang_id, $is_enabled, $is_default);
         LanguageSettingService::setRecord($language_model);
         return $language_model;
     }
