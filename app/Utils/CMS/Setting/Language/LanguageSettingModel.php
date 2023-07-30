@@ -5,7 +5,7 @@ namespace App\Utils\CMS\Setting\Language;
 use App\Interfaces\SettingDataInterface;
 use JetBrains\PhpStorm\ArrayShape;
 
-class LanguageSettingDataInterface implements SettingDataInterface
+class LanguageSettingModel implements SettingDataInterface
 {
     private LanguageItemModel $config;
     private string $lang_id;
