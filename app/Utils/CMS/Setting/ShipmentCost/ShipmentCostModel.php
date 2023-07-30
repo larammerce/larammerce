@@ -4,12 +4,12 @@
 namespace App\Utils\CMS\Setting\ShipmentCost;
 
 
+use App\Interfaces\SettingDataInterface;
 use App\Models\State;
-use App\Utils\CMS\Setting\AbstractSettingModel;
 use JetBrains\PhpStorm\ArrayShape;
 use stdClass;
 
-class ShipmentCostModel extends AbstractSettingModel
+class ShipmentCostModel implements SettingDataInterface
 {
     private int $shipment_cost;
     private int $minimum_purchase_free_shipment;

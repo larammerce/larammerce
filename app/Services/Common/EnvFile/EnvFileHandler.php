@@ -7,7 +7,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 
 class EnvFileHandler implements FileHandlerInterface {
-
     public function read(string $path): Collection {
         $file_content = File::get($path);
         $file_lines = collect(explode("\n", $file_content));

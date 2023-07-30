@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Interfaces\TagInterface as TaggableContract;
 use App\Jobs\UpdateProductsStructureSortScore;
-use App\Models\Interfaces\TagContract as TaggableContract;
-use App\Models\Traits\Taggable;
+use App\Traits\Taggable;
 use App\Utils\Translation\Traits\Translatable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;

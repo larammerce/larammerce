@@ -2,9 +2,9 @@
 
 namespace App\Utils\CMS\Setting\Representative;
 
-use App\Utils\CMS\Setting\AbstractSettingModel;
+use App\Interfaces\SettingDataInterface;
 
-class RepresentativeSettingModel extends AbstractSettingModel
+class RepresentativeSettingModel implements SettingDataInterface
 {
     private bool $is_enabled;
     private bool $is_customer_representative_enabled;

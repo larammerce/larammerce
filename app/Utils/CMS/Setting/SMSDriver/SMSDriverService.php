@@ -6,7 +6,7 @@ namespace App\Utils\CMS\Setting\SMSDriver;
 use App\Utils\CMS\Enums\DataSourceDriver;
 use App\Utils\CMS\Enums\SettingType;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\Setting\AbstractSettingService;
+use App\Utils\CMS\Setting\BaseCMSConfigManager;
 use App\Utils\SMSManager\ConfigProvider;
 use App\Utils\SMSManager\Exceptions\SMSDriverInvalidConfigurationException;
 use App\Utils\SMSManager\Exceptions\SMSDriverNotConfiguredException;
@@ -14,7 +14,7 @@ use App\Utils\SMSManager\Exceptions\SMSDriverNotConfiguredException;
 /**
  * @method static SMSDriverModel getRecord(string $name = "", ?string $parent_id = null)
  */
-class SMSDriverService extends AbstractSettingService
+class SMSDriverService extends BaseCMSConfigManager
 {
     protected static string $KEY_POSTFIX = '_sms_driver_config';
     protected static int $SETTING_TYPE = SettingType::GLOBAL_SETTING;

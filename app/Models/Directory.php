@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use App\Models\Enums\DirectoryType;
-use App\Models\Interfaces\FileContract;
-use App\Models\Interfaces\HashContract;
-use App\Models\Interfaces\ImageContract;
-use App\Models\Traits\Badgeable;
-use App\Models\Traits\Fileable;
-use App\Models\Traits\FullTextSearch;
+use App\Enums\Directory\DirectoryType;
+use App\Interfaces\CMSExposedNodeInterface;
+use App\Interfaces\HashInterface;
+use App\Interfaces\ImageOwnerInterface;
+use App\Traits\Badgeable;
+use App\Traits\Fileable;
+use App\Traits\FullTextSearch;
 use App\Utils\CMS\AdminRequestService;
 use App\Utils\Common\ImageService;
 use App\Utils\Translation\Traits\Translatable;
@@ -73,7 +73,7 @@ use Illuminate\Support\Facades\DB;
  * Class Directory
  * @package App\Models
  */
-class Directory extends BaseModel implements ImageContract, HashContract, FileContract {
+class Directory extends BaseModel implements ImageOwnerInterface, HashInterface, CMSExposedNodeInterface {
     use Fileable, Badgeable, Translatable, FullTextSearch;
 
     protected static array $SORTABLE_FIELDS = ["id", "priority", "title", "created_at"];

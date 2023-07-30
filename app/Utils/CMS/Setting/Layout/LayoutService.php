@@ -12,13 +12,13 @@ namespace App\Utils\CMS\Setting\Layout;
 use App\Utils\CMS\Enums\DataSourceDriver;
 use App\Utils\CMS\Enums\LayoutType;
 use App\Utils\CMS\Enums\SettingType;
-use App\Utils\CMS\Setting\AbstractSettingService;
+use App\Utils\CMS\Setting\BaseCMSConfigManager;
 use App\Utils\Common\ModelService;
 
 /**
  * @method static LayoutModel getRecord(string $name = "", ?string $parent_id = null)
  */
-class LayoutService extends AbstractSettingService
+class LayoutService extends BaseCMSConfigManager
 {
     protected static string $KEY_POSTFIX = '_layout';
     protected static int $SETTING_TYPE = SettingType::LOCAL_SETTING;

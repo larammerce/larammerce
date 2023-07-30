@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Interfaces\ImageContract;
+use App\Interfaces\ImageOwnerInterface;
 use App\Utils\Translation\Traits\Translatable;
 
 /**
@@ -23,7 +23,7 @@ use App\Utils\Translation\Traits\Translatable;
  * Class ProductImage
  * @package App\Models
  */
-class ProductImage extends BaseModel implements ImageContract
+class ProductImage extends BaseModel implements ImageOwnerInterface
 {
     use Translatable;
 

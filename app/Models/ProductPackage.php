@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
-use App\Models\Exceptions\ProductPackageItemNotFoundException;
+use App\Exceptions\Product\ProductPackageItemNotFoundException;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\DB;
 use stdClass;
 

@@ -59,7 +59,7 @@ class ProfileController extends BaseController
      *     email="nullable|email|unique:users",
      *     national_code="required|national_code",
      *     is_legal_person="boolean",
-     *     gender="nullable|in:".\App\Models\Enums\Gender::stringValues(),
+     *     gender="nullable|in:".\App\Enums\Customer\Gender::stringValues(),
      *     company_name="required_with:is_legal_person",
      *     economical_code="nullable|regex:/[0-9]{8,16}/|min:8|max:16",
      *     national_id="required_with:is_legal_person|regex:/[0-9]{6,11}/|min:6|max:11",

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin\Api\V1;
 
+use App\Enums\Directory\DirectoryType;
+use App\Enums\Invoice\PaymentStatus;
 use App\Models\Directory;
-use App\Models\Enums\DirectoryType;
-use App\Models\Enums\PaymentStatus;
 use App\Models\Invoice;
 use App\Models\User;
 use App\Utils\Common\MessageFactory;

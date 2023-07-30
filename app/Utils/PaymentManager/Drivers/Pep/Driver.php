@@ -4,7 +4,7 @@
 namespace App\Utils\PaymentManager\Drivers\Pep;
 
 
-use App\Models\Enums\PaymentStatus;
+use App\Enums\Invoice\PaymentStatus;
 use App\Utils\PaymentManager\AbstractDriver;
 use App\Utils\PaymentManager\ConfigProvider;
 use App\Utils\PaymentManager\Drivers\Pep\RSA\RSAKeyType;

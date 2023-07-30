@@ -2,8 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Interfaces\TagContract as TagContract;
-use App\Models\Traits\Taggable;
+use App\Traits\Taggable;
 use App\Utils\Translation\Traits\Translatable;
 
 /**
@@ -17,7 +16,7 @@ use App\Utils\Translation\Traits\Translatable;
  * Class District
  * @package App\Models
  */
-class District extends BaseModel implements TagContract
+class District extends BaseModel implements TagInterface
 {
     use Taggable, Translatable;
 

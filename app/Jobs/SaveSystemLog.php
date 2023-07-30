@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Models\Interfaces\SystemLogContract;
+use App\Interfaces\SystemLogInterface;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -14,14 +14,14 @@ class SaveSystemLog implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private SystemLogContract $syslog;
+    private SystemLogInterface $syslog;
 
     /**
      * Create a new job instance.
-     * @param SystemLogContract $loggable
+     * @param SystemLogInterface $loggable
      * @return void
      */
-    public function __construct(SystemLogContract $loggable)
+    public function __construct(SystemLogInterface $loggable)
     {
         $this->syslog = $loggable;
         $this->queue = config('queue.names.admin') . "_SYS_LOG";

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Models\Interfaces\TagContract as TaggableContract;
-use App\Models\Traits\Taggable;
+use App\Interfaces\TagInterface as TaggableContract;
+use App\Traits\Taggable;
 
 /**
  * @property integer id

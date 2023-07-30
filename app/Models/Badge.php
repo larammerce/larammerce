@@ -2,16 +2,13 @@
 
 namespace App\Models;
 
-use App\Models\Interfaces\ImageContract;
-use App\Models\Interfaces\TagContract as TaggableContract;
-use App\Models\Traits\Taggable;
+use App\Interfaces\ImageOwnerInterface;
+use App\Interfaces\TagInterface as TaggableContract;
+use App\Traits\Taggable;
 use App\Utils\Common\ImageService;
 use App\Utils\Translation\Traits\Translatable;
-use DateTime;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
-use JetBrains\PhpStorm\Pure;
-use function PHPUnit\Framework\isFalse;
 
 /**
  * @property int id
@@ -23,7 +20,7 @@ use function PHPUnit\Framework\isFalse;
  * @property Carbon updated_at
  * @property bool show_title
  */
-class Badge extends BaseModel implements ImageContract, TaggableContract
+class Badge extends BaseModel implements ImageOwnerInterface, TaggableContract
 {
     use Taggable, Translatable;
 

@@ -5,16 +5,9 @@ namespace App\Utils\CMS\Setting\Representative;
 use App\Utils\CMS\Enums\DataSourceDriver;
 use App\Utils\CMS\Enums\SettingType;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\Setting\AbstractSettingModel;
-use App\Utils\CMS\Setting\AbstractSettingService;
-use App\Utils\Reflection\AnnotationBadKeyException;
-use App\Utils\Reflection\AnnotationBadScopeException;
-use App\Utils\Reflection\AnnotationNotFoundException;
-use App\Utils\Reflection\AnnotationSyntaxException;
-use Illuminate\Support\Str;
-use ReflectionException;
+use App\Utils\CMS\Setting\BaseCMSConfigManager;
 
-class RepresentativeSettingService extends AbstractSettingService
+class RepresentativeSettingService extends BaseCMSConfigManager
 {
     protected static string $KEY_POSTFIX = 'representative';
     protected static int $SETTING_TYPE = SettingType::GLOBAL_SETTING;

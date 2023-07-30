@@ -9,9 +9,9 @@
 namespace App\Utils\CMS\File;
 
 
+use App\Interfaces\CMSExposedNodeInterface;
 use App\Models\Article;
 use App\Models\Directory;
-use App\Models\Interfaces\FileContract;
 use App\Models\Product;
 
 class FileManager
@@ -47,7 +47,7 @@ class FileManager
     }
 
     /**
-     * @param FileContract[]|Directory[]|Product[]|Article[] $movingObjects
+     * @param CMSExposedNodeInterface[]|Directory[]|Product[]|Article[] $movingObjects
      * @param $newParentDirectory
      * @throws FileSameDestinationException
      */
@@ -58,7 +58,7 @@ class FileManager
     }
 
     /**
-     * @param FileContract[]|Directory[]|Product[]|Article[] $copyingObjects
+     * @param CMSExposedNodeInterface[]|Directory[]|Product[]|Article[] $copyingObjects
      * @param $newParentDirectory
      */
     public static function copy($copyingObjects, $newParentDirectory)
@@ -70,7 +70,7 @@ class FileManager
     /**
      * @param $fileIds
      * @param $FileType
-     * @return FileContract[]|Directory[]|Product[]|Article[]
+     * @return CMSExposedNodeInterface[]|Directory[]|Product[]|Article[]
      * @throws EmptyObjectCollectionException
      */
     public static function getObjects($fileIds, $FileType)

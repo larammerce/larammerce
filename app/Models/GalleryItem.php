@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Interfaces\ImageContract;
+use App\Interfaces\ImageOwnerInterface;
 use App\Utils\CMS\Template\Gallery\GalleryItemField;
 use App\Utils\Common\ImageService;
 use DateTime;
@@ -24,7 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Class GalleryItem
  * @package App\Models
  */
-class GalleryItem extends BaseModel implements ImageContract
+class GalleryItem extends BaseModel implements ImageOwnerInterface
 {
     protected $table = "gallery_items";
     protected $hidden = ["data"];

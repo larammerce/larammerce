@@ -3,10 +3,10 @@
 
 namespace App\Utils\CMS\Setting\CartNotification;
 
-use App\Utils\CMS\Setting\AbstractSettingModel;
+use App\Interfaces\SettingDataInterface;
 use JetBrains\PhpStorm\ArrayShape;
 
-class CartNotificationModel extends AbstractSettingModel
+class CartNotificationModel implements SettingDataInterface
 {
     private int $default_delay_hours;
     private bool $is_active;

@@ -2,12 +2,12 @@
 
 namespace App\Utils\CMS\Setting\FinancialDriver;
 
-use App\Utils\CMS\Setting\AbstractSettingModel;
+use App\Interfaces\SettingDataInterface;
 use App\Utils\FinancialManager\Kernel;
 use App\Utils\FinancialManager\Models\BaseFinancialConfig;
 use JetBrains\PhpStorm\ArrayShape;
 
-class FinancialDriverModel extends AbstractSettingModel
+class FinancialDriverModel implements SettingDataInterface
 {
     private BaseFinancialConfig $config_model;
     private string $driver_id;

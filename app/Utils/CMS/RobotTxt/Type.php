@@ -9,7 +9,7 @@
 namespace App\Utils\CMS\RobotTxt;
 
 
-use App\Utils\Common\BaseEnum;
+use App\Common\BaseEnum;
 
 class Type extends BaseEnum
 {

@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\Interfaces\ImageContract;
-use App\Models\Interfaces\TagContract as TaggableContract;
-use App\Models\Traits\Taggable;
+use App\Interfaces\ImageOwnerInterface;
+use App\Interfaces\TagInterface as TaggableContract;
+use App\Traits\Taggable;
 use App\Utils\Common\ImageService;
 use App\Utils\Translation\Traits\Translatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -24,7 +24,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * Class PStructureAttrValue
  * @package App\Models
  */
-class PStructureAttrValue extends BaseModel implements TaggableContract, ImageContract
+class PStructureAttrValue extends BaseModel implements TaggableContract, ImageOwnerInterface
 {
     use Taggable, Translatable;
 

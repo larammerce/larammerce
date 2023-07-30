@@ -45,7 +45,7 @@
         </div>
         <div class="input-group group-sm col-lg-3 col-md-5 col-sm-6 col-xs-9">
             <select name="extra_properties[<%- rowId %>][type]" class="form-control input-sm">
-                @foreach(\App\Models\Enums\PExtraPropertyShowType::values() as $value)
+                @foreach(\App\Enums\Product\PExtraPropertyShowType::values() as $value)
                     <% if(type === {{$value}}){ %>
                     <option selected value="{{$value}}">@lang('general.p_extra_property_show_type.'.$value)</option>
                     <% } else { %>
@@ -467,8 +467,9 @@
         </div>
         <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
             <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
-                    <span class="label">مقدار - <%= counter %>  -</span>
-                <input class="form-control input-sm" type="text" dir="ltr" name="env_rows[][value]" value="<%= value %>">
+                <span class="label">مقدار - <%= counter %>  -</span>
+                <input class="form-control input-sm" type="text" dir="ltr" name="env_rows[][value]"
+                       value="<%= value %>">
             </div>
         </div>
         <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">

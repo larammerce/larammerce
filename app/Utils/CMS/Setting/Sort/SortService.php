@@ -11,14 +11,14 @@ namespace App\Utils\CMS\Setting\Sort;
 use App\Utils\CMS\Enums\DataSourceDriver;
 use App\Utils\CMS\Enums\SettingType;
 use App\Utils\CMS\Enums\SortMethod;
-use App\Utils\CMS\Setting\AbstractSettingService;
+use App\Utils\CMS\Setting\BaseCMSConfigManager;
 use App\Utils\Common\ModelService;
 use stdClass;
 
 /**
  * @method static SortModel getRecord(string $name = "", ?string $parent_id = null)
  */
-class SortService extends AbstractSettingService
+class SortService extends BaseCMSConfigManager
 {
     protected static string $KEY_POSTFIX = '_sort_attributes';
     protected static int $SETTING_TYPE = SettingType::LOCAL_SETTING;

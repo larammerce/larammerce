@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Customer;
 
 
 use App\Models\CustomerAddress;
+use App\Services\Customer\CustomerAddressService;
 use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationModel;
 use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationService;
 use App\Utils\CMS\SystemMessageService;
@@ -21,8 +22,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AddressController extends BaseController
 {
-    public function create()
-    {
+    private CustomerAddressService $customer_address_service;
+
+    public function __construct(CustomerAddressService $customer_address_service) {
+        parent::__construct();
+        $this->customer_address_service = $customer_address_service;
+    }
+
+    public function create() {
         return h_view('public.address-add');
     }
 
@@ -34,14 +41,13 @@ class AddressController extends BaseController
      * @description(comment="this method is for adding an address to user")
      * @return RedirectResponse
      */
-    public function store(Request $request)
-    {
+    public function store(Request $request) {
         $customerUser = get_customer_user("web");
         $address = new CustomerAddress($request->all());
         $address->customer_user_id = $customerUser->id;
         $address->name = trans('ecommerce.user.address') . ' ' . (count($customerUser->addresses) + 1);
         $address->save();
-        $address->setAsMain();
+        $this->customer_address_service->setAddressAsMain($address);
 
         $defaultResponse = redirect()->to('/');
         if ($customerUser->cartRows()->get()->count() > 0) {
@@ -55,8 +61,7 @@ class AddressController extends BaseController
      * @param CustomerAddress $customer_address
      * @return \Illuminate\Http\Response
      */
-    public function edit(CustomerAddress $customer_address)
-    {
+    public function edit(CustomerAddress $customer_address) {
         if ($customer_address->customer_user_id != get_customer_user("web")->id)
             abort(403);
 
@@ -71,8 +76,7 @@ class AddressController extends BaseController
      * @param CustomerAddress $customer_address
      * @return RedirectResponse|Response
      */
-    public function update(Request $request, CustomerAddress $customer_address)
-    {
+    public function update(Request $request, CustomerAddress $customer_address) {
         //TODO: not safe, any user can edit others addresses.
         $customer_address->update($request->all());
 
@@ -84,8 +88,7 @@ class AddressController extends BaseController
      * @return RedirectResponse
      * @throws Exception
      */
-    public function delete(CustomerAddress $address)
-    {
+    public function delete(CustomerAddress $address) {
         $customer = get_customer_user("web");
         if ($address->customer_user_id != $customer->id)
             abort(403);
@@ -105,10 +108,9 @@ class AddressController extends BaseController
     /**
      * @rules(address_id="required|exists:customer_addresses,id")
      */
-    public function setMain(): RedirectResponse
-    {
+    public function setMain(): RedirectResponse {
         $address = CustomerAddress::find(request()->get("address_id"));
-        $address->setAsMain();
+        $this->customer_address_service->setAddressAsMain($address);
         CustomerLocationService::setRecord(new CustomerLocationModel($address->state, $address->city));
         SystemMessageService::addSuccessMessage("system_messages.user.location_updated");
         return redirect()->back();

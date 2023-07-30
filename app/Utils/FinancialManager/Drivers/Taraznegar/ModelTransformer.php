@@ -2,11 +2,11 @@
 
 namespace App\Utils\FinancialManager\Drivers\Taraznegar;
 
-use App\Models\Enums\Gender;
+use App\Enums\Customer\Gender;
 use App\Models\Invoice;
 use App\Models\InvoiceRow;
 use App\Models\User;
-use App\Utils\CMS\InvoiceService;
+use App\Services\Invoice\NewInvoiceService;
 use App\Utils\CMS\ProductService;
 use App\Utils\FinancialManager\Models\Customer;
 use App\Utils\FinancialManager\Models\Product;
@@ -110,7 +110,9 @@ class ModelTransformer
 
     public static function productStdToModel(stdClass $stdProduct): bool|Product
     {
-        $ratio = ProductService::getPriceRatio();
+        /** @var NewInvoiceService $new_invoice_service */
+        $new_invoice_service = app(NewInvoiceService::class);
+        $ratio = $new_invoice_service->getProductPriceRatio();
         try {
             $product = new Product();
             $product->id = $stdProduct->relation;
@@ -154,36 +156,39 @@ class ModelTransformer
 
     public static function invoiceModelToStd(Invoice $invoice): bool|stdClass
     {
+        /** @var NewInvoiceService $new_invoice_service */
+        $new_invoice_service = app(NewInvoiceService::class);
+
         try {
-            $customerUser = $invoice->customer;
-            $preInvoiceStd = new stdClass();
-            $preInvoiceStd->CustomerRelation = $customerUser->getFinManRelation($invoice->is_legal);
-            $preInvoiceStd->Description = "تحویل گیرنده : " . $invoice->transferee_name . " - " .
+            $customer_user = $invoice->customer;
+            $pre_invoice_std = new stdClass();
+            $pre_invoice_std->CustomerRelation = $customer_user->getFinManRelation($invoice->is_legal);
+            $pre_invoice_std->Description = "تحویل گیرنده : " . $invoice->transferee_name . " - " .
                 "سفارش دهنده : " . $invoice->customer->user->full_name . "\n" .
                 $invoice->getCMIComment();
 
-            $preInvoiceStd->Items = [];
-            foreach ($invoice->rows as $invoiceRow) {
-                $preInvoiceRowStd = static::invoiceRowModelToStd($invoiceRow);
-                $preInvoiceStd->Items[] = $preInvoiceRowStd;
+            $pre_invoice_std->Items = [];
+            foreach ($invoice->rows as $invoice_row) {
+                $pre_invoice_row_std = static::invoiceRowModelToStd($invoice_row);
+                $pre_invoice_std->Items[] = $pre_invoice_row_std;
             }
 
-            $preInvoiceStd->addsubs = [];
+            $pre_invoice_std->addsubs = [];
             if ($invoice->has_shipment_cost) {
 
-                $standardShipmentCost = $invoice->shipment_cost;
-                $shipmentCostExploded = ProductService::reverseCalculateTaxAndToll($standardShipmentCost);
+                $standard_shipment_cost = $invoice->shipment_cost;
+                $shipment_cost_exploded = $new_invoice_service->reverseCalculateProductTaxAndToll($standard_shipment_cost);
 
                 $addSub = new stdClass();
-                $addSub->AddSubID = InvoiceService::getShipmentProductCode();
-                $addSub->TASAmount = $shipmentCostExploded->price;
-                $addSub->TASTaxAmount = $shipmentCostExploded->tax;
-                $addSub->TASTollAmount = $shipmentCostExploded->toll;
+                $addSub->AddSubID = $new_invoice_service->getShipmentProductCode();
+                $addSub->TASAmount = $shipment_cost_exploded->price;
+                $addSub->TASTaxAmount = $shipment_cost_exploded->tax;
+                $addSub->TASTollAmount = $shipment_cost_exploded->toll;
 
-                $preInvoiceStd->addsubs[] = $addSub;
+                $pre_invoice_std->addsubs[] = $addSub;
             }
 
-            return $preInvoiceStd;
+            return $pre_invoice_std;
         }catch (Exception $exception){
             return false;
         }

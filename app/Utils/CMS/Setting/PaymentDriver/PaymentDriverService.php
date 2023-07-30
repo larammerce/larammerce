@@ -7,7 +7,7 @@ namespace App\Utils\CMS\Setting\PaymentDriver;
 use App\Utils\CMS\Enums\DataSourceDriver;
 use App\Utils\CMS\Enums\SettingType;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\Setting\AbstractSettingService;
+use App\Utils\CMS\Setting\BaseCMSConfigManager;
 use App\Utils\PaymentManager\ConfigProvider;
 use App\Utils\PaymentManager\Exceptions\PaymentDriverNotConfiguredException;
 use App\Utils\PaymentManager\Exceptions\PaymentInvalidDriverException;
@@ -15,7 +15,7 @@ use App\Utils\PaymentManager\Exceptions\PaymentInvalidDriverException;
 /**
  * @method static PaymentDriverModel getRecord(string $name = "", ?string $parent_id = null)
  */
-class PaymentDriverService extends AbstractSettingService
+class PaymentDriverService extends BaseCMSConfigManager
 {
     protected static string $KEY_POSTFIX = '_payment_driver_config';
     protected static int $SETTING_TYPE = SettingType::GLOBAL_SETTING;

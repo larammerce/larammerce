@@ -9,11 +9,11 @@
 namespace App\Utils\CMS\Setting\Sort;
 
 
-use App\Utils\CMS\Setting\AbstractSettingModel;
+use App\Interfaces\SettingDataInterface;
 use App\Utils\Common\ModelService;
 use JetBrains\PhpStorm\ArrayShape;
 
-class SortModel extends AbstractSettingModel
+class SortModel implements SettingDataInterface
 {
     private string $model_name;
     private string $field;

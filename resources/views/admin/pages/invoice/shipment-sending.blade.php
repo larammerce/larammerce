@@ -6,9 +6,13 @@
 
 @endsection
 
-@section('form_title')تغییر وضعیت سفارش به در حال ارسال@endsection
+@section('form_title')
+    تغییر وضعیت سفارش به در حال ارسال
+@endsection
 
-@section('form_attributes') action="{{route('admin.invoice.set-shipment-sending', $invoice)}}" method="POST" @endsection
+@section('form_attributes')
+    action="{{route('admin.invoice.set-shipment-sending', $invoice)}}" method="POST"
+@endsection
 
 @section('form_body')
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -19,12 +23,12 @@
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
             <span class="label">نحوه‌ی ارسال</span>
             <select class="form-control input-sm" name="shipment_driver" act="select-control">
-                @foreach(\App\Models\Enums\ShipmentMethod::toMap() as $name => $index)
+                @foreach(\App\Enums\Invoice\ShipmentMethod::toMap() as $name => $index)
                     <option value="{{ strtolower($name) }}"
                             @if($invoice->shipment_driver == strtolower($name)) selected @endif
                             @if(\App\Utils\ShipmentService\Factory::driver(strtolower($name))->isTrackable())
-                            data-target-container=".shipment-data-tracking-code"
-                        @endif>
+                                data-target-container=".shipment-data-tracking-code"
+                            @endif>
                         @lang('invoice.shipment_method.' . $index)
                     </option>
                 @endforeach

@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\Directory\DirectoryType;
 use App\Jobs\ActionDirectoryChildrenBadges;
 use App\Jobs\UpdateProductsSpecialPrice;
 use App\Models\Directory;
-use App\Models\Enums\DirectoryType;
 use App\Models\Product;
 use App\Utils\CMS\File\ExploreService;
-use App\Utils\CMS\SiteMap\Provider as SiteMapProvider;
 use App\Utils\Common\History;
 use App\Utils\Common\MessageFactory;
 use App\Utils\Common\RequestService;
@@ -204,9 +203,9 @@ class DirectoryController extends BaseController
         dispatch($job);
 
         if (RequestService::isRequestAjax()) {
-            if ($directory->content_type == \App\Models\Enums\DirectoryType::PRODUCT) {
+            if ($directory->content_type == \App\Enums\Directory\DirectoryType::PRODUCT) {
                 $action_success_message = "messages.directory.badge_attached_to_products";
-            } elseif ($directory->content_type == \App\Models\Enums\DirectoryType::BLOG) {
+            } elseif ($directory->content_type == \App\Enums\Directory\DirectoryType::BLOG) {
                 $action_success_message = "messages.directory.badge_attached_to_articles";
             } else {
                 $action_success_message = "messages.directory.badge_attached";
@@ -235,9 +234,9 @@ class DirectoryController extends BaseController
         dispatch($job);
 
         if (RequestService::isRequestAjax()) {
-            if ($directory->content_type == \App\Models\Enums\DirectoryType::PRODUCT) {
+            if ($directory->content_type == \App\Enums\Directory\DirectoryType::PRODUCT) {
                 $action_success_message = "messages.directory.badge_detached_from_products";
-            } elseif ($directory->content_type == \App\Models\Enums\DirectoryType::BLOG) {
+            } elseif ($directory->content_type == \App\Enums\Directory\DirectoryType::BLOG) {
                 $action_success_message = "messages.directory.badge_detached_from_articles";
             } else {
                 $action_success_message = "messages.directory.badge_detached";

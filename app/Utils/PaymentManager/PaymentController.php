@@ -3,8 +3,8 @@
 
 namespace App\Utils\PaymentManager;
 
-use App\Models\Enums\PaymentStatus;
-use App\Models\Enums\ShipmentStatus;
+use App\Enums\Invoice\PaymentStatus;
+use App\Enums\Invoice\ShipmentStatus;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Utils\CMS\SystemMessageService;

@@ -5,7 +5,7 @@ namespace App\Utils\CMS\Setting\Language;
 use App\Utils\CMS\Enums\DataSourceDriver;
 use App\Utils\CMS\Enums\SettingType;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\Setting\AbstractSettingService;
+use App\Utils\CMS\Setting\BaseCMSConfigManager;
 use App\Utils\Reflection\AnnotationBadKeyException;
 use App\Utils\Reflection\AnnotationBadScopeException;
 use App\Utils\Reflection\AnnotationNotFoundException;
@@ -15,29 +15,29 @@ use ReflectionException;
 
 /**
  *
- * @method static LanguageSettingModel getRecord($name)
+ * @method static LanguageSettingDataInterface getRecord($name)
  */
-class LanguageSettingService extends AbstractSettingService
+class LanguageSettingService extends BaseCMSConfigManager
 {
     protected static string $KEY_POSTFIX = '_language_config';
     protected static int $SETTING_TYPE = SettingType::GLOBAL_SETTING;
     protected static string $DRIVER = DataSourceDriver::DATABASE;
     private static array $CACHED_DATA = [];
 
-    public static function defaultRecord($name): LanguageSettingModel
+    public static function defaultRecord($name): LanguageSettingDataInterface
     {
         if ($name == config("translation.fallback_locale")) {
-            return new LanguageSettingModel($name, true, true);
+            return new LanguageSettingDataInterface($name, true, true);
         }
-        return new LanguageSettingModel($name, false, false);
+        return new LanguageSettingDataInterface($name, false, false);
     }
 
     /**
      * @throws NotValidSettingRecordException
      */
-    public static function updateRecord(string $lang_id, bool $is_enabled, bool $is_default): LanguageSettingModel
+    public static function updateRecord(string $lang_id, bool $is_enabled, bool $is_default): LanguageSettingDataInterface
     {
-        $language_model = new LanguageSettingModel($lang_id, $is_enabled, $is_default);
+        $language_model = new LanguageSettingDataInterface($lang_id, $is_enabled, $is_default);
         LanguageSettingService::setRecord($language_model);
         return $language_model;
     }

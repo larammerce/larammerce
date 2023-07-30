@@ -4,12 +4,12 @@
 namespace App\Utils\CMS\Setting\CustomerLocation;
 
 
+use App\Interfaces\SettingDataInterface;
 use App\Models\City;
 use App\Models\State;
-use App\Utils\CMS\Setting\AbstractSettingModel;
 use JetBrains\PhpStorm\ArrayShape;
 
-class CustomerLocationModel extends AbstractSettingModel
+class CustomerLocationModel implements SettingDataInterface
 {
     private State $state;
     private City $city;

@@ -2,9 +2,9 @@
 
 namespace App\Utils\CMS;
 
+use App\Exceptions\General\InvalidActionRequestException;
 use App\Jobs\SaveSystemLog;
 use App\Models\ActionLog;
-use App\Models\Exceptions\InvalidActionRequestException;
 use App\Models\User;
 use App\Utils\CMS\Setting\SystemLog\ActionLogSettingService;
 use App\Utils\Reflection\Action;

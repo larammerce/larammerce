@@ -8,13 +8,13 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\Directory\DirectoryType;
 use App\Models\Directory;
-use App\Models\Enums\DirectoryType;
 use App\Models\Product;
 use App\Models\ProductFilter;
 use App\Models\ProductQuery;
 use App\Models\Rate;
-use App\Utils\CMS\ProductService;
+use App\Services\Product\ProductService;
 use App\Utils\Common\MessageFactory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;

@@ -2,15 +2,14 @@
 
 namespace App\Models;
 
-use App\Models\Interfaces\ImageContract;
-use App\Models\Interfaces\TagContract as TaggableContract;
-use App\Models\Traits\Taggable;
+use App\Interfaces\ImageOwnerInterface;
+use App\Interfaces\TagInterface as TaggableContract;
+use App\Traits\Taggable;
 use App\Utils\CMS\Enums\UserHome;
 use App\Utils\Common\ImageService;
 use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
 use App\Utils\FinancialManager\Factory as FinFactory;
 use DateTime;
-use Exception;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
@@ -55,7 +54,7 @@ class User extends BaseModel implements
     AuthenticatableContract,
     AuthorizableContract,
     CanResetPasswordContract,
-    ImageContract,
+    ImageOwnerInterface,
     TaggableContract,
     JWTSubject
 {

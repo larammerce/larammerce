@@ -9,7 +9,7 @@
 namespace App\Utils\PaymentManager\Drivers\Pec;
 
 
-use App\Models\Enums\PaymentStatus;
+use App\Enums\Invoice\PaymentStatus;
 use App\Utils\PaymentManager\AbstractDriver;
 use App\Utils\PaymentManager\ConfigProvider;
 use App\Utils\PaymentManager\Exceptions\PaymentCallbackInvalidParametersException;
@@ -19,7 +19,6 @@ use App\Utils\PaymentManager\Kernel;
 use App\Utils\PaymentManager\Models\Form;
 use App\Utils\PaymentManager\Models\FormAttribute;
 use Exception;
-use Illuminate\Support\Facades\Log;
 use SoapClient;
 
 class Driver extends AbstractDriver

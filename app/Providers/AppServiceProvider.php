@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Interfaces\FileHandlerInterface;
+use App\Interfaces\Repositories\SettingRepositoryInterface;
+use App\Repositories\Eloquent\SettingRepositoryEloquent;
 use App\Services\Common\EnvFile\EnvFileHandler;
 use App\Utils\CMS\RobotTxt\RobotTxtService;
 use App\Utils\CMS\Setting\Logistic\LogisticService;
@@ -20,8 +22,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
-    {
+    public function boot() {
         $proxy_url = env('PROXY_URL');
         $proxy_schema = env('PROXY_SCHEMA');
 
@@ -59,8 +60,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
-    {
+    public function register() {
         // set the public path to this directory
         $this->app->bind('path.public', function () {
             return base_path() . '/public_html';
@@ -74,6 +74,10 @@ class AppServiceProvider extends ServiceProvider
             return new RobotTxtService('auto');
         });
 
-        $this->app->bind(FileHandlerInterface::class, EnvFileHandler::class);
+        //Services
+        $this->app->singleton(FileHandlerInterface::class, EnvFileHandler::class);
+
+        //Repositories
+        $this->app->bind(SettingRepositoryInterface::class, SettingRepositoryEloquent::class);
     }
 }

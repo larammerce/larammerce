@@ -6,9 +6,13 @@
 
 @endsection
 
-@section('form_title')ویرایش صورت حساب@endsection
+@section('form_title')
+    ویرایش صورت حساب
+@endsection
 
-@section('form_attributes') action="{{route('admin.invoice.update', $invoice)}}" method="POST" @endsection
+@section('form_attributes')
+    action="{{route('admin.invoice.update', $invoice)}}" method="POST"
+@endsection
 
 @section('form_body')
     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
@@ -21,7 +25,7 @@
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
             <span class="label">نوع پرداخت</span>
             <select class="form-control input-sm" name="payment_type" disabled>
-                @foreach(\App\Models\Enums\PaymentType::values() as $key)
+                @foreach(\App\Enums\Invoice\PaymentType::values() as $key)
                     <option value="{{ $key }}" @if($invoice->payment_type == $key) selected @endif>
                         {{ trans('invoice.payment_type.' . $key)}}
                     </option>
@@ -31,7 +35,7 @@
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
             <span class="label">وضعیت پرداخت</span>
             <select class="form-control input-sm" name="payment_status" disabled>
-                @foreach(\App\Models\Enums\PaymentStatus::values() as $key)
+                @foreach(\App\Enums\Invoice\PaymentStatus::values() as $key)
                     <option value="{{ $key }}" @if($invoice->payment_status == $key) selected @endif>
                         {{ trans('invoice.payment_status.' . $key)}}
                     </option>
@@ -41,7 +45,7 @@
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
             <span class="label">وضعیت ارسال</span>
             <select class="form-control input-sm" name="shipment_status" disabled>
-                @foreach(\App\Models\Enums\ShipmentStatus::values() as $key)
+                @foreach(\App\Enums\Invoice\ShipmentStatus::values() as $key)
                     <option value="{{ $key }}" @if($invoice->shipment_status == $key) selected @endif>
                         {{ trans('invoice.shipment_status.' . $key)}}
                     </option>
@@ -49,19 +53,19 @@
             </select>
         </div>
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
-            @if($invoice->shipment_status == \App\Models\Enums\ShipmentStatus::WAREHOUSE_EXIT_TAB)
+            @if($invoice->shipment_status == \App\Enums\Invoice\ShipmentStatus::WAREHOUSE_EXIT_TAB)
                 <a class="btn btn-sm btn-primary pull-left"
                    href="{{route('admin.invoice.show-shipment-sending', $invoice) }}">
                     تغییر وضعیت ارسال به
                     <b>در حال ارسال</b>
                 </a>
-            @elseif($invoice->shipment_status == \App\Models\Enums\ShipmentStatus::PREPARING_TO_SEND)
+            @elseif($invoice->shipment_status == \App\Enums\Invoice\ShipmentStatus::PREPARING_TO_SEND)
                 <a class="btn btn-sm btn-primary pull-left"
                    href="{{route('admin.invoice.show-shipment-exit-tab', $invoice) }}">
                     تغییر وضعیت ارسال به
                     <b>مجوز خروج از انبار</b>
                 </a>
-            @elseif($invoice->shipment_status == \App\Models\Enums\ShipmentStatus::SENDING)
+            @elseif($invoice->shipment_status == \App\Enums\Invoice\ShipmentStatus::SENDING)
                 <a class="btn btn-sm btn-primary pull-left"
                    href="{{route('admin.invoice.show-shipment-delivered', $invoice) }}">
                     تغییر وضعیت ارسال به
@@ -89,7 +93,7 @@
         <ul>
             @foreach($invoice->products as $product)
                 <li><a href="{{route('admin.product.edit',$product)}}"><i
-                            class="fa fa-eye"></i></a> {{ $product->title }} - کد محصول : {{ $product->code }}
+                                class="fa fa-eye"></i></a> {{ $product->title }} - کد محصول : {{ $product->code }}
                 </li>
             @endforeach
         </ul>

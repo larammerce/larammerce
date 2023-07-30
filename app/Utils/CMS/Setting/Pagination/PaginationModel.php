@@ -9,10 +9,10 @@
 namespace App\Utils\CMS\Setting\Pagination;
 
 
-use App\Utils\CMS\Setting\AbstractSettingModel;
+use App\Interfaces\SettingDataInterface;
 use JetBrains\PhpStorm\ArrayShape;
 
-class PaginationModel extends AbstractSettingModel
+class PaginationModel implements SettingDataInterface
 {
     private string $model;
     private int $page;

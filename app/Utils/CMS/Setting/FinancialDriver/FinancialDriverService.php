@@ -6,7 +6,7 @@ namespace App\Utils\CMS\Setting\FinancialDriver;
 use App\Utils\CMS\Enums\DataSourceDriver;
 use App\Utils\CMS\Enums\SettingType;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\Setting\AbstractSettingService;
+use App\Utils\CMS\Setting\BaseCMSConfigManager;
 use App\Utils\FinancialManager\ConfigProvider;
 use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
 use App\Utils\FinancialManager\Exceptions\FinancialDriverNotConfiguredException;
@@ -19,7 +19,7 @@ use App\Utils\FinancialManager\Models\BaseFinancialConfig;
  * Class ShipmentCostService
  * @package App\Utils\CMS\ShipmentCost
  */
-class FinancialDriverService extends AbstractSettingService
+class FinancialDriverService extends BaseCMSConfigManager
 {
     protected static string $KEY_POSTFIX = '_financial_driver_config';
     protected static int $SETTING_TYPE = SettingType::GLOBAL_SETTING;

@@ -4,11 +4,11 @@
 namespace App\Utils\CMS\Setting\SystemLog;
 
 
-use App\Utils\CMS\Setting\AbstractSettingModel;
+use App\Interfaces\SettingDataInterface;
 use App\Utils\Reflection\ReflectiveNamespace;
 use JetBrains\PhpStorm\ArrayShape;
 
-class ActionLogSettingModel extends AbstractSettingModel
+class ActionLogSettingModel implements SettingDataInterface
 {
     private int $is_enabled;
     private int $log_period;
