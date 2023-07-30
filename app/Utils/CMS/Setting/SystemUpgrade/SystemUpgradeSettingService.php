@@ -19,7 +19,9 @@ class SystemUpgradeSettingService extends AbstractSettingService {
     public static function defaultRecord($name): SystemUpgradeSettingDataInterface {
         return new SystemUpgradeSettingDataInterface(
             "git@github.com:larammerce/larammerce.git",
-            "git@github.com:larammerce/larammerce-base-theme.git"
+            "production",
+            "git@github.com:larammerce/larammerce-base-theme.git",
+            "master"
         );
     }
 }

@@ -1,4 +1,4 @@
-@extends('admin.form_layout.col_4')
+@extends('admin.form_layout.col_6')
 
 @section('bread_crumb')
     <li><a href="{{route('admin.setting.upgrade.index')}}">تنظیمات</a></li>
@@ -17,14 +17,31 @@
 
 @section('form_body')
     <script>window.PAGE_ID = "admin.pages.upgrade.index";</script>
-    <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
-        <span class="label">آدرس گیت هسته</span>
-        <input class="form-control input-sm" name="larammerce_repo_address" value="{{ $larammerce_repo_address }}">
+    <div class="col-md-9">
+        <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+            <span class="label">آدرس گیت هسته</span>
+            <input class="form-control input-sm" name="larammerce_repo_address" value="{{ $larammerce_repo_address }}">
+        </div>
     </div>
-    <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
-        <span class="label">آدرس گیت تم پروژه</span>
-        <input class="form-control input-sm" name="larammerce_theme_repo_address"
-               value="{{ $larammerce_theme_repo_address }}">
+    <div class="col-md-3">
+        <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+            <span class="label">برنچ هسته</span>
+            <input class="form-control input-sm" name="larammerce_branch_name" value="{{ $larammerce_branch_name }}">
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+            <span class="label">آدرس گیت تم پروژه</span>
+            <input class="form-control input-sm" name="larammerce_theme_repo_address"
+                   value="{{ $larammerce_theme_repo_address }}">
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+            <span class="label">برنچ تم</span>
+            <input class="form-control input-sm" name="larammerce_theme_branch_name"
+                   value="{{ $larammerce_theme_branch_name }}">
+        </div>
     </div>
     @if(isset($public_key))
         <div class="alert alert-success" role="alert">
@@ -54,11 +71,11 @@
         </div>
         <div class="row mt-15" id="updating-note" style="display: none">
             <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
-            <div class="alert alert-warning" role="alert">
-                <h4 class="alert-heading">در حال به روز رسانی</h4>
-                <hr>
-                <p>لطفا تا پایان عملیات از بستن این صفحه خودداری نمایید.</p>
-            </div>
+                <div class="alert alert-warning" role="alert">
+                    <h4 class="alert-heading">در حال به روز رسانی</h4>
+                    <hr>
+                    <p>لطفا تا پایان عملیات از بستن این صفحه خودداری نمایید.</p>
+                </div>
             </div>
         </div>
         <div class="row mt-15">
