@@ -11,9 +11,7 @@ namespace App\Services\Invoice;
 
 use App\Enums\Setting\CMSSettingKey;
 use App\Helpers\CMSSettingHelper;
-use App\Models\CustomerAddress;
 use App\Models\Invoice;
-use App\Utils\CMS\AdminRequestService;
 use App\Utils\CMS\Cart\Provider as CartProvider;
 use App\Utils\CMS\Setting\ShipmentCost\ShipmentCostService;
 use Exception;
@@ -23,8 +21,7 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use stdClass;
 
-class NewInvoiceService
-{
+class NewInvoiceService {
     private Request $request;
     private CMSSettingHelper $setting_service;
 
@@ -45,7 +42,9 @@ class NewInvoiceService
 
     public function getTheNew(): Invoice {
         try {
-            return $this->request->session()->get(self::CURRENT_INVOICE_KEY) ?? new Invoice();
+            $invoice = $this->request->session()->get(self::CURRENT_INVOICE_KEY) ?? new Invoice();
+            $invoice->setNewInvoiceService($this);
+            return $invoice;
         } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
             return new Invoice();
         }
@@ -90,14 +89,6 @@ class NewInvoiceService
 
     public function flush($guard = null): void {
         CartProvider::flush();
-    }
-
-    public function updateAddress(CustomerAddress $customer_address): void {
-        if (AdminRequestService::isInAdminArea())
-            return;
-        $invoice = $this->getTheNew();
-        $invoice->updateAddress($customer_address);
-        $this->setTheNew($invoice);
     }
 
     public function getProductTollPercentage(): float {

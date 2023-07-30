@@ -97,8 +97,12 @@ class Invoice extends BaseModel {
     private NewInvoiceService $new_invoice_service;
 
     public function __construct(array $attributes = []) {
-        $this->new_invoice_service = app(NewInvoiceService::class);
         parent::__construct($attributes);
+        $this->new_invoice_service = app(NewInvoiceService::class);
+    }
+
+    public function setNewInvoiceService(NewInvoiceService $new_invoice_service): void {
+        $this->new_invoice_service = $new_invoice_service;
     }
 
     public function getStatusAttribute(): int {

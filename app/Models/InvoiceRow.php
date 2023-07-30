@@ -44,8 +44,8 @@ class InvoiceRow extends BaseModel
     private NewInvoiceService $new_invoice_service;
 
     public function __construct(array $attributes = []) {
-        $this->new_invoice_service = app(NewInvoiceService::class);
         parent::__construct($attributes);
+        $this->new_invoice_service = app(NewInvoiceService::class);
 
     }
 
