@@ -42,9 +42,7 @@ class NewInvoiceService {
 
     public function getTheNew(): Invoice {
         try {
-            $invoice = $this->request->session()->get(self::CURRENT_INVOICE_KEY) ?? new Invoice();
-            $invoice->setNewInvoiceService($this);
-            return $invoice;
+            return $this->request->session()->get(self::CURRENT_INVOICE_KEY) ?? new Invoice();
         } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
             return new Invoice();
         }

@@ -96,15 +96,6 @@ class Invoice extends BaseModel {
 
     private NewInvoiceService $new_invoice_service;
 
-    public function __construct(array $attributes = []) {
-        parent::__construct($attributes);
-        $this->new_invoice_service = app(NewInvoiceService::class);
-    }
-
-    public function setNewInvoiceService(NewInvoiceService $new_invoice_service): void {
-        $this->new_invoice_service = $new_invoice_service;
-    }
-
     public function getStatusAttribute(): int {
         return $this->extra_attributes["status"] ?? 0;
     }
@@ -128,6 +119,7 @@ class Invoice extends BaseModel {
     }
 
     public function getIsShipFreeAttribute(): bool {
+        $this->new_invoice_service = $this->new_invoice_service ?? app(NewInvoiceService::class);
         return !$this->is_shippable or $this->new_invoice_service->getMinimumPurchaseFreeShipment() <= $this->sum;
     }
 
@@ -219,6 +211,7 @@ class Invoice extends BaseModel {
     }
 
     public function updateRows() {
+        $this->new_invoice_service = $this->new_invoice_service ?? app(NewInvoiceService::class);
         $discount_percentage = 0;
         $discount_card = $this->discountCard;
         $discountable_amount = $this->getDiscountableAmount();
@@ -336,6 +329,7 @@ class Invoice extends BaseModel {
     }
 
     public function calculateShipmentCost(): int {
+        $this->new_invoice_service = $this->new_invoice_service ?? app(NewInvoiceService::class);
         if ($this->is_ship_free)
             return 0;
         return $this->new_invoice_service->getStandardShipmentCost($this->state_id);

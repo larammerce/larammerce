@@ -218,14 +218,8 @@ class Product extends BaseModel implements
 
     protected static string $TRANSLATION_EDIT_FORM = "admin.pages.product.translate";
 
-    private CMSSettingHelper $setting_service;
+    private CMSSettingHelper $cms_setting_helper;
     private NewInvoiceService $new_invoice_service;
-
-    public function __construct(array $attributes = []) {
-        parent::__construct($attributes);
-        $this->setting_service = app(CMSSettingHelper::class);
-        $this->new_invoice_service = app(NewInvoiceService::class);
-    }
 
     public function getIsLocationLimitedAttribute(): bool {
         if (config("cms.general.site.enable_directory_location")) {
@@ -259,9 +253,10 @@ class Product extends BaseModel implements
     }
 
     public function getIsNewAttribute(): bool {
+        $this->cms_setting_helper = $this->cms_setting_helper ?? app(CMSSettingHelper::class);
         if ($this->created_at === null)
             return false;
-        $new_product_delay_days = $this->setting_service->getCMSSettingAsInt(CMSSettingKey::NEW_PRODUCT_DELAY_DAYS);
+        $new_product_delay_days = $this->cms_setting_helper->getCMSSettingAsInt(CMSSettingKey::NEW_PRODUCT_DELAY_DAYS);
         return Carbon::now()->lessThan($this->created_at->addDays($new_product_delay_days));
     }
 
@@ -675,7 +670,7 @@ class Product extends BaseModel implements
     }
 
     public function updateTaxAmount(): void {
-
+        $this->new_invoice_service = $this->new_invoice_service ?? app(NewInvoiceService::class);
         $priceData = ConfigProvider::isTaxAddedToPrice() ?
             $this->new_invoice_service->reverseCalculateProductTaxAndToll(
                 intval($this->latest_sell_price / $this->new_invoice_service->getProductPriceRatio())
@@ -728,7 +723,8 @@ class Product extends BaseModel implements
     }
 
     private function updateEnabledStatus(bool $do_save = true): bool {
-        $min_allowed_count = $this->setting_service->getCMSSettingAsBool(CMSSettingKey::DISABLE_PRODUCT_ON_MIN) ?
+        $this->cms_setting_helper = $this->cms_setting_helper ?? app(CMSSettingHelper::class);
+        $min_allowed_count = $this->cms_setting_helper->getCMSSettingAsBool(CMSSettingKey::DISABLE_PRODUCT_ON_MIN) ?
             $this->min_allowed_count : 0;
         if ($this->count > $min_allowed_count and $this->latest_price > 0)
             return $this->makeEnabled($do_save);
@@ -918,8 +914,9 @@ class Product extends BaseModel implements
 
     // Todo : this method must be checked check
     public function getMaximumAllowedPurchaseCount() {
+        $this->cms_setting_helper = $this->cms_setting_helper ?? app(CMSSettingHelper::class);
         try {
-            $min_allowed_count = $this->setting_service->getCMSSettingAsBool(CMSSettingKey::DISABLE_PRODUCT_ON_MIN) ?
+            $min_allowed_count = $this->cms_setting_helper->getCMSSettingAsBool(CMSSettingKey::DISABLE_PRODUCT_ON_MIN) ?
                 $this->min_allowed_count : 0;
             return max((config('cms.general.site.show_deactivated_products') ? 1 : 0),
                 min(($this->count - $min_allowed_count), $this->max_purchase_count));
@@ -941,6 +938,7 @@ class Product extends BaseModel implements
     }
 
     public function getStandardLatestPrice(): int {
+        $this->new_invoice_service = $this->new_invoice_service ?? app(NewInvoiceService::class);
         return intval($this->latest_price / $this->new_invoice_service->getProductPriceRatio());
     }
 
@@ -1090,10 +1088,11 @@ class Product extends BaseModel implements
      * @return array
      */
     public function toArray(): array {
+        $this->cms_setting_helper = $this->cms_setting_helper ?? app(CMSSettingHelper::class);
         $parent_result = parent::toArray();
 
         if (
-            (!$this->setting_service->getCMSSettingAsBool(CMSSettingKey::DISABLE_PRODUCT_ON_MIN)) and
+            (!$this->cms_setting_helper->getCMSSettingAsBool(CMSSettingKey::DISABLE_PRODUCT_ON_MIN)) and
             $this->is_active and
             $this->count <= $this->min_allowed_count
         ) {
