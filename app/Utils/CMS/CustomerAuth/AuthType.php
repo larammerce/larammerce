@@ -9,7 +9,7 @@
 namespace App\Utils\CMS\CustomerAuth;
 
 
-use App\Utils\Common\BaseEnum;
+use App\Common\BaseEnum;
 
 class AuthType extends BaseEnum
 {

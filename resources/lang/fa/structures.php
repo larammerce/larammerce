@@ -236,7 +236,7 @@ return [
             'important_at' => 'تاریخ اعلام مهم بودن',
             'is_notified' => 'اطلاع رسانی شده است؟',
             'client_ip' => 'آی پی مشتری',
-            'request_counts' => 'تعداد درخواست'
+            'request_counts' => 'تعداد درخواست',
         ],
     'methods' =>
         [

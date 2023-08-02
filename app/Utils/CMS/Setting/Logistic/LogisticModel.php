@@ -4,14 +4,14 @@
 namespace App\Utils\CMS\Setting\Logistic;
 
 
-use App\Utils\CMS\Setting\AbstractSettingModel;
+use App\Interfaces\SettingDataInterface;
 use App\Utils\Jalali\JDate;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use JetBrains\PhpStorm\ArrayShape;
 use stdClass;
 
-class LogisticModel extends AbstractSettingModel
+class LogisticModel implements SettingDataInterface
 {
     private int $max_items_count;
     private int $max_total_price;

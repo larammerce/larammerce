@@ -4,11 +4,11 @@
 namespace App\Utils\CMS\Setting\Excel;
 
 
-use App\Utils\CMS\Setting\AbstractSettingModel;
+use App\Interfaces\SettingDataInterface;
 use App\Utils\Reflection\ReflectiveNamespace;
 use JetBrains\PhpStorm\ArrayShape;
 
-class ExcelCacheModel extends AbstractSettingModel
+class ExcelCacheModel implements SettingDataInterface
 {
 
     private array $models;

@@ -5,7 +5,7 @@ namespace App\Utils\CMS\Setting\Language;
 use App\Utils\CMS\Enums\DataSourceDriver;
 use App\Utils\CMS\Enums\SettingType;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
-use App\Utils\CMS\Setting\AbstractSettingService;
+use App\Utils\CMS\Setting\BaseCMSConfigManager;
 use App\Utils\Reflection\AnnotationBadKeyException;
 use App\Utils\Reflection\AnnotationBadScopeException;
 use App\Utils\Reflection\AnnotationNotFoundException;
@@ -17,7 +17,7 @@ use ReflectionException;
  *
  * @method static LanguageSettingModel getRecord($name)
  */
-class LanguageSettingService extends AbstractSettingService
+class LanguageSettingService extends BaseCMSConfigManager
 {
     protected static string $KEY_POSTFIX = '_language_config';
     protected static int $SETTING_TYPE = SettingType::GLOBAL_SETTING;

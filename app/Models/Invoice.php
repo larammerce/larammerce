@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\Enums\NewInvoiceType;
-use App\Models\Enums\PaymentStatus;
-use App\Utils\CMS\InvoiceService;
+use App\Enums\Invoice\NewInvoiceType;
+use App\Enums\Invoice\PaymentStatus;
+use App\Services\Invoice\NewInvoiceService;
 use App\Utils\CMS\ProductService;
 use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
 use App\Utils\FinancialManager\Factory;
@@ -72,8 +72,7 @@ use Illuminate\Support\Facades\DB;
  * Class Invoice
  * @package App\Models
  */
-class Invoice extends BaseModel
-{
+class Invoice extends BaseModel {
     protected $table = 'invoices';
     protected $fillable = [
         'payment_type', 'customer_user_id', 'customer_address', 'sum', 'payment_status', 'payment_id', 'has_paper',
@@ -89,31 +88,38 @@ class Invoice extends BaseModel
         "status" => 0
     ];
 
-    protected array $caches = [];
+    protected array $cached_attributes = [];
 
     protected static array $SORTABLE_FIELDS = ['id', 'payment_type', 'payment_status', 'shipment_status', 'sum', 'is_active'];
     protected static array $SEARCHABLE_FIELDS = ['tracking_code'];
     protected static int $FRONT_PAGINATION_COUNT = 10;
 
-    public function getStatusAttribute(): int
-    {
+    private NewInvoiceService $new_invoice_service;
+
+    public function __construct(array $attributes = []) {
+        parent::__construct($attributes);
+        $this->new_invoice_service = app(NewInvoiceService::class);
+    }
+
+    public function setNewInvoiceService(NewInvoiceService $new_invoice_service): void {
+        $this->new_invoice_service = $new_invoice_service;
+    }
+
+    public function getStatusAttribute(): int {
         return $this->extra_attributes["status"] ?? 0;
     }
 
-    public function setStatusAttribute(int $status): void
-    {
+    public function setStatusAttribute(int $status): void {
         if (!in_array($status, NewInvoiceType::values()))
             return;
         $this->extra_attributes["status"] = $status;
     }
 
-    public function getHasShipmentCostAttribute(): int
-    {
+    public function getHasShipmentCostAttribute(): int {
         return $this->shipment_cost > 0;
     }
 
-    public function getIsShippableAttribute(): bool
-    {
+    public function getIsShippableAttribute(): bool {
         foreach ($this->rows as $row) {
             if ($row->product->productStructure->is_shippable)
                 return true;
@@ -121,55 +127,46 @@ class Invoice extends BaseModel
         return false;
     }
 
-    public function getIsShipFreeAttribute(): bool
-    {
-        return !$this->is_shippable or InvoiceService::getMinimumPurchaseFreeShipment() <= $this->sum;
+    public function getIsShipFreeAttribute(): bool {
+        return !$this->is_shippable or $this->new_invoice_service->getMinimumPurchaseFreeShipment() <= $this->sum;
     }
 
-    public function getSumOfRowsAttribute(): int
-    {
-        if (!isset($this->caches["sum_of_rows"])) {
+    public function getSumOfRowsAttribute(): int {
+        if (!isset($this->cached_attributes["sum_of_rows"])) {
             $result = DB::table("invoice_rows")->whereRaw(DB::raw("invoice_id={$this->id}"))
                 ->select(DB::raw("sum((pure_price + tax_amount + toll_amount) * count) as sum_of_rows"))
                 ->first();
-            $this->caches["sum_of_rows"] = $result != null ? $result->sum_of_rows : 0;
+            $this->cached_attributes["sum_of_rows"] = $result != null ? $result->sum_of_rows : 0;
         }
-        return $this->caches["sum_of_rows"];
+        return $this->cached_attributes["sum_of_rows"];
     }
 
-    public function products(): BelongsToMany
-    {
+    public function products(): BelongsToMany {
         return $this->belongsToMany(Product::class, 'invoice_rows',
             'invoice_id', 'product_id');
     }
 
-    public function customer(): BelongsTo
-    {
+    public function customer(): BelongsTo {
         return $this->belongsTo(CustomerUser::class, 'customer_user_id');
     }
 
-    public function state(): BelongsTo
-    {
+    public function state(): BelongsTo {
         return $this->belongsTo(State::class, 'state_id');
     }
 
-    public function rows(): HasMany
-    {
+    public function rows(): HasMany {
         return $this->hasMany(InvoiceRow::class, 'invoice_id');
     }
 
-    public function payments(): HasMany
-    {
+    public function payments(): HasMany {
         return $this->hasMany(Payment::class, 'invoice_id');
     }
 
-    public function discountCard(): BelongsTo
-    {
+    public function discountCard(): BelongsTo {
         return $this->belongsTo(DiscountCard::class, 'discount_card_id');
     }
 
-    public function createFinManRelation(): bool
-    {
+    public function createFinManRelation(): bool {
         if ($this->is_active)
             return false;
 
@@ -193,8 +190,7 @@ class Invoice extends BaseModel
         return true;
     }
 
-    public function deleteFinManRelation(): bool
-    {
+    public function deleteFinManRelation(): bool {
         if ((!$this->is_active) or
             $this->payment_status == PaymentStatus::SUBMITTED or
             $this->payment_status == PaymentStatus::CONFIRMED)
@@ -218,13 +214,11 @@ class Invoice extends BaseModel
         }
     }
 
-    public function hasDiscountCard(): bool
-    {
+    public function hasDiscountCard(): bool {
         return $this->discountCard != null;
     }
 
-    public function updateRows()
-    {
+    public function updateRows() {
         $discount_percentage = 0;
         $discount_card = $this->discountCard;
         $discountable_amount = $this->getDiscountableAmount();
@@ -234,7 +228,7 @@ class Invoice extends BaseModel
             if ($discount_card->group->is_percentage)
                 $discount_percentage = $discount_value;
             else
-                $this->direct_discount = ($discount_value / ProductService::getPriceRatio());
+                $this->direct_discount = ($discount_value / $this->new_invoice_service->getProductPriceRatio());
         }
 
         $this->sum = 0;
@@ -262,66 +256,57 @@ class Invoice extends BaseModel
         }
     }
 
-    public static function getFrontPaginationCount(): int
-    {
+    public static function getFrontPaginationCount(): int {
         return self::$FRONT_PAGINATION_COUNT;
     }
 
-    public function getSearchUrl(): string
-    {
+    public function getSearchUrl(): string {
         return route("admin.invoice.edit", $this);
     }
 
-    public function isPayed(): bool
-    {
+    public function isPayed(): bool {
         return in_array($this->payment_status, [
             PaymentStatus::SUBMITTED,
             PaymentStatus::CONFIRMED
         ]);
     }
 
-    public function hasTrackableShipment(): bool
-    {
+    public function hasTrackableShipment(): bool {
         if (!$this->shipment_driver)
             return false;
 
         return ShipmentFactory::driver($this->shipment_driver)->isTrackable();
     }
 
-    public function getShipmentTrackingCode(): string
-    {
+    public function getShipmentTrackingCode(): string {
         if (!$this->shipment_driver)
             return '';
 
         return ShipmentFactory::driver($this->shipment_driver)->getTrackingCode($this->shipment_data);
     }
 
-    public function getShipmentTrackingUrl(): string
-    {
+    public function getShipmentTrackingUrl(): string {
         if (!$this->shipment_driver)
             return '#';
 
         return ShipmentFactory::driver($this->shipment_driver)->getTrackingUrl();
     }
 
-    public function getShipmentDeliveryDate(): string
-    {
+    public function getShipmentDeliveryDate(): string {
         if (!$this->shipment_driver)
             return '-';
 
         return ShipmentFactory::driver($this->shipment_driver)->getDeliveryDate($this->shipment_data);
     }
 
-    public function getDiscountAmount(): int
-    {
+    public function getDiscountAmount(): int {
         $discount = 0;
         foreach ($this->rows as $invoiceRow)
             $discount += $invoiceRow->discount_amount * $invoiceRow->count;
         return $discount;
     }
 
-    public function getDiscountPercentage(): int
-    {
+    public function getDiscountPercentage(): int {
         $discountCard = $this->discountCard;
         $discountGroup = $discountCard?->group;
         if ($discountGroup != null and $discountGroup->is_percentage)
@@ -329,8 +314,7 @@ class Invoice extends BaseModel
         return 0;
     }
 
-    public function getCMIComment($newline = "\n"): string
-    {
+    public function getCMIComment($newline = "\n"): string {
         $result = "";
         foreach ($this->rows()->where("cmi_id", "!=", null)->get() as $row) {
             $result .= "({$row->product->title}): {$newline} ================== {$newline} " .
@@ -339,8 +323,7 @@ class Invoice extends BaseModel
         return $result;
     }
 
-    public function getDiscountableAmount(): int
-    {
+    public function getDiscountableAmount(): int {
         $discountable_amount = 0;
         if ($this->discount_card_id !== null) {
             foreach ($this->rows as $row) {
@@ -352,15 +335,13 @@ class Invoice extends BaseModel
         return $discountable_amount;
     }
 
-    public function calculateShipmentCost(): int
-    {
+    public function calculateShipmentCost(): int {
         if ($this->is_ship_free)
             return 0;
-        return InvoiceService::getStandardShipmentCost($this->state_id);
+        return $this->new_invoice_service->getStandardShipmentCost($this->state_id);
     }
 
-    public function updateAddress(?CustomerAddress $customer_address)
-    {
+    public function updateAddress(?CustomerAddress $customer_address) {
         if ($customer_address !== null) {
             $this->state_id = $customer_address->state_id;
             $this->customer_address = $customer_address->getFullAddress();
@@ -372,8 +353,7 @@ class Invoice extends BaseModel
         $this->shipment_cost = $this->calculateShipmentCost();
     }
 
-    public function customPush(): bool
-    {
+    public function customPush(): bool {
         if (!$this->save()) {
             return false;
         }

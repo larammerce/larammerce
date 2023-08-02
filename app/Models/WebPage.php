@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\Interfaces\ImageContract;
-use App\Models\Interfaces\SeoContract as SeoableContract;
-use App\Models\Traits\Seoable;
+use App\Interfaces\ImageOwnerInterface;
+use App\Interfaces\SeoSubjectInterface as SeoableContract;
+use App\Traits\Seoable;
 use App\Utils\CMS\Template\Contents\Audio;
 use App\Utils\CMS\Template\Contents\File;
 use App\Utils\CMS\Template\Contents\Image;
@@ -23,7 +23,6 @@ use DateTime;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Yangqi\Htmldom\Htmldom;
 
@@ -47,7 +46,7 @@ use Yangqi\Htmldom\Htmldom;
  * Class WebPage
  * @package App\Models
  */
-class WebPage extends BaseModel implements ImageContract, SeoableContract
+class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
 {
     use Seoable, Translatable;
 

@@ -2,11 +2,11 @@
 
 namespace App\Utils\CMS\Setting\SMSDriver;
 
-use App\Utils\CMS\Setting\AbstractSettingModel;
+use App\Interfaces\SettingDataInterface;
 use App\Utils\SMSManager\Kernel;
 use JetBrains\PhpStorm\ArrayShape;
 
-class SMSDriverModel extends AbstractSettingModel
+class SMSDriverModel implements SettingDataInterface
 {
     private string $config_model;
     private string $driver_id;

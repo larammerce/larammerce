@@ -4,10 +4,10 @@
 namespace App\Utils\FinancialManager\Drivers\HamkaranSystem;
 
 
-use App\Utils\CMS\Setting\AbstractSettingModel;
+use App\Interfaces\SettingDataInterface;
 use Carbon\Carbon;
 
-class HamkaranAuthModel extends AbstractSettingModel
+class HamkaranAuthModel implements SettingDataInterface
 {
     private string $id;
     private string $m;

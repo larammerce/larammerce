@@ -2,7 +2,7 @@
 
 namespace App\Utils\CMS\Setting\Language;
 
-use App\Models\Traits\Inputable;
+use App\Traits\Inputable;
 use JsonSerializable;
 use Serializable;
 

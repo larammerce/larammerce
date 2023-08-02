@@ -1,12 +1,13 @@
 <?php
 
-
 namespace App\Utils\CMS\Setting\SystemUpgrade;
 
 
-use App\Utils\CMS\Setting\AbstractSettingModel;
+use App\Interfaces\SettingDataInterface;
 
-class SystemUpgradeSettingModel extends AbstractSettingModel {
+
+class SystemUpgradeSettingModel implements SettingDataInterface
+{
     private string $larammerce_repo_address;
 
     private string $larammerce_branch_name;

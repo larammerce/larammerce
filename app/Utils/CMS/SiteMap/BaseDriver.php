@@ -11,7 +11,6 @@ namespace App\Utils\CMS\SiteMap;
 
 use App\Models\Article;
 use App\Models\Directory;
-use App\Models\Enums\DirectoryType;
 use App\Models\Product;
 use Illuminate\Support\Collection;
 

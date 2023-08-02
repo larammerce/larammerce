@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Interfaces\RateContract as RateableContract;
+use App\Interfaces\RateOwnerInterface as RateableContract;
 use DateTime;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

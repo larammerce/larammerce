@@ -9,7 +9,7 @@
 namespace App\Utils\CMS\File;
 
 
-use App\Utils\Common\BaseEnum;
+use App\Common\BaseEnum;
 
 class FileAction extends BaseEnum
 {

@@ -8,19 +8,20 @@
 
 namespace App\Http\Controllers\Customer;
 
+use App\Enums\Discount\DiscountCardStatus;
+use App\Enums\Invoice\NewInvoiceType;
+use App\Enums\Invoice\PaymentStatus;
+use App\Enums\Invoice\PaymentType;
+use App\Enums\Invoice\ShipmentMethod;
+use App\Enums\Invoice\ShipmentStatus;
+use App\Exceptions\Discount\InvalidDiscountCodeException;
 use App\Models\CustomerAddress;
 use App\Models\DiscountCard;
-use App\Models\Enums\DiscountCardStatus;
-use App\Models\Enums\NewInvoiceType;
-use App\Models\Enums\PaymentStatus;
-use App\Models\Enums\PaymentType;
-use App\Models\Enums\ShipmentMethod;
-use App\Models\Enums\ShipmentStatus;
-use App\Models\Exceptions\InvalidDiscountCodeException;
 use App\Models\Invoice;
 use App\Models\InvoiceRow;
+use App\Services\Customer\CustomerAddressService;
+use App\Services\Invoice\NewInvoiceService;
 use App\Utils\CMS\Enums\ExportType;
-use App\Utils\CMS\InvoiceService;
 use App\Utils\CMS\ProductService;
 use App\Utils\CMS\Setting\Logistic\LogisticService;
 use App\Utils\CMS\Setting\Survey\SurveyService;
@@ -45,15 +46,21 @@ use Illuminate\View\View;
 use niklasravnsborg\LaravelPdf\Facades\Pdf;
 use Throwable;
 
-class InvoiceController extends BaseController
-{
-    public function index()
-    {
+class InvoiceController extends BaseController {
+    private NewInvoiceService $new_invoice_service;
+    private CustomerAddressService $customer_address_service;
+
+    public function __construct(NewInvoiceService $new_invoice_service, CustomerAddressService $customer_address_service) {
+        parent::__construct();
+        $this->new_invoice_service = $new_invoice_service;
+        $this->customer_address_service = $customer_address_service;
+    }
+
+    public function index() {
         return h_view("public.orders");
     }
 
-    public function submitCart(): RedirectResponse
-    {
+    public function submitCart(): RedirectResponse {
 
         $customer = get_customer_user();
 
@@ -142,11 +149,11 @@ class InvoiceController extends BaseController
         }
 
         $invoice->updateRows();
-        InvoiceService::setNew($invoice);
+        $this->new_invoice_service->setTheNew($invoice);
 
-        if ($invoice->sum < InvoiceService::getMinimumPurchase()) {
+        if ($invoice->sum < $this->new_invoice_service->getMinimumPurchase()) {
             SystemMessageService::addWarningMessage("system_messages.cart.minimum_purchase_error",
-                ["minimum_purchase" => InvoiceService::getMinimumPurchase()]);
+                ["minimum_purchase" => $this->new_invoice_service->getMinimumPurchase()]);
             $fault_flag = true;
         }
 
@@ -158,14 +165,13 @@ class InvoiceController extends BaseController
         return redirect()->route("customer.invoice.show-shipment");
     }
 
-    public function showShipment(): Application|Factory|View|RedirectResponse
-    {
-        if (!InvoiceService::hasNew(NewInvoiceType::CART_SUBMISSION)) {
+    public function showShipment(): Application|Factory|View|RedirectResponse {
+        if (!$this->new_invoice_service->hasNew(NewInvoiceType::CART_SUBMISSION)) {
             SystemMessageService::addWarningMessage("system_messages.invoice.no_invoice");
             return redirect()->route("customer.cart.show");
         }
 
-        $invoice = InvoiceService::getTheNew();
+        $invoice = $this->new_invoice_service->getTheNew();
 
         if ($invoice->is_shippable)
             return h_view("public.invoice-shipment", [
@@ -177,20 +183,19 @@ class InvoiceController extends BaseController
 
     /**
      * @rules(customer_address_id="required|exists:customer_addresses,id", is_legal="required|boolean",
-     *     shipment_method="required|in:".\App\Models\Enums\ShipmentMethod::stringValues(),
+     *     shipment_method="required|in:".\App\Enums\Invoice\ShipmentMethod::stringValues(),
      *     delivery_period=config("cms.logistics.enabled") ? "required_if:logistics_enabled,1|delivery_period" : "delivery_period" )
      * @param Request $request
      * @description(comment="this method is for adding customer address and shipment method and paper need selection for each invoice")
      * @return RedirectResponse
      */
-    public function saveShipment(Request $request): RedirectResponse
-    {
-        if (!InvoiceService::hasNew(NewInvoiceType::CART_SUBMISSION)) {
+    public function saveShipment(Request $request): RedirectResponse {
+        if (!$this->new_invoice_service->hasNew(NewInvoiceType::CART_SUBMISSION)) {
             SystemMessageService::addWarningMessage("system_messages.invoice.no_invoice");
             return redirect()->route("customer.cart.show");
         }
 
-        $invoice = InvoiceService::getTheNew();
+        $invoice = $this->new_invoice_service->getTheNew();
         $invoice->status = NewInvoiceType::SHIPMENT;
         $invoice->has_paper = true;
         $invoice->is_legal = $request->get("is_legal");
@@ -201,22 +206,37 @@ class InvoiceController extends BaseController
                 return redirect()->back();
         }
 
-        InvoiceService::setNew($invoice);
+        $this->new_invoice_service->setTheNew($invoice);
 
         $customer_address = CustomerAddress::find($request->get("customer_address_id"));
-        $customer_address->setAsMain();
+        $this->customer_address_service->setAddressAsMain($customer_address);
+
+        $fault_flag = false;
+        foreach ($invoice->rows as $row) {
+            if (!$row->product->can_deliver) {
+                SystemMessageService::addWarningMessage(
+                    "system_messages.cart.cant_deliver",
+                    [
+                        "product_title" => $row->product->title
+                    ]);
+                $fault_flag = true;
+            }
+        }
+
+        if ($fault_flag) {
+            return redirect()->back();
+        }
 
         return redirect()->route("customer.invoice.show-payment");
     }
 
-    public function showPayment(): Application|Factory|View|RedirectResponse
-    {
-        if (!InvoiceService::hasNew(NewInvoiceType::SHIPMENT)) {
+    public function showPayment(): Application|Factory|View|RedirectResponse {
+        if (!$this->new_invoice_service->hasNew(NewInvoiceType::SHIPMENT)) {
             SystemMessageService::addWarningMessage("system_messages.invoice.no_invoice");
             return redirect()->route("customer.cart.show");
         }
 
-        $invoice = InvoiceService::getTheNew();
+        $invoice = $this->new_invoice_service->getTheNew();
 
         return h_view("public.invoice-payment", [
             "invoice" => $invoice
@@ -224,30 +244,29 @@ class InvoiceController extends BaseController
     }
 
     /**
-     * @rules(payment_type="required|in:".\App\Models\Enums\PaymentType::stringValues())
+     * @rules(payment_type="required|in:".\App\Enums\Invoice\PaymentType::stringValues())
      */
-    public function savePayment(Request $request): Factory|Application|Redirector|View|\Illuminate\Contracts\Foundation\Application|RedirectResponse
-    {
+    public function savePayment(Request $request): Factory|Application|Redirector|View|\Illuminate\Contracts\Foundation\Application|RedirectResponse {
 
         $customer_user = get_customer_user();
 
-        if (!InvoiceService::hasNew(NewInvoiceType::SHIPMENT)) {
+        if (!$this->new_invoice_service->hasNew(NewInvoiceType::SHIPMENT)) {
             SystemMessageService::addWarningMessage("system_messages.invoice.no_invoice");
             return redirect()->route("customer.cart.show");
         }
 
-        $invoice = InvoiceService::getTheNew();
+        $invoice = $this->new_invoice_service->getTheNew();
         $invoice->payment_status = PaymentStatus::PENDING;
         $invoice->payment_type = $request->get("payment_type");
         $invoice->shipment_status = ShipmentStatus::WAITING_TO_CONFIRM;
         $invoice->is_active = false;
         $invoice->is_warned = false;
-        $invoice->tracking_code = InvoiceService::createTrackingCode();
+        $invoice->tracking_code = $this->new_invoice_service->createTrackingCode();
         $invoice->updateRows();
         $invoice->customPush();
 
-        InvoiceService::forgetTheNew();
-        InvoiceService::flush();
+        $this->new_invoice_service->forgetTheNew();
+        $this->new_invoice_service->flush();
 
 
         if ($invoice->createFinManRelation()) {
@@ -292,8 +311,7 @@ class InvoiceController extends BaseController
         return redirect()->route("customer.invoice.show-checkout", $invoice);
     }
 
-    public function showCheckout(?Invoice $invoice): Application|Factory|View|RedirectResponse
-    {
+    public function showCheckout(?Invoice $invoice): Application|Factory|View|RedirectResponse {
         if ($invoice->customer_user_id != get_customer_user()->id) {
             SystemMessageService::addErrorMessage("system_messages.invoice.not_owner");
             return redirect()->route("customer.invoice.index");
@@ -333,8 +351,7 @@ class InvoiceController extends BaseController
     /**
      * @rules(payment_driver="required|in:".\App\Utils\PaymentManager\Provider::getEnabledDrivers(false, true))
      */
-    public function payOnline(Invoice $invoice): RedirectResponse
-    {
+    public function payOnline(Invoice $invoice): RedirectResponse {
         if ($invoice->customer_user_id != get_customer_user()->id or (!$invoice->is_active))
             return redirect()->back();
         if ($invoice->payment_type == PaymentType::ONLINE) {
@@ -365,8 +382,7 @@ class InvoiceController extends BaseController
     /**
      * @rules(discount_code="required|exists:discount_cards,code")
      */
-    public function checkDiscountCode(): JsonResponse
-    {
+    public function checkDiscountCode(): JsonResponse {
         $discount_code = strtoupper(request()->get("discount_code"));
         try {
             $discount_card = DiscountCard::checkCode($discount_code);
@@ -376,7 +392,7 @@ class InvoiceController extends BaseController
                 , 400);
         }
 
-        $invoice = InvoiceService::getTheNew();
+        $invoice = $this->new_invoice_service->getTheNew();
         $invoice->discountCard()->associate($discount_card);
         $discountable_amount = $invoice->getDiscountableAmount();
         $discount_value = $discount_card->group->calculate($discountable_amount);
@@ -386,7 +402,7 @@ class InvoiceController extends BaseController
         } else {
             $discount_amount = $discount_value;
         }
-        $discount_amount /= ProductService::getPriceRatio();
+        $discount_amount /= $this->new_invoice_service->getProductPriceRatio();
 
         if ($discount_amount === 0) {
             return response()->json(
@@ -394,7 +410,7 @@ class InvoiceController extends BaseController
                     400, []), 400);
         }
 
-        InvoiceService::setNew($invoice);
+        $this->new_invoice_service->setTheNew($invoice);
 
         return response()->json(
             MessageFactory::create(
@@ -409,8 +425,7 @@ class InvoiceController extends BaseController
      * @param Invoice $invoice
      * @return RedirectResponse
      */
-    public function enable(Invoice $invoice)
-    {
+    public function enable(Invoice $invoice) {
         if (get_customer_user()->id == $invoice->customer_user_id) {
             $invoice->updateRows();
             $invoice->customPush();
@@ -426,8 +441,7 @@ class InvoiceController extends BaseController
         return redirect()->back();
     }
 
-    public function showSurvey(Invoice $invoice): RedirectResponse
-    {
+    public function showSurvey(Invoice $invoice): RedirectResponse {
         $survey_config = SurveyService::getRecord();
         if (!is_string($survey_config->getDefaultSurveyUrl()) or !strlen($survey_config->getDefaultSurveyUrl()) > 0) {
             abort(404);

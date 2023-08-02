@@ -1,11 +1,11 @@
 <?php
 
-use App\Models\Enums\Gender;
-use App\Models\Enums\PaymentStatus;
-use App\Models\Enums\PaymentType;
-use App\Models\Enums\PSAttrKeyShowType;
-use App\Models\Enums\ShipmentMethod;
-use App\Models\Enums\ShipmentStatus;
+use App\Enums\Customer\Gender;
+use App\Enums\Invoice\PaymentStatus;
+use App\Enums\Invoice\PaymentType;
+use App\Enums\Invoice\ShipmentMethod;
+use App\Enums\Invoice\ShipmentStatus;
+use App\Enums\Product\PSAttrKeyShowType;
 use App\Utils\CMS\Appliance\ApplianceService;
 use App\Utils\CMS\Enums\SortMethod;
 use App\Utils\CMS\File\ExploreService;

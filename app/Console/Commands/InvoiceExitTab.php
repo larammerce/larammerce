@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Enums\ShipmentStatus;
+use App\Enums\Invoice\ShipmentStatus;
 use App\Models\Invoice;
 use App\Utils\Common\SMSService;
 use App\Utils\FinancialManager\ConfigProvider;

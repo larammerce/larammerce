@@ -4,7 +4,7 @@
 namespace App\Utils\CMS\Template;
 
 
-use App\Utils\Common\BaseEnum;
+use App\Common\BaseEnum;
 
 class RelativeBladeType extends BaseEnum
 {

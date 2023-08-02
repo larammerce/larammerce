@@ -3,6 +3,7 @@
 namespace App\Models;
 
 
+use App\Services\Invoice\NewInvoiceService;
 use App\Utils\CMS\ProductService;
 use App\Utils\FinancialManager\ConfigProvider;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -39,6 +40,14 @@ class InvoiceRow extends BaseModel
     public $timestamps = false;
 
     protected static array $SORTABLE_FIELDS = ['id', 'count'];
+
+    private NewInvoiceService $new_invoice_service;
+
+    public function __construct(array $attributes = []) {
+        parent::__construct($attributes);
+        $this->new_invoice_service = app(NewInvoiceService::class);
+
+    }
 
 
     /**
@@ -129,28 +138,26 @@ class InvoiceRow extends BaseModel
         return $result;
     }
 
-    private function applyDiscountPercentage($discount_percentage)
-    {
-        $this->product_price = $this->product->latest_price / ProductService::getPriceRatio();
+    private function applyDiscountPercentage($discount_percentage): void {
+        $this->product_price = $this->product->latest_price / $this->new_invoice_service->getProductPriceRatio();
         $this->discount_amount = intval($this->product_price * $discount_percentage / 100);
 
         $price_data = ConfigProvider::isTaxAddedToPrice() ?
-            ProductService::reverseCalculateTaxAndToll($this->product_price - $this->discount_amount) :
-            ProductService::calculateTaxAndToll($this->product_price - $this->discount_amount);
+            $this->new_invoice_service->reverseCalculateProductTaxAndToll($this->product_price - $this->discount_amount) :
+            $this->new_invoice_service->calculateProductTaxAndToll($this->product_price - $this->discount_amount);
 
         $this->pure_price = $price_data->price;
         $this->tax_amount = $price_data->tax;
         $this->toll_amount = $price_data->toll;
     }
 
-    private function applySpecialOffer()
-    {
-        $this->product_price = $this->product->previous_price / ProductService::getPriceRatio();
-        $this->discount_amount = $this->product_price - ($this->product->latest_price / ProductService::getPriceRatio());
+    private function applySpecialOffer(): void {
+        $this->product_price = $this->product->previous_price / $this->new_invoice_service->getProductPriceRatio();
+        $this->discount_amount = $this->product_price - ($this->product->latest_price / $this->new_invoice_service->getProductPriceRatio());
 
         $price_data = ConfigProvider::isTaxAddedToPrice() ?
-            ProductService::reverseCalculateTaxAndToll($this->product_price - $this->discount_amount) :
-            ProductService::calculateTaxAndToll($this->product_price - $this->discount_amount);
+            $this->new_invoice_service->reverseCalculateProductTaxAndToll($this->product_price - $this->discount_amount) :
+            $this->new_invoice_service->calculateProductTaxAndToll($this->product_price - $this->discount_amount);
 
         $this->pure_price = $price_data->price;
         $this->tax_amount = $price_data->tax;

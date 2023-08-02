@@ -6,12 +6,12 @@ namespace App\Utils\CMS\Setting\Survey;
 
 use App\Utils\CMS\Enums\DataSourceDriver;
 use App\Utils\CMS\Enums\SettingType;
-use App\Utils\CMS\Setting\AbstractSettingService;
+use App\Utils\CMS\Setting\BaseCMSConfigManager;
 
 /**
  * @method static SurveyModel getRecord(string $name = "", ?string $parent_id = null)
  */
-class SurveyService extends AbstractSettingService
+class SurveyService extends BaseCMSConfigManager
 {
     protected static string $KEY_POSTFIX = 'survey_config';
     protected static int $SETTING_TYPE = SettingType::GLOBAL_SETTING;

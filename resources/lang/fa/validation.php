@@ -193,7 +193,8 @@ return [
         'default_delay_days' => 'روزهای تاخیر ارسال پرسشنامه',
         'default_survey_url' => 'آدرس وب‌‌پیج فرم پرسشنامه',
         'descent_percentage' => 'درصد کاهش قیمت',
-        'delivery_period' => "زمان ارسال"
+        'delivery_period' => "زمان ارسال",
+        'representative_type' => 'نوع آشنایی با سیستم',
     ],
 
 ];

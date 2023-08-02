@@ -9,8 +9,8 @@
 namespace App\Utils\CMS\File;
 
 
+use App\Enums\Directory\DirectoryType;
 use App\Models\Directory;
-use App\Models\Enums\DirectoryType;
 
 class ClipBoardService
 {
