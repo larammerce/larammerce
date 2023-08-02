@@ -1,14 +1,5 @@
 #!/bin/bash
 
-export UPGRADE_LOG="${ECOMMERCE_BASE_PATH}/storage/logs/upgrade.log"
-echo "Upgrade log ..." >"${UPGRADE_LOG}"
-{
-  echo "PHP: $(php -v)"
-  echo "NODE: $(node -v)"
-  echo "NPM: $(npm -v)"
-  echo "COMPOSER: $(composer -V)"
-} >>"${UPGRADE_LOG}"
-
 check_prerequisites() {
   command -v php >>"${UPGRADE_LOG}" 2>&1 || {
     echo >&2 "I require PHP but it's not installed. Please install it and run again."
@@ -37,10 +28,6 @@ update_core() {
 
   for param in "$@"; do
     case $param in
-    --core-path=*)
-      export ECOMMERCE_BASE_PATH="${param#*=}"
-      shift
-      ;;
     --core-repo=*)
       core_repo="${param#*=}"
       shift
@@ -220,8 +207,6 @@ update_theme() {
   echo "Theme Update successfully done!"
 }
 
-check_prerequisites
-
 # Parse the input parameters
 only_core=0
 only_theme=0
@@ -236,8 +221,23 @@ for param in "$@"; do
     only_theme=1
     shift
     ;;
+  --core-path=*)
+    export ECOMMERCE_BASE_PATH="${param#*=}"
+    shift
+    ;;
   esac
 done
+
+export UPGRADE_LOG="${ECOMMERCE_BASE_PATH}/storage/logs/upgrade.log"
+echo "Upgrade log ..." >"${UPGRADE_LOG}"
+{
+  echo "PHP: $(php -v)"
+  echo "NODE: $(node -v)"
+  echo "NPM: $(npm -v)"
+  echo "COMPOSER: $(composer -V)"
+} >>"${UPGRADE_LOG}"
+
+check_prerequisites
 
 if ((only_core)); then
   update_core "$@"
