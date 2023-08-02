@@ -43,56 +43,41 @@ class InvoiceRow extends BaseModel
 
     private NewInvoiceService $new_invoice_service;
 
-    public function __construct(array $attributes = []) {
-        parent::__construct($attributes);
-        $this->new_invoice_service = app(NewInvoiceService::class);
-
-    }
-
-
     /**
      * @return BelongsTo
      */
-    public function product(): BelongsTo
-    {
+    public function product(): BelongsTo {
         return $this->belongsTo(Product::class, 'product_id');
     }
 
     /**
      * @return BelongsTo
      */
-    public function invoice(): BelongsTo
-    {
+    public function invoice(): BelongsTo {
         return $this->belongsTo(Invoice::class, 'invoice_id');
     }
 
-    public function customerMetaItem(): BelongsTo
-    {
+    public function customerMetaItem(): BelongsTo {
         return $this->belongsTo(CustomerMetaItem::class, "cmi_id", "id");
     }
 
-    public function purePrice()
-    {
+    public function purePrice() {
         return $this->pure_price;
     }
 
-    public function shownPrice()
-    {
+    public function shownPrice() {
         return $this->product_price;
     }
 
-    public function paymentPrice()
-    {
+    public function paymentPrice() {
         return $this->pure_price + $this->tax_amount + $this->toll_amount;
     }
 
-    public function sum()
-    {
+    public function sum() {
         return $this->paymentPrice() * $this->count;
     }
 
-    public function updateAmounts(?DiscountCard $discount_card = null, int $discount_percentage = 0)
-    {
+    public function updateAmounts(?DiscountCard $discount_card = null, int $discount_percentage = 0) {
         $product = $this->product;
         $this->discount_amount = 0;
         $this->tax_amount = $product->tax_amount;
@@ -119,13 +104,11 @@ class InvoiceRow extends BaseModel
     /**
      * @return string
      */
-    public function getSearchUrl(): string
-    {
+    public function getSearchUrl(): string {
         return '';
     }
 
-    public function getCMIComment($newline = "\n")
-    {
+    public function getCMIComment($newline = "\n") {
         $result = $newline;
         if ($this->cmi_id !== null) {
             $customer_meta_item = $this->customerMetaItem;
@@ -139,6 +122,7 @@ class InvoiceRow extends BaseModel
     }
 
     private function applyDiscountPercentage($discount_percentage): void {
+        $this->new_invoice_service = $this->new_invoice_service ?? app(NewInvoiceService::class);
         $this->product_price = $this->product->latest_price / $this->new_invoice_service->getProductPriceRatio();
         $this->discount_amount = intval($this->product_price * $discount_percentage / 100);
 
@@ -152,6 +136,7 @@ class InvoiceRow extends BaseModel
     }
 
     private function applySpecialOffer(): void {
+        $this->new_invoice_service = $this->new_invoice_service ?? app(NewInvoiceService::class);
         $this->product_price = $this->product->previous_price / $this->new_invoice_service->getProductPriceRatio();
         $this->discount_amount = $this->product_price - ($this->product->latest_price / $this->new_invoice_service->getProductPriceRatio());
 
