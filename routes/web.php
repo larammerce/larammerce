@@ -146,7 +146,7 @@ Route::group(
                 Route::delete("{discount_group}/filter/{product_filter}", ["as" => "product-filter.detach", "uses" => "DiscountGroupController@detachProductFilter"]);
             }
         );
-        Route::delete("/admin/discount-group/{discount_group}", ["as" => "admin.discount-group.softDelete", "uses" => "DiscountGroupController@softDelete"]);
+        Route::delete("/admin/discount-group/{discount_group}", ["as" => "admin.discount-group.soft-delete", "uses" => "DiscountGroupController@softDelete"]);
         Route::resource("discount-group", "DiscountGroupController", ["as" => "admin"]);
 
 
