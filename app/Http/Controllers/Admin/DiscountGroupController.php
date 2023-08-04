@@ -13,6 +13,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Carbon\Carbon;
 
 /**
  * @package App\Http\Controllers\Admin
@@ -86,6 +87,15 @@ class DiscountGroupController extends BaseController
         $discount_group->is_active = !($discount_group->is_active);
         $discount_group->save();
         return History::redirectBack();
+    }
+
+    /**
+     * @role(super_user, acc_manager)
+     */
+    public function softDelete(DiscountGroup $discount_group)
+    {
+        $discount_group->delete();
+        return redirect()->back();
     }
 
     /**
