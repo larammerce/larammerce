@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Interfaces\TagInterface;
 use App\Traits\Taggable;
 use App\Utils\Translation\Traits\Translatable;
 
