@@ -691,7 +691,7 @@ class Product extends BaseModel implements
         }
 
         if ($std_product === false) {
-            Log::error("product.updater.$this->id : can not fetch product stock data from fin man server " .
+            Log::warning("product.updater.$this->id : can not fetch product stock data from fin man server " .
                 $this->code);
             $this->makeDisabled();
             return false;
