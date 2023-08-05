@@ -13,8 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
-class Handler extends ExceptionHandler
-{
+class Handler extends ExceptionHandler {
     /**
      * A list of the exception types that are not reported.
      *
@@ -40,15 +39,15 @@ class Handler extends ExceptionHandler
      *
      * @return void
      */
-    public function register()
-    {
+    public function register() {
         $this->reportable(function (Throwable $e) {
-            //
+            if (app()->bound('sentry')) {
+                app('sentry')->captureException($e);
+            }
         });
     }
 
-    public function render($request, Throwable $e)
-    {
+    public function render($request, Throwable $e) {
         if ($e instanceof TokenMismatchException) {
             Log::error("http_request:token_mismatch_exception:ip:" . $request->ip());
             return redirect()->back();
@@ -83,12 +82,11 @@ class Handler extends ExceptionHandler
     /**
      * Convert an authentication exception into a response.
      *
-     * @param  Request  $request
+     * @param Request $request
      * @param AuthenticationException $exception
      * @return Response
      */
-    protected function unauthenticated($request, AuthenticationException $exception)
-    {
+    protected function unauthenticated($request, AuthenticationException $exception) {
         if ($request->expectsJson()) {
             return response()->json(['error' => 'Unauthenticated.'], 401);
         }
