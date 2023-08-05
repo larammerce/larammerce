@@ -49,7 +49,7 @@ class Handler extends ExceptionHandler {
 
     public function render($request, Throwable $e) {
         if ($e instanceof TokenMismatchException) {
-            Log::error("http_request:token_mismatch_exception:ip:" . $request->ip());
+            Log::warning("http_request:token_mismatch_exception:ip:" . $request->ip());
             return redirect()->back();
         }
         if ($e instanceof HttpException and !AdminRequestService::isInAdminArea()) {
