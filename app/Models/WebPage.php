@@ -66,14 +66,12 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
     ];
     protected static string $TRANSLATION_EDIT_FORM = "admin.pages.web-page.translate";
 
-    public function __construct(array $attributes = [])
-    {
+    public function __construct(array $attributes = []) {
         $this->cached_attributes["contents"] = [];
         parent::__construct($attributes);
     }
 
-    private function loadContents()
-    {
+    private function loadContents() {
         if (count(is_countable($this->cached_attributes["contents"]) ? $this->cached_attributes["contents"] : []) == 0) {
             if ($this->data != null and strlen($this->data) > 0) {
                 try {
@@ -87,25 +85,21 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
         }
     }
 
-    public function getContentsAttribute(): array
-    {
+    public function getContentsAttribute(): array {
         $this->loadContents();
         return $this->cached_attributes["contents"];
     }
 
-    public function putContent($key, $value)
-    {
+    public function putContent($key, $value) {
         $this->loadContents();
         $this->cached_attributes["contents"][$key] = $value;
     }
 
-    public function setContentsAttribute($contents): void
-    {
+    public function setContentsAttribute($contents): void {
         $this->cached_attributes["contents"] = $contents;
     }
 
-    public function getBladeNameAttribute()
-    {
+    public function getBladeNameAttribute() {
         if (!isset($this->attributes["blade_name"]))
             return null;
         $locale = $this->getDefaultLocale();
@@ -121,82 +115,72 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
         return $blade_name;
     }
 
-    public function setDataAttribute($data): void
-    {
+    public function setDataAttribute($data): void {
         $this->attributes["data"] = $this->fillData($data);
     }
 
-    public function directory(): BelongsTo
-    {
+    public function directory(): BelongsTo {
         return $this->belongsTo(Directory::class, 'directory_id');
     }
 
-    public function tags(): MorphToMany
-    {
+    public function tags(): MorphToMany {
         return $this->morphToMany(Tag::class, 'taggable');
     }
 
-    public function delete()
-    {
+    public function delete() {
         $this->tags()->detach();
         $this->review()->delete();
 
         return parent::delete();
     }
 
-    public function getTitle()
-    {
+    public function getTitle() {
         return $this->directory->title;
     }
 
-    public function getSeoTitle()
-    {
+    public function getSeoTitle() {
         if ($this->seo_title !== null and strlen($this->seo_title) > 0)
             return $this->seo_title;
         return $this->directory->title;
     }
 
-    public function hasImage()
-    {
+    public function getSeoUrl(): string {
+        return $this->getFrontUrl();
+    }
+
+    public function hasImage() {
         return isset($this->image_path);
     }
 
-    public function getImagePath()
-    {
+    public function getImagePath() {
         return $this->image_path;
     }
 
-    public function setImagePath()
-    {
+    public function setImagePath() {
         $tmpImage = ImageService::saveImage($this->getImageCategoryName());
         $this->image_path = $tmpImage->destinationPath . '/' . $tmpImage->name;
         $this->save();
     }
 
-    public function removeImage()
-    {
+    public function removeImage() {
         $this->image_path = null;
         $this->save();
     }
 
-    public function getDefaultImagePath()
-    {
+    public function getDefaultImagePath() {
         return '/admin_dashboard/images/No_image.jpg.png';
     }
 
-    public function getImageCategoryName()
-    {
+    public function getImageCategoryName() {
         return 'web_page';
     }
 
-    public function save(array $options = []): bool
-    {
+    public function save(array $options = []): bool {
         $this->saveBladeContents();
         return parent::save($options);
     }
 
-    public function fillData(array $data): string
-    {
+    public function fillData(array $data): string {
         if (isset($this->id) and $this->id != null) {
             $this->loadBladeContents();
             foreach ($data as $content_id => $values) {
@@ -218,8 +202,7 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
         return serialize([]);
     }
 
-    private function loadBladeContents()
-    {
+    private function loadBladeContents() {
         $tmp_contents = $this->contents;
         $this->contents = [];
         if ($this->blade_name != null and strlen($this->blade_name) > 0) {
@@ -241,8 +224,7 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
         }
     }
 
-    private function loadContentTags($content_tags, $first_contents)
-    {
+    private function loadContentTags($content_tags, $first_contents) {
         foreach ($content_tags as $content_tag) {
             $contentType = $content_tag->attr[Directives::CONTENT_TYPE];
             $content_id = $content_tag->attr[Directives::CONTENT];
@@ -300,8 +282,7 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
         }
     }
 
-    private function setContentTags(array $contents, array $content_tags)
-    {
+    private function setContentTags(array $contents, array $content_tags) {
         foreach ($content_tags as $content_tag) {
             $content_type = $content_tag->attr[Directives::CONTENT_TYPE];
             $content_id = $content_tag->attr[Directives::CONTENT];
@@ -352,8 +333,7 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
         }
     }
 
-    private function saveBladeContents()
-    {
+    private function saveBladeContents() {
         if ($this->blade_name != null and strlen($this->blade_name) > 0) {
             $this->updateBladeContent($this->contents, TemplateService::getBladePath($this->blade_name));
             foreach (RelativeBladeType::values() as $relative_blade_postfix) {
@@ -363,8 +343,7 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
         }
     }
 
-    private function updateBladeContent(array $contents, $blade_path, $relative_blade_postfix = null)
-    {
+    private function updateBladeContent(array $contents, $blade_path, $relative_blade_postfix = null) {
         $blade_content = TemplateService::getBladeContent($blade_path);
         $html = null;
         $content_tags = null;
@@ -382,34 +361,28 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
         }
     }
 
-    public function getContent($contentName)
-    {
+    public function getContent($contentName) {
         return $this->contents[$contentName];
     }
 
-    public function getSearchUrl(): string
-    {
+    public function getSearchUrl(): string {
         return '';
     }
 
-    public function getFrontUrl(): string
-    {
+    public function getFrontUrl(): string {
         return $this->directory->getFrontUrl();
     }
 
-    public function getSeoDescription(): ?string
-    {
+    public function getSeoDescription(): ?string {
         return $this->seo_description;
     }
 
-    public function getSeoKeywords(): ?string
-    {
+    public function getSeoKeywords(): ?string {
         return $this->seo_keywords;
     }
 
 
-    public function isImageLocal(): bool
-    {
+    public function isImageLocal(): bool {
         return true;
     }
 }

@@ -21,7 +21,7 @@ class Provider
                 if ($driver_config->is_enabled)
                     return $driver_id;
             } catch (FinancialDriverNotConfiguredException $e){
-                  Log::error("Financial driver not configured.
+                  Log::warning("Financial driver not configured.
                  ConfigProvider:getConfig:{$e->getMessage()}");
             }
         }

@@ -6,15 +6,13 @@
  * Time: 4:45 PM
  */
 
-namespace App\Utils\FinancialManager\Drivers\Arpa;
+namespace App\Utils\FinancialManager\Drivers\StandardAPI;
 
 
-use App\Enums\Customer\Gender;
 use App\Models\Invoice;
 use App\Models\InvoiceRow;
 use App\Models\User;
 use App\Services\Invoice\NewInvoiceService;
-use App\Utils\CMS\ProductService;
 use App\Utils\FinancialManager\Models\Customer;
 use App\Utils\FinancialManager\Models\Product;
 use Exception;
@@ -49,7 +47,7 @@ class ModelTransformer
             //$customer->stateId = $std_customer->provinceId; //TODO: this item should be returned
             return $customer;
         } catch (Exception $exception) {
-            Log::warning($exception->getMessage());
+            Log::error($exception->getMessage());
             return false;
         }
     }
@@ -122,9 +120,7 @@ class ModelTransformer
     }
 
     public static function productStdToModel(stdClass $stdProduct): Product|bool {
-        /** @var NewInvoiceService $new_invoice_service */
-        $new_invoice_service = app(NewInvoiceService::class);
-        $ratio = $new_invoice_service->getProductPriceRatio();
+        $ratio = ProductService::getPriceRatio();
         try {
             $product = new Product();
             $product->id = $stdProduct->itemID;
@@ -153,24 +149,21 @@ class ModelTransformer
     }
 
     public static function invoiceRowModelToStd(InvoiceRow $invoice_row, $tax_added_to_price = true): stdClass {
-        /** @var NewInvoiceService $new_invoice_service */
-        $new_invoice_service = app(NewInvoiceService::class);
-
         $preInvoiceRowStd = new stdClass();
 
         $preInvoiceRowStd->ItemCode = $invoice_row->product->code;
         $preInvoiceRowStd->MjQty = $invoice_row->count;
 
         $discount_data = $tax_added_to_price ?
-            $new_invoice_service->reverseCalculateProductTaxAndToll($invoice_row->discount_amount) :
-            $new_invoice_service->calculateProductTaxAndToll($invoice_row->discount_amount);
+            ProductService::reverseCalculateTaxAndToll($invoice_row->discount_amount) :
+            ProductService::calculateTaxAndToll($invoice_row->discount_amount);
 
         $preInvoiceRowStd->DiscountAmount = intval($discount_data->price * $invoice_row->count);
         $preInvoiceRowStd->DiscountPercent = 0;
 
         $price_data = $tax_added_to_price ?
-            $new_invoice_service->reverseCalculateProductTaxAndToll($invoice_row->product_price) :
-            $new_invoice_service->calculateProductTaxAndToll($invoice_row->product_price);
+            ProductService::reverseCalculateTaxAndToll($invoice_row->product_price) :
+            ProductService::calculateTaxAndToll($invoice_row->product_price);
 
         $preInvoiceRowStd->Price = $price_data->price;
         $preInvoiceRowStd->TaxAmount = intval($invoice_row->tax_amount * $invoice_row->count);
@@ -180,8 +173,8 @@ class ModelTransformer
     }
 
     public static function invoiceModelToStd(Invoice $invoice, $tax_added_to_price = true): stdClass|bool {
+        /** @var NewInvoiceService $new_invoice_service */
         $new_invoice_service = app(NewInvoiceService::class);
-
         try {
             $pre_invoice_std = new stdClass();
             $customer_user = $invoice->customer;
@@ -247,14 +240,14 @@ class ModelTransformer
 
             $pre_invoice_std->addsubs = [];
             if ($invoice->has_shipment_cost) {
-                $standard_shipment_cost = $invoice->shipment_cost;
-                $shipment_cost_exploded = $new_invoice_service->reverseCalculateProductTaxAndToll($standard_shipment_cost);
+                $standardShipmentCost = $invoice->shipment_cost;
+                $shipmentCostExploded = $new_invoice_service->reverseCalculateProductTaxAndToll($standardShipmentCost);
 
                 $addSub = new stdClass();
                 $addSub->AddSubID = $new_invoice_service->getShipmentProductCode();
-                $addSub->TASAmount = $shipment_cost_exploded->price;
-                $addSub->TASTaxAmount = $shipment_cost_exploded->tax;
-                $addSub->TASTollAmount = $shipment_cost_exploded->toll;
+                $addSub->TASAmount = $shipmentCostExploded->price;
+                $addSub->TASTaxAmount = $shipmentCostExploded->tax;
+                $addSub->TASTollAmount = $shipmentCostExploded->toll;
 
                 $pre_invoice_std->addsubs[] = $addSub;
             }

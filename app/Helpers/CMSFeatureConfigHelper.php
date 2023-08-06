@@ -52,7 +52,9 @@ class CMSFeatureConfigHelper {
             $setting_repository = app(SettingRepositoryInterface::class);
             /** @var User $user */
             $user = Auth::user();
-            return $setting_repository->findPersonalSystemSetting($key, $user);
+            if(!is_null($user)){
+                return $setting_repository->findPersonalSystemSetting($key, $user);
+            }
         } else if ($driver == DataSourceDriver::SESSION) {
             $strResult = request()->session()->get($key, false);
             if ($strResult !== false) {

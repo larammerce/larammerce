@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\ProductImage;
+use App\Services\Product\ProductImageService;
 use App\Utils\Common\History;
 use App\Utils\Common\ImageService;
 use App\Utils\Common\MessageFactory;
@@ -79,9 +80,7 @@ class ProductImageController extends BaseController
      */
     public function setAsMainImage(ProductImage $product_image): JsonResponse|RedirectResponse
     {
-        $product_image->product->images()->update(["is_main" => false]);
-        $product_image->is_main = true;
-        $product_image->save();
+        ProductImageService::setImageAsMain($product_image);
         if (RequestService::isRequestAjax())
             return response()->json(MessageFactory::create(
                 ['messages.product_image.main_image_changed'], 200
@@ -94,9 +93,7 @@ class ProductImageController extends BaseController
      */
     public function setAsSecondaryImage(ProductImage $product_image): JsonResponse|RedirectResponse
     {
-        $product_image->product->images()->update(["is_secondary" => false]);
-        $product_image->is_secondary = true;
-        $product_image->save();
+
         if (RequestService::isRequestAjax())
             return response()->json(MessageFactory::create(
                 ['messages.product_image.secondary_image_changed'], 200

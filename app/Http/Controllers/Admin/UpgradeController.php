@@ -95,9 +95,9 @@ class UpgradeController extends BaseController {
             $command[] = "--only-theme";
         }
 
-        $command[] = "--theme-repo=" . $record->getLarammerceThemeRepoAddress();
-        $command[] = "--core-repo=" . $record->getLarammerceRepoAddress();
         $command[] = "--core-path=" . $base_path;
+        $command[] = "--core-repo=" . $record->getLarammerceRepoAddress();
+        $command[] = "--theme-repo=" . $record->getLarammerceThemeRepoAddress();
 
         if (strlen($record->getLarammerceBranchName()) > 0) {
             $command[] = "--core-branch=" . $record->getLarammerceBranchName();

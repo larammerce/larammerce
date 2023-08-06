@@ -35,7 +35,7 @@ class ModelTransformer
             $customer->companyName = $std_customer->companyName;
             return $customer;
         } catch (Exception $exception) {
-            Log::error($exception->getMessage());
+            Log::warning($exception->getMessage());
             return false;
         }
     }

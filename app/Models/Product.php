@@ -27,7 +27,6 @@ use App\Utils\CMS\AdminRequestService;
 use App\Utils\CMS\ProductService;
 use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationModel;
 use App\Utils\Common\EmailService;
-use App\Utils\Common\ImageService;
 use App\Utils\Common\SMSService;
 use App\Utils\FinancialManager\ConfigProvider;
 use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
@@ -99,6 +98,8 @@ use Throwable;
  * @property bool is_package
  * @property integer maximum_allowed_purchase_count
  * @property integer minimum_allowed_purchase_count
+ * @property string main_photo
+ * @property string secondary_photo
  *
  * @property CustomerLocationModel[] location_limitations
  * @property bool is_location_limited
@@ -139,7 +140,7 @@ class Product extends BaseModel implements
     use Rateable, Seoable, Fileable, FullTextSearch, Badgeable, Translatable;
 
     public $timestamps = true;
-    protected $appends = ["is_liked", "is_needed", "main_photo", "secondary_photo", "fin_man_price",
+    protected $appends = ["is_liked", "is_needed", "fin_man_price",
         "status", "url", "is_main_model", "minimum_allowed_purchase_count", "maximum_allowed_purchase_count",
         "is_new", "is_important", "location_limitations", "is_location_limited", "can_deliver"];
     protected $hidden = ["count", "min_allowed_count", "max_purchase_count"];
@@ -158,7 +159,7 @@ class Product extends BaseModel implements
         "cmc_id", "notice", "discount_group_id", "priority", "is_discountable", "structure_sort_score",
         "is_package", "accessory_for", "count",
         //these are not table fields, these are form sections that role permission system works with
-        "tags", "attributes", "gallery", "colors", "badges"
+        "tags", "attributes", "gallery", "colors", "badges", "main_photo", "secondary_photo"
     ];
 
     protected $casts = [
@@ -168,10 +169,6 @@ class Product extends BaseModel implements
         "is_active" => "bool",
         "is_visible" => "bool",
         "is_discountable" => "bool"
-    ];
-
-    protected $with = [
-        "discountGroup", "directory", "images"
     ];
 
     protected static ?bool $DISABLE_ON_MIN = null; //TODO: move this to admin layer setting.
@@ -281,14 +278,6 @@ class Product extends BaseModel implements
         } catch (Exception $e) {
             return;
         }
-    }
-
-    public function getMainPhotoAttribute(): string {
-        return ImageService::getImage($this, "preview");
-    }
-
-    public function getSecondaryPhotoAttribute(): string {
-        return ImageService::getImage($this->getSecondaryPhoto(), "preview");
     }
 
     public function getFinManPriceAttribute(): int {
@@ -401,7 +390,7 @@ class Product extends BaseModel implements
     }
 
     public function setModelIdAttribute($value) {
-        $this->attributes["model_id"] = $value ?: $this->id;
+        $this->attributes["model_id"] = $value ?? $this->id;
     }
 
     public function setExtraPropertiesAttribute(?array $extra_properties) {
@@ -821,21 +810,11 @@ class Product extends BaseModel implements
     }
 
     public function hasImage(): bool {
-        if (isset($this->relations["images"])) {
-            return count($this->images) > 0;
-        }
-        return $this->images()->main()->count() > 0;
+        return strlen($this->main_photo) > 0;
     }
 
     public function getImagePath(): string {
-        if (isset($this->relations["images"])) {
-            foreach ($this->images as $image) {
-                if ($image->is_main)
-                    return $image->getImagePath();
-            }
-            return $this->getDefaultImagePath();
-        }
-        return $this->images()->main()->first()->getImagePath();
+        return $this->main_photo;
     }
 
     public function setImagePath(): void {
@@ -982,7 +961,9 @@ class Product extends BaseModel implements
         return $this->title . " - " . $this->directory->title;
     }
 
-
+    public function getSeoUrl(): string {
+        return $this->getMainProduct()->getFrontUrl();
+    }
     public function getSeoDescription() {
         return $this->seo_description;
     }
