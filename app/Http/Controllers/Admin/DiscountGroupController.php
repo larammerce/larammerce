@@ -4,16 +4,16 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use App\Models\DiscountGroup;
 use App\Models\ProductFilter;
 use App\Utils\Common\History;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\Response;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Carbon\Carbon;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\Foundation\Application;
 
 /**
  * @package App\Http\Controllers\Admin
@@ -25,10 +25,14 @@ class DiscountGroupController extends BaseController
     /**
      * @role(super_user, acc_manager)
      */
-    public function index(): Factory|View|Application
+    public function index(Request $request): Factory|View|Application
     {
-        parent::setPageAttribute();
-        $discount_groups = DiscountGroup::with('cards')->paginate(DiscountGroup::getPaginationCount());
+        if($request->has("deleted")){
+            $discount_groups = DiscountGroup::with('cards')->onlyTrashed()->paginate(DiscountGroup::getPaginationCount());
+        } else{
+            parent::setPageAttribute();
+            $discount_groups = DiscountGroup::with('cards')->paginate(DiscountGroup::getPaginationCount());
+        }
         return view('admin.pages.discount-group.index', compact("discount_groups"));
     }
 
