@@ -20,12 +20,15 @@
                         {{$sortable_field->title}}
                     </li>
                 @endforeach
-                <li class="btn btn-default" href="{{route('admin.discount-group.index')}}" act="link">
-                    show all
-                </li>
-                <li class="btn btn-default" href="{{route('admin.discount-group.index')}}?deleted=true" act="link">
-                    show deleted
-                </li>
+                @if($deleted==true)
+                    <li class="btn btn-default" href="{{route('admin.discount-group.index')}}" act="link">
+                        show all
+                    </li>
+                @else
+                    <li class="btn btn-default" href="{{route('admin.discount-group.index')}}?deleted=true" act="link">
+                        show deleted
+                    </li>
+                @endif
             </ul>
         </div>
         <div class="inner-container has-toolbar has-pagination">

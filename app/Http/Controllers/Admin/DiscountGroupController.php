@@ -28,12 +28,14 @@ class DiscountGroupController extends BaseController
     public function index(Request $request): Factory|View|Application
     {
         if($request->has("deleted")){
+            $deleted = true;
             $discount_groups = DiscountGroup::with('cards')->onlyTrashed()->paginate(DiscountGroup::getPaginationCount());
         } else{
+            $deleted = false;
             parent::setPageAttribute();
             $discount_groups = DiscountGroup::with('cards')->paginate(DiscountGroup::getPaginationCount());
         }
-        return view('admin.pages.discount-group.index', compact("discount_groups"));
+        return view('admin.pages.discount-group.index', compact('discount_groups' , 'deleted'));
     }
 
     /**
