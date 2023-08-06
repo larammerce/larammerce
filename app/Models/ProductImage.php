@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Interfaces\ImageOwnerInterface;
 use App\Utils\Translation\Traits\Translatable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  *
@@ -23,8 +24,7 @@ use App\Utils\Translation\Traits\Translatable;
  * Class ProductImage
  * @package App\Models
  */
-class ProductImage extends BaseModel implements ImageOwnerInterface
-{
+class ProductImage extends BaseModel implements ImageOwnerInterface {
     use Translatable;
 
     protected $table = "product_images";
@@ -40,41 +40,19 @@ class ProductImage extends BaseModel implements ImageOwnerInterface
         "caption" => ["string", "input:text"]
     ];
 
-    /*
-     * Relations Methods
-     */
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function product()
-    {
-        return $this->belongsTo("\\App\\Models\\Product", "product_id");
+    public function product(): BelongsTo {
+        return $this->belongsTo(Product::class, "product_id", "id");
     }
 
-
-    /*
-     * Scope Methods
-     */
-
-    public function scopeMain($query)
-    {
+    public function scopeMain($query) {
         return $query->where("is_main", true);
     }
 
-    public function scopeSecondary($query)
-    {
+    public function scopeSecondary($query) {
         return $query->where("is_secondary", true);
     }
 
-    /**
-     * @param $query
-     * @param string|array $extensions
-     * @param array $except
-     * @return mixed
-     */
-    public function scopeExtension($query, $extensions, array $except = [])
-    {
+    public function scopeExtension($query, array|string $extensions, array $except = []): mixed {
         if (!is_array($extensions))
             $extensions = [$extensions];
         if (sizeof($except) > 0)
@@ -83,65 +61,46 @@ class ProductImage extends BaseModel implements ImageOwnerInterface
         return $query->whereIn("extension", $extensions);
     }
 
-    /**
-     * @param $query
-     * @param string|array $extensions
-     * @return mixed
-     */
-    public function scopeNotExtension($query, $extensions)
-    {
+    public function scopeNotExtension($query, array|string $extensions): mixed {
         if (!is_array($extensions))
             $extensions = [$extensions];
         return $query->whereNotIn("extension", $extensions);
     }
 
-
-    /*
-     * Image Methods
-     */
-
-    public function hasImage()
-    {
+    public function hasImage(): bool {
         if (isset($this))
             return true;
         return false;
     }
 
-    public function getImagePath()
-    {
+    public function getImagePath(): string {
         return $this->path . "/" . $this->real_name;
     }
 
-    public function setImagePath()
-    {
+    public function setImagePath() {
         // the process is in the store method in controller
     }
 
-    public function removeImage()
-    {
+    public function removeImage() {
         $this->delete();
     }
 
-    public function getDefaultImagePath()
-    {
+    public function getDefaultImagePath(): string {
         return "/admin_dashboard/images/No_image.jpg.png";
     }
 
-    public function getImageCategoryName()
-    {
+    public function getImageCategoryName(): string {
         return "product";
     }
 
     /**
      * @return string
      */
-    public function getSearchUrl(): string
-    {
+    public function getSearchUrl(): string {
         return "";
     }
 
-    public function isImageLocal()
-    {
+    public function isImageLocal(): bool {
         return true;
     }
 }

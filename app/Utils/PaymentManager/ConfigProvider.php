@@ -23,7 +23,7 @@ class ConfigProvider
         return Factory::driver($driver_id)->getDefaultConfig();
     }
 
-    public static function getConfig(string $driver_id): BasePaymentConfig|Config
+    public static function getConfig(string $driver_id): BasePaymentConfig
     {
         if (count(self::$CACHED_DATA) == 0 or !array_key_exists($driver_id, self::$CACHED_DATA))
         {

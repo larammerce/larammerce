@@ -4,15 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Directory;
 use App\Models\Product;
-use App\Models\PAttr;
 use App\Models\ProductFilter;
 use App\Models\PStructure;
 use App\Models\PStructureAttrKey;
 use App\Models\PStructureAttrValue;
 use App\Services\Product\ProductService;
 use App\Utils\CMS\File\ExploreService;
-use App\Utils\CMS\FormService;
-use App\Utils\CMS\SiteMap\Provider as SiteMapProvider;
 use App\Utils\Common\History;
 use App\Utils\Common\MessageFactory;
 use App\Utils\Common\RequestService;
@@ -28,10 +25,8 @@ use Illuminate\Http\Request;
  * @package App\Http\Controllers\Admin
  * @role(enabled=true)
  */
-class ProductController extends BaseController
-{
-    public function __construct()
-    {
+class ProductController extends BaseController {
+    public function __construct() {
         parent::__construct();
         $this->middleware('permission-system');
     }
@@ -40,8 +35,7 @@ class ProductController extends BaseController
      * @role(super_user, stock_manager, seo_master, cms_manager)
      * @rules(directory_id="exists:directories,id", product_filter_id="exists:product_filters,id")
      */
-    public function index()
-    {
+    public function index() {
         if (request()->has('directory_id')) {
             $directory = Directory::permitted()->where("id", request()->get('directory_id'))->first();
             if ($directory != null) {
@@ -69,8 +63,7 @@ class ProductController extends BaseController
      * @role(super_user, cms_manager, acc_manager)
      * @rules(directory_id="exists:directories,id")
      */
-    public function create(Request $request): Factory|View|Application
-    {
+    public function create(Request $request): Factory|View|Application {
         $directoryId = 0;
         if ($request->has('directory_id'))
             $directoryId = $request->get('directory_id');
@@ -92,8 +85,7 @@ class ProductController extends BaseController
      *     code="unique:products,code",
      *     is_package="boolean")
      */
-    public function store(Request $request): RedirectResponse
-    {
+    public function store(Request $request): RedirectResponse {
         $product = Product::create($request->all());
         $directory = Directory::find($request->get('directory_id'));
         $product->attachFileTo($directory);
@@ -106,16 +98,14 @@ class ProductController extends BaseController
     /**
      * @role(super_user, stock_manager, seo_master, cms_manager, acc_manager)
      */
-    public function show(Product $product): RedirectResponse
-    {
+    public function show(Product $product): RedirectResponse {
         return redirect()->to($product->getFrontUrl());
     }
 
     /**
      * @role(super_user, stock_manager, seo_master, cms_manager, acc_manager)
      */
-    public function edit(Product $product): Factory|View|Application
-    {
+    public function edit(Product $product): Factory|View|Application {
         $relations = ['directory', 'productStructure', 'images', 'pAttributes', 'tags'];
         if ($product->is_package)
             $relations[] = 'productPackage';
@@ -130,8 +120,7 @@ class ProductController extends BaseController
      *     code="required|unique:products,code,".request('id'))
      * @role(super_user, stock_manager, seo_master, cms_manager, acc_manager)
      */
-    public function update(Request $request, Product $product): RedirectResponse
-    {
+    public function update(Request $request, Product $product): RedirectResponse {
         $product->update($request->all());
         $product->updateReview();
         return History::redirectBack();
@@ -140,8 +129,7 @@ class ProductController extends BaseController
     /**
      * @role(super_user, cms_manager, acc_manager)
      */
-    public function destroy(Product $product): RedirectResponse
-    {
+    public function destroy(Product $product): RedirectResponse {
         $product->delete();
         return back();
     }
@@ -150,8 +138,7 @@ class ProductController extends BaseController
      * @role(super_user, stock_manager, seo_master, cms_manager, acc_manager)
      * @rules(query="required")
      */
-    public function search(Request $request)
-    {
+    public function search(Request $request) {
         return Product::permitted()->search($request->get('query'))->get();
     }
 
@@ -159,8 +146,7 @@ class ProductController extends BaseController
      * @role(super_user, cms_manager, acc_manager)
      * @rules(id="required|exists:p_structure_attr_values,id")
      */
-    public function attachAttribute(Request $request, Product $product, PStructureAttrKey $key): JsonResponse|RedirectResponse
-    {
+    public function attachAttribute(Request $request, Product $product, PStructureAttrKey $key): JsonResponse|RedirectResponse {
         $value = PStructureAttrValue::find($request->get('id'));
         ProductService::attachAttributeToProduct($product, $key, $value);
         if (RequestService::isRequestAjax()) {
@@ -175,8 +161,7 @@ class ProductController extends BaseController
      * @role(super_user, cms_manager, acc_manager)
      * @rules(id="required|exists:p_structure_attr_values,id")
      */
-    public function detachAttribute(Request $request, Product $product, PStructureAttrKey $key): JsonResponse|RedirectResponse
-    {
+    public function detachAttribute(Request $request, Product $product, PStructureAttrKey $key): JsonResponse|RedirectResponse {
         $value = PStructureAttrValue::find($request->get('id'));
         ProductService::detachAttributeFromProduct($product, $key, $value);
         if (RequestService::isRequestAjax()) {
@@ -191,8 +176,7 @@ class ProductController extends BaseController
      * @role(super_user, cms_manager, acc_manager)
      * @rules(colors="array", colors.*="exists:colors,id")
      */
-    public function attachColors(Request $request, Product $product): RedirectResponse
-    {
+    public function attachColors(Request $request, Product $product): RedirectResponse {
         $product->colors()->detach();
         $product->colors()->attach($request->get('colors'));
         return redirect()->route('admin.pages.product.index');
@@ -202,8 +186,7 @@ class ProductController extends BaseController
      * @role(super_user, cms_manager, acc_manager)
      * @rules(id="required|exists:colors,id")
      */
-    public function attachColor(Request $request, Product $product): JsonResponse|RedirectResponse
-    {
+    public function attachColor(Request $request, Product $product): JsonResponse|RedirectResponse {
         $product->colors()->attach($request->get('id'));
         if (RequestService::isRequestAjax()) {
             return response()->json(MessageFactory::create(
@@ -217,8 +200,7 @@ class ProductController extends BaseController
      * @role(super_user, cms_manager, acc_manager)
      * @rules(id="required|exists:colors,id")
      */
-    public function detachColor(Request $request, Product $product): JsonResponse|RedirectResponse
-    {
+    public function detachColor(Request $request, Product $product): JsonResponse|RedirectResponse {
         $product->colors()->detach($request->get('id'));
         if (RequestService::isRequestAjax()) {
             return response()->json(MessageFactory::create(
@@ -233,8 +215,7 @@ class ProductController extends BaseController
      * @role(super_user, cms_manager, acc_manager)
      * @rules(tags="array", tags.key.*="exists:tags,id")
      */
-    public function attachTags(Request $request, Product $product): RedirectResponse
-    {
+    public function attachTags(Request $request, Product $product): RedirectResponse {
         $product->tags()->detach();
         $product->tags()->attach($request->all());
         return redirect()->route('admin.pages.product.index');
@@ -244,8 +225,7 @@ class ProductController extends BaseController
      * @role(super_user, cms_manager, acc_manager)
      * @rules(id="required|exists:tags,id")
      */
-    public function attachTag(Request $request, Product $product): JsonResponse|RedirectResponse
-    {
+    public function attachTag(Request $request, Product $product): JsonResponse|RedirectResponse {
         $product->tags()->attach($request->get('id'));
         if (RequestService::isRequestAjax()) {
             return response()->json(MessageFactory::create(
@@ -259,8 +239,7 @@ class ProductController extends BaseController
      * @role(super_user, cms_manager, acc_manager)
      * @rules(id="required|exists:tags,id")
      */
-    public function detachTag(Request $request, Product $product): JsonResponse|RedirectResponse
-    {
+    public function detachTag(Request $request, Product $product): JsonResponse|RedirectResponse {
         $product->tags()->detach($request->get('id'));
         if (RequestService::isRequestAjax()) {
             return response()->json(MessageFactory::create(
@@ -280,8 +259,7 @@ class ProductController extends BaseController
      * @param Product $product
      * @return RedirectResponse|\Illuminate\Http\JsonResponse
      */
-    public function attachBadge(Request $request, Product $product)
-    {
+    public function attachBadge(Request $request, Product $product) {
         $product->badges()->attach($request->get('id'));
         if (RequestService::isRequestAjax()) {
             return response()->json(MessageFactory::create(
@@ -300,8 +278,7 @@ class ProductController extends BaseController
      * @param Product $product
      * @return RedirectResponse|\Illuminate\Http\JsonResponse
      */
-    public function detachBadge(Request $request, Product $product)
-    {
+    public function detachBadge(Request $request, Product $product) {
         $product->badges()->detach($request->get('id'));
         if (RequestService::isRequestAjax()) {
             return response()->json(MessageFactory::create(
@@ -315,15 +292,13 @@ class ProductController extends BaseController
     /**
      * @role(super_user, cms_manager, acc_manager)
      */
-    public function cloneModel(Request $request, Product $product): RedirectResponse
-    {
+    public function cloneModel(Request $request, Product $product): RedirectResponse {
         $new_product = $product->cloneFile();
         $new_product->directory->attachLeafFiles($new_product->id);
         return redirect()->route('admin.product.edit', $new_product);
     }
 
-    public function models(Request $request, Product $product): Factory|View|Application
-    {
+    public function models(Request $request, Product $product): Factory|View|Application {
         $scope = "scope_" . $product->model_id;
         parent::setPageAttribute($scope);
         $products = Product::models($product, false)
@@ -333,13 +308,16 @@ class ProductController extends BaseController
         return view('admin.pages.product.index', compact('products', 'scope'));
     }
 
-    public function import(): Factory|View|Application
-    {
+    public function import(): Factory|View|Application {
         return view('admin.pages.excel.import');
     }
 
-    public function getModel(): ?string
-    {
+    public function cacheClear(Request $request): RedirectResponse {
+        ProductService::clearCache();
+        return redirect()->back();
+    }
+
+    public function getModel(): ?string {
         return Product::class;
     }
 }
