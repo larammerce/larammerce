@@ -38,7 +38,7 @@ class ActionDirectoryChildrenBadges extends Job implements ShouldQueue
      */
     public function handle()
     {
-        if ($this->directory->content_type== \App\Models\Enums\DirectoryType::PRODUCT){
+        if ($this->directory->content_type== \App\Enums\Directory\DirectoryType::PRODUCT){
             if ($this->action == self::ATTACH){
                 $this->directory->leafProducts()->chunk(100, function ($products) {
                     foreach ($products as $product) {
@@ -52,7 +52,7 @@ class ActionDirectoryChildrenBadges extends Job implements ShouldQueue
                     }});
             }
         }
-        elseif ($this->directory->content_type== \App\Models\Enums\DirectoryType::BLOG){
+        elseif ($this->directory->content_type== \App\Enums\Directory\DirectoryType::BLOG){
             if ($this->action == self::ATTACH){
                 $this->directory->articles()->chunk(100, function ($articles) {
                     foreach ($articles as $article) {

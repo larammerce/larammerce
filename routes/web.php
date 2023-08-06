@@ -55,8 +55,17 @@ Route::group(
 
                 Route::get("representative", ["as" => "representative.edit", "uses" => "RepresentativeSettingController@edit"]);
                 Route::put("representative", ["as" => "representative.update", "uses" => "RepresentativeSettingController@update"]);
+
+                Route::get("upgrade", ["as" => "upgrade.index", "uses" => "UpgradeController@index"]);
+                Route::post("upgrade", ["as" => "upgrade.save-config", "uses" => "UpgradeController@saveConfig"]);
+
+                Route::get("env-file", ["as" => "env-file.edit", "uses" => "EnvFileController@edit"]);
+                Route::put("env-file", ["as" => "env-file.update", "uses" => "EnvFileController@update"]);
             });
         Route::resource("setting", "SettingController", ["as" => "admin"]);
+
+        //Upgrade
+        Route::any("upgrade", ["as" => "upgrade", "uses" => "UpgradeController@doUpgrade"]);
 
         //Shop
         Route::group(["prefix" => "shop", "as" => "admin.shop."],

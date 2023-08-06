@@ -2,10 +2,10 @@
 
 namespace App\Utils\CMS\Setting\Language;
 
-use App\Utils\CMS\Setting\AbstractSettingModel;
+use App\Interfaces\SettingDataInterface;
 use JetBrains\PhpStorm\ArrayShape;
 
-class LanguageSettingModel extends AbstractSettingModel
+class LanguageSettingModel implements SettingDataInterface
 {
     private LanguageItemModel $config;
     private string $lang_id;

@@ -5,10 +5,10 @@
 namespace App\Http\Controllers\Admin;
 
 
+use App\Enums\Directory\DirectoryType;
 use App\Models\Directory;
 use App\Models\DiscountCard;
 use App\Models\DiscountGroup;
-use App\Models\Enums\DirectoryType;
 use App\Utils\Common\History;
 use App\Utils\Common\SMSService;
 use Illuminate\Contracts\Foundation\Application;
@@ -89,22 +89,27 @@ class DiscountCardController extends BaseController
                         'code' => $request->has('code') ? $request->code : null,
                         'customer_user_id' => $user->customer_user->id,
                     ]);
-                    $this->setDirectory($discount_group, $result, $request);
+                    if(!is_null($result)){
+                        $this->setDirectory($discount_group, $result, $request);
+                    }
                 }
             }
         } else {
             $count = $request->has('count') ? intval($request->get('count')) : 1;
-            for ($i = 0; $i < $count; $i++) {
+            global $created_cards;
+            $created_cards = 0;
+            while ($created_cards < $count) {
                 $result = DiscountCard::create([
                     'prefix' => $discount_group->prefix,
                     'postfix' => $discount_group->postfix,
                     'code' => $request->has('code') ? $request->code : null,
                     'discount_group_id' => $discount_group->id
                 ]);
-                $this->setDirectory($discount_group, $result, $request);
+                if(!is_null($result)){
+                    $this->setDirectory($discount_group, $result, $request);
+                }
             }
         }
-
         return redirect()->route('admin.discount-group.show', $discount_group);
 
     }
@@ -112,8 +117,11 @@ class DiscountCardController extends BaseController
     public function setDirectory(DiscountGroup $discount_group, DiscountCard $result, Request $request): void
     {
         if ($discount_group->has_directory)
-            $result->directories()->sync($request->get("directories"));
-
+            {
+                $result->directories()->sync($request->get("directories"));
+                global $created_cards;
+                $created_cards++;
+            }
     }
 
     /**

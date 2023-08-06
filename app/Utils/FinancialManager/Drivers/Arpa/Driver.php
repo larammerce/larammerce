@@ -86,7 +86,7 @@ class Driver implements BaseDriver
         try {
             $std_customer = $curl_result->data[0];
         } catch (Exception $e) {
-            Log::error("fin_manager.get_customer_by_relation : " . $e->getMessage());
+            Log::warning("fin_manager.get_customer_by_relation : " . $e->getMessage());
             return false;
         }
         if ($std_customer == null)
@@ -128,7 +128,7 @@ class Driver implements BaseDriver
         $customer = ModelTransformer::userConfigToFinCustomer($customer, $user_config);
         $std_customer = ModelTransformer::customerModelToStd($customer);
         if ($std_customer === false) {
-            Log::error('fin_manager.edit_customer.std_false:' . $user->id . ':' . $is_legal . ':' . json_encode($user));
+            Log::warning('fin_manager.edit_customer.std_false:' . $user->id . ':' . $is_legal . ':' . json_encode($user));
             return false;
         }
         $config = ConfigProvider::getConfig(self::DRIVER_ID);
@@ -141,12 +141,12 @@ class Driver implements BaseDriver
             if ($result == "true")
                 return true;
             else {
-                Log::error('fin_manager.edit_customer.result_error:user_id:' . $user->id .
+                Log::warning('fin_manager.edit_customer.result_error:user_id:' . $user->id .
                     ':is_legal:' . $is_legal . json_encode($curl_result));
                 return false;
             }
         } catch (Exception $exception) {
-            Log::error('fin_manager.edit_customer.data_parse_exception:' .
+            Log::warning('fin_manager.edit_customer.data_parse_exception:' .
                 $user->id . ':' . $is_legal . ':' . $exception->getMessage() . ":"
                 . json_encode($curl_result));
             return false;
@@ -227,7 +227,7 @@ class Driver implements BaseDriver
             $invoice->state_id);
 
         if ($updateFinManAddressResult === false) {
-            Log::error('fin_manager.add_pre_invoice: ' . $invoice->id . ':address_not_updated');
+            Log::warning('fin_manager.add_pre_invoice: ' . $invoice->id . ':address_not_updated');
             return false;
         }
         $config = ConfigProvider::getConfig(self::DRIVER_ID);
@@ -243,10 +243,10 @@ class Driver implements BaseDriver
                     return $result;
                 }
             }
-            Log::error('fin_manager.add_pre_invoice.data_parse_exception: ' .
+            Log::warning('fin_manager.add_pre_invoice.data_parse_exception: ' .
                 json_encode($curl_result) . ' passed_data : ' . json_encode($stdPreInvoice));
         }
-        Log::error('fin_manager.add_pre_invoice.std_false:' . $invoice->id . ':' . json_encode($invoice));
+        Log::warning('fin_manager.add_pre_invoice.std_false:' . $invoice->id . ':' . json_encode($invoice));
         return false;
     }
 
@@ -270,7 +270,7 @@ class Driver implements BaseDriver
         if (isset($curl_result->status) and $curl_result->status == "true") {
             return true;
         }
-        Log::error("fin_manager.delete_pre_invoice : " . json_encode($curl_result));
+        Log::warning("fin_manager.delete_pre_invoice : " . json_encode($curl_result));
         return false;
     }
 
@@ -298,10 +298,10 @@ class Driver implements BaseDriver
             $result = $curl_result->data;
             if ($result != null)
                 return json_encode($result);
-            Log::error("fin_manager.submit_warehouse_permission.error : curlResult null data");
+            Log::warning("fin_manager.submit_warehouse_permission.error : curlResult null data");
             return false;
         } catch (Exception $exception) {
-            Log::error("fin_manager.submit_warehouse_permission.error :" . $exception->getMessage());
+            Log::warning("fin_manager.submit_warehouse_permission.error :" . $exception->getMessage());
             return false;
         }
     }

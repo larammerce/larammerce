@@ -9,11 +9,11 @@
 namespace App\Utils\CMS\Setting\Layout;
 
 
-use App\Utils\CMS\Setting\AbstractSettingModel;
+use App\Interfaces\SettingDataInterface;
 use App\Utils\Common\ModelService;
 use JetBrains\PhpStorm\ArrayShape;
 
-class LayoutModel extends AbstractSettingModel
+class LayoutModel implements SettingDataInterface
 {
     private string $model;
     private string $method;

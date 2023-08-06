@@ -2,24 +2,26 @@
 
 namespace App\Providers;
 
+use App\Interfaces\FileHandlerInterface;
+use App\Interfaces\Repositories\SettingRepositoryInterface;
+use App\Repositories\Eloquent\SettingRepositoryEloquent;
+use App\Services\Common\EnvFile\EnvFileHandler;
+use App\Services\Invoice\NewInvoiceService;
 use App\Utils\CMS\RobotTxt\RobotTxtService;
 use App\Utils\CMS\Setting\Logistic\LogisticService;
-use App\Utils\Modal\ModalRouter;
 use App\Utils\Validation\ValidationRule;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 
-class AppServiceProvider extends ServiceProvider
-{
+class AppServiceProvider extends ServiceProvider {
     /**
      * Bootstrap any application services.
      *
      * @return void
      */
-    public function boot()
-    {
+    public function boot() {
         $proxy_url = env('PROXY_URL');
         $proxy_schema = env('PROXY_SCHEMA');
 
@@ -57,8 +59,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
-    {
+    public function register() {
         // set the public path to this directory
         $this->app->bind('path.public', function () {
             return base_path() . '/public_html';
@@ -71,5 +72,12 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton('robotTxtService.auto', function ($app) {
             return new RobotTxtService('auto');
         });
+
+        //Services
+        $this->app->singleton(FileHandlerInterface::class, EnvFileHandler::class);
+        $this->app->singleton(NewInvoiceService::class);
+
+        //Repositories
+        $this->app->bind(SettingRepositoryInterface::class, SettingRepositoryEloquent::class);
     }
 }

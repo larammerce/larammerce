@@ -8,11 +8,10 @@
 
 namespace App\Models;
 
-use App\Models\GlobalScopes\SortScope;
+use App\Scopes\SortScope;
 use App\Utils\CMS\AdminRequestService;
 use App\Utils\CMS\Setting\Layout\LayoutService;
 use App\Utils\Jalali\JDate;
-use App\Utils\Validation\DataValidation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;

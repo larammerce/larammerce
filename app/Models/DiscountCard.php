@@ -8,8 +8,8 @@
 
 namespace App\Models;
 
-use App\Models\Enums\DiscountCardStatus;
-use App\Models\Exceptions\InvalidDiscountCodeException;
+use App\Enums\Discount\DiscountCardStatus;
+use App\Exceptions\Discount\InvalidDiscountCodeException;
 use DateTime;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

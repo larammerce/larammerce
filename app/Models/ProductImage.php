@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Interfaces\ImageContract;
+use App\Interfaces\ImageOwnerInterface;
 use App\Utils\Translation\Traits\Translatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -24,7 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Class ProductImage
  * @package App\Models
  */
-class ProductImage extends BaseModel implements ImageContract {
+class ProductImage extends BaseModel implements ImageOwnerInterface {
     use Translatable;
 
     protected $table = "product_images";

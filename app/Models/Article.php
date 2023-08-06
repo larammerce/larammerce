@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
-use App\Models\Interfaces\FileContract as FileAbstractionContract;
-use App\Models\Interfaces\HashContract;
-use App\Models\Interfaces\ImageContract;
-use App\Models\Interfaces\PublishScheduleContract;
-use App\Models\Interfaces\RateContract as RateableContract;
-use App\Models\Interfaces\SeoContract as SeoableContract;
-use App\Models\Interfaces\ShareContract;
-use App\Models\Traits\Fileable;
-use App\Models\Traits\Rateable;
-use App\Models\Traits\Seoable;
+use App\Interfaces\CMSExposedNodeInterface as FileAbstractionContract;
+use App\Interfaces\HashInterface;
+use App\Interfaces\ImageOwnerInterface;
+use App\Interfaces\PublishScheduleInterface;
+use App\Interfaces\RateOwnerInterface as RateableContract;
+use App\Interfaces\SeoSubjectInterface as SeoableContract;
+use App\Interfaces\ShareSubjectInterface;
+use App\Traits\Fileable;
+use App\Traits\Rateable;
+use App\Traits\Seoable;
 use App\Utils\Common\ImageService;
 use App\Utils\Translation\Traits\Translatable;
 use DateTime;
@@ -49,8 +49,8 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
  * @package App\Models
  */
 class Article extends BaseModel implements
-    FileAbstractionContract, ShareContract, PublishScheduleContract, ImageContract,
-    RateableContract, SeoableContract, HashContract {
+    FileAbstractionContract, ShareSubjectInterface, PublishScheduleInterface, ImageOwnerInterface,
+    RateableContract, SeoableContract, HashInterface {
     use Rateable, Seoable, Fileable, Translatable;
 
     protected $table = 'articles';

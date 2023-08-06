@@ -29,11 +29,11 @@
                     <li class="btn btn-default" href="{{route('admin.directory.edit', $directory)}}" act="link">
                         <i class="fa fa-edit"></i>ویرایش
                     </li>
-                    @if($directory->content_type == \App\Models\Enums\DirectoryType::BLOG)
+                    @if($directory->content_type == \App\Enums\Directory\DirectoryType::BLOG)
                         <li class="btn btn-default" href="{{route('admin.article.index')}}" act="link">
                             <i class="fa fa-file-text-o"></i>بلاگ‌ها
                         </li>
-                    @elseif($directory->content_type == \App\Models\Enums\DirectoryType::PRODUCT)
+                    @elseif($directory->content_type == \App\Enums\Directory\DirectoryType::PRODUCT)
                         <li class="btn btn-default" href="{{route('admin.product.index')}}" act="link">
                             <i class="fa fa-cubes"></i>محصولات
                         </li>

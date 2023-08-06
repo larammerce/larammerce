@@ -4,12 +4,12 @@
 namespace App\Utils\CMS\Setting\Survey;
 
 
+use App\Interfaces\SettingDataInterface;
 use App\Models\State;
-use App\Utils\CMS\Setting\AbstractSettingModel;
 use JetBrains\PhpStorm\ArrayShape;
 use stdClass;
 
-class SurveyModel extends AbstractSettingModel
+class SurveyModel implements SettingDataInterface
 {
     private int $default_delay_hours;
     private int $default_delay_days;

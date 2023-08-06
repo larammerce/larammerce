@@ -2,7 +2,7 @@
 
 namespace App\Utils\PaymentManager\Models;
 
-use App\Models\Traits\Inputable;
+use App\Traits\Inputable;
 use JsonSerializable;
 use Serializable;
 

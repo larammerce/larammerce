@@ -8,7 +8,7 @@
 
 namespace App\Models;
 
-use App\Utils\CMS\ProductService;
+use App\Services\Product\ProductService;
 use DateTime;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

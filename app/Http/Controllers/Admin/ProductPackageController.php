@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Exceptions\ProductPackageItemInvalidCountException;
-use App\Models\Exceptions\ProductPackageItemInvalidIdException;
-use App\Models\Exceptions\ProductPackageItemNotFoundException;
-use App\Models\Exceptions\ProductPackageNotExistsException;
+use App\Exceptions\Product\ProductPackageItemInvalidCountException;
+use App\Exceptions\Product\ProductPackageItemInvalidIdException;
+use App\Exceptions\Product\ProductPackageItemNotFoundException;
+use App\Exceptions\Product\ProductPackageNotExistsException;
 use App\Models\Product;
 use App\Models\ProductPackage;
 use App\Utils\CMS\SystemMessageService;

@@ -3,11 +3,11 @@
 
 namespace App\Utils\CMS\Setting\PaymentDriver;
 
-use App\Utils\CMS\Setting\AbstractSettingModel;
+use App\Interfaces\SettingDataInterface;
 use App\Utils\PaymentManager\Kernel;
 use JetBrains\PhpStorm\ArrayShape;
 
-class PaymentDriverModel extends AbstractSettingModel
+class PaymentDriverModel implements SettingDataInterface
 {
     private string $config_model;
     private string $driver_id;

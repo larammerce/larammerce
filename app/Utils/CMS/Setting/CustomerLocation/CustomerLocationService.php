@@ -4,23 +4,22 @@
 namespace App\Utils\CMS\Setting\CustomerLocation;
 
 
+use App\Interfaces\SettingDataInterface;
 use App\Models\City;
 use App\Models\State;
 use App\Utils\CMS\Enums\DataSourceDriver;
 use App\Utils\CMS\Enums\SettingType;
-use App\Utils\CMS\Setting\AbstractSettingModel;
-use App\Utils\CMS\Setting\AbstractSettingService;
+use App\Utils\CMS\Setting\BaseCMSConfigManager;
 use Exception;
-use function config;
 use function request;
 
-class CustomerLocationService extends AbstractSettingService
+class CustomerLocationService extends BaseCMSConfigManager
 {
     protected static string $KEY_POSTFIX = '_customer_location';
     protected static int $SETTING_TYPE = SettingType::LOCAL_SETTING;
     protected static string $DRIVER = DataSourceDriver::SESSION;
 
-    public static function getRecord(string $name = "", ?string $parent_id = null): null|CustomerLocationModel|AbstractSettingModel
+    public static function getRecord(string $name = "", ?string $parent_id = null): null|CustomerLocationModel|SettingDataInterface
     {
         try {
             return parent::getRecord($name, $parent_id);

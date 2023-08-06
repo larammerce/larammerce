@@ -3,7 +3,7 @@
 namespace App\Utils\PaymentManager\Drivers\BehPardakht;
 
 
-use App\Models\Enums\PaymentStatus;
+use App\Enums\Invoice\PaymentStatus;
 use App\Utils\PaymentManager\AbstractDriver;
 use App\Utils\PaymentManager\ConfigProvider;
 use App\Utils\PaymentManager\Exceptions\PaymentCallbackInvalidParametersException;

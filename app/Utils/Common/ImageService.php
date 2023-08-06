@@ -9,10 +9,9 @@
 namespace App\Utils\Common;
 
 
+use App\Interfaces\ImageOwnerInterface;
 use App\Jobs\ImageResizer;
-use App\Models\Interfaces\ImageContract;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ImageService
@@ -25,7 +24,7 @@ class ImageService
             return config("cms.images.{$category}");
     }
 
-    public static function getImage(ImageContract $model = null, $type = 'original', $absolute = false)
+    public static function getImage(ImageOwnerInterface $model = null, $type = 'original', $absolute = false)
     {
         if ($model == null)
             return '';

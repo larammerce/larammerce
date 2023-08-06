@@ -3,7 +3,7 @@
 
 namespace App\Models;
 
-use App\Models\Traits\WithDataField;
+use App\Traits\WithDataField;
 use DateTime;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

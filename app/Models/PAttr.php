@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Enums\DirectoryType;
+use App\Enums\Directory\DirectoryType;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Lang;

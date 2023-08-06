@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use App\Utils\CMS\InvoiceService;
 use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationModel;
 use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationService;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property integer id
@@ -43,74 +44,31 @@ class CustomerAddress extends BaseModel
 
     protected static array $SORTABLE_FIELDS = ['id', 'name'];
 
-
-    /*
-     * Relations Methods
-     */
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function customer()
-    {
-        return $this->belongsTo('\\App\\Models\\CustomerUser', 'customer_user_id');
+    public function customer(): BelongsTo {
+        return $this->belongsTo(CustomerUser::class, 'customer_user_id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function state()
-    {
-        return $this->belongsTo('\\App\\Models\\State', 'state_id');
+    public function state(): BelongsTo {
+        return $this->belongsTo(State::class, 'state_id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function city()
-    {
-        return $this->belongsTo('\\App\\Models\\City', 'city_id');
+    public function city(): BelongsTo {
+        return $this->belongsTo(City::class, 'city_id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function district()
-    {
-        return $this->belongsTo('\\App\\Models\\District', 'district_id');
+    public function district(): BelongsTo {
+        return $this->belongsTo(District::class, 'district_id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function invoices()
-    {
-        return $this->hasMany('\\App\\Models\\Invoice', 'customer_address_id');
+    public function invoices(): HasMany {
+        return $this->hasMany(Invoice::class, 'customer_address_id');
     }
 
-    public function scopeMain($query)
-    {
+    public function scopeMain($query) {
         return $query->where("is_main", true);
     }
 
-    public function setAsMain()
-    {
-        if (!$this->is_main) {
-            $mainAddress = $this->customer->addresses()->main()->first();
-            if ($mainAddress != null) {
-                $mainAddress->is_main = false;
-                $mainAddress->save();
-            }
-            $this->is_main = true;
-            $this->save();
-            $this->setAsCurrentLocation();
-            InvoiceService::updateAddress($this);
-        }
-        return true;
-    }
-
-    public function setAsCurrentLocation()
-    {
+    public function setAsCurrentLocation() {
         CustomerLocationService::setRecord(new CustomerLocationModel($this->state, $this->city));
     }
 
@@ -118,8 +76,7 @@ class CustomerAddress extends BaseModel
     /*
      * Helper method
      */
-    public function getFullAddress()
-    {
+    public function getFullAddress() {
         $separator = '، ';
         $result = $this->state->name . $separator;
         $result .= $this->city->name . $separator;
@@ -131,8 +88,7 @@ class CustomerAddress extends BaseModel
     /**
      * @return string
      */
-    public function getSearchUrl(): string
-    {
+    public function getSearchUrl(): string {
         return '';
     }
 }

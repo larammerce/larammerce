@@ -9,7 +9,7 @@
 namespace App\Utils\CMS\Enums;
 
 
-use App\Utils\Common\BaseEnum;
+use App\Common\BaseEnum;
 
 class SortMethod extends BaseEnum
 {
