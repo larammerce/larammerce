@@ -44,7 +44,7 @@ class Driver implements BaseDriver
             }
             return $result;
         } catch (Exception $exception) {
-            Log::error("fin_manager.get_all_customers.error :" . $exception->getMessage());
+            Log::warning("fin_manager.get_all_customers.error :" . $exception->getMessage());
             return $result;
         }
     }
@@ -65,7 +65,7 @@ class Driver implements BaseDriver
                 return false;
             return ModelTransformer::customerStdToModel($std_customer);
         } catch (Exception $exception) {
-            Log::error("fin_manager.get_customer_by_phone.error :" . $exception->getMessage());
+            Log::warning("fin_manager.get_customer_by_phone.error :" . $exception->getMessage());
             return false;
         }
     }
@@ -87,7 +87,7 @@ class Driver implements BaseDriver
                 return false;
             return ModelTransformer::customerStdToModel($std_customer);
         } catch (Exception $exception) {
-            Log::error("fin_manager.get_customer_by_relation.error : " . $exception->getMessage());
+            Log::warning("fin_manager.get_customer_by_relation.error : " . $exception->getMessage());
             return false;
         }
     }
@@ -109,7 +109,7 @@ class Driver implements BaseDriver
                 ->withData($std_customer)->asJson()
                 ->post();
         } catch (Exception $exception) {
-            Log::error("fin_manager.add_customer.error : " . $exception->getMessage());
+            Log::warning("fin_manager.add_customer.error : " . $exception->getMessage());
             return false;
         }
     }
@@ -126,7 +126,7 @@ class Driver implements BaseDriver
         $customer = ModelTransformer::userConfigToFinCustomer($customer, $user_config);
         $std_customer = ModelTransformer::customerModelToStd($customer);
         if ($std_customer === false) {
-            Log::error('fin_manager.edit_customer.std_false:' . $user->id . ':' . $is_legal . ':' . json_encode($user));
+            Log::warning('fin_manager.edit_customer.std_false:' . $user->id . ':' . $is_legal . ':' . json_encode($user));
             return false;
         }
         try {
@@ -138,15 +138,15 @@ class Driver implements BaseDriver
             if ($result != null) {
                 switch ($curl_result) {
                     case -1:
-                        Log::error('fin_manager.edit_customer.data_parse_exception: ' .
+                        Log::warning('fin_manager.edit_customer.data_parse_exception: ' .
                             json_encode($curl_result) . ' passed_data : the Relation not valid');
                         break;
                     case -2:
-                        Log::error('fin_manager.edit_customer.data_parse_exception: ' .
+                        Log::warning('fin_manager.edit_customer.data_parse_exception: ' .
                             json_encode($curl_result) . ' passed_data : the customer with specified relation doesn\'t exist');
                         break;
                     case -3:
-                        Log::error('fin_manager.edit_customer.data_parse_exception: ' .
+                        Log::warning('fin_manager.edit_customer.data_parse_exception: ' .
                             json_encode($curl_result) . ' passed_data : unknown error');
                         break;
                     default :
@@ -154,11 +154,11 @@ class Driver implements BaseDriver
                         break;
                 }
             }
-            Log::error('fin_manager.edit_customer.result_error:user_id:' . $user->id .
+            Log::warning('fin_manager.edit_customer.result_error:user_id:' . $user->id .
                 ':is_legal:' . $is_legal . json_encode($curl_result));
             return false;
         } catch (Exception $exception) {
-            Log::error('fin_manager.edit_customer.error:' . $exception->getMessage());
+            Log::warning('fin_manager.edit_customer.error:' . $exception->getMessage());
             return false;
         }
     }
@@ -181,7 +181,7 @@ class Driver implements BaseDriver
             }
             return $result;
         } catch (Exception $exception) {
-            Log::error('fin_manager.get_all_products.error:' . $exception->getMessage());
+            Log::warning('fin_manager.get_all_products.error:' . $exception->getMessage());
             return $result;
         }
     }
@@ -202,7 +202,7 @@ class Driver implements BaseDriver
                 return false;
             return ModelTransformer::productStdToModel($stdProduct);
         } catch (Exception $exception) {
-            Log::error('fin_manager.get_product.error:' . $exception->getMessage());
+            Log::warning('fin_manager.get_product.error:' . $exception->getMessage());
             return false;
         }
     }
@@ -220,7 +220,7 @@ class Driver implements BaseDriver
                 ->get();
             $count = intval($curl_result->data[0]->stock);
         } catch (Exception $exception) {
-            Log::error('fin_manager.get_product_count.error:' . $exception->getMessage());
+            Log::warning('fin_manager.get_product_count.error:' . $exception->getMessage());
             return false;
         }
         return $count;
@@ -237,7 +237,7 @@ class Driver implements BaseDriver
             $invoice->state_id);
 
         if ($updateFinManAddressResult === false) {
-            Log::error('fin_manager.add_pre_invoice: ' . $invoice->id . ':address_not_updated');
+            Log::warning('fin_manager.add_pre_invoice: ' . $invoice->id . ':address_not_updated');
             return false;
         }
 
@@ -250,17 +250,17 @@ class Driver implements BaseDriver
                     ->post();
                 switch ($curl_result) {
                     case 0:
-                        Log::error('fin_manager.add_pre_invoice.data_parse_exception: ' .
+                        Log::warning('fin_manager.add_pre_invoice.data_parse_exception: ' .
                             json_encode($curl_result) . ' passed_data : something went wrong');
                         break;
                     default :
                         return $curl_result;
                 }
             }
-            Log::error('fin_manager.add_pre_invoice.error:' . $invoice->id . ':' . json_encode($invoice));
+            Log::warning('fin_manager.add_pre_invoice.error:' . $invoice->id . ':' . json_encode($invoice));
             return false;
         } catch (Exception $exception) {
-            Log::error("fin_manager.add_pre_invoice.error :" . $exception->getMessage());
+            Log::warning("fin_manager.add_pre_invoice.error :" . $exception->getMessage());
             return false;
         }
     }
@@ -282,19 +282,19 @@ class Driver implements BaseDriver
             if (isset($curl_result)) {
                 switch ($curl_result) {
                     case -1:
-                        Log::error('fin_manager.delete_pre_invoice.data_parse_exception: ' .
+                        Log::warning('fin_manager.delete_pre_invoice.data_parse_exception: ' .
                             json_encode($curl_result) . ' passed_data : There is no factor with this relation id');
                         break;
                     case -2:
-                        Log::error('fin_manager.delete_pre_invoice.data_parse_exception: ' .
+                        Log::warning('fin_manager.delete_pre_invoice.data_parse_exception: ' .
                             json_encode($curl_result) . ' passed_data : This factor is not PreInvoice and cannot be deleted');
                         break;
                     case -3:
-                        Log::error('fin_manager.delete_pre_invoice.data_parse_exception: ' .
+                        Log::warning('fin_manager.delete_pre_invoice.data_parse_exception: ' .
                             json_encode($curl_result) . ' passed_data : This factor is PreInvoice but already convert to invoice then cannot be deleted');
                         break;
                     case -4:
-                        Log::error('fin_manager.delete_pre_invoice.data_parse_exception: ' .
+                        Log::warning('fin_manager.delete_pre_invoice.data_parse_exception: ' .
                             json_encode($curl_result) . ' passed_data : Unknown error');
                         break;
                     default :
@@ -302,10 +302,10 @@ class Driver implements BaseDriver
                         break;
                 }
             }
-            Log::error("fin_manager.delete_pre_invoice : " . json_encode($curl_result));
+            Log::warning("fin_manager.delete_pre_invoice : " . json_encode($curl_result));
             return false;
         } catch (Exception $exception) {
-            Log::error("fin_manager.delete_pre_invoice.error :" . $exception->getMessage());
+            Log::warning("fin_manager.delete_pre_invoice.error :" . $exception->getMessage());
             return false;
         }
 
@@ -330,25 +330,25 @@ class Driver implements BaseDriver
             if ($result != null) {
                 switch ($curl_result) {
                     case -1:
-                        Log::error('fin_manager.submit_warehouse_permission.data_parse_exception: ' .
+                        Log::warning('fin_manager.submit_warehouse_permission.data_parse_exception: ' .
                             json_encode($curl_result) . ' passed_data : PreInvoice with specified relation doesn\'t exist');
                         break;
                     case -3:
-                        Log::error('fin_manager.submit_warehouse_permission.data_parse_exception: ' .
+                        Log::warning('fin_manager.submit_warehouse_permission.data_parse_exception: ' .
                             json_encode($curl_result) . ' passed_data : This PreInvoice Already converted to Complete Invoice');
                         break;
                     case -4:
-                        Log::error('fin_manager.submit_warehouse_permission.data_parse_exception: ' .
+                        Log::warning('fin_manager.submit_warehouse_permission.data_parse_exception: ' .
                             json_encode($curl_result) . ' passed_data :Unknown error');
                         break;
                     default :
                         return $result;
                 }
             }
-            Log::error("fin_manager.submit_warehouse_permission.error : curlResult null data");
+            Log::warning("fin_manager.submit_warehouse_permission.error : curlResult null data");
             return false;
         } catch (Exception $exception) {
-            Log::error("fin_manager.submit_warehouse_permission.error :" . $exception->getMessage());
+            Log::warning("fin_manager.submit_warehouse_permission.error :" . $exception->getMessage());
             return false;
         }
     }
@@ -371,21 +371,21 @@ class Driver implements BaseDriver
             if ($result != null) {
                 switch ($curl_result) {
                     case -1:
-                        Log::error('fin_manager.check_exit_tab.data_parse_exception: ' .
+                        Log::warning('fin_manager.check_exit_tab.data_parse_exception: ' .
                             json_encode($curl_result) . ' passed_data : Invoice with specified relation doesn\'t exist');
                         break;
                     case 0:
-                        Log::error('fin_manager.check_exit_tab.data_parse_exception: ' .
+                        Log::warning('fin_manager.check_exit_tab.data_parse_exception: ' .
                             json_encode($curl_result) . ' passed_data : Havale doesn\'t submit yet');
                         break;
                     default :
                         return $result;
                 }
             }
-            Log::error("fin_manager.check_exit_tab.error : curlResult null data");
+            Log::warning("fin_manager.check_exit_tab.error : curlResult null data");
             return false;
         } catch (Exception $exception) {
-            Log::error("fin_manager.check_exit_tab.error :" . $exception->getMessage());
+            Log::warning("fin_manager.check_exit_tab.error :" . $exception->getMessage());
             return false;
         }
     }

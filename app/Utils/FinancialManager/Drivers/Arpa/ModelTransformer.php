@@ -49,7 +49,7 @@ class ModelTransformer
             //$customer->stateId = $std_customer->provinceId; //TODO: this item should be returned
             return $customer;
         } catch (Exception $exception) {
-            Log::error($exception->getMessage());
+            Log::warning($exception->getMessage());
             return false;
         }
     }

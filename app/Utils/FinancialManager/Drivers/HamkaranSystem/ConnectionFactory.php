@@ -37,7 +37,7 @@ class ConnectionFactory
                     try {
                         HamkaranAuthService::setRecord($auth_config);
                     } catch (NotValidSettingRecordException $e) {
-                        Log::error("HamkaranSystem.ConnectionFactory.authenticate.setRecord." . $e->getMessage());
+                        Log::warning("HamkaranSystem.ConnectionFactory.authenticate.setRecord." . $e->getMessage());
                     }
                 }
             }
@@ -57,7 +57,7 @@ class ConnectionFactory
             }
             return $auth_config;
         }
-        Log::error("fin_manager.hamkaran.connection_factory.read_auth_config." . json_encode($result));
+        Log::warning("fin_manager.hamkaran.connection_factory.read_auth_config." . json_encode($result));
         return null;
     }
 
