@@ -85,7 +85,7 @@ class Driver implements BaseDriver
         $customer = $is_legal ? ModelTransformer::legalUserToFinCustomer($user) : ModelTransformer::userToFinCustomer($user);
         $std_customer = ModelTransformer::customerModelToStd($customer);
         if ($std_customer === false) {
-            Log::error("finman.hamkaran.add-customer.transform-model-failed");
+            Log::warning("finman.hamkaran.add-customer.transform-model-failed");
             return false;
         }
         $config = ConfigProvider::getConfig(self::DRIVER_ID);
@@ -190,10 +190,10 @@ class Driver implements BaseDriver
                 }
                 return $curl_result;
             }
-            Log::error("fin_manager.add_pre_invoice.data_parse_exception: " .
+            Log::warning("fin_manager.add_pre_invoice.data_parse_exception: " .
                 json_encode($curl_result) . " passed_data : " . json_encode($std_invoice));
         }
-        Log::error("fin_manager.add_pre_invoice.std_false:" . $invoice->id . ":" . json_encode($invoice));
+        Log::warning("fin_manager.add_pre_invoice.std_false:" . $invoice->id . ":" . json_encode($invoice));
         return false;
     }
 
