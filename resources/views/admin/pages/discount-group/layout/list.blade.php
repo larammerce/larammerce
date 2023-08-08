@@ -24,30 +24,44 @@
         <div class="col-lg-3 col-md-9 col-sm-6 col-xs-12 col">
             <div class="label">عملیات</div>
             <div class="actions-container">
-                <a class="btn btn-sm btn-primary" href="{{ route('admin.discount-group.edit', $discount_group) }}">
-                    <i class="fa fa-pencil"></i>
-                </a>
-                <a class="btn btn-sm @if($discount_group->is_active) btn-danger @else btn-info @endif virt-form"
-                   data-action="{{ route('admin.discount-group.destroy', $discount_group) }}"
-                   data-method="DELETE" confirm>
-                    @if($discount_group->is_active)
-                        <i class="fa fa-stop"></i>
-                    @else
-                        <i class="fa fa-play"></i>
-                    @endif
-                </a>
-                <a class="btn btn-sm btn-success" href="{{ route('admin.discount-group.show', $discount_group) }}">
-                    <i class="fa fa-ticket"></i>
-                </a>
-                <a class="btn btn-sm btn-success"
-                   href="{{ route('admin.discount-group.product-filter.index', $discount_group) }}">
-                    <i class="fa fa-cubes"></i>
-                </a>
-
-                @if((!$discount_group->is_active)AND(((Carbon\Carbon::now())->diffInDays($discount_group->updated_at))>7))
-                    <a class="btn btn-sm btn-danger virt-form" data-action="{{ route('admin.discount-group.soft-delete', $discount_group) }}" data-method="DELETE" confirm>
-                        <i class="fa fa-remove"></i>
+                @if($deleted==false)
+                    <a class="btn btn-sm btn-primary" href="{{ route('admin.discount-group.edit', $discount_group) }}">
+                        <i class="fa fa-pencil"></i>
                     </a>
+                    <a class="btn btn-sm @if($discount_group->is_active) btn-danger @else btn-info @endif virt-form"
+                    data-action="{{ route('admin.discount-group.destroy', $discount_group) }}"
+                    data-method="DELETE" confirm>
+                        @if($discount_group->is_active)
+                            <i class="fa fa-stop"></i>
+                        @else
+                            <i class="fa fa-play"></i>
+                        @endif
+                    </a>
+                    <a class="btn btn-sm btn-success" href="{{ route('admin.discount-group.show', $discount_group) }}">
+                        <i class="fa fa-ticket"></i>
+                    </a>
+                    <a class="btn btn-sm btn-success"
+                    href="{{ route('admin.discount-group.product-filter.index', $discount_group) }}">
+                        <i class="fa fa-cubes"></i>
+                    </a>
+
+                    @if((!$discount_group->is_active)AND(((Carbon\Carbon::now())->diffInDays($discount_group->updated_at))>7))
+                        <a class="btn btn-sm btn-danger virt-form" data-action="{{ route('admin.discount-group.soft-delete', $discount_group) }}" data-method="DELETE" confirm>
+                            <i class="fa fa-remove"></i>
+                        </a>
+                    @endif
+                @else
+                    {{-- <a class="btn btn-sm btn-primary virt-form" data-action="{{ route('admin.discount-group.restore', $discount_group) }}" data-method="PATCH" confirm>
+                        <i class="fa fa-undo"></i>
+                    </a> --}}
+                    
+                    <form action="{{route('admin.discount-group.restore', $discount_group)}}" method="POST">
+                        {{csrf_field()}}
+                        {{method_field("PATCH")}}
+                        <button type="submit" class="btn btn-sm btn-primary">
+                            <i class="fa fa-undo"></i>
+                        </button>
+                    </form>
                 @endif
             </div>
         </div>

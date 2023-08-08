@@ -27,12 +27,12 @@ class DiscountGroupController extends BaseController
      */
     public function index(Request $request): Factory|View|Application
     {
+        parent::setPageAttribute();
         if($request->has("deleted")){
             $deleted = true;
             $discount_groups = DiscountGroup::with('cards')->onlyTrashed()->paginate(DiscountGroup::getPaginationCount());
         } else{
             $deleted = false;
-            parent::setPageAttribute();
             $discount_groups = DiscountGroup::with('cards')->paginate(DiscountGroup::getPaginationCount());
         }
         return view('admin.pages.discount-group.index', compact('discount_groups' , 'deleted'));
@@ -101,6 +101,18 @@ class DiscountGroupController extends BaseController
     public function softDelete(DiscountGroup $discount_group)
     {
         $discount_group->delete();
+        return redirect()->back();
+    }
+
+    /**
+     * @role(super_user, acc_manager)
+     */
+    public function restore(Request $request, DiscountGroup $discount_group)
+    {
+        $discount_group->update([
+            "deleted_at" => NULL
+        ]);
+        // $discount_group->restore();
         return redirect()->back();
     }
 
