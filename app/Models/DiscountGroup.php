@@ -8,6 +8,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use DateTime;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -127,6 +128,11 @@ class DiscountGroup extends BaseModel
             $this->extra_attributes["steps_data_object"] = Arr::prepend($this->extra_attributes["steps_data_object"], $first_step);
         }
         return $this->extra_attributes["steps_data_object"];
+    }
+
+    public function getCanDeleteAttribute()
+    {
+       return ((!$this->is_active)AND(((Carbon::now())->diffInDays($this->updated_at))>7));
     }
 
     /**

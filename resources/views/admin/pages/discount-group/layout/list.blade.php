@@ -24,7 +24,7 @@
         <div class="col-lg-3 col-md-9 col-sm-6 col-xs-12 col">
             <div class="label">عملیات</div>
             <div class="actions-container">
-                @if($deleted==false)
+                @if($is_deleted==false)
                     <a class="btn btn-sm btn-primary" href="{{ route('admin.discount-group.edit', $discount_group) }}">
                         <i class="fa fa-pencil"></i>
                     </a>
@@ -45,7 +45,7 @@
                         <i class="fa fa-cubes"></i>
                     </a>
 
-                    @if((!$discount_group->is_active)AND(((Carbon\Carbon::now())->diffInDays($discount_group->updated_at))>7))
+                    @if($discount_group->can_delete)
                         <a class="btn btn-sm btn-danger virt-form" data-action="{{ route('admin.discount-group.soft-delete', $discount_group) }}" data-method="DELETE" confirm>
                             <i class="fa fa-remove"></i>
                         </a>

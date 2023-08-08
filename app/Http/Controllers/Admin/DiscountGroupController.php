@@ -29,13 +29,13 @@ class DiscountGroupController extends BaseController
     {
         parent::setPageAttribute();
         if($request->has("deleted")){
-            $deleted = true;
+            $is_deleted = true;
             $discount_groups = DiscountGroup::with('cards')->onlyTrashed()->paginate(DiscountGroup::getPaginationCount());
         } else{
-            $deleted = false;
+            $is_deleted = false;
             $discount_groups = DiscountGroup::with('cards')->paginate(DiscountGroup::getPaginationCount());
         }
-        return view('admin.pages.discount-group.index', compact('discount_groups' , 'deleted'));
+        return view('admin.pages.discount-group.index', compact('discount_groups' , 'is_deleted'));
     }
 
     /**
