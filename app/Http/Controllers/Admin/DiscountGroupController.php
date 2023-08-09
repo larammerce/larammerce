@@ -4,6 +4,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Services\DiscountGroup\DiscountGroupService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\DiscountGroup;
@@ -28,14 +29,9 @@ class DiscountGroupController extends BaseController
     public function index(Request $request): Factory|View|Application
     {
         parent::setPageAttribute();
-        if($request->has("deleted")){
-            $is_deleted = true;
-            $discount_groups = DiscountGroup::with('cards')->onlyTrashed()->paginate(DiscountGroup::getPaginationCount());
-        } else{
-            $is_deleted = false;
-            $discount_groups = DiscountGroup::with('cards')->paginate(DiscountGroup::getPaginationCount());
-        }
-        return view('admin.pages.discount-group.index', compact('discount_groups' , 'is_deleted'));
+        $discount_groups = DiscountGroupService::getAll($request);
+        $is_deleted = DiscountGroupService::getIsDeleted($request);
+        return view('admin.pages.discount-group.index', compact('discount_groups', 'is_deleted'));
     }
 
     /**
