@@ -24,7 +24,6 @@ use App\Traits\FullTextSearch;
 use App\Traits\Rateable;
 use App\Traits\Seoable;
 use App\Utils\CMS\AdminRequestService;
-use App\Utils\CMS\ProductService;
 use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationModel;
 use App\Utils\Common\EmailService;
 use App\Utils\Common\SMSService;
