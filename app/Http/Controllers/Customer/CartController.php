@@ -14,6 +14,8 @@ use App\Utils\CMS\Cart\CartAttachCountLimitExceedException;
 use App\Utils\CMS\Cart\CartAttachDuplicateProductException;
 use App\Utils\CMS\Cart\CartAttachInvalidProductException;
 use App\Utils\CMS\Cart\Provider as CartProvider;
+use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationModel;
+use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationService;
 use App\Utils\Common\MessageFactory;
 use App\Utils\Common\RequestService;
 use Illuminate\Contracts\View\Factory;
@@ -31,6 +33,13 @@ class CartController extends BaseController
         if ($customer == null) {
             return redirect()->route('customer-auth.show-auth', 'mobile');
         }
+
+        $main_address = $customer->main_address;
+
+        if($main_address !== null) {
+            CustomerLocationService::setRecord(new CustomerLocationModel($main_address->state, $main_address->city));
+        }
+
 
         if (request()->session()->has('invoice_not_saved')) {
             request()->session()->forget('invoice_not_saved');
