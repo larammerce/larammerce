@@ -36,7 +36,7 @@ class CartController extends BaseController
 
         $main_address = $customer->main_address;
 
-        if($main_address !== null) {
+        if($main_address !== null and CustomerLocationService::getRecord()?->getState()?->id == null) {
             CustomerLocationService::setRecord(new CustomerLocationModel($main_address->state, $main_address->city));
         }
 

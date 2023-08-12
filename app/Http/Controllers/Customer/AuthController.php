@@ -10,6 +10,8 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationModel;
+use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationService;
 use App\Utils\CMS\CustomerAuth\{AuthType as CustomerAuthType,
     BadAuthTypeException,
     BadLoginException,
@@ -109,6 +111,10 @@ class AuthController extends Controller {
             $customer_user = CustomerAuthProvider::validateByCode($type, $value, $oneTimeCode);
             if ($customer_user != null) {
                 CustomerAuthProvider::login($customer_user);
+                $main_address = $customer_user->main_address;
+                if($main_address !== null and CustomerLocationService::getRecord()?->getState()?->id == null) {
+                    CustomerLocationService::setRecord(new CustomerLocationModel($main_address->state, $main_address->city));
+                }
                 return redirect()->intended(UserService::getHome($customer_user->user));
             } else {
                 SystemMessageService::addSuccessMessage("system_messages.one_time_code.valid_one_time_code");
@@ -157,6 +163,10 @@ class AuthController extends Controller {
             $customer_user = CustomerAuthProvider::validateByPassword($type, $value, $password);
             if ($customer_user != null) {
                 CustomerAuthProvider::login($customer_user);
+                $main_address = $customer_user->main_address;
+                if($main_address !== null and CustomerLocationService::getRecord()?->getState()?->id == null) {
+                    CustomerLocationService::setRecord(new CustomerLocationModel($main_address->state, $main_address->city));
+                }
                 return redirect()->intended(UserService::getHome($customer_user->user));
             } else {
                 SystemMessageService::addErrorMessage("system_messages.user.login_error");
@@ -193,6 +203,10 @@ class AuthController extends Controller {
             $customer_user = CustomerAuthProvider::register($type, $value, $data);
             if ($customer_user != null) {
                 CustomerAuthProvider::login($customer_user);
+                $main_address = $customer_user->main_address;
+                if($main_address !== null and CustomerLocationService::getRecord()?->getState()?->id == null) {
+                    CustomerLocationService::setRecord(new CustomerLocationModel($main_address->state, $main_address->city));
+                }
                 SystemMessageService::addSuccessMessage("system_messages.user.register_done");
                 return redirect()->intended(UserService::getHome($customer_user->user));
             } else {
