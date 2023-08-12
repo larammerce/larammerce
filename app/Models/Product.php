@@ -134,8 +134,7 @@ use Throwable;
  */
 class Product extends BaseModel implements
     CMSExposedNodeInterface, ShareSubjectInterface, PublishScheduleInterface, ImageOwnerInterface,
-    RateOwnerInterface, SeoSubjectInterface, HashInterface
-{
+    RateOwnerInterface, SeoSubjectInterface, HashInterface {
     use Rateable, Seoable, Fileable, FullTextSearch, Badgeable, Translatable;
 
     public $timestamps = true;
@@ -603,7 +602,9 @@ class Product extends BaseModel implements
     public function save(array $options = []) {
         //TODO: This method content should be moved to accessor methods.
 
-        $this->updateEnabledStatus(false);
+        if ($this->isDirty("count") or $this->isDirty("latest_price") or $this->isDirty("latest_special_price")) {
+            $this->updateEnabledStatus(false);
+        }
         $this->color_code = $this->generateColorCode();
         $this->code = drop_non_ascii($this->code);
 
@@ -963,6 +964,7 @@ class Product extends BaseModel implements
     public function getSeoUrl(): string {
         return $this->getMainProduct()->getFrontUrl();
     }
+
     public function getSeoDescription() {
         return $this->seo_description;
     }
