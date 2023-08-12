@@ -236,7 +236,10 @@ return [
             'important_at' => 'تاریخ اعلام مهم بودن',
             'is_notified' => 'اطلاع رسانی شده است؟',
             'client_ip' => 'آی پی مشتری',
-            'request_counts' => 'تعداد درخواست'
+            'request_counts' => 'تعداد درخواست',
+            "is_tax_included" => "آیا مالیات در قیمت محصول لحاظ شده است؟",
+            "tax_percentage" => "درصد مالیات",
+            "toll_percentage" => "درصد عوارض"
         ],
     'methods' =>
         [

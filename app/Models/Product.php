@@ -24,7 +24,6 @@ use App\Traits\FullTextSearch;
 use App\Traits\Rateable;
 use App\Traits\Seoable;
 use App\Utils\CMS\AdminRequestService;
-use App\Utils\CMS\ProductService;
 use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationModel;
 use App\Utils\Common\EmailService;
 use App\Utils\Common\ImageService;
@@ -99,6 +98,11 @@ use Throwable;
  * @property bool is_package
  * @property integer maximum_allowed_purchase_count
  * @property integer minimum_allowed_purchase_count
+ * @property string main_photo
+ * @property string secondary_photo
+ * @property int tax_percentage
+ * @property int toll_percentage
+ * @property bool is_tax_included
  *
  * @property CustomerLocationModel[] location_limitations
  * @property bool is_location_limited
@@ -156,7 +160,7 @@ class Product extends BaseModel implements
         "is_important", "seo_title", "seo_keywords", "seo_description", "model_id",
         "has_discount", "previous_price", "is_accessory", "is_visible", "inaccessibility_type",
         "cmc_id", "notice", "discount_group_id", "priority", "is_discountable", "structure_sort_score",
-        "is_package", "accessory_for", "count",
+        "is_package", "accessory_for", "count", "is_tax_included", "tax_percentage", "toll_percentage",
         //these are not table fields, these are form sections that role permission system works with
         "tags", "attributes", "gallery", "colors", "badges"
     ];
@@ -167,7 +171,8 @@ class Product extends BaseModel implements
         "is_package" => "bool",
         "is_active" => "bool",
         "is_visible" => "bool",
-        "is_discountable" => "bool"
+        "is_discountable" => "bool",
+        "is_tax_included" => "bool",
     ];
 
     protected $with = [
@@ -220,6 +225,29 @@ class Product extends BaseModel implements
 
     private CMSSettingHelper $cms_setting_helper;
     private NewInvoiceService $new_invoice_service;
+
+    public function getTaxPercentageAttribute() {
+        $this->new_invoice_service = $this->new_invoice_service ?? app(NewInvoiceService::class);
+        $tax_percentage = $this->attributes["tax_percentage"] ?? 0;
+        if ($tax_percentage > 0) {
+            return $tax_percentage;
+        }
+        return $this->new_invoice_service->getProductTaxPercentage();
+    }
+
+    public function getTollPercentageAttribute() {
+        $this->new_invoice_service = $this->new_invoice_service ?? app(NewInvoiceService::class);
+        $toll_percentage = $this->attributes["toll_percentage"] ?? 0;
+        if ($toll_percentage > 0) {
+            return $toll_percentage;
+        }
+        return $this->new_invoice_service->getProductTollPercentage();
+    }
+
+    public function getIsTaxIncludedAttribute() {
+        $this->new_invoice_service = $this->new_invoice_service ?? app(NewInvoiceService::class);
+        return $this->attributes["is_tax_included"] ?? ConfigProvider::isTaxAddedToPrice();
+    }
 
     public function getIsLocationLimitedAttribute(): bool {
         if (config("cms.general.site.enable_directory_location")) {

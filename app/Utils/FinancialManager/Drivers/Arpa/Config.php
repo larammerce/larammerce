@@ -24,4 +24,13 @@ class Config extends BaseFinancialConfig
      * @data(input_type="number")
      */
     public $port;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->token = "";
+        $this->host = "";
+        $this->port = "";
+    }
 }

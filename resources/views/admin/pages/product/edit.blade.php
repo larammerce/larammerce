@@ -240,6 +240,25 @@
     <span class="label">حد اقل موجودی مجاز</span>
     <input class="form-control input-sm" name="min_allowed_count" value="{{ $product->min_allowed_count }}">
     </div>
+    <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12"
+         @roleinput($product, "tax_percentage")>
+    <span class="label">درصد مالیات</span>
+    <input class="form-control input-sm" name="tax_percentage" value="{{ $product->tax_percentage }}">
+    </div>
+    <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12"
+         @roleinput($product, "toll_percentage")>
+    <span class="label">درصد عوارض</span>
+    <input class="form-control input-sm" name="toll_percentage" value="{{ $product->toll_percentage }}">
+    </div>
+    <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12"
+         style="margin-bottom: 40px;" @roleinput($product, "is_tax_included")>
+    <span class="material-switch pull-right">آیا مالیات در قیمت محصول لحاظ شده است؟ &nbsp
+                <input id="is_tax_included" name="is_tax_included" type="checkbox" value="1"
+                       @if($product->is_tax_included) checked @endif/>
+                <label for="is_tax_included"></label>
+            <input id="is_tax_included_hidden" name="is_tax_included" type="hidden" value="0"/>
+            </span>
+    </div>
     @if(is_manual_stock())
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12"
              @roleinput($product, "count")>

@@ -33,6 +33,24 @@ abstract class BaseFinancialConfig extends BaseModel implements JsonSerializable
      */
     public bool $tax_added_to_price;
 
+    /**
+     * @rules(input_rule="number")
+     * @data(input_type="number")
+     */
+    public int $tax_percentage;
+
+    /**
+     * @rules(input_rule="number")
+     * @data(input_type="number")
+     */
+    public int $toll_percentage;
+
+    /**
+     * @rules(input_rule="bool")
+     * @data(input_type="checkbox")
+     */
+    public bool $use_per_product_config;
+
 
     public function __construct()
     {
@@ -40,6 +58,9 @@ abstract class BaseFinancialConfig extends BaseModel implements JsonSerializable
         $this->is_manual_stock = false;
         $this->check_exit_tab_sms_notification = true;
         $this->tax_added_to_price = true;
+        $this->tax_percentage = 6;
+        $this->toll_percentage = 3;
+        $this->use_per_product_config = false;
     }
 
     public function serialize(): bool|string|null
