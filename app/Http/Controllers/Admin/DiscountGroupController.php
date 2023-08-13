@@ -29,8 +29,10 @@ class DiscountGroupController extends BaseController
     public function index(Request $request): Factory|View|Application
     {
         parent::setPageAttribute();
-        $discount_groups = DiscountGroupService::getAll($request);
         $show_deleted = $this->mustShowDeletedItems($request);
+        $discount_groups = $show_deleted ?
+            DiscountGroupService::getDeletedPaginated() :
+            DiscountGroupService::getAllPaginated();
         return view('admin.pages.discount-group.index', compact('discount_groups', 'show_deleted'));
     }
 
@@ -158,7 +160,6 @@ class DiscountGroupController extends BaseController
 
     private function mustShowDeletedItems(Request $request)
     {
-        $show_deleted = $request->has("deleted") ? true : false;
-        return $show_deleted;
+        return $request->has("deleted") ? true : false;
     }
 }
