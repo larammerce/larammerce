@@ -47,7 +47,7 @@
 
                     @if($discount_group->can_delete)
                         <a class="btn btn-sm btn-danger virt-form" data-action="{{ route('admin.discount-group.soft-delete', $discount_group) }}" data-method="DELETE" confirm>
-                            <i class="fa fa-remove"></i>
+                            <i class="fa fa-trash"></i>
                         </a>
                     @endif
                 @else
