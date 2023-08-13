@@ -144,9 +144,10 @@ Route::group(
                 Route::get("{discount_group}/filter/create", ["as" => "product-filter.create", "uses" => "DiscountGroupController@createProductFilter"]);
                 Route::post("{discount_group}/filter", ["as" => "product-filter.attach", "uses" => "DiscountGroupController@attachProductFilter"]);
                 Route::delete("{discount_group}/filter/{product_filter}", ["as" => "product-filter.detach", "uses" => "DiscountGroupController@detachProductFilter"]);
+                Route::delete("{discount_group}/soft-delete", ["as" => "soft-delete", "uses" => "DiscountGroupController@softDelete"]);
             }
         );
-        Route::delete("/admin/discount-group/{discount_group}", ["as" => "admin.discount-group.soft-delete", "uses" => "DiscountGroupController@softDelete"]);
+        
         Route::patch("discount-group?deleted=true/{discount_group}/restore", ["as" => "admin.discount-group.restore", "uses" => "DiscountGroupController@restore"]);
         Route::resource("discount-group", "DiscountGroupController", ["as" => "admin"]);
         
