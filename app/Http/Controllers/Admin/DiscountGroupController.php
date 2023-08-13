@@ -30,8 +30,8 @@ class DiscountGroupController extends BaseController
     {
         parent::setPageAttribute();
         $discount_groups = DiscountGroupService::getAll($request);
-        $is_deleted = DiscountGroupService::getIsDeleted($request);
-        return view('admin.pages.discount-group.index', compact('discount_groups', 'is_deleted'));
+        $show_deleted = $this->mustShowDeletedItems($request);
+        return view('admin.pages.discount-group.index', compact('discount_groups', 'show_deleted'));
     }
 
     /**
@@ -154,5 +154,11 @@ class DiscountGroupController extends BaseController
     public function getModel(): ?string
     {
         return DiscountGroup::class;
+    }
+
+    private function mustShowDeletedItems(Request $request)
+    {
+        $show_deleted = $request->has("deleted") ? true : false;
+        return $show_deleted;
     }
 }

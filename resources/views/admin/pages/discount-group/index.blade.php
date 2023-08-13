@@ -20,7 +20,7 @@
                         {{$sortable_field->title}}
                     </li>
                 @endforeach
-                @if($is_deleted==true)
+                @if($show_deleted==true)
                     <li class="btn btn-default" href="{{route('admin.discount-group.index')}}" act="link">
                         show all
                     </li>

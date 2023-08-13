@@ -14,10 +14,4 @@ class DiscountGroupService
             DiscountGroup::with('cards')->paginate(DiscountGroup::getPaginationCount());
         return $discount_groups;
     }
-
-    public static function getIsDeleted(Request $request)
-    {
-        $is_deleted = $request->has("deleted") ? true : false;
-        return $is_deleted;
-    }
 }

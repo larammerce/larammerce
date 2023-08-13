@@ -24,7 +24,7 @@
         <div class="col-lg-3 col-md-9 col-sm-6 col-xs-12 col">
             <div class="label">عملیات</div>
             <div class="actions-container">
-                @if($is_deleted==false)
+                @if($show_deleted==false)
                     <a class="btn btn-sm btn-primary" href="{{ route('admin.discount-group.edit', $discount_group) }}">
                         <i class="fa fa-pencil"></i>
                     </a>
