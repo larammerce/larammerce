@@ -4,17 +4,20 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Services\DiscountGroup\DiscountGroupService;
+use Exception;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\DiscountGroup;
 use App\Models\ProductFilter;
 use App\Utils\Common\History;
 use Illuminate\Http\Response;
+use PhpParser\Node\Stmt\TryCatch;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\Foundation\Application;
+use App\Services\DiscountGroup\DiscountGroupService;
+use App\Utils\CMS\SystemMessageService;
 
 /**
  * @package App\Http\Controllers\Admin
@@ -99,7 +102,12 @@ class DiscountGroupController extends BaseController
      */
     public function softDelete(DiscountGroup $discount_group)
     {
-        $discount_group->delete();
+        try{
+            $discount_group->delete();
+            SystemMessageService::addSuccessMessage("messages.discount_group.soft_delete_success");
+        }catch(Exception $e){
+            SystemMessageService::addErrorMessage("messages.discount_group.soft_delete_fail");
+        }
         return redirect()->back();
     }
 
@@ -108,8 +116,13 @@ class DiscountGroupController extends BaseController
      */
     public function restore(Request $request, int $discount_group_id)
     {
-        $discount_group = DiscountGroup::onlyTrashed()->find($discount_group_id);
-        $discount_group->restore();
+        try{
+            $discount_group = DiscountGroup::onlyTrashed()->find($discount_group_id);
+            $discount_group->restore();
+            SystemMessageService::addSuccessMessage("messages.discount_group.restore_success");
+        }catch(Exception $e){
+            SystemMessageService::addErrorMessage("messages.discount_group.restore_fail");
+        }
         return redirect()->back();
     }
 
