@@ -148,16 +148,13 @@ Route::group(
                 Route::patch("{discount_group_id}/restore", ["as" => "restore", "uses" => "DiscountGroupController@restore"]);
             }
         );
-        
-        
         Route::resource("discount-group", "DiscountGroupController", ["as" => "admin"]);
         
-
+        //DiscountCard
         Route::group(["prefix" => "discount-card", "as" => "admin.discount-card."],
             function () {
                 Route::post("notify/{discount_card}", ["as" => "notify", "uses" => "DiscountCardController@notify"]);
             });
-        //DiscountCard
         Route::resource("discount-card", "DiscountCardController", ["as" => "admin"]);
 
         //CustomerUserLegalInfo
