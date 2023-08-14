@@ -51,17 +51,9 @@
                         </a>
                     @endif
                 @else
-                    {{-- <a class="btn btn-sm btn-primary virt-form" data-action="{{ route('admin.discount-group.restore', $discount_group) }}" data-method="PATCH" confirm>
+                    <a class="btn btn-sm btn-primary virt-form" data-action="{{ route('admin.discount-group.restore', $discount_group) }}" data-method="PATCH" confirm>
                         <i class="fa fa-undo"></i>
-                    </a> --}}
-                    
-                    <form action="{{route('admin.discount-group.restore', $discount_group)}}" method="POST">
-                        {{csrf_field()}}
-                        {{method_field("PATCH")}}
-                        <button type="submit" class="btn btn-sm btn-primary">
-                            <i class="fa fa-undo"></i>
-                        </button>
-                    </form>
+                    </a>
                 @endif
             </div>
         </div>
