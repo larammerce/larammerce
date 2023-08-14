@@ -106,12 +106,10 @@ class DiscountGroupController extends BaseController
     /**
      * @role(super_user, acc_manager)
      */
-    public function restore(Request $request, DiscountGroup $discount_group)
+    public function restore(Request $request, int $discount_group_id)
     {
-        $discount_group->update([
-            "deleted_at" => NULL
-        ]);
-        // $discount_group->restore();
+        $discount_group = DiscountGroup::onlyTrashed()->find($discount_group_id);
+        $discount_group->restore();
         return redirect()->back();
     }
 
