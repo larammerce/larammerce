@@ -14,7 +14,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-
+use App\Services\Invoice\InvoiceFilterService;
 /**
  * @package App\Http\Controllers\Admin
  * @role(enabled=true)
@@ -35,7 +35,7 @@ class InvoiceController extends BaseController
         $delivery_finish_time = $request->get('finish_hour');
         $first_delivery_date = $request->get('first_date');
         $last_delivery_date = $request->get('last_date');
-
+        $show_filtered = $this->mustShowFilteredItems($request);
         $customerUser = null;
         if (request()->has('customer_user_id')) {
             parent::setPageAttribute(request()->get("customer_user_id"));
@@ -55,10 +55,12 @@ class InvoiceController extends BaseController
                 }
 
             } else {
-                $invoices = Invoice::with(['customer', 'products'])->paginate(Invoice::getPaginationCount());
+                $invoices = $show_filtered ?
+                    InvoiceFilterService::getFilteredPaginated() :
+                    InvoiceFilterService::getAllPaginated();
             }
         }
-        return view('admin.pages.invoice.index', compact('invoices', 'customerUser'));
+        return view('admin.pages.invoice.index', compact('invoices', 'customerUser', 'show_filtered'));
     }
 
     /**
@@ -227,5 +229,10 @@ class InvoiceController extends BaseController
     public function getModel(): ?string
     {
         return Invoice::class;
+    }
+
+    private function mustShowFilteredItems(Request $request)
+    {
+        return $request->has("filtered") ? true : false;
     }
 }

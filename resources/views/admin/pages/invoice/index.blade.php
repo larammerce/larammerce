@@ -36,6 +36,16 @@
                         {{$sortable_field->title}}
                     </li>
                 @endforeach
+                @if($show_filtered)
+                    <li class="btn btn-default" href="{{route('admin.invoice.index')}}" act="link">
+                        show all
+                    </li>
+
+                @else
+                    <li class="btn btn-default" href="{{route('admin.invoice.index')}}?filtered=true" act="link">
+                        show filtered
+                    </li>
+                @endif
             </ul>
         </div>
         <div class="inner-container has-toolbar has-pagination">
