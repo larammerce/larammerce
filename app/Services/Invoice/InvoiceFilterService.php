@@ -3,6 +3,7 @@
 namespace App\Services\Invoice;
 
 use App\Models\Invoice;
+use Illuminate\Http\Request;
 
 class InvoiceFilterService
 {
@@ -11,8 +12,8 @@ class InvoiceFilterService
         return Invoice::paginate(Invoice::getPaginationCount());
     }
 
-    public static function getFilteredPaginated()
+    public static function getFilteredPaginated(Request $request)
     {
-        return Invoice::where('customer_user_id', '33')->paginate(Invoice::getPaginationCount());
+        return Invoice::where('customer_user_id', $request->customer_user_id)->paginate(Invoice::getPaginationCount());
     }
 }
