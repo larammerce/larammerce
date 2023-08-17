@@ -61,6 +61,8 @@ Route::group(
 
                 Route::get("env-file", ["as" => "env-file.edit", "uses" => "EnvFileController@edit"]);
                 Route::put("env-file", ["as" => "env-file.update", "uses" => "EnvFileController@update"]);
+
+                Route::get("database/export", ["as" => "database.export", "uses" => "DatabaseController@export"]);
             });
         Route::resource("setting", "SettingController", ["as" => "admin"]);
 

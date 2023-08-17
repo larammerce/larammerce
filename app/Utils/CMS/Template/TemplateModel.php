@@ -217,11 +217,11 @@ class TemplateModel
                 $underLine = "_";
                 if ((isset($galleryTag->attr[Directives::UNSHARED]) and $galleryTag->attr[Directives::UNSHARED] == "true"))
                     $galleryItemTag->outertext = " @foreach(get_gallery_items(\"$galleryName$underLine\" .".'$directory->id'.
-                        $countString . $randomSelect . ") as \$galleryItem) " . $galleryItemTag->outertext .
+                        $countString . $randomSelect . ") as \$itemIndex => \$galleryItem) " . $galleryItemTag->outertext .
                         " @endforeach ";
                 else
                     $galleryItemTag->outertext = " @foreach(get_gallery_items(\"$galleryName\"" .
-                        $countString . $randomSelect . ") as \$galleryItem) " . $galleryItemTag->outertext .
+                        $countString . $randomSelect . ") as \$itemIndex => \$galleryItem) " . $galleryItemTag->outertext .
                         " @endforeach ";
             }
         }

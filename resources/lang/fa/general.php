@@ -43,6 +43,7 @@ return [
         "color_management" => "مدیریت رنگ‌ها",
         "representative" => "مدیریت معرفین",
         "env_file" => "مدیریت فایل محیطی",
+        "export_database" => "پشتیبان گیری",
     ],
     "shop" => [
         "products" => "محصولات",

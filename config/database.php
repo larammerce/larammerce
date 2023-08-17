@@ -59,6 +59,9 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
+            'dump'=>[
+                'dump_binary_path' => env('DB_DUMP_PATH'), // only the path, so without `mysqldump` or `pg_dump`
+            ]
         ],
 
         "wp_connection" => [
