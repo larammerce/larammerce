@@ -36,6 +36,7 @@ class InvoiceController extends BaseController
         $first_delivery_date = $request->get('first_date');
         $last_delivery_date = $request->get('last_date');
         $show_filtered = $this->mustShowFilteredItems($request);
+        $scope = $show_filtered ? "filtered" : "active";
         $customerUser = null;
         if (request()->has('customer_user_id')) {
             parent::setPageAttribute(request()->get("customer_user_id"));
@@ -55,12 +56,13 @@ class InvoiceController extends BaseController
                 }
 
             } else {
+                parent::setPageAttribute($scope);
                 $invoices = $show_filtered ?
                     InvoiceFilterService::getFilteredPaginated() :
                     InvoiceFilterService::getAllPaginated();
             }
         }
-        return view('admin.pages.invoice.index', compact('invoices', 'customerUser', 'show_filtered'));
+        return view('admin.pages.invoice.index', compact('invoices', 'customerUser', 'show_filtered', 'scope'));
     }
 
     /**
