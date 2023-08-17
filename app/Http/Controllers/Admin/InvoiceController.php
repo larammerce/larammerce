@@ -237,4 +237,9 @@ class InvoiceController extends BaseController
     {
         return $request->has("filtered") ? true : false;
     }
+
+    public function filter()
+    {
+        return view('admin.pages.invoice.filter');
+    }
 }

@@ -113,6 +113,7 @@ Route::group(
                 Route::post("{invoice}/shipment-delivered", ["as" => "set-shipment-delivered", "uses" => "InvoiceController@setShipmentDelivered"]);
                 Route::get("{invoice}/shipment-exit-tab", ["as" => "show-shipment-exit-tab", "uses" => "InvoiceController@showShipmentExitTab"]);
                 Route::post("{invoice}/shipment-exit-tab", ["as" => "set-shipment-exit-tab", "uses" => "InvoiceController@setShipmentExitTab"]);
+                Route::get("/filter", ["as" => "filter", "uses" => "InvoiceController@filter"]);
             });
         Route::resource("invoice", "InvoiceController", ["as" => "admin"]);
 

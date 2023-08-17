@@ -42,7 +42,10 @@
                     </li>
 
                 @else
-                    <li class="btn btn-default" href="{{route('admin.invoice.index')}}?filtered=true" act="link">
+                    {{-- <li class="btn btn-default" href="{{route('admin.invoice.index')}}?filtered=true" act="link">
+                        show filtered
+                    </li> --}}
+                    <li class="btn btn-default" href="{{route('admin.invoice.filter')}}" act="link">
                         show filtered
                     </li>
                 @endif
