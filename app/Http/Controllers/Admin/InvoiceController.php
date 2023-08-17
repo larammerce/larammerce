@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\Invoice\ShipmentStatus;
-use App\Models\CustomerUser;
 use App\Models\Invoice;
-use App\Utils\Common\History;
-use App\Utils\Common\RequestService;
-use App\Utils\Common\SMSService;
-use App\Utils\ShipmentService\Factory as ShipmentFactory;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
-use Illuminate\Http\RedirectResponse;
+use App\Models\CustomerUser;
 use Illuminate\Http\Request;
-use App\Services\Invoice\InvoiceFilterService;
+use App\Utils\Common\History;
+use App\Utils\Common\SMSService;
+use Illuminate\Contracts\View\View;
+use App\Utils\Common\RequestService;
+use App\Enums\Invoice\ShipmentStatus;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\Foundation\Application;
+use App\Utils\ShipmentService\Factory as ShipmentFactory;
 /**
  * @package App\Http\Controllers\Admin
  * @role(enabled=true)
@@ -36,33 +35,39 @@ class InvoiceController extends BaseController
         $first_delivery_date = $request->get('first_date');
         $last_delivery_date = $request->get('last_date');
         $show_filtered = $this->mustShowFilteredItems($request);
-        $scope = $show_filtered ? "filtered" : "active";
         $customerUser = null;
-        if (request()->has('customer_user_id')) {
-            parent::setPageAttribute(request()->get("customer_user_id"));
-            $customerUser = CustomerUser::find(request()->get('customer_user_id'));
-            $invoices = Invoice::where("customer_user_id", request()->get("customer_user_id"))
-                ->with(['customer', 'products'])->paginate(Invoice::getPaginationCount());
-        } else {
-            parent::setPageAttribute();
-            if ($request->has('start_hour')) {
-                if ($last_delivery_date === '') {
-                    $invoices = Invoice::whereBetween('delivery_finish_time', [$delivery_start_time, $delivery_finish_time])
-                        ->with('customer', 'products')->paginate(Invoice::getPaginationCount());
-                } else {
-                    $invoices = Invoice::whereBetween('delivery_finish_time', [$delivery_start_time, $delivery_finish_time])
-                        ->whereBetween('delivery_date', [$first_delivery_date, $last_delivery_date])
-                        ->with('customer', 'products')->paginate(Invoice::getPaginationCount());
-                }
-
+        
+        if(!$show_filtered){
+            if (request()->has('customer_user_id')) {
+                parent::setPageAttribute(request()->get("customer_user_id"));
+                $customerUser = CustomerUser::find(request()->get('customer_user_id'));
+                $invoices = Invoice::where("customer_user_id", request()->get("customer_user_id"))
+                    ->with(['customer', 'products'])->paginate(Invoice::getPaginationCount());
             } else {
-                parent::setPageAttribute($scope);
-                $invoices = $show_filtered ?
-                    InvoiceFilterService::getFilteredPaginated() :
-                    InvoiceFilterService::getAllPaginated();
+                parent::setPageAttribute();
+                if ($request->has('start_hour')) {
+                    if ($last_delivery_date === '') {
+                        $invoices = Invoice::whereBetween('delivery_finish_time', [$delivery_start_time, $delivery_finish_time])
+                            ->with('customer', 'products')->paginate(Invoice::getPaginationCount());
+                    } else {
+                        $invoices = Invoice::whereBetween('delivery_finish_time', [$delivery_start_time, $delivery_finish_time])
+                            ->whereBetween('delivery_date', [$first_delivery_date, $last_delivery_date])
+                            ->with('customer', 'products')->paginate(Invoice::getPaginationCount());
+                    }
+    
+                } else {
+                    parent::setPageAttribute();
+                    $invoices = Invoice::paginate(Invoice::getPaginationCount());
+                }
+            }
+            return view('admin.pages.invoice.index', compact('invoices', 'customerUser', 'show_filtered'));
+        } else {
+            if(request()->has('customer_user_fullname')){
+                parent::setPageAttribute();
+                $invoices = Invoice::where('full_name', request()->get("customer_user_fullname"))->paginate(Invoice::getPaginationCount());;
+                return view('admin.pages.invoice.index', compact('invoices', 'customerUser', 'show_filtered'));
             }
         }
-        return view('admin.pages.invoice.index', compact('invoices', 'customerUser', 'show_filtered', 'scope'));
     }
 
     /**
