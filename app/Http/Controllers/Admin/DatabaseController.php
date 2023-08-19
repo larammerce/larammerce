@@ -17,6 +17,7 @@ class DatabaseController extends BaseController
      * @role(super_user)
      */
     public function export(): BinaryFileResponse {
+        ini_set('memory_limit', '1024M');
         // Define a unique name for the SQL file
         $filename = "database_backup_" . now()->format('Y_m_d_H_i_s') . ".sql";
 
