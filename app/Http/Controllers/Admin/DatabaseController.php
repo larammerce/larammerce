@@ -29,6 +29,7 @@ class DatabaseController extends BaseController
             ->setDbName(config('database.connections.mysql.database'))
             ->setUserName(config('database.connections.mysql.username'))
             ->setPassword(config('database.connections.mysql.password'))
+            ->setHost(config('database.connections.mysql.host'))
             ->dumpToFile($temporaryFilePath);
 
         // Download the SQL file and then delete it from server storage
