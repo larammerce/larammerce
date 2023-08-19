@@ -14,7 +14,8 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
-class SettingRepositoryEloquent implements SettingRepositoryInterface {
+class SettingRepositoryEloquent implements SettingRepositoryInterface
+{
     const CACHE_TAGS = ["settings"];
     const CACHE_TTL = 60 * 24;
 
@@ -29,6 +30,10 @@ class SettingRepositoryEloquent implements SettingRepositoryInterface {
         $cache_key = CacheHelper::getCacheKey([static::class, __FUNCTION__], func_get_args());
         if (Cache::tags(static::CACHE_TAGS)->has($cache_key)) {
             $result = Cache::tags(static::CACHE_TAGS)->get($cache_key);
+            if (is_null($result)) {
+                Cache::tags(static::CACHE_TAGS)->forget($cache_key);
+                throw new CMSRecordNotFoundException("CMS Record with key {$key} not found !");
+            }
         } else {
             try {
                 $result = Setting::cmsRecords()->where("key", $key)->firstOrFail();
@@ -37,6 +42,7 @@ class SettingRepositoryEloquent implements SettingRepositoryInterface {
                 throw new CMSRecordNotFoundException("CMS Record with key {$key} not found !");
             }
         }
+
         return $result;
     }
 
