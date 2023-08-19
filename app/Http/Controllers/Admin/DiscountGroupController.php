@@ -13,6 +13,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Collection;
 
 /**
  * @package App\Http\Controllers\Admin
@@ -27,7 +28,8 @@ class DiscountGroupController extends BaseController
     public function index(): Factory|View|Application
     {
         parent::setPageAttribute();
-        $discount_groups = DiscountGroup::with('cards')->paginate(DiscountGroup::getPaginationCount());
+        /** @var DiscountGroup[]|Collection $discount_groups */
+        $discount_groups = DiscountGroup::query()->paginate(DiscountGroup::getPaginationCount());
         return view('admin.pages.discount-group.index', compact("discount_groups"));
     }
 

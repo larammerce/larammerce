@@ -65,6 +65,14 @@ return [
                     "route" => "admin.setting.language.edit"
                 ]
             ],
+            [
+                "properties" => [
+                    "id" => "export-database",
+                    "name" => "general.setting.export_database",
+                    "icon" => "icon-export-database",
+                    "route" => "admin.setting.database.export"
+                ]
+            ],
         ],
         "explore_appliances" => []
     ],
