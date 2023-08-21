@@ -62,9 +62,9 @@ if (window.PAGE_ID === "admin.pages.upgrade.index")
                             if (lines.length > 0) {
                                 // add the lines to the output div
                                 document.getElementById("output").innerHTML += "<br>" + lines.join("<br>");
-                            } else {
-                                document.getElementById("output").innerHTML += " .";
                             }
+                        } else {
+                            document.getElementById("output").innerHTML += " .";
                         }
 
                         // see if the data.running is false stop the interval
