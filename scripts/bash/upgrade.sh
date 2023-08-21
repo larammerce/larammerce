@@ -79,7 +79,7 @@ update_core() {
     echo "Installing composer packages...done!"
 
     echo "Installing npm packages..."
-    cd "${ECOMMERCE_BASE_PATH}" && npm install "${ECOMMERCE_BASE_PATH}" >>"${UPGRADE_LOG}" 2>&1 || {
+    npm --no-save --prefix "${ECOMMERCE_BASE_PATH}" install "${ECOMMERCE_BASE_PATH}" >>"${UPGRADE_LOG}" 2>&1 || {
         echo "Failed installing npm packages. Please check your package.json file."
         exit 1
     }
@@ -93,7 +93,7 @@ update_core() {
     echo "Running database migrations...done!"
 
     echo "Running npm production build..."
-    cd "${ECOMMERCE_BASE_PATH}" && npm run production >>"${UPGRADE_LOG}" 2>&1 || {
+    npm --no-save --prefix "${ECOMMERCE_BASE_PATH}" run production >>"${UPGRADE_LOG}" 2>&1 || {
         echo "Failed running npm production build. Please check your scripts in package.json."
         exit 1
     }
@@ -169,23 +169,18 @@ update_theme() {
     fi
 
     echo "Installing npm packages..."
-    cd "${THEME_BASE_PATH}" && npm install "${THEME_BASE_PATH}" >>"${UPGRADE_LOG}" 2>&1 || {
+    npm --no-save --prefix "${THEME_BASE_PATH}" install "${THEME_BASE_PATH}" >>"${UPGRADE_LOG}" 2>&1 || {
         echo "Failed installing npm packages. Please check your package.json file."
         exit 1
     }
     echo "Installing npm packages...done!"
 
     echo "Running npm production build..."
-    cd "${THEME_BASE_PATH}" && npm run production >>"${UPGRADE_LOG}" 2>&1 || {
+    npm --no-save --prefix "${THEME_BASE_PATH}" run production >>"${UPGRADE_LOG}" 2>&1 || {
         echo "Failed running npm production build. Please check your scripts in package.json."
         exit 1
     }
     echo "Running npm production build...done!"
-
-    cd "${ECOMMERCE_BASE_PATH}" || {
-        echo "Failed changing directory to ${ECOMMERCE_BASE_PATH}. Please check if the directory exists."
-        exit 1
-    }
 
     if [[ ! -f "${THEME_BASE_PATH}/deploy.sh" ]]; then
         echo "There is no deploy.sh script in the theme project"
