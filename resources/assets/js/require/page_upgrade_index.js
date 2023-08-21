@@ -13,11 +13,20 @@ if (window.PAGE_ID === "admin.pages.upgrade.index")
             }
         }
 
+        function printDot(){
+            if(dotCounter > 5) {
+                dotCounter = 0;
+                document.getElementById("output").innerHTML = "<br/>";
+            }
+            document.getElementById("output").innerHTML += " .";
+        }
+
         function handleUpgrade(url) {
             upgradeInProgress = true;
             toggleLoading();
             let logLines = [];
             let counter = 0;
+            let dotCounter = 0;
 
             jQuery.ajax({
                 url: url,
@@ -27,7 +36,7 @@ if (window.PAGE_ID === "admin.pages.upgrade.index")
                 let gettingLogInProgress = false;
                 const upgradeInterval = setInterval(function () {
                     if (gettingLogInProgress) {
-                        document.getElementById("output").innerHTML += " .";
+                        printDot();
                         return;
                     }
 
@@ -36,6 +45,7 @@ if (window.PAGE_ID === "admin.pages.upgrade.index")
                         upgradeInProgress = false;
                         toggleLoading();
                         document.getElementById("output").innerHTML += "Upgrade timed out!";
+                        dotCounter = 0;
                         return;
                     }
 
@@ -62,9 +72,10 @@ if (window.PAGE_ID === "admin.pages.upgrade.index")
                             if (lines.length > 0) {
                                 // add the lines to the output div
                                 document.getElementById("output").innerHTML += "<br>" + lines.join("<br>");
+                                dotCounter = 0;
                             }
                         } else {
-                            document.getElementById("output").innerHTML += " .";
+                            printDot();
                         }
 
                         // see if the data.running is false stop the interval
@@ -76,15 +87,15 @@ if (window.PAGE_ID === "admin.pages.upgrade.index")
                     }).fail(function (jqXHR, textStatus, errorThrown) {
                         gettingLogInProgress = false;
                         counter += 1;
-                        document.getElementById("output").innerHTML += " .";
-                        console.log()
+                        printDot();
                     });
                 }, 2000);
             }).fail(function (jqXHR, textStatus, errorThrown) {
                 upgradeInProgress = false;
                 toggleLoading();
 
-                document.getElementById("output").innerHTML += "Another upgrade in progress! Try again in a minute!";
+                document.getElementById("output").innerHTML += "Another upgrade in progress! Try again in a minute!<br>";
+                dotCounter = 0;
             });
         }
 

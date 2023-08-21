@@ -13,7 +13,7 @@ const mix = require('laravel-mix');
 
 mix.setPublicPath('public_html');
 
-mix.sass('resources/assets/sass/app.scss', 'public_html/admin_dashboard/css/app-23-08-21r4.css');
+mix.sass('resources/assets/sass/app.scss', 'public_html/admin_dashboard/css/app-23-08-21r5.css');
 
 mix.sass('resources/assets/sass/tinymce-extras.scss', 'public_html/admin_dashboard/css/tinymce-extras.css');
 
@@ -26,4 +26,4 @@ mix.babel([
     'resources/assets/js/init.js',
     'resources/assets/js/define/*.js',
     'resources/assets/js/require/*.js'
-], 'public_html/admin_dashboard/js/all-23-08-21r4.js');
+], 'public_html/admin_dashboard/js/all-23-08-21r5.js');
