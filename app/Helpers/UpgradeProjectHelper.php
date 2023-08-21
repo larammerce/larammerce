@@ -38,7 +38,11 @@ class UpgradeProjectHelper
             return false;
         }
 
-        $output = shell_exec("ps -p $pid");
+        $command = env("UPGRADE_PID_CHECK_COMMAND", "ps -p {{pid}}");
+        // preg replace {{ pid }} with the pid
+        $command = preg_replace("/{{\s*pid\s*}}/", $pid, $command);
+
+        $output = shell_exec($command);
         return str_contains($output, (string)$pid);
     }
 
