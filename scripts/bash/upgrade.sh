@@ -206,8 +206,6 @@ update_theme() {
     echo "Theme Update successfully done!"
 }
 
-check_prerequisites
-
 # Parse the input parameters
 only_core=0
 only_theme=0
@@ -238,6 +236,8 @@ echo "Upgrade log ..." >"${UPGRADE_LOG}"
     echo "NPM: $(npm -v)"
     echo "COMPOSER: $(composer -V)"
 } >>"${UPGRADE_LOG}"
+
+check_prerequisites
 
 if ((only_core)); then
     update_core "$@"
