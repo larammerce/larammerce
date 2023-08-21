@@ -102,8 +102,7 @@ class UpgradeProjectHelper
     }
 
     private static function runProcess($command, $base_path): ?int {
-        // empty the log file
-        file_put_contents(self::getLogFilePath(), "");
+        static::cleanLogFile();
 
         $process = new Process($command);
         $process->setEnv(['PATH' => static::getPathEnv(), 'ECOMMERCE_BASE_PATH' => $base_path]);
