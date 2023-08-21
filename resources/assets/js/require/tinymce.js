@@ -2,6 +2,8 @@ require(['tinymce'], function () {
     window.filemanagerAccessKey = window.filemanagerAccessKey || '';
     tinymce.init({
         selector: '.tinymce',
+        media_strict: false,
+        valid_elements: "*[*]",
         theme: 'modern',
         directionality: 'rtl',
         language: 'fa_IR',

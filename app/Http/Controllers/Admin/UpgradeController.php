@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\UpgradeProjectHelper;
+use App\Jobs\UpgradeProjectJob;
 use App\Services\Common\SSHService;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
 use App\Utils\CMS\Setting\SystemUpgrade\SystemUpgradeSettingService;
 use App\Utils\CMS\SystemMessageService;
 use App\Utils\Common\History;
+use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
-use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\Process;
 
-class UpgradeController extends BaseController {
+class UpgradeController extends BaseController
+{
 
     public function index(Request $request): Factory|View|Application {
         $record = SystemUpgradeSettingService::getRecord();
@@ -75,80 +77,39 @@ class UpgradeController extends BaseController {
         }
     }
 
-    public function doUpgrade(Request $request) {
+    public function doUpgrade(Request $request): \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse {
         ini_set('output_buffering', 'off');
         ini_set('zlib.output_compression', 'off');
         $record = SystemUpgradeSettingService::getRecord();
 
-        $only_theme = $request->input('only_theme');
-        $only_core = $request->input('only_core');
-        $base_path = base_path();
-        $script_path = base_path('scripts/bash/upgrade.sh');
+        $only_theme = $request->input('only_theme') ?? false;
+        $only_core = $request->input('only_core') ?? false;
+        $larammerce_repo_address = $record->getLarammerceRepoAddress();
+        $larammerce_branch_name = $record->getLarammerceBranchName();
+        $larammerce_theme_repo_address = $record->getLarammerceThemeRepoAddress();
+        $larammerce_theme_branch_name = $record->getLarammerceThemeBranchName();
 
-        $command = [$script_path];
-
-        if ($only_core) {
-            $command[] = "--only-core";
+        try {
+            $job = new UpgradeProjectJob(
+                $larammerce_repo_address,
+                $larammerce_branch_name,
+                $larammerce_theme_repo_address,
+                $larammerce_theme_branch_name,
+                $only_core,
+                $only_theme
+            );
+        } catch (Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 401);
         }
 
-        if ($only_theme) {
-            $command[] = "--only-theme";
-        }
+        dispatch($job);
+        return response()->json(['success' => true], 200);
+    }
 
-        $command[] = "--core-path=" . $base_path;
-        $command[] = "--core-repo=" . $record->getLarammerceRepoAddress();
-        $command[] = "--theme-repo=" . $record->getLarammerceThemeRepoAddress();
-
-        if (strlen($record->getLarammerceBranchName()) > 0) {
-            $command[] = "--core-branch=" . $record->getLarammerceBranchName();
-        }
-
-        if (strlen($record->getLarammerceThemeBranchName()) > 0) {
-            $command[] = "--theme-branch=" . $record->getLarammerceThemeBranchName();
-        }
-
-
-        $process = new Process($command);
-        $process->setEnv(['PATH' => $this->getPathEnv(), 'ECOMMERCE_BASE_PATH' => $base_path]);
-        $process->setWorkingDirectory($base_path);
-        $process->setTimeout(3600);
-        $process->start();
-
-        $response = response()->stream(function () use ($process) {
-            while ($process->isRunning()) {
-                $incremental_output = $process->getIncrementalOutput();
-                $incremental_error_output = $process->getIncrementalErrorOutput();
-
-                if (strlen($incremental_output) > 0) {
-                    echo 'data: ' . $incremental_output . "\n";
-                }
-
-                if (strlen($incremental_error_output) > 0) {
-                    echo 'data: ERROR: ' . $incremental_error_output . "\n";
-                }
-
-                if (ob_get_length()) {
-                    ob_flush();
-                }
-
-                flush();
-                sleep(1);
-            }
-
-            if (!$process->isSuccessful()) {
-                throw new ProcessFailedException($process);
-            }
-
-            echo 'data: ' . $process->getIncrementalOutput() . "\n";
-            echo "data: END: \n\n";
-        });
-
-        $response->headers->set('Content-Type', 'text/event-stream');
-        $response->headers->set('Cache-Control', 'no-cache');
-        $response->headers->set('Connection', 'keep-alive');
-        $response->headers->set('X-Accel-Buffering', 'no');
-
-        return $response;
+    public function readLog(Request $request): \Illuminate\Http\JsonResponse {
+        $line_number = intval($request->get("line_number"));
+        $log = UpgradeProjectHelper::tailLogFromLine($line_number);
+        return response()->json(['success' => true, 'log' => $log, 'running' => UpgradeProjectHelper::isRunning()]);
     }
 
     private function extractDomains($repo_urls): array {
@@ -161,23 +122,6 @@ class UpgradeController extends BaseController {
         }
 
         return array_unique($domains);
-    }
-
-    private function getPathEnv() {
-        return "/usr/local/cpanel/3rdparty/lib/path-bin:" .
-            "/usr/local/sbin:" .
-            "/usr/local/bin:" .
-            "/usr/sbin:" .
-            "/usr/bin:" .
-            "/sbin:" .
-            "/bin:" .
-            "/opt/cpanel/composer/bin:" .
-            "/opt/bin:" .
-            "/usr/local/jdk/bin:" .
-            "/usr/kerberos/sbin:" .
-            "/usr/kerberos/bin:" .
-            "/usr/X11R6/bin:" .
-            "/usr/local/bin";
     }
 
     public function getModel(): ?string {

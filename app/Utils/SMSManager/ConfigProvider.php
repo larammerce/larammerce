@@ -95,6 +95,9 @@ class ConfigProvider
      */
     public static function getRules($drivers): array
     {
+        if ($drivers === null)
+            return [];
+
         $rules = [];
         foreach ($drivers as $driver_id => $inputs) {
             $driver_config = self::getDefaultConfig($driver_id);

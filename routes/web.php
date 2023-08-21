@@ -68,6 +68,7 @@ Route::group(
 
         //Upgrade
         Route::any("upgrade", ["as" => "upgrade", "uses" => "UpgradeController@doUpgrade"]);
+        Route::any("upgrade-log", ["as" => "upgrade-log", "uses" => "UpgradeController@readLog"]);
 
         //Shop
         Route::group(["prefix" => "shop", "as" => "admin.shop."],
