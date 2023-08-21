@@ -3,6 +3,8 @@ if (window.PAGE_ID === "admin.pages.upgrade.index")
 
         let upgradeInProgress = false;
         let dotCounter = 0;
+        let logLines = [];
+        let counter = 0;
 
         function toggleLoading() {
             if (upgradeInProgress) {
@@ -19,15 +21,16 @@ if (window.PAGE_ID === "admin.pages.upgrade.index")
                 dotCounter = 0;
                 document.getElementById("output").innerHTML = "<br/>";
             }else{
-                document.getElementById("output").innerHTML += " .";
+                dotCounter += 1;
+                document.getElementById("output").innerHTML += ".";
             }
         }
 
         function handleUpgrade(url) {
             upgradeInProgress = true;
             toggleLoading();
-            let logLines = [];
-            let counter = 0;
+            logLines = [];
+            counter = 0;
 
             jQuery.ajax({
                 url: url,
