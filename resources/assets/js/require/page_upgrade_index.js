@@ -2,7 +2,6 @@ if (window.PAGE_ID === "admin.pages.upgrade.index")
     require(["jquery"], function (jQuery) {
 
         let upgradeInProgress = false;
-        const logLines = [];
 
         function toggleLoading() {
             if (upgradeInProgress) {
@@ -17,20 +16,30 @@ if (window.PAGE_ID === "admin.pages.upgrade.index")
         function handleUpgrade(url) {
             upgradeInProgress = true;
             toggleLoading();
+            let logLines = [];
+            let counter = 0;
 
             jQuery.ajax({
                 url: url,
                 type: 'GET',
                 dataType: 'json'
             }).done(function (data) {
-                let gettingLog = false;
+                let gettingLogInProgress = false;
                 const upgradeInterval = setInterval(function () {
-                    if (gettingLog) {
+                    if (gettingLogInProgress) {
                         document.getElementById("output").innerHTML += " .";
                         return;
                     }
 
-                    gettingLog = true;
+                    if (counter > 10) {
+                        clearInterval(upgradeInterval);
+                        upgradeInProgress = false;
+                        toggleLoading();
+                        document.getElementById("output").innerHTML += "Upgrade timed out!";
+                        return;
+                    }
+
+                    gettingLogInProgress = true;
                     jQuery.ajax({
                         url: '/admin/upgrade-log',
                         data: {
@@ -39,7 +48,8 @@ if (window.PAGE_ID === "admin.pages.upgrade.index")
                         type: 'GET',
                         dataType: 'json'
                     }).done(function (data) {
-                        gettingLog = false;
+                        gettingLogInProgress = false;
+                        counter = 0;
                         if (data.log.length > 0) {
                             // split the data.log with \n
                             const lines = data.log.split("\n");
@@ -60,7 +70,9 @@ if (window.PAGE_ID === "admin.pages.upgrade.index")
                             }
                         }
                     }).fail(function (jqXHR, textStatus, errorThrown) {
-                        gettingLog = false;
+                        gettingLogInProgress = false;
+                        counter += 1;
+                        document.getElementById("output").innerHTML += " .";
                         console.log()
                     });
                 }, 2000);
