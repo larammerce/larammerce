@@ -59,8 +59,12 @@ if (window.PAGE_ID === "admin.pages.upgrade.index")
                             // add the lines to the logLines array
                             logLines.push(...lines);
 
-                            // add the lines to the output div
-                            document.getElementById("output").innerHTML += "<br>" + lines.join("<br>");
+                            if(lines.length > 0){
+                                // add the lines to the output div
+                                document.getElementById("output").innerHTML += "<br>" + lines.join("<br>");
+                            }else{
+                                document.getElementById("output").innerHTML += " .";
+                            }
 
                             // see if the data.running is false stop the interval
                             if (!data.running) {
