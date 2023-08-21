@@ -59,19 +59,19 @@ if (window.PAGE_ID === "admin.pages.upgrade.index")
                             // add the lines to the logLines array
                             logLines.push(...lines);
 
-                            if(lines.length > 0){
+                            if (lines.length > 0) {
                                 // add the lines to the output div
                                 document.getElementById("output").innerHTML += "<br>" + lines.join("<br>");
-                            }else{
+                            } else {
                                 document.getElementById("output").innerHTML += " .";
                             }
+                        }
 
-                            // see if the data.running is false stop the interval
-                            if (!data.running) {
-                                clearInterval(upgradeInterval);
-                                upgradeInProgress = false;
-                                toggleLoading();
-                            }
+                        // see if the data.running is false stop the interval
+                        if (!data.running) {
+                            clearInterval(upgradeInterval);
+                            upgradeInProgress = false;
+                            toggleLoading();
                         }
                     }).fail(function (jqXHR, textStatus, errorThrown) {
                         gettingLogInProgress = false;
