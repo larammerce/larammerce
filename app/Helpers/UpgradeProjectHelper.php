@@ -128,7 +128,7 @@ class UpgradeProjectHelper
     public static function tailLogFromLine(int $line_number): string {
         // return the log file from line $line_number to the end
         $log_file = self::getLogFilePath();
-        return shell_exec("tail -n +$line_number $log_file");
+        return shell_exec("tail -n +$line_number $log_file") ?? "";
     }
 
     public static function cleanLogFile(): void {
