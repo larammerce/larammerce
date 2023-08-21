@@ -105,7 +105,13 @@ class UpgradeProjectHelper
         static::cleanLogFile();
 
         $process = new Process($command);
-        $process->setEnv(['PATH' => static::getPathEnv(), 'ECOMMERCE_BASE_PATH' => $base_path]);
+        $process->setEnv(
+            [
+                'PATH' => static::getPathEnv(),
+                'ECOMMERCE_BASE_PATH' => $base_path,
+                "HOME" => static::getHome()
+            ]
+        );
         $process->setWorkingDirectory($base_path);
         $process->setTimeout(3600);
         $process->start();
@@ -149,5 +155,13 @@ class UpgradeProjectHelper
             "/usr/kerberos/bin:" .
             "/usr/X11R6/bin:" .
             "/usr/local/bin";
+    }
+
+    private static function getHome(): string {
+        $upgrade_home = base_path("data/upgrade-home");
+        if (!file_exists($upgrade_home)) {
+            mkdir($upgrade_home);
+        }
+        return $upgrade_home;
     }
 }
