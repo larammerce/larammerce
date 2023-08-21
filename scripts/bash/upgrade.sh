@@ -74,7 +74,7 @@ update_core() {
     echo "Installing composer packages..."
     composer install --working-dir="${ECOMMERCE_BASE_PATH}" >>"${UPGRADE_LOG}" 2>&1 || {
         echo "Failed installing composer packages. Please check your composer.json file."
-        # exit 1
+        exit 1
     }
     echo "Installing composer packages...done!"
 
