@@ -83,7 +83,7 @@ if (window.PAGE_ID === "admin.pages.upgrade.index")
                         }
 
                         // see if the data.running is false stop the interval
-                        if (!data.running) {
+                        if (!data.running && logLines.length > 0) {
                             clearInterval(upgradeInterval);
                             upgradeInProgress = false;
                             toggleLoading();
