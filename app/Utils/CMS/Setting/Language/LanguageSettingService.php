@@ -98,6 +98,9 @@ class LanguageSettingService extends BaseCMSConfigManager
      */
     public static function getRules($languages): array
     {
+        if(is_null($languages))
+            return [];
+
         $rules = [];
         foreach ($languages as $inputs) {
             $lang_config = new LanguageItemModel();

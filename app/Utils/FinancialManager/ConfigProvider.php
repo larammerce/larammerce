@@ -19,13 +19,11 @@ class ConfigProvider
     /**
      * @throws FinancialDriverInvalidConfigurationException
      */
-    public static function getDefaultConfig(string $driver_id): BaseFinancialConfig
-    {
+    public static function getDefaultConfig(string $driver_id): BaseFinancialConfig {
         return Factory::driver($driver_id)->getDefaultConfig();
     }
 
-    public static function getConfig(string $driver_id): BaseFinancialConfig
-    {
+    public static function getConfig(string $driver_id): BaseFinancialConfig {
         if (count(self::$CACHED_DATA) == 0 or !array_key_exists($driver_id, self::$CACHED_DATA)) {
             $payment_driver_setting_record = FinancialDriverService::getRecord($driver_id);
             self::$CACHED_DATA[$driver_id] = $payment_driver_setting_record->getConfigModel();
@@ -33,8 +31,7 @@ class ConfigProvider
         return self::$CACHED_DATA[$driver_id];
     }
 
-    public static function getAll(): array
-    {
+    public static function getAll(): array {
         $result = [];
         $drivers = Kernel::$drivers;
         foreach ($drivers as $driver_id => $driver_class) {
@@ -51,8 +48,7 @@ class ConfigProvider
      * @throws NotValidSettingRecordException
      * @throws FinancialDriverInvalidConfigurationException
      */
-    public static function setAll(array $drivers): void
-    {
+    public static function setAll(array $drivers): void {
         $last_enabled_driver_id = null;
         foreach ($drivers as $driver_id => $driver_config_data) {
             if (Provider::hasDriver($driver_id)) {
@@ -75,8 +71,7 @@ class ConfigProvider
     /**
      * @throws NotValidSettingRecordException
      */
-    private static function resetEnabledDrivers(array $other_drivers): void
-    {
+    private static function resetEnabledDrivers(array $other_drivers): void {
         foreach ($other_drivers as $other_driver_id => $data) {
             $other_driver_config = self::getConfig($other_driver_id);
             $other_driver_config->is_enabled = false;
@@ -93,8 +88,10 @@ class ConfigProvider
      * @throws AnnotationBadKeyException
      * @throws ReflectionException
      */
-    public static function getRules($drivers): array
-    {
+    public static function getRules($drivers): array {
+        if ($drivers === null)
+            return [];
+
         $rules = [];
         foreach ($drivers as $driver_id => $inputs) {
             $driver_config = self::getDefaultConfig($driver_id);
@@ -104,8 +101,7 @@ class ConfigProvider
         return array_filter($rules);
     }
 
-    public static function isTaxAddedToPrice(): bool
-    {
+    public static function isTaxAddedToPrice(): bool {
         $financial_driver = Provider::getEnabledDriver();
         $tax_added_to_price = true;
         if (strlen($financial_driver) > 0 and Provider::hasDriver($financial_driver)) {
