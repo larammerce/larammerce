@@ -2,6 +2,7 @@ if (window.PAGE_ID === "admin.pages.upgrade.index")
     require(["jquery"], function (jQuery) {
 
         let upgradeInProgress = false;
+        let dotCounter = 0;
 
         function toggleLoading() {
             if (upgradeInProgress) {
@@ -17,8 +18,9 @@ if (window.PAGE_ID === "admin.pages.upgrade.index")
             if(dotCounter > 5) {
                 dotCounter = 0;
                 document.getElementById("output").innerHTML = "<br/>";
+            }else{
+                document.getElementById("output").innerHTML += " .";
             }
-            document.getElementById("output").innerHTML += " .";
         }
 
         function handleUpgrade(url) {
@@ -26,7 +28,6 @@ if (window.PAGE_ID === "admin.pages.upgrade.index")
             toggleLoading();
             let logLines = [];
             let counter = 0;
-            let dotCounter = 0;
 
             jQuery.ajax({
                 url: url,
