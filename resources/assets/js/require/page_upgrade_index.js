@@ -16,11 +16,11 @@ if (window.PAGE_ID === "admin.pages.upgrade.index")
             }
         }
 
-        function printDot(){
-            if(dotCounter > 5) {
+        function printDot() {
+            if (dotCounter > 5) {
                 dotCounter = 0;
-                document.getElementById("output").innerHTML = "<br/>";
-            }else{
+                document.getElementById("output").innerHTML += "<br/>";
+            } else if (logLines.length > 0) {
                 dotCounter += 1;
                 document.getElementById("output").innerHTML += ".";
             }
