@@ -89,9 +89,9 @@ class UpgradeProjectHelper
             $command[] = "--only-theme";
         }
 
+        $command[] = "--core-path=" . $base_path;
         $command[] = "--theme-repo=" . $larammerce_theme_repo_address;
         $command[] = "--core-repo=" . $larammerce_repo_address;
-        $command[] = "--core-path=" . $base_path;
 
         if (strlen($larammerce_branch_name) > 0) {
             $command[] = "--core-branch=" . $larammerce_branch_name;
