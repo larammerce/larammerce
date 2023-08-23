@@ -2,9 +2,11 @@
 
 namespace App\Jobs\Product;
 
+use App\Jobs\ImageResizer;
 use App\Models\Product;
 use App\Services\Product\ProductWatermarkService;
 use App\Utils\CMS\Setting\ProductWatermark\ProductWatermarkSettingModel;
+use App\Utils\Common\ImageService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -26,11 +28,15 @@ class ApplyProductWatermarkJob implements ShouldQueue {
 
     public function handle(ProductWatermarkService $image_watermark_service) {
         if ($this->is_force or $this->product->watermark_uuid !== $this->product_watermark_setting->getWatermarkUUID()) {
-            $image_watermark_service->applyWatermark($this->product->main_photo, $this->product_watermark_setting);
-            $image_watermark_service->applyWatermark($this->product->secondary_photo, $this->product_watermark_setting);
-
-            foreach($this->product->images as $product_image) {
+            foreach ($this->product->images as $product_image) {
                 $image_watermark_service->applyWatermark($product_image->getImagePath(), $this->product_watermark_setting);
+
+                foreach (ImageService::getImageConfig("product") as $key => $value) {
+                    if ($key != 'ratio' and in_array(strtolower($product_image->extension), ['jpg', 'png', 'webp'])) {
+                        $job = new ImageResizer(public_path($product_image->getImagePath()), $product_image->path, $key, $value["width"], $value["height"]);
+                        $job->handle();
+                    }
+                }
             }
         }
     }

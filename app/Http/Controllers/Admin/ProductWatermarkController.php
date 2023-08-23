@@ -9,6 +9,7 @@ use App\Utils\CMS\Setting\ProductWatermark\ProductWatermarkSettingService;
 use App\Utils\CMS\SystemMessageService;
 use App\Utils\Common\History;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 /**
  * @role(enabled=true)
@@ -64,12 +65,16 @@ class ProductWatermarkController extends BaseController {
             $apply_product_watermark = new ApplyProductWatermarkJob($product, $watermark_setting);
             $this->dispatch($apply_product_watermark);
         } else {
-            Product::with(["images"])->chunk(100, function (Product $products) use ($watermark_setting) {
-                foreach ($products as $product) {
-                    $apply_product_watermark = new ApplyProductWatermarkJob($product, $watermark_setting);
-                    $this->dispatch($apply_product_watermark);
-                }
-            });
+            Product::with(["images"])->chunk(100,
+                /**
+                 * @param Collection|Product[] $products
+                 */
+                function (array|Collection $products) use ($watermark_setting) {
+                    foreach ($products as $product) {
+                        $apply_product_watermark = new ApplyProductWatermarkJob($product, $watermark_setting);
+                        $this->dispatch($apply_product_watermark);
+                    }
+                });
         }
 
         SystemMessageService::addSuccessMessage("messages.product_watermark.process.success");
