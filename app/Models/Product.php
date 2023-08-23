@@ -281,11 +281,11 @@ class Product extends BaseModel implements
     }
 
     public function getMainPhotoAttribute(): string {
-        return $this->getMainPhoto();
+        return ImageService::getImage($this, "preview");
     }
 
     public function getSecondaryPhotoAttribute(): string {
-        return $this->getSecondaryPhoto();
+        return ImageService::getImage($this->getSecondaryPhoto(), "preview");
     }
 
     public function getFinManPriceAttribute(): int {
@@ -821,11 +821,11 @@ class Product extends BaseModel implements
 
     public function hasImage(): bool {
         $main_photo = $this->getMainPhoto();
-        return $main_photo != null and strlen($main_photo) > 0;
+        return $main_photo != null and strlen($main_photo->getImagePath()) > 0;
     }
 
     public function getImagePath(): string {
-        return $this->getMainPhoto();
+        return $this->getMainPhoto()->getImagePath();
     }
 
     public function setImagePath(): void {
@@ -845,8 +845,11 @@ class Product extends BaseModel implements
     }
 
     public function getMainPhoto(): ?ProductImage {
-        if(isset($this->attributes["main_photo"]))
-            return $this->attributes["main_photo"];
+        if (isset($this->attributes["main_photo"])) {
+            $photo = new ProductImage();
+            $photo->setFullPath($this->attributes["main_photo"]);
+            return $photo;
+        }
         if (isset($this->relations["images"])) {
             foreach ($this->images as $image) {
                 if ($image->is_main)
@@ -858,8 +861,11 @@ class Product extends BaseModel implements
     }
 
     public function getSecondaryPhoto(): ?ProductImage {
-        if(isset($this->attributes["secondary_photo"]))
-            return $this->attributes["secondary_photo"];
+        if (isset($this->attributes["secondary_photo"])) {
+            $photo = new ProductImage();
+            $photo->setFullPath($this->attributes["secondary_photo"]);
+            return $photo;
+        }
         if (isset($this->relations["images"])) {
             foreach ($this->images as $image) {
                 if ($image->is_secondary)
