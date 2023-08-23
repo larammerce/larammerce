@@ -281,11 +281,11 @@ class Product extends BaseModel implements
     }
 
     public function getMainPhotoAttribute(): string {
-        return $this->attributes["main_photo"] ?? ImageService::getImage($this, "preview");
+        return $this->getMainPhoto();
     }
 
     public function getSecondaryPhotoAttribute(): string {
-        return $this->attributes["secondary_photo"] ?? ImageService::getImage($this->getSecondaryPhoto(), "preview");
+        return $this->getSecondaryPhoto();
     }
 
     public function getFinManPriceAttribute(): int {
@@ -820,11 +820,12 @@ class Product extends BaseModel implements
     }
 
     public function hasImage(): bool {
-        return strlen($this->main_photo) > 0;
+        $main_photo = $this->getMainPhoto();
+        return $main_photo != null and strlen($main_photo) > 0;
     }
 
     public function getImagePath(): string {
-        return $this->main_photo;
+        return $this->getMainPhoto();
     }
 
     public function setImagePath(): void {
