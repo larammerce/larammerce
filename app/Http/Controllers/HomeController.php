@@ -21,11 +21,9 @@ use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Stevebauman\Location\Facades\Location;
 
-class HomeController extends Controller
-{
+class HomeController extends Controller {
 
-    public function main(Request $request)
-    {
+    public function main(Request $request) {
         $url_path = $request->path();
         $shortened_link = $url_path;
         $url_path = ($url_path != "/" ? "/" : "") . $url_path;
@@ -82,8 +80,7 @@ class HomeController extends Controller
         abort(404);
     }
 
-    private function visitShortLink(ShortLink $short_link): RedirectResponse
-    {
+    private function visitShortLink(ShortLink $short_link): RedirectResponse {
         $path = $short_link->link;
         $link_id = $short_link->id;
         $views_count = Cache::get('short-link:views:' . $link_id);
@@ -102,15 +99,13 @@ class HomeController extends Controller
         return redirect()->to($path);
     }
 
-    public function showWebPage(Directory $directory, $cart_rows): Factory|Application|View
-    {
+    public function showWebPage(Directory $directory, $cart_rows): Factory|Application|View {
         $web_page = $directory->webPage;
         return h_view("public." . $web_page->blade_name,
             compact("web_page", "directory", "cart_rows"));
     }
 
-    public function showProduct(Product $product): Factory|Application|View
-    {
+    public function showProduct(Product $product): Factory|Application|View {
         if ($product->is_visible or (get_user() !== false and get_user()->is_system_user)) {
             $attributes = PAttr::getProductAttributes($product);
             $blade_name = $product->productStructure->blade_name ?: 'product-single';
@@ -122,16 +117,23 @@ class HomeController extends Controller
         abort(404);
     }
 
-    public function showBlog(Article $article): Factory|Application|View
-    {
+    public function showBlog(Article $article): Factory|Application|View {
         $blade_name = get_article_single_blade($article->content_type);
         return h_view($blade_name, compact("article"));
     }
 
-    private function showProductFilter(Directory $directory, $cart_rows, bool $needs_landing = false): Factory|Application|View
-    {
-        $product_ids = $directory->leafProducts()->mainModels()->visible()->pluck("products.id")->toArray();
-        $filter_data = ProductService::getFilterData($product_ids);
+    private function showProductFilter(Directory $directory, $cart_rows, bool $needs_landing = false): Factory|Application|View {
+        $product_ids = $directory->leafProducts()->visible()->pluck("products.id")->toArray();
+        if (count($product_ids) > 3000) {
+            $filter_data = [
+                "price_range" => ["min" => 0, "max" => Product::query()->max("latest_price")],
+                "keys" => [],
+                "colors" => [],
+                "directories" => [$directory]
+            ];
+        } else {
+            $filter_data = ProductService::getFilterData($product_ids);
+        }
         if ($needs_landing) {
             $web_page = $directory->webPage;
             if ($web_page != null)
@@ -142,17 +144,24 @@ class HomeController extends Controller
             compact("directory", "cart_rows"))->with($filter_data);
     }
 
-    private function showProductCustomFilter(Directory $directory, ProductFilter $product_filter, $cart_rows): Factory|Application|View
-    {
-        $product_ids = $product_filter->getQuery()->mainModels()->visible()->pluck("products.id")->toArray();
-        $filter_data = ProductService::getFilterData($product_ids);
+    private function showProductCustomFilter(Directory $directory, ProductFilter $product_filter, $cart_rows): Factory|Application|View {
+        $product_ids = $product_filter->getQuery()->visible()->pluck("products.id")->toArray();
+        if (count($product_ids) > 3000) {
+            $filter_data = [
+                "price_range" => ["min" => 0, "max" => Product::query()->max("latest_price")],
+                "keys" => [],
+                "colors" => [],
+                "directories" => [$directory]
+            ];
+        } else {
+            $filter_data = ProductService::getFilterData($product_ids);
+        }
         $web_page = $directory->webPage;
         return h_view("public." . $web_page->blade_name,
             compact("product_filter", "web_page", "cart_rows"))->with($filter_data);
     }
 
-    private function showBlogList($directory): Factory|Application|View
-    {
+    private function showBlogList($directory): Factory|Application|View {
         $articles = $directory->getPaginatedBlog();
         $blade_name = get_article_list_blade($directory);
         return h_view($blade_name, compact("articles", "directory"));
@@ -161,8 +170,7 @@ class HomeController extends Controller
     /**
      * @rules(query="required")
      */
-    public function search(): RedirectResponse|Factory|Application|View
-    {
+    public function search(): RedirectResponse|Factory|Application|View {
         $query = request("query");
         $product_ids = Product::search($query)->pluck("id")->toArray();
 

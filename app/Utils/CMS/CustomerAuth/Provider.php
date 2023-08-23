@@ -41,7 +41,6 @@ class Provider
      */
     public static function sendOneTimeCode($type, $value)
     {
-
         OneTimeCodeProvider::generate($value, 1);
         $oneTimeCode = OneTimeCodeProvider::getCode($value);
         switch ($type) {
