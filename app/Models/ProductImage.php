@@ -144,4 +144,11 @@ class ProductImage extends BaseModel implements ImageOwnerInterface
     {
         return true;
     }
+
+    public function setFullPath(string $full_path) {
+        // extract the full path and set the fillables
+        $this->path = dirname($full_path);
+        $this->real_name = basename($full_path);
+        $this->extension = pathinfo($full_path, PATHINFO_EXTENSION);
+    }
 }
