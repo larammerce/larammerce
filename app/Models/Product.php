@@ -24,7 +24,6 @@ use App\Traits\FullTextSearch;
 use App\Traits\Rateable;
 use App\Traits\Seoable;
 use App\Utils\CMS\AdminRequestService;
-use App\Utils\CMS\ProductService;
 use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationModel;
 use App\Utils\Common\EmailService;
 use App\Utils\Common\ImageService;
@@ -72,6 +71,7 @@ use Throwable;
  * @property float average_rating
  * @property int rates_count
  * @property int count
+ * @property string watermark_uuid
  * @property boolean is_active
  * @property DateTime important_at
  * @property boolean is_important
@@ -156,7 +156,7 @@ class Product extends BaseModel implements
         "is_important", "seo_title", "seo_keywords", "seo_description", "model_id",
         "has_discount", "previous_price", "is_accessory", "is_visible", "inaccessibility_type",
         "cmc_id", "notice", "discount_group_id", "priority", "is_discountable", "structure_sort_score",
-        "is_package", "accessory_for", "count",
+        "is_package", "accessory_for", "count", "watermark_uuid",
         //these are not table fields, these are form sections that role permission system works with
         "tags", "attributes", "gallery", "colors", "badges"
     ];
@@ -284,11 +284,11 @@ class Product extends BaseModel implements
     }
 
     public function getMainPhotoAttribute(): string {
-        return ImageService::getImage($this, "preview");
+        return $this->attributes["main_photo"] ?? ImageService::getImage($this, "preview");
     }
 
     public function getSecondaryPhotoAttribute(): string {
-        return ImageService::getImage($this->getSecondaryPhoto(), "preview");
+        return $this->attributes["secondary_photo"] ?? ImageService::getImage($this->getSecondaryPhoto(), "preview");
     }
 
     public function getFinManPriceAttribute(): int {

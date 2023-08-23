@@ -63,6 +63,11 @@ Route::group(
                 Route::put("env-file", ["as" => "env-file.update", "uses" => "EnvFileController@update"]);
 
                 Route::get("database/export", ["as" => "database.export", "uses" => "DatabaseController@export"]);
+
+                Route::get("product-watermark/edit", ["as" => "product-watermark.edit", "uses" => "ProductWatermarkController@edit"]);
+                Route::put("product-watermark/", ["as" => "product-watermark.update", "uses" => "ProductWatermarkController@update"]);
+                Route::any("product-watermark/process", ["as" => "product-watermark.process", "uses" => "ProductWatermarkController@process"]);
+                Route::any("product-watermark/remove-image", ["as" => "product-watermark.remove-image", "uses" => "ProductWatermarkController@removeImage"]);
             });
         Route::resource("setting", "SettingController", ["as" => "admin"]);
 
