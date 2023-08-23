@@ -61,4 +61,5 @@
 @section('form_footer')
     <button type="submit" class="btn btn-default btn-sm">ذخیره</button>
     <input type="submit" class="btn btn-warning btn-sm" name="exit" value="ذخیره و خروج">
+    <a class="btn btn-danger btn-sm" href="{{route("admin.setting.product-watermark.process")}}">بازسازی همه محصولات</a>
 @endsection
