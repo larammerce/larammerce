@@ -51,7 +51,7 @@
                 <div class="photo-container">
                     <a href="{{ route('admin.setting.product-watermark.remove-image')  }}"
                        class="btn btn-sm btn-danger btn-remove">x</a>
-                    <img src="{{ $watermark_setting->getImagePath() }}" style="height: 200px;">
+                    <img src="{{ $watermark_setting->getImagePath() }}" style="width: 150px;">
                 </div>
             @endif
         </div>
