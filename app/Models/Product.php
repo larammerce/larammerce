@@ -855,6 +855,8 @@ class Product extends BaseModel implements
     }
 
     public function getMainPhoto(): ?ProductImage {
+        if(isset($this->attributes["main_photo"]))
+            return $this->attributes["main_photo"];
         if (isset($this->relations["images"])) {
             foreach ($this->images as $image) {
                 if ($image->is_main)
@@ -866,6 +868,8 @@ class Product extends BaseModel implements
     }
 
     public function getSecondaryPhoto(): ?ProductImage {
+        if(isset($this->attributes["secondary_photo"]))
+            return $this->attributes["secondary_photo"];
         if (isset($this->relations["images"])) {
             foreach ($this->images as $image) {
                 if ($image->is_secondary)
