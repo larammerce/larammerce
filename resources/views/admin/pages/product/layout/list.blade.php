@@ -71,6 +71,9 @@
                         <i class="fa fa-percent"></i>
                     </a>
                 @endif
+                <a class="btn btn-sm btn-warning" href="{{route('admin.setting.product-watermark.process') . "?product_id={$product->id}"}}">
+                    <i class="fa fa-picture-o"></i>
+                </a>
             </div>
         </div>
     </div>

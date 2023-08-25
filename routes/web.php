@@ -63,6 +63,11 @@ Route::group(
                 Route::put("env-file", ["as" => "env-file.update", "uses" => "EnvFileController@update"]);
 
                 Route::get("database/export", ["as" => "database.export", "uses" => "DatabaseController@export"]);
+
+                Route::get("product-watermark/edit", ["as" => "product-watermark.edit", "uses" => "ProductWatermarkController@edit"]);
+                Route::put("product-watermark/", ["as" => "product-watermark.update", "uses" => "ProductWatermarkController@update"]);
+                Route::any("product-watermark/process", ["as" => "product-watermark.process", "uses" => "ProductWatermarkController@process"]);
+                Route::any("product-watermark/remove-image", ["as" => "product-watermark.remove-image", "uses" => "ProductWatermarkController@removeImage"]);
             });
         Route::resource("setting", "SettingController", ["as" => "admin"]);
 
@@ -233,6 +238,8 @@ Route::group(
                 Route::get("{directory}/special-price", ["as" => "special-price.edit", "uses" => "DirectoryController@editSpecialPrice"]);
                 Route::post("{directory}/special-price", ["as" => "special-price.update", "uses" => "DirectoryController@updateSpecialPrice"]);
                 Route::delete("{directory}/special-price", ["as" => "special-price.destroy", "uses" => "DirectoryController@destroySpecialPrice"]);
+                Route::get("{directory}/sync", ["as" => "sync", "uses" => "DirectoryController@sync"]);
+                Route::get("cache-clear", ["as" => "cache-clear", "uses" => "DirectoryController@cacheClear"]);
             });
         Route::resource("directory", "DirectoryController", ["as" => "admin"]);
 
@@ -284,6 +291,7 @@ Route::group(
                 Route::put("{product}/publish", ["as" => "publish", "uses" => "ProductController@publish"]);
                 Route::put("{product}/clone", ["as" => "clone", "uses" => "ProductController@cloneModel"]);
                 Route::get("{product}/models", ["as" => "models", "uses" => "ProductController@models"]);
+                Route::get("cache-clear", ["as" => "cache-clear", "uses" => "DirectoryController@cacheClear"]);
             });
         Route::resource("product", "ProductController", ["as" => "admin"]);
 
