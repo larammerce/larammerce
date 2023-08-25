@@ -1737,3 +1737,71 @@ if (!function_exists('is_android')) {
         return DetectService::isAndroid();
     }
 }
+
+if (!function_exists('get_related_products_according_to_structures')) {
+    /**
+     * @param Product $product
+     * @param array|Collection $keys_to_be_the_same
+     * @param array|Collection $keys_to_be_different
+     * @return void
+     */
+    function get_related_products_according_to_structures(
+        Product          $product,
+        array|Collection $keys_to_be_the_same,
+        array|Collection $keys_to_be_different,
+        int              $limit_count = 5
+    ) {
+        if ($keys_to_be_the_same instanceof Collection) {
+            $keys_to_be_the_same = $keys_to_be_the_same->all();
+        }
+
+        if ($keys_to_be_different instanceof Collection) {
+            $keys_to_be_different = $keys_to_be_different->all();
+        }
+
+        $keys_to_be_different = array_map(function ($iter_key) {
+            if (is_int($iter_key)) {
+                return $iter_key;
+            }
+
+            if ($iter_key instanceof PStructureAttrKey) {
+                return $iter_key->id;
+            }
+
+            return null;
+        }, $keys_to_be_different);
+
+        // filter not null values for keys_to_be_different
+        $keys_to_be_different = array_filter($keys_to_be_different, function ($iter_key) {
+            return $iter_key !== null;
+        });
+
+        $keys_to_be_the_same = array_map(function ($iter_key) {
+            if (is_int($iter_key)) {
+                return $iter_key;
+            }
+
+            if ($iter_key instanceof PStructureAttrKey) {
+                return $iter_key->id;
+            }
+
+            return null;
+        }, $keys_to_be_the_same);
+
+        // filter not null values for keys_to_be_the_same
+        $keys_to_be_the_same = array_filter($keys_to_be_the_same, function ($iter_key) {
+            return $iter_key !== null;
+        });
+
+        $values_to_not_to_have = $product->pAttributes()->whereIn("p_structure_attr_key_id", $keys_to_be_different)
+            ->pluck("p_structure_attr_value_id")->toArray();
+        $values_to_have = $product->pAttributes()->whereIn("p_structure_attr_key_id", $keys_to_be_the_same)
+            ->pluck("p_structure_attr_value_id")->toArray();
+
+        return Product::whereHas("pAttributes", function ($query) use ($values_to_not_to_have) {
+            $query->whereNotIn("p_structure_attr_value_id", $values_to_not_to_have);
+        })->whereHas("pAttributes", function ($query) use ($values_to_have) {
+            $query->whereIn("p_structure_attr_value_id", $values_to_have);
+        })->where("is_active", true)->mainModels()->visible()->latest()->take($limit_count)->get();
+    }
+}
