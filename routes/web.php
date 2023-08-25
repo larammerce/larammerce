@@ -61,11 +61,14 @@ Route::group(
 
                 Route::get("env-file", ["as" => "env-file.edit", "uses" => "EnvFileController@edit"]);
                 Route::put("env-file", ["as" => "env-file.update", "uses" => "EnvFileController@update"]);
+
+                Route::get("database/export", ["as" => "database.export", "uses" => "DatabaseController@export"]);
             });
         Route::resource("setting", "SettingController", ["as" => "admin"]);
 
         //Upgrade
         Route::any("upgrade", ["as" => "upgrade", "uses" => "UpgradeController@doUpgrade"]);
+        Route::any("upgrade-log", ["as" => "upgrade-log", "uses" => "UpgradeController@readLog"]);
 
         //Shop
         Route::group(["prefix" => "shop", "as" => "admin.shop."],

@@ -239,7 +239,10 @@ return [
             'request_counts' => 'تعداد درخواست',
             "is_tax_included" => "آیا مالیات در قیمت محصول لحاظ شده است؟",
             "tax_percentage" => "درصد مالیات",
-            "toll_percentage" => "درصد عوارض"
+            "toll_percentage" => "درصد عوارض",
+            'depth' => 'عمق',
+            'is_hidden' => 'مخفی بودن',
+            'metadata' => 'اطلاعات و داده های مازاد',
         ],
     'methods' =>
         [
@@ -312,6 +315,11 @@ return [
             'view_import' => 'نمایش فرم ورود گروهی اطلاعات',
             'import' => 'ورود گروهی اطلاعات',
             'get_import_sample' => 'دریافت نمونه فایل ورود اطلاعات',
+            'save_config' => 'ذخیره تنظیمات',
+            'do_upgrade' => 'اجرای به روز رسانی',
+            'read_log' => 'دریافت لاگ به روز رسانی',
+            'download_excel' => 'دانلود فایل اکسل',
+            'upload_excel' => 'آپلود فایل اکسل',
         ],
     'classes' =>
         [
@@ -383,6 +391,12 @@ return [
             'product_package_item' => 'آیتم پکیج محصول',
             'robot_txt_record' => 'رکورد تنظیمات ربات جستجوگر',
             'short_link_statistic' => 'آمار لینک کوتاه',
+            'database' => 'دیتابیس/ پایگاه داده',
+            'env_file' => 'فایل محیطی',
+            'live_reports' => 'گزارشات زنده',
+            'upgrade' => 'به روز رسانی',
+            'w_p_post' => 'پست ورد پرس',
+            'w_p_post_meta' => 'اطلاعات پست ورد پرس',
         ],
     'actions' =>
         [
@@ -455,5 +469,10 @@ return [
             'view_import' => 'None',
             'import' => 'None',
             'get_import_sample' => 'None',
+            'save_config' => 'None',
+            'do_upgrade' => 'None',
+            'read_log' => 'None',
+            'download_excel' => 'None',
+            'upload_excel' => 'None',
         ],
 ];
