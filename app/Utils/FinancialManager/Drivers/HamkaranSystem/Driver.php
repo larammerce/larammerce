@@ -101,7 +101,8 @@ class Driver implements BaseDriver
                     return $customer->id;
             }
         }
-        Log::warning('fin_manager.add_customer.std_false:' . $user->id . ':' . $is_legal . ':' . json_encode($user) . ":" . json_encode($curl_result));
+        Log::warning('fin_manager.add_customer.std_false:user_id.' . $user->id . ':is_legal.' . $is_legal .
+            ':user.' . json_encode($user) . ":curl_result." . json_encode($curl_result) . ":customer." . json_encode($customer));
         return false;
     }
 
