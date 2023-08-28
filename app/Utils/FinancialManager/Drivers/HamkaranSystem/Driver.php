@@ -15,21 +15,18 @@ class Driver implements BaseDriver
 {
     const DRIVER_ID = "hamkaran";
 
-    public function getId(): string
-    {
+    public function getId(): string {
         return self::DRIVER_ID;
     }
 
-    public function getDefaultConfig(): Config
-    {
+    public function getDefaultConfig(): Config {
         return new Config();
     }
 
     /**
      * @return Customer[]
      */
-    public function getAllCustomers()
-    {
+    public function getAllCustomers() {
         //There is no get all customers web service in hamkaran system.
         return [];
     }
@@ -37,8 +34,7 @@ class Driver implements BaseDriver
     /**
      * @param $phone_number
      */
-    public function getCustomerByPhone($phone_number): Customer|bool
-    {
+    public function getCustomerByPhone($phone_number): Customer|bool {
         $config = ConfigProvider::getConfig(self::DRIVER_ID);
         $curl_result = ConnectionFactory::create("/System/BusinessRuleEngine/Service.svc/Call", $config)
             ->withData([
@@ -57,8 +53,7 @@ class Driver implements BaseDriver
     /**
      * @param string $relation
      */
-    public function getCustomerByRelation($relation): Customer|bool
-    {
+    public function getCustomerByRelation($relation): Customer|bool {
         $config = ConfigProvider::getConfig(self::DRIVER_ID);
         $curl_result = ConnectionFactory::create("/System/BusinessRuleEngine/Service.svc/Call", $config)
             ->withData([
@@ -80,8 +75,7 @@ class Driver implements BaseDriver
      * @param User $user
      * @param boolean $is_legal
      */
-    public function addCustomer($user, $is_legal): string|bool
-    {
+    public function addCustomer($user, $is_legal): string|bool {
         $customer = $is_legal ? ModelTransformer::legalUserToFinCustomer($user) : ModelTransformer::userToFinCustomer($user);
         $std_customer = ModelTransformer::customerModelToStd($customer);
         if ($std_customer === false) {
@@ -107,6 +101,7 @@ class Driver implements BaseDriver
                     return $customer->id;
             }
         }
+        Log::warning('fin_manager.add_customer.std_false:' . $user->id . ':' . $is_legal . ':' . json_encode($user) . ":" . json_encode($curl_result));
         return false;
     }
 
@@ -115,8 +110,7 @@ class Driver implements BaseDriver
      * @param boolean $is_legal
      * @param array $config
      */
-    public function editCustomer($user, $is_legal, $config = []): bool
-    {
+    public function editCustomer($user, $is_legal, $config = []): bool {
         //There is no edit customer in hamkaran webservices.
         return true;
     }
@@ -124,8 +118,7 @@ class Driver implements BaseDriver
     /**
      * @return Product[]
      */
-    public function getAllProducts()
-    {
+    public function getAllProducts() {
         //There is no get all products web service in hamkaran system.
         return [];
     }
@@ -133,8 +126,7 @@ class Driver implements BaseDriver
     /**
      * @param string $code
      */
-    public function getProduct($code): Product|bool
-    {
+    public function getProduct($code): Product|bool {
         $config = ConfigProvider::getConfig(self::DRIVER_ID);
         $curl_result = ConnectionFactory::create("/System/BusinessRuleEngine/Service.svc/Call", $config)
             ->withData([
@@ -150,23 +142,21 @@ class Driver implements BaseDriver
     /**
      * @param string $code
      */
-    public function getProductCount($code): int|bool
-    {
+    public function getProductCount($code): int|bool {
         return false;
     }
 
     /**
      * @param Invoice $invoice
      */
-    public function addPreInvoice($invoice): string|bool
-    {
+    public function addPreInvoice($invoice): string|bool {
         foreach ($invoice->rows as $row) {
             $extras = array_filter(json_decode($row->product->extra_properties),
                 function ($extra) {
                     return strtoupper($extra->key) == "ID";
                 }
             );
-            if (count(is_countable($extras)?$extras :[]) > 0) {
+            if (count(is_countable($extras) ? $extras : []) > 0) {
                 $row->hamkaran_product_id = array_pop($extras)->value;
             } else {
                 $hamkaran_product = $this->getProduct($row->product->code);
@@ -201,11 +191,10 @@ class Driver implements BaseDriver
      * @param string $fin_relation
      * @throws InvalidFinRelationException
      */
-    public function deletePreInvoice($fin_relation): bool
-    {
+    public function deletePreInvoice($fin_relation): bool {
         $config = ConfigProvider::getConfig(self::DRIVER_ID);
         $curl_result = ConnectionFactory::create("/Sales/OrderManagement/Services/OrderManagementService.svc/ChangeQuotationState/{$fin_relation}/Canceled",
-        $config)
+            $config)
             ->asJson()
             ->returnResponseObject()
             ->post();
@@ -222,8 +211,7 @@ class Driver implements BaseDriver
     /**
      * @param string $fin_relation
      */
-    public function submitWarehousePermission($fin_relation): string|bool
-    {
+    public function submitWarehousePermission($fin_relation): string|bool {
         $config = ConfigProvider::getConfig(self::DRIVER_ID);
         $curl_result = ConnectionFactory::create("/Sales/OrderManagement/Services/OrderManagementService.svc/ChangeQuotationState/{$fin_relation}/Confirmed",
             $config)
@@ -236,8 +224,7 @@ class Driver implements BaseDriver
     /**
      * @param string $fin_relation
      */
-    public function checkExitTab($fin_relation): bool
-    {
+    public function checkExitTab($fin_relation): bool {
         $config = ConfigProvider::getConfig(self::DRIVER_ID);
         $curl_result = ConnectionFactory::create("/System/BusinessRuleEngine/Service.svc/Call", $config)
             ->withData([
@@ -256,8 +243,7 @@ class Driver implements BaseDriver
     /**
      * @param integer $standard_price
      */
-    public function convertPrice($standard_price): int
-    {
+    public function convertPrice($standard_price): int {
         return $standard_price;
     }
 }
