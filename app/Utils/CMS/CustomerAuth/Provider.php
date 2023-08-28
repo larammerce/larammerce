@@ -4,6 +4,7 @@
 namespace App\Utils\CMS\CustomerAuth;
 
 
+use App\Enums\Customer\Gender;
 use App\Jobs\SendEmail;
 use App\Utils\CMS\SystemMessageService;
 use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
@@ -27,8 +28,7 @@ class Provider
      * @param string $value
      * @return bool
      */
-    public static function isPasswordAuthPossible($type, $value)
-    {
+    public static function isPasswordAuthPossible($type, $value) {
         $customerUser = self::getCustomerUser($type, $value);
         return $customerUser != null and $customerUser->user->hasSetPassword();
     }
@@ -39,8 +39,7 @@ class Provider
      * @throws GenerateCodeNotPossibleException
      * @throws BadAuthTypeException
      */
-    public static function sendOneTimeCode($type, $value)
-    {
+    public static function sendOneTimeCode($type, $value) {
 
         OneTimeCodeProvider::generate($value, 1);
         $oneTimeCode = OneTimeCodeProvider::getCode($value);
@@ -71,8 +70,7 @@ class Provider
      * @throws SecurityLevelException
      * @throws BadValidationCodePassed
      */
-    public static function validateByCode($type, $value, $code)
-    {
+    public static function validateByCode($type, $value, $code) {
         if (OneTimeCodeProvider::check($value, $code)) {
             OneTimeCodeProvider::clear($value);
             $customerUser = self::getCustomerUser($type, $value);
@@ -94,8 +92,7 @@ class Provider
      * @return CustomerUser|null
      * @throws BadLoginException
      */
-    public static function validateByPassword($type, $value, $password)
-    {
+    public static function validateByPassword($type, $value, $password) {
         $customerUser = self::getCustomerUser($type, $value);
         if ($customerUser != null) {
             if (Hash::check($password, $customerUser->user->password)) {
@@ -117,27 +114,30 @@ class Provider
      * @return CustomerUser
      * @throws VerificationException
      */
-    public static function register($type, $value, $data)
-    {
+    public static function register($type, $value, $data) {
         if (!SessionService::hasVal($value)) {
             throw new VerificationException("The request with value `{$value}` is not verified yet.");
         }
 
-        $newUser = User::create([
-            "name" => $data["name"],
-            "family" => $data["family"],
-            "username" => $data["main_phone"],
-            "email" => $data["email"],
-            "representative_username" => $data["representative_username"] ?? "",
-            "representative_type" => $data["representative_type"] ?? "",
-            "is_email_confirmed" => ($type == AuthType::EMAIL),
-            "is_system_user" => false,
-            "is_customer_user" => true,
-            "gender" => 2,
-        ]);
+        // Check if there are any user with the username equal to $data["main_phone"]
+        $user = User::where("username", $data["main_phone"])->first();
+        if (is_null($user)) {
+            $user = User::create([
+                "name" => $data["name"],
+                "family" => $data["family"],
+                "username" => $data["main_phone"],
+                "email" => $data["email"],
+                "representative_username" => $data["representative_username"] ?? "",
+                "representative_type" => $data["representative_type"] ?? "",
+                "is_email_confirmed" => ($type == AuthType::EMAIL),
+                "is_system_user" => false,
+                "is_customer_user" => true,
+                "gender" => Gender::NONE,
+            ]);
+        }
 
         $customerUser = CustomerUser::create([
-            "user_id" => $newUser->id,
+            "user_id" => $user->id,
             "main_phone" => $data["main_phone"],
             "national_code" => $data["national_code"] ?? null,
             "is_legal_person" => false,
@@ -154,8 +154,7 @@ class Provider
      * @param $value
      * @return CustomerUser|null
      */
-    private static function getCustomerUser($type, $value)
-    {
+    private static function getCustomerUser($type, $value) {
         $type = AuthType::fix($type);
         $customerUser = null;
         if ($type == AuthType::MOBILE)
@@ -167,8 +166,7 @@ class Provider
         return $customerUser;
     }
 
-    public static function login(CustomerUser $customer_user): void
-    {
+    public static function login(CustomerUser $customer_user): void {
         auth('web')->login($customer_user->user);
         SystemMessageService::addInfoMessage("system_messages.user.login_message",
             ["name" => $customer_user->user->full_name]);
