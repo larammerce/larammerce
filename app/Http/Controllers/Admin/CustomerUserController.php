@@ -44,7 +44,7 @@ class CustomerUserController extends BaseController
     /**
      * @role(super_user, cms_manager, acc_manager)
      * @rules(user_id="required|exists:users,id", main_phone="required|unique:customer_users",
-     *     is_legal_person="boolean", national_code="required|national_code", credit="numeric",
+     *     is_legal_person="boolean", national_code="nullable|national_code", credit="numeric",
      *     bank_account_card_number="nullable|min:16|max:16", bank_account_uuid="nullable|min:24|max:24")
      */
     public function store(Request $request): RedirectResponse|Response
