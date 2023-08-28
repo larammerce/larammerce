@@ -921,7 +921,7 @@ if (!function_exists('get_configurations')) {
 
 if (!function_exists('get_searched_products')) {
     function get_searched_products() {
-        return Product::search(request('query'))->mainModels()->visible()->get();
+        return Product::search(request('query'), 1)->mainModels()->visible()->get();
     }
 }
 

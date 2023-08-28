@@ -71,7 +71,7 @@ class ShopController extends BaseController
         }
 
         if (request()->has("query"))
-            $products = $products->search(request("query"));
+            $products = $products->search(request("query"), 1);
 
         if (request()->has("product_ids"))
             $products = $products->whereIn("id", request("product_ids"));
@@ -136,7 +136,7 @@ class ShopController extends BaseController
     {
         $products_count = request()->has("products_count") ? request()->get("products_count") : 4;
         $directories_count = request()->has("directories_count") ? request()->get("directories_count") : 3;
-        $products = Product::search(request()->get("query"))->mainModels()->visible();
+        $products = Product::search(request()->get("query"), 1)->mainModels()->visible();
 
         $directories = Directory::where("content_type", DirectoryType::PRODUCT)->search(request()->get("query"), 1)
             ->take($directories_count)->get();
