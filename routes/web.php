@@ -70,6 +70,12 @@ Route::group(
         Route::any("upgrade", ["as" => "upgrade", "uses" => "UpgradeController@doUpgrade"]);
         Route::any("upgrade-log", ["as" => "upgrade-log", "uses" => "UpgradeController@readLog"]);
 
+        //DebugLog
+        Route::get("debug-log", ["as" => "admin.debug-log.index", "uses" => "DebugLogController@index"]);
+        Route::get("debug-log/search", ["as" => "admin.debug-log.search", "uses" => "DebugLogController@search"]);
+        Route::get("debug-log/view", ["as" => "admin.debug-log.view", "uses" => "DebugLogController@view"]);
+        Route::get("debug-log/download", ["as" => "admin.debug-log.download", "uses" => "DebugLogController@download"]);
+
         //Shop
         Route::group(["prefix" => "shop", "as" => "admin.shop."],
             function () {
@@ -632,7 +638,7 @@ Route::group(
         "prefix" => "health",
         "as" => "health."
     ],
-    function (){
+    function () {
         Route::get("dbversion", [
             "as" => "dbversion",
             "uses" => "HealthController@getDBVersion"

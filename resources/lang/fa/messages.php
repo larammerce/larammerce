@@ -81,4 +81,8 @@ return [
         "importable_attributes_not_set" => "فیلد های قابل خروجی گرفتن تعریف نشده اند",
         "row_validation_failed" => "متاسفانه اطلاعات موجود در خط :row معتبر نمی‌باشد. :message"
     ],
+
+    "debug_log" => [
+        "unknown_debug_log_type_error" => "نوع لاگ مورد نظر معتبر نمی‌باشد",
+    ]
 ];
