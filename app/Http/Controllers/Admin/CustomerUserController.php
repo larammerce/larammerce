@@ -23,8 +23,7 @@ class CustomerUserController extends BaseController
     /**
      * @role(super_user, cms_manager, acc_manager)
      */
-    public function index(): Factory|View|Application
-    {
+    public function index(): Factory|View|Application {
         parent::setPageAttribute();
         $customer_users = CustomerUser::with('user', 'addresses', 'invoices')
             ->paginate(CustomerUser::getPaginationCount());
@@ -35,9 +34,10 @@ class CustomerUserController extends BaseController
      * @role(super_user, cms_manager, acc_manager)
      * @rules(id="required|exists:users,id")
      */
-    public function create(): Factory|View|Application
-    {
+    public function create(): Application|Factory|View|RedirectResponse {
         $user = User::find(request()->get('id'));
+        if ($user->customerUser !== null)
+            return redirect()->route('admin.customer-user.edit', $user->customerUser->id);
         return view('admin.pages.customer-user.create', compact('user'));
     }
 
@@ -47,8 +47,7 @@ class CustomerUserController extends BaseController
      *     is_legal_person="boolean", national_code="nullable|national_code", credit="numeric",
      *     bank_account_card_number="nullable|min:16|max:16", bank_account_uuid="nullable|min:24|max:24")
      */
-    public function store(Request $request): RedirectResponse|Response
-    {
+    public function store(Request $request): RedirectResponse|Response {
         RequestService::setAttr('is_initiated', true);
         RequestService::setAttr('is_active', false);
         $customer = CustomerUser::create($request->all());
@@ -65,8 +64,7 @@ class CustomerUserController extends BaseController
     /**
      * @role(super_user, cms_manager, acc_manager)
      */
-    public function show(CustomerUser $customer_user)
-    {
+    public function show(CustomerUser $customer_user) {
         //TODO : we must make a view page for customer_users
         return response()->make('customer user show page');
     }
@@ -74,8 +72,7 @@ class CustomerUserController extends BaseController
     /**
      * @role(super_user, cms_manager, acc_manager)
      */
-    public function edit(CustomerUser $customer_user): Factory|View|Application
-    {
+    public function edit(CustomerUser $customer_user): Factory|View|Application {
         $customer_user->load('user', 'addresses', 'invoices');
         return view('admin.pages.customer-user.edit')->with(compact("customer_user"));
     }
@@ -85,8 +82,7 @@ class CustomerUserController extends BaseController
      * @rules(main_phone="required", is_legal_person="boolean", credit="numeric",
      *     bank_account_card_number="nullable|min:16|max:16", bank_account_uuid="nullable|min:24|max:24")
      */
-    public function update(Request $request, CustomerUser $customer_user): RedirectResponse
-    {
+    public function update(Request $request, CustomerUser $customer_user): RedirectResponse {
         $customer_user->update($request->all());
         $customer_user->user->updateFinManCustomer();
         return History::redirectBack();
@@ -95,8 +91,7 @@ class CustomerUserController extends BaseController
     /**
      * @role(super_user)
      */
-    public function destroy(CustomerUser $customer_user): RedirectResponse
-    {
+    public function destroy(CustomerUser $customer_user): RedirectResponse {
         $customer_user->delete();
         return back();
     }
@@ -104,8 +99,7 @@ class CustomerUserController extends BaseController
     /**
      * @role(super_user, cms_manager, acc_manager)
      */
-    public function activate(Request $request, CustomerUser $customer_user): RedirectResponse
-    {
+    public function activate(Request $request, CustomerUser $customer_user): RedirectResponse {
         if ($customer_user->user->saveFinManCustomer())
             $customer_user->update(['is_active' => true]);
         else
@@ -114,8 +108,7 @@ class CustomerUserController extends BaseController
     }
 
 
-    public function getModel(): ?string
-    {
+    public function getModel(): ?string {
         return CustomerUser::class;
     }
 }
