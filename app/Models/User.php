@@ -125,11 +125,6 @@ class User extends BaseModel implements
         return $this->name . " " . $this->family;
     }
 
-    public function getIsSystemUserAttribute(): bool {
-        $is_system_user = $this->attributes["is_system_user"] ?? false;
-        return $is_system_user and $this->systemUser != null;
-    }
-
     public function getIsCustomerUserAttribute(): bool {
         $is_customer_user = $this->attributes["is_customer_user"] ?? false;
         return $is_customer_user and $this->customerUser != null;
