@@ -37,7 +37,7 @@ class CustomerUserController extends BaseController
     public function create(): Application|Factory|View|RedirectResponse {
         $user = User::find(request()->get('id'));
         if ($user->customerUser !== null)
-            return redirect()->route('admin.customer-user.edit', $user->customerUser->id);
+            return redirect()->route('admin.user.edit', $user->id);
         return view('admin.pages.customer-user.create', compact('user'));
     }
 
@@ -58,7 +58,7 @@ class CustomerUserController extends BaseController
         else
             SystemMessageService::addErrorMessage("messages.customer_user.activation_failed");
 
-        return redirect()->route('admin.customer-user.edit');
+        return redirect()->route('admin.customer-user.edit', $customer->id);
     }
 
     /**
