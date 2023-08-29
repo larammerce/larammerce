@@ -46,6 +46,7 @@
     "sentry/sentry-laravel": "^3.4",
     "spatie/db-dumper": "^3.4",
     "stevebauman/location": "^6.1",
+    "teamtnt/tntsearch": "^4.1",
     "tymon/jwt-auth": "1.0.*@dev",
     "yangqi/htmldom": "dev-master"
   },
