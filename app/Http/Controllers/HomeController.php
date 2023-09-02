@@ -172,7 +172,7 @@ class HomeController extends Controller {
      */
     public function search(): RedirectResponse|Factory|Application|View {
         $query = request("query");
-        $product_ids = Product::search($query)->pluck("id")->toArray();
+        $product_ids = Product::search($query, 1)->pluck("id")->toArray();
 
         if (count(is_countable($product_ids) ? $product_ids : []) === 1) {
             $found_product = Product::find($product_ids[0]);
