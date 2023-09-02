@@ -125,7 +125,7 @@ class ShopController extends BaseController
         } else {
             $products = $products->orderBy("priority", "ASC");
         }
-        return $products->paginate(Product::getFilterPaginationCount());
+        return $products->with(["directory", "discountGroup"])->paginate(Product::getFilterPaginationCount());
     }
 
     /**
