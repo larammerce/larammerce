@@ -152,16 +152,17 @@ Route::group(
                 Route::get("{discount_group}/filter/create", ["as" => "product-filter.create", "uses" => "DiscountGroupController@createProductFilter"]);
                 Route::post("{discount_group}/filter", ["as" => "product-filter.attach", "uses" => "DiscountGroupController@attachProductFilter"]);
                 Route::delete("{discount_group}/filter/{product_filter}", ["as" => "product-filter.detach", "uses" => "DiscountGroupController@detachProductFilter"]);
+                Route::delete("{discount_group}/soft-delete", ["as" => "soft-delete", "uses" => "DiscountGroupController@softDelete"]);
+                Route::patch("{discount_group_id}/restore", ["as" => "restore", "uses" => "DiscountGroupController@restore"]);
             }
         );
         Route::resource("discount-group", "DiscountGroupController", ["as" => "admin"]);
-
-
+        
+        //DiscountCard
         Route::group(["prefix" => "discount-card", "as" => "admin.discount-card."],
             function () {
                 Route::post("notify/{discount_card}", ["as" => "notify", "uses" => "DiscountCardController@notify"]);
             });
-        //DiscountCard
         Route::resource("discount-card", "DiscountCardController", ["as" => "admin"]);
 
         //CustomerUserLegalInfo

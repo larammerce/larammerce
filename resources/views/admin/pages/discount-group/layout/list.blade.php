@@ -17,32 +17,44 @@
             <div class="label">کد پسین</div>
             <div>{{$discount_group->postfix}}</div>
         </div>
-        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-3 col">
+        <div class="col-lg-2 col-md-3 col-sm-6 col-xs-3 col">
             <div class="label">انقضا</div>
             <div>{{$discount_group->has_expiration ? JDate::forge($discount_group->expiration_date)->format("Y/m/d") : "-"}}</div>
         </div>
-        <div class="col-lg-2 col-md-9 col-sm-6 col-xs-12 col">
+        <div class="col-lg-3 col-md-9 col-sm-6 col-xs-12 col">
             <div class="label">عملیات</div>
             <div class="actions-container">
-                <a class="btn btn-sm btn-primary" href="{{ route('admin.discount-group.edit', $discount_group) }}">
-                    <i class="fa fa-pencil"></i>
-                </a>
-                <a class="btn btn-sm @if($discount_group->is_active) btn-danger @else btn-info @endif virt-form"
-                   data-action="{{ route('admin.discount-group.destroy', $discount_group) }}"
-                   data-method="DELETE" confirm>
-                    @if($discount_group->is_active)
-                        <i class="fa fa-stop"></i>
-                    @else
-                        <i class="fa fa-play"></i>
+                @if(!$show_deleted)
+                    <a class="btn btn-sm btn-primary" href="{{ route('admin.discount-group.edit', $discount_group) }}">
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                    <a class="btn btn-sm @if($discount_group->is_active) btn-danger @else btn-info @endif virt-form"
+                    data-action="{{ route('admin.discount-group.destroy', $discount_group) }}"
+                    data-method="DELETE" confirm>
+                        @if($discount_group->is_active)
+                            <i class="fa fa-stop"></i>
+                        @else
+                            <i class="fa fa-play"></i>
+                        @endif
+                    </a>
+                    <a class="btn btn-sm btn-success" href="{{ route('admin.discount-group.show', $discount_group) }}">
+                        <i class="fa fa-ticket"></i>
+                    </a>
+                    <a class="btn btn-sm btn-success"
+                    href="{{ route('admin.discount-group.product-filter.index', $discount_group) }}">
+                        <i class="fa fa-cubes"></i>
+                    </a>
+
+                    @if($discount_group->can_delete)
+                        <a class="btn btn-sm btn-danger virt-form" data-action="{{ route('admin.discount-group.soft-delete', $discount_group) }}" data-method="DELETE" confirm>
+                            <i class="fa fa-trash"></i>
+                        </a>
                     @endif
-                </a>
-                <a class="btn btn-sm btn-success" href="{{ route('admin.discount-group.show', $discount_group) }}">
-                    <i class="fa fa-ticket"></i>
-                </a>
-                <a class="btn btn-sm btn-success"
-                   href="{{ route('admin.discount-group.product-filter.index', $discount_group) }}">
-                    <i class="fa fa-cubes"></i>
-                </a>
+                @else
+                    <a class="btn btn-sm btn-primary virt-form" data-action="{{ route('admin.discount-group.restore', $discount_group) }}" data-method="PATCH" confirm>
+                        <i class="fa fa-undo"></i>
+                    </a>
+                @endif
             </div>
         </div>
     </div>
