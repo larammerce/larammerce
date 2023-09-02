@@ -17,6 +17,7 @@ class DatabaseController extends BaseController
      * @role(super_user)
      */
     public function export(): BinaryFileResponse {
+        ini_set('memory_limit', '1024M');
         // Define a unique name for the SQL file
         $filename = "database_backup_" . now()->format('Y_m_d_H_i_s') . ".sql";
 
@@ -29,6 +30,7 @@ class DatabaseController extends BaseController
             ->setDbName(config('database.connections.mysql.database'))
             ->setUserName(config('database.connections.mysql.username'))
             ->setPassword(config('database.connections.mysql.password'))
+            ->setHost(config('database.connections.mysql.host'))
             ->dumpToFile($temporaryFilePath);
 
         // Download the SQL file and then delete it from server storage

@@ -22,21 +22,18 @@ class Driver implements BaseDriver
 {
     const DRIVER_ID = 'arpa';
 
-    public function getId(): string
-    {
+    public function getId(): string {
         return self::DRIVER_ID;
     }
 
-    public function getDefaultConfig(): Config
-    {
+    public function getDefaultConfig(): Config {
         return new Config();
     }
 
     /**
      * @return Customer[]
      */
-    public function getAllCustomers()
-    {
+    public function getAllCustomers() {
         $config = ConfigProvider::getConfig(self::DRIVER_ID);
         $curl_result = ConnectionFactory::create('/serv/api/GetBusiness', $config)
             ->asJson()
@@ -53,8 +50,7 @@ class Driver implements BaseDriver
     /**
      * @param string $phone_number
      */
-    public function getCustomerByPhone($phone_number): Customer|bool
-    {
+    public function getCustomerByPhone($phone_number): Customer|bool {
         $config = ConfigProvider::getConfig(self::DRIVER_ID);
         $curl_result = ConnectionFactory::create('/serv/api/GetBusiness', $config)
             ->withData(['MobileNo' => $phone_number])
@@ -74,8 +70,7 @@ class Driver implements BaseDriver
     /**
      * @param string $relation
      */
-    public function getCustomerByRelation($relation): Customer|bool
-    {
+    public function getCustomerByRelation($relation): Customer|bool {
         $integerId = intval($relation);
         $config = ConfigProvider::getConfig(self::DRIVER_ID);
         $curl_result = ConnectionFactory::create('/serv/api/GetBusiness', $config)
@@ -98,8 +93,7 @@ class Driver implements BaseDriver
      * @param User $user
      * @param boolean $is_legal
      */
-    public function addCustomer($user, $is_legal): string|bool
-    {
+    public function addCustomer($user, $is_legal): string|bool {
         $customer = $is_legal ? ModelTransformer::legalUserToFinCustomer($user) : ModelTransformer::userToFinCustomer($user);
         $std_customer = ModelTransformer::customerModelToStd($customer);
         if ($std_customer === false)
@@ -109,9 +103,10 @@ class Driver implements BaseDriver
             ->withData(['data' => $std_customer])->asJson()
             ->post();
 
-        if(!is_null($curl_result->data)){
+        if (!is_null($curl_result->data)) {
             return $curl_result->data->result;
         } else {
+            Log::warning('fin_manager.add_customer.std_false:' . $user->id . ':' . $is_legal . ':' . json_encode($user) . ":" . json_encode($curl_result));
             return false;
         }
     }
@@ -121,8 +116,7 @@ class Driver implements BaseDriver
      * @param boolean $is_legal
      * @param array $user_config
      */
-    public function editCustomer($user, $is_legal, $user_config = []): bool
-    {
+    public function editCustomer($user, $is_legal, $user_config = []): bool {
         $customer = $is_legal ? ModelTransformer::legalUserToFinCustomer($user) :
             ModelTransformer::userToFinCustomer($user);
         $customer = ModelTransformer::userConfigToFinCustomer($customer, $user_config);
@@ -156,8 +150,7 @@ class Driver implements BaseDriver
     /**
      * @return Product[]
      */
-    public function getAllProducts()
-    {
+    public function getAllProducts() {
         $config = ConfigProvider::getConfig(self::DRIVER_ID);
         $curl_result = ConnectionFactory::create('/serv/api/GetItem', $config)
             ->asJson()
@@ -174,8 +167,7 @@ class Driver implements BaseDriver
     /**
      * @param string $code
      */
-    public function getProduct($code): Product|bool
-    {
+    public function getProduct($code): Product|bool {
         $config = ConfigProvider::getConfig(self::DRIVER_ID);
         $curl_result = ConnectionFactory::create('/serv/api/GetItem', $config)
             ->withData(['ItemCode' => $code])
@@ -196,8 +188,7 @@ class Driver implements BaseDriver
     /**
      * @param string $code
      */
-    public function getProductCount($code): int|bool
-    {
+    public function getProductCount($code): int|bool {
         $config = ConfigProvider::getConfig(self::DRIVER_ID);
         $curl_result = ConnectionFactory::create('/serv/api/GetStock', $config)
             ->withData(['ItemCode' => $code])
@@ -215,8 +206,7 @@ class Driver implements BaseDriver
     /**
      * @param Invoice $invoice
      */
-    public function addPreInvoice($invoice): string|bool
-    {
+    public function addPreInvoice($invoice): string|bool {
         $customerUser = $invoice->customer;
 
         /* TODO : here is a circular dependency,
@@ -253,8 +243,7 @@ class Driver implements BaseDriver
     /**
      * @param string $fin_relation
      */
-    public function deletePreInvoice($fin_relation): bool
-    {
+    public function deletePreInvoice($fin_relation): bool {
         $fin_relation = json_decode($fin_relation);
 
         if ($fin_relation == null)
@@ -277,8 +266,7 @@ class Driver implements BaseDriver
     /**
      * @param string $fin_relation
      */
-    public function submitWarehousePermission($fin_relation): string|bool
-    {
+    public function submitWarehousePermission($fin_relation): string|bool {
         $fin_relation = json_decode($fin_relation);
 
         if ($fin_relation == null)
@@ -309,8 +297,7 @@ class Driver implements BaseDriver
     /**
      * @param string $warehouse_permission_data
      */
-    public function checkExitTab($warehouse_permission_data): bool
-    {
+    public function checkExitTab($warehouse_permission_data): bool {
         $warehouse_permission_data = json_decode($warehouse_permission_data);
 
         if ($warehouse_permission_data == null)
@@ -332,8 +319,7 @@ class Driver implements BaseDriver
     /**
      * @param integer $standard_price
      */
-    public function convertPrice($standard_price): int
-    {
+    public function convertPrice($standard_price): int {
         return $standard_price;
     }
 }

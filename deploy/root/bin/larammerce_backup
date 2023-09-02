@@ -92,7 +92,7 @@ create_files_backup() {
     FILENAME="${BACKUP_DIR}/complete/${HOST}-${DATE}-files.tar.gz"
     echo -ne "$(date +"%Y-%m-%d %H:%M:%S"): Compressing files ..." | tee -a ${LOG_FILE}
     mkdir -p "${BACKUP_DIR}/complete"
-    tar --ignore-failed-read --warning=no-file-changed -czf ${FILENAME} --absolute-names /etc/httpd /etc/php-fpm.d ${PROJECT_DIRS} >> ${LOG_FILE} 2>&1
+    tar --ignore-failed-read -czf ${FILENAME} --absolute-names --exclude='*.log' /etc/httpd /etc/php-fpm.d ${PROJECT_DIRS} >> ${LOG_FILE} 2>&1
     echo -e "\e[32m Done!\e[0m" | tee -a ${LOG_FILE}
 }
 
@@ -130,7 +130,7 @@ create_db_backup() {
 }
 
 cleanup_local() {
-    find "${BACKUP_DIR}/${1}" -name "*-${DATE}.tar.gz" -mtime +${2} -delete
+    find "${BACKUP_DIR}/" -type f -mtime +${1} -delete
 }
 
 cleanup_s3() {
@@ -160,7 +160,7 @@ test_config() {
 case $1 in
     --db-only)
         create_db_backup
-        cleanup_local db-only 24
+        cleanup_local 2
         push_s3 db-only
         cleanup_s3 db-only 48
         echo "Backup Process Ended at $(date)" >> ${LOG_FILE}
@@ -168,8 +168,7 @@ case $1 in
     --complete)
         create_files_backup
         create_db_backup
-        cleanup_local complete 2
-        cleanup_local db-only 24
+        cleanup_local 2
         push_s3 complete
         push_s3 db-only
         cleanup_s3 complete 168
