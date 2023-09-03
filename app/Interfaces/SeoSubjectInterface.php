@@ -7,29 +7,35 @@
  */
 
 namespace App\Interfaces;
-
-
-interface SeoSubjectInterface
-{
+interface SeoSubjectInterface {
     /*
      *  Relation Methods
      */
     public function review();
+
     public function createReview();
+
     public function updateReview();
 
     /*
      *  Helper Methods
      */
     public function getAdminEditUrl();
+
     public function getType();
+
     public function getTitle();
+
     public function getFrontUrl();
 
     /*
      *  Getter Methods
      */
     public function getSeoDescription();
+
     public function getSeoKeywords();
+
     public function getSeoTitle();
+
+    public function getSeoUrl();
 }

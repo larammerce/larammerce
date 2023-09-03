@@ -44,6 +44,7 @@ return [
         "representative" => "مدیریت معرفین",
         "env_file" => "مدیریت فایل محیطی",
         "export_database" => "پشتیبان گیری",
+        "product_watermark" => "مدیریت واترمارک",
     ],
     "shop" => [
         "products" => "محصولات",
@@ -106,8 +107,21 @@ return [
         1 => "قبل از خرید",
         2 => "بعد از خرید"
     ],
+  
     "debug_log_type" => [
         "default" => "پیش فرض",
         "data_tmp" => "داده های موقت"
     ],
+
+    "product_watermark_position" => [
+        "top_left" => "بالا چپ",
+        "top_right" => "بالا راست",
+        "bottom_left" => "پایین چپ",
+        "bottom_right" => "پایین راست",
+        "center" => "وسط",
+        "top_center" => "بالا وسط",
+        "bottom_center" => "پایین وسط",
+        "left_center" => "چپ وسط",
+        "right_center" => "راست وسط",
+    ]
 ];

@@ -125,6 +125,11 @@ class User extends BaseModel implements
         return $this->name . " " . $this->family;
     }
 
+    public function getIsCustomerUserAttribute(): bool {
+        $is_customer_user = $this->attributes["is_customer_user"] ?? false;
+        return $is_customer_user and $this->customerUser != null;
+    }
+
     /*
      * Image Methods
      */

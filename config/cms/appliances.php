@@ -73,6 +73,14 @@ return [
                     "route" => "admin.setting.database.export"
                 ]
             ],
+            [
+                "properties" => [
+                    "id" => "product-watermark",
+                    "name" => "general.setting.product_watermark",
+                    "icon" => "icon-product-watermark",
+                    "route" => "admin.setting.product-watermark.edit"
+                ]
+            ]
         ],
         "explore_appliances" => []
     ],

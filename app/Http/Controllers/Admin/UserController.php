@@ -69,8 +69,8 @@ class UserController extends BaseController
      * @role(super_user)
      * @rules(name='required', family='required',
      *     username='required|unique:users,username,'. request()->get('id'),
-     *     email='required|unique:users,email,'. request()->get('id'), password='min:6|confirmed',
-     *     password_confirmation='min:6', is_system_user='boolean', is_customer_user='boolean')
+     *     email='nullable|unique:users,email,'. request()->get('id'), password='nullable|min:6|confirmed',
+     *     password_confirmation='nullable|min:6', is_system_user='boolean', is_customer_user='boolean')
      */
     public function update(Request $request, User $user): RedirectResponse
     {

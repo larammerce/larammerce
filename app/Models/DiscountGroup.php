@@ -8,12 +8,14 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use DateTime;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use stdClass;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Properties
@@ -50,6 +52,7 @@ use stdClass;
  */
 class DiscountGroup extends BaseModel
 {
+    use SoftDeletes;
     protected $table = "discount_groups";
     protected $fillable = [
         "title",
@@ -125,6 +128,11 @@ class DiscountGroup extends BaseModel
             $this->extra_attributes["steps_data_object"] = Arr::prepend($this->extra_attributes["steps_data_object"], $first_step);
         }
         return $this->extra_attributes["steps_data_object"];
+    }
+
+    public function getCanDeleteAttribute()
+    {
+       return ((!$this->is_active)AND(((Carbon::now())->diffInDays($this->updated_at))>7));
     }
 
     /**

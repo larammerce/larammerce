@@ -63,6 +63,11 @@ Route::group(
                 Route::put("env-file", ["as" => "env-file.update", "uses" => "EnvFileController@update"]);
 
                 Route::get("database/export", ["as" => "database.export", "uses" => "DatabaseController@export"]);
+
+                Route::get("product-watermark/edit", ["as" => "product-watermark.edit", "uses" => "ProductWatermarkController@edit"]);
+                Route::put("product-watermark/", ["as" => "product-watermark.update", "uses" => "ProductWatermarkController@update"]);
+                Route::any("product-watermark/process", ["as" => "product-watermark.process", "uses" => "ProductWatermarkController@process"]);
+                Route::any("product-watermark/remove-image", ["as" => "product-watermark.remove-image", "uses" => "ProductWatermarkController@removeImage"]);
             });
         Route::resource("setting", "SettingController", ["as" => "admin"]);
 
@@ -153,16 +158,17 @@ Route::group(
                 Route::get("{discount_group}/filter/create", ["as" => "product-filter.create", "uses" => "DiscountGroupController@createProductFilter"]);
                 Route::post("{discount_group}/filter", ["as" => "product-filter.attach", "uses" => "DiscountGroupController@attachProductFilter"]);
                 Route::delete("{discount_group}/filter/{product_filter}", ["as" => "product-filter.detach", "uses" => "DiscountGroupController@detachProductFilter"]);
+                Route::delete("{discount_group}/soft-delete", ["as" => "soft-delete", "uses" => "DiscountGroupController@softDelete"]);
+                Route::patch("{discount_group_id}/restore", ["as" => "restore", "uses" => "DiscountGroupController@restore"]);
             }
         );
         Route::resource("discount-group", "DiscountGroupController", ["as" => "admin"]);
-
-
+        
+        //DiscountCard
         Route::group(["prefix" => "discount-card", "as" => "admin.discount-card."],
             function () {
                 Route::post("notify/{discount_card}", ["as" => "notify", "uses" => "DiscountCardController@notify"]);
             });
-        //DiscountCard
         Route::resource("discount-card", "DiscountCardController", ["as" => "admin"]);
 
         //CustomerUserLegalInfo
@@ -239,6 +245,8 @@ Route::group(
                 Route::get("{directory}/special-price", ["as" => "special-price.edit", "uses" => "DirectoryController@editSpecialPrice"]);
                 Route::post("{directory}/special-price", ["as" => "special-price.update", "uses" => "DirectoryController@updateSpecialPrice"]);
                 Route::delete("{directory}/special-price", ["as" => "special-price.destroy", "uses" => "DirectoryController@destroySpecialPrice"]);
+                Route::get("{directory}/sync", ["as" => "sync", "uses" => "DirectoryController@sync"]);
+                Route::get("cache-clear", ["as" => "cache-clear", "uses" => "DirectoryController@cacheClear"]);
             });
         Route::resource("directory", "DirectoryController", ["as" => "admin"]);
 
@@ -290,6 +298,7 @@ Route::group(
                 Route::put("{product}/publish", ["as" => "publish", "uses" => "ProductController@publish"]);
                 Route::put("{product}/clone", ["as" => "clone", "uses" => "ProductController@cloneModel"]);
                 Route::get("{product}/models", ["as" => "models", "uses" => "ProductController@models"]);
+                Route::get("cache-clear", ["as" => "cache-clear", "uses" => "DirectoryController@cacheClear"]);
             });
         Route::resource("product", "ProductController", ["as" => "admin"]);
 

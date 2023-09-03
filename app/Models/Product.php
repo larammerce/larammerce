@@ -24,7 +24,6 @@ use App\Traits\FullTextSearch;
 use App\Traits\Rateable;
 use App\Traits\Seoable;
 use App\Utils\CMS\AdminRequestService;
-use App\Utils\CMS\ProductService;
 use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationModel;
 use App\Utils\Common\EmailService;
 use App\Utils\Common\ImageService;
@@ -72,6 +71,7 @@ use Throwable;
  * @property float average_rating
  * @property int rates_count
  * @property int count
+ * @property string watermark_uuid
  * @property boolean is_active
  * @property DateTime important_at
  * @property boolean is_important
@@ -99,6 +99,8 @@ use Throwable;
  * @property bool is_package
  * @property integer maximum_allowed_purchase_count
  * @property integer minimum_allowed_purchase_count
+ * @property string main_photo
+ * @property string secondary_photo
  *
  * @property CustomerLocationModel[] location_limitations
  * @property bool is_location_limited
@@ -134,12 +136,11 @@ use Throwable;
  */
 class Product extends BaseModel implements
     CMSExposedNodeInterface, ShareSubjectInterface, PublishScheduleInterface, ImageOwnerInterface,
-    RateOwnerInterface, SeoSubjectInterface, HashInterface
-{
+    RateOwnerInterface, SeoSubjectInterface, HashInterface {
     use Rateable, Seoable, Fileable, FullTextSearch, Badgeable, Translatable;
 
     public $timestamps = true;
-    protected $appends = ["is_liked", "is_needed", "main_photo", "secondary_photo", "fin_man_price",
+    protected $appends = ["is_liked", "is_needed", "fin_man_price",
         "status", "url", "is_main_model", "minimum_allowed_purchase_count", "maximum_allowed_purchase_count",
         "is_new", "is_important", "location_limitations", "is_location_limited", "can_deliver"];
     protected $hidden = ["count", "min_allowed_count", "max_purchase_count"];
@@ -156,9 +157,9 @@ class Product extends BaseModel implements
         "is_important", "seo_title", "seo_keywords", "seo_description", "model_id",
         "has_discount", "previous_price", "is_accessory", "is_visible", "inaccessibility_type",
         "cmc_id", "notice", "discount_group_id", "priority", "is_discountable", "structure_sort_score",
-        "is_package", "accessory_for", "count",
+        "is_package", "accessory_for", "count", "watermark_uuid",
         //these are not table fields, these are form sections that role permission system works with
-        "tags", "attributes", "gallery", "colors", "badges"
+        "tags", "attributes", "gallery", "colors", "badges", "main_photo", "secondary_photo"
     ];
 
     protected $casts = [
@@ -168,10 +169,6 @@ class Product extends BaseModel implements
         "is_active" => "bool",
         "is_visible" => "bool",
         "is_discountable" => "bool"
-    ];
-
-    protected $with = [
-        "discountGroup", "directory", "images"
     ];
 
     protected static ?bool $DISABLE_ON_MIN = null; //TODO: move this to admin layer setting.
@@ -401,7 +398,7 @@ class Product extends BaseModel implements
     }
 
     public function setModelIdAttribute($value) {
-        $this->attributes["model_id"] = $value ?: $this->id;
+        $this->attributes["model_id"] = $value ?? $this->id;
     }
 
     public function setExtraPropertiesAttribute(?array $extra_properties) {
@@ -615,7 +612,9 @@ class Product extends BaseModel implements
     public function save(array $options = []) {
         //TODO: This method content should be moved to accessor methods.
 
-        $this->updateEnabledStatus(false);
+        if ($this->isDirty("count") or $this->isDirty("latest_price") or $this->isDirty("latest_special_price")) {
+            $this->updateEnabledStatus(false);
+        }
         $this->color_code = $this->generateColorCode();
         $this->code = drop_non_ascii($this->code);
 
@@ -821,21 +820,12 @@ class Product extends BaseModel implements
     }
 
     public function hasImage(): bool {
-        if (isset($this->relations["images"])) {
-            return count($this->images) > 0;
-        }
-        return $this->images()->main()->count() > 0;
+        $main_photo = $this->getMainPhoto();
+        return $main_photo != null and strlen($main_photo->getImagePath()) > 0;
     }
 
     public function getImagePath(): string {
-        if (isset($this->relations["images"])) {
-            foreach ($this->images as $image) {
-                if ($image->is_main)
-                    return $image->getImagePath();
-            }
-            return $this->getDefaultImagePath();
-        }
-        return $this->images()->main()->first()->getImagePath();
+        return $this->getMainPhoto()->getImagePath();
     }
 
     public function setImagePath(): void {
@@ -855,6 +845,11 @@ class Product extends BaseModel implements
     }
 
     public function getMainPhoto(): ?ProductImage {
+        if (isset($this->attributes["main_photo"])) {
+            $photo = new ProductImage();
+            $photo->setFullPath($this->attributes["main_photo"]);
+            return $photo;
+        }
         if (isset($this->relations["images"])) {
             foreach ($this->images as $image) {
                 if ($image->is_main)
@@ -866,6 +861,11 @@ class Product extends BaseModel implements
     }
 
     public function getSecondaryPhoto(): ?ProductImage {
+        if (isset($this->attributes["secondary_photo"])) {
+            $photo = new ProductImage();
+            $photo->setFullPath($this->attributes["secondary_photo"]);
+            return $photo;
+        }
         if (isset($this->relations["images"])) {
             foreach ($this->images as $image) {
                 if ($image->is_secondary)
@@ -982,6 +982,9 @@ class Product extends BaseModel implements
         return $this->title . " - " . $this->directory->title;
     }
 
+    public function getSeoUrl(): string {
+        return $this->getMainProduct()->getFrontUrl();
+    }
 
     public function getSeoDescription() {
         return $this->seo_description;
