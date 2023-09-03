@@ -457,6 +457,14 @@ return [
                     "route" => "admin.action-log.index"
                 ]
             ],
+            [
+                "properties" => [
+                    "id" => "debug_logs",
+                    "name" => "general.analytic.debug_logs",
+                    "icon" => "icon-debug-logs",
+                    "route" => "admin.debug-log.index"
+                ]
+            ],
         ]
     ],
     [

@@ -67,7 +67,8 @@ return [
         "web_form_message" => "پیام ها",
         "edit_robots_txt" => "متن فایل ربات",
         "action_logs" => "لاگ های عملیات",
-        "live_reports" => "گزارش زنده سیستم"
+        "live_reports" => "گزارش زنده سیستم",
+        "debug_logs"=> "لاگ های خطایابی",
     ],
     "directory" => [
         "type" => [
@@ -105,6 +106,11 @@ return [
     "customer_meta_category_type" => [
         1 => "قبل از خرید",
         2 => "بعد از خرید"
+    ],
+  
+    "debug_log_type" => [
+        "default" => "پیش فرض",
+        "data_tmp" => "داده های موقت"
     ],
 
     "product_watermark_position" => [
