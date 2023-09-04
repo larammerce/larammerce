@@ -8,23 +8,22 @@
 
 namespace App\Http\Controllers\Customer;
 
+use App\Models\NeedList;
 use App\Models\Product;
 use App\Utils\CMS\SystemMessageService;
 
 class NeedListController extends BaseController
 {
-    public function attachProduct(Product $product)
-    {
+    public function attachProduct(Product $product) {
         if (!$product->is_active) {
             $customer = get_customer_user();
-            $customer->needList()->syncWithoutDetaching([$product->id]);
+            NeedList::syncWithoutDetaching($product, $customer);
             SystemMessageService::addSuccessMessage("system_messages.need_list.attached");
         }
         return redirect()->to($product->getFrontUrl());
     }
 
-    public function detachProduct(Product $product)
-    {
+    public function detachProduct(Product $product) {
         $customer = get_customer_user();
         $customer->needList()->detach($product->id);
         SystemMessageService::addSuccessMessage("system_messages.need_list.detached");
