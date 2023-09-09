@@ -24,10 +24,8 @@ use Throwable;
  * @package App\Http\Controllers\Admin
  * @role(enabled=true)
  */
-class DiscountCardController extends BaseController
-{
-    public static function storeRules(?int $discount_group_id): array
-    {
+class DiscountCardController extends BaseController {
+    public static function storeRules(?int $discount_group_id): array {
         if ($discount_group_id === null)
             return [];
         $discount_group = DiscountGroup::find($discount_group_id);
@@ -50,8 +48,7 @@ class DiscountCardController extends BaseController
      * @role(super_user, acc_manager)
      * @rules(discount_group_id="required|exists:discount_groups,id")
      */
-    public function index(): Factory|View|Application
-    {
+    public function index(): Factory|View|Application {
         $discount_group = DiscountGroup::find(request()->get('discount_group_id'));
         parent::setPageAttribute($discount_group->id);
         $discount_cards = $discount_group->cards()->with('invoice', 'customer', 'directories:id,title')->paginate(
@@ -63,8 +60,7 @@ class DiscountCardController extends BaseController
      * @role(super_user, acc_manager)
      * @rules(discount_group_id="required|exists:discount_groups,id")
      */
-    public function create(): Factory|View|Application
-    {
+    public function create(): Factory|View|Application {
         $directories = Directory::from(DirectoryType::PRODUCT)->get();
         $discount_group = DiscountGroup::find(request()->get('discount_group_id'));
         return view('admin.pages.discount-card.create', compact('discount_group', 'directories'));
@@ -75,8 +71,7 @@ class DiscountCardController extends BaseController
      * @rules(discount_group_id="required|exists:discount_groups,id",
      *     dynamic_rulee=\App\Http\Controllers\Admin\DiscountCardController::storeRules(request()->discount_group_id))
      */
-    public function store(Request $request): JsonResponse|RedirectResponse
-    {
+    public function store(Request $request): JsonResponse|RedirectResponse {
         $discount_group = DiscountGroup::find(request()->get('discount_group_id'));
         if ($discount_group->is_assigned and !$discount_group->is_event) {
             $users = json_decode($request->get('users'));
@@ -89,24 +84,24 @@ class DiscountCardController extends BaseController
                         'code' => $request->has('code') ? $request->code : null,
                         'customer_user_id' => $user->customer_user->id,
                     ]);
-                    if(!is_null($result)){
+                    if (!is_null($result)) {
                         $this->setDirectory($discount_group, $result, $request);
                     }
                 }
             }
         } else {
             $count = $request->has('count') ? intval($request->get('count')) : 1;
-            global $created_cards;
-            $created_cards = 0;
-            while ($created_cards < $count) {
+            $created_cards_count = 0;
+            while ($created_cards_count < $count) {
                 $result = DiscountCard::create([
                     'prefix' => $discount_group->prefix,
                     'postfix' => $discount_group->postfix,
                     'code' => $request->has('code') ? $request->code : null,
                     'discount_group_id' => $discount_group->id
                 ]);
-                if(!is_null($result)){
+                if (!is_null($result)) {
                     $this->setDirectory($discount_group, $result, $request);
+                    $created_cards_count++;
                 }
             }
         }
@@ -114,21 +109,16 @@ class DiscountCardController extends BaseController
 
     }
 
-    public function setDirectory(DiscountGroup $discount_group, DiscountCard $result, Request $request): void
-    {
-        if ($discount_group->has_directory)
-            {
-                $result->directories()->sync($request->get("directories"));
-                global $created_cards;
-                $created_cards++;
-            }
+    public function setDirectory(DiscountGroup $discount_group, DiscountCard $result, Request $request): void {
+        if ($discount_group->has_directory) {
+            $result->directories()->sync($request->get("directories"));
+        }
     }
 
     /**
      * @role(super_user)
      */
-    public function destroy(DiscountCard $discount_card): RedirectResponse
-    {
+    public function destroy(DiscountCard $discount_card): RedirectResponse {
         $discount_card->is_active = !($discount_card->is_active);
         $discount_card->save();
         return History::redirectBack();
@@ -137,8 +127,7 @@ class DiscountCardController extends BaseController
     /**
      * @role(super_user, acc_manager)
      */
-    public function notify(DiscountCard $discount_card): RedirectResponse
-    {
+    public function notify(DiscountCard $discount_card): RedirectResponse {
         if ($discount_card->group->is_assigned and !$discount_card->is_notified) {
             try {
                 if ($discount_card->group->is_percentage)
@@ -162,8 +151,7 @@ class DiscountCardController extends BaseController
         return History::redirectBack();
     }
 
-    public function getModel(): ?string
-    {
+    public function getModel(): ?string {
         return DiscountCard::class;
     }
 }
