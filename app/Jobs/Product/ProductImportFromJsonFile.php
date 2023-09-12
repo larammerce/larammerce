@@ -392,13 +392,13 @@ class ProductImportFromJsonFile extends Job implements ShouldQueue {
 
         if (str_contains($keywords, "boot") or str_contains($keywords, "shoe") or
             (str_contains($keywords, "tennis") and (str_contains($keywords, "racket") or str_contains($keywords, "bag") or str_contains($keywords, "pack")))) {
-            $result = intval($base_price * 0.90 * 1.75 * $this->price_ratio) + 1200000;
+            $result = intval($base_price * 0.90 * 1.75 * $this->price_ratio) + 3000000;
         } else if (str_contains($keywords, "nit") or str_contains($keywords, "glasses") or str_contains($keywords, "hat") or str_contains($keywords, "cap") or str_contains($keywords, "beanie")) {
-            $result = intval($base_price * 0.85 * 1.75 * $this->price_ratio) + 150000;
+            $result = intval($base_price * 0.85 * 1.75 * $this->price_ratio) + 500000;
         } else if (((str_contains($keywords, "cloth") or str_contains($keywords, "watch")) and $base_price < 70)) {
-            $result = intval($base_price * 0.85 * 1.75 * $this->price_ratio) + 370000;
+            $result = intval($base_price * 0.85 * 1.75 * $this->price_ratio) + 800000;
         } else {
-            $result = intval($base_price * 0.90 * 1.75 * $this->price_ratio) + 400000;
+            $result = intval($base_price * 0.90 * 1.75 * $this->price_ratio) + 1200000;
         }
 
         return intval($result / 1000) * 1000;
