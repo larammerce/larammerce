@@ -133,7 +133,11 @@
         </ul>
     </div>
     <div class="explore-map col-md-2 hidden-sm hidden-xs">
-        @include('admin.templates.explore.map')
+        @hasSection('side_content')
+            @yield('side_content')
+        @else
+            @include('admin.templates.explore.map')
+        @endif
     </div>
     <div class="explore-view-container col-md-10 col-sm-12 col-xs-12">
         @yield('main_content')

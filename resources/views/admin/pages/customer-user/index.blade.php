@@ -67,3 +67,9 @@
         ])
     </div>
 @endsection
+
+@section('side_content')
+    <div>
+        
+    </div>
+@endsection
