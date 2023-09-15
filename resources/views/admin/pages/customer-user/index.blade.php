@@ -70,6 +70,9 @@
 
 @section('side_content')
     <div>
-        
+        <a href="{{route('admin.customer-user.index')}}?follow=1">link1</a>
+    </div>
+    <div>
+        <a href="{{route('admin.customer-user.index')}}?follow=2">link2</a>
     </div>
 @endsection

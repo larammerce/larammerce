@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\CustomerUser;
 use App\Models\User;
-use App\Utils\CMS\SystemMessageService;
-use App\Utils\Common\History;
-use App\Utils\Common\RequestService;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
-use Illuminate\Http\RedirectResponse;
+use App\Models\CustomerUser;
 use Illuminate\Http\Request;
+use App\Utils\Common\History;
+use Illuminate\Contracts\View\View;
+use App\Utils\Common\RequestService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Contracts\View\Factory;
+use App\Utils\CMS\SystemMessageService;
+use Illuminate\Database\Eloquent\Builder;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Contracts\Foundation\Application;
 
 /**
  * @package App\Http\Controllers\Admin
@@ -23,11 +24,28 @@ class CustomerUserController extends BaseController
     /**
      * @role(super_user, cms_manager, acc_manager)
      */
-    public function index(): Factory|View|Application {
-        parent::setPageAttribute();
-        $customer_users = CustomerUser::with('user', 'addresses', 'invoices')
-            ->paginate(CustomerUser::getPaginationCount());
-        return view('admin.pages.customer-user.index', compact('customer_users'));
+    public function index(Request $request): Factory|View|Application {
+
+        $scope = $request->has('follow') ? 'follow' : 'active';
+        parent::setPageAttribute($scope);
+
+        $customers_query = CustomerUser::query()->with('user', 'addresses', 'invoices');
+
+        if($request->has('follow')){
+            if(request('follow')=='1'){
+                $customer_users = $customers_query->whereHas('invoices', function (Builder $query){
+                    $query->where('sum', '<', 10000);
+                })->paginate(CustomerUser::getPaginationCount());
+            }elseif(request('follow')=='2'){
+                $customer_users = $customers_query->whereHas('invoices', function (Builder $query){
+                    $query->where('sum', '<', 2000000);
+                })->paginate(CustomerUser::getPaginationCount());
+            }    
+        }else{
+            $customer_users = $customers_query->paginate(CustomerUser::getPaginationCount());
+        }
+        
+        return view('admin.pages.customer-user.index', compact('customer_users', 'scope'));
     }
 
     /**
