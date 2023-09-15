@@ -70,9 +70,10 @@
 
 @section('side_content')
     <div>
-        <a href="{{route('admin.customer-user.index')}}?follow=1">link1</a>
+        <a href="{{route('admin.customer-user.index')}}?follow=1">دارای فاکتور با مبلغ کمتر از 10000 تومان</a>
     </div>
+    <br><br>
     <div>
-        <a href="{{route('admin.customer-user.index')}}?follow=2">link2</a>
+        <a href="{{route('admin.customer-user.index')}}?follow=2">دارای فاکتور با مبلغ کمتر از 2000000 تومان</a>
     </div>
 @endsection
