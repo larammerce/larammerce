@@ -8,9 +8,9 @@
 
 @section('main_content')
     <div class="inner-container row">
-        <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">
+        <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12" style="max-width: 900px">
             <script>window.PAGE_ID = "admin.pages.short-link.stats"</script>
-            <canvas id="line-chart" width="600" height="350"></canvas>
+            <canvas id="line-chart" width="600" height="350" style="width: 600px; height: 350px"></canvas>
             <input type="hidden" id="total-count" value="{{$total_count}}">
             <input type="hidden" id="stats-data" value="{{$stats_data}}">
         </div>
@@ -20,7 +20,7 @@
                 <button type="button" class="btn btn-primary" style="width: 100px" id="weekly-report-btn">هفتگی</button>
 
             </div>
-            <div style="margin-top: 10%;margin-right: 30%;margin-bottom: 10%;margin-left: 10%">
+            <div style="margin: 10% 30% 10% 10%;">
 
                 <button type="button" class="btn btn-primary" style="width: 100px" id="monthly-report-btn">ماهانه
                 </button>
@@ -32,7 +32,7 @@
                 </button>
 
             </div>
-            <div style="margin-top: 10%;margin-right: 30%;margin-bottom: 10%;margin-left: 10%">
+            <div style="margin: 10% 30% 10% 10%;">
 
                 <p style="width: 100px">تعداد کل بازدیدها: {{$total_count}}</p>
 
