@@ -1,10 +1,6 @@
 if (window.PAGE_ID === "admin.pages.short-link.stats") {
     require(["jquery", "template", "chartJs"], function (jQuery) {
         jQuery(function () {
-            /*let array = {
-                "7-19": {"United States": 4, "Iran": 6},
-                "7-20": {"United States": 12, "Japan": 3},
-            };*/
 
             const weekly_report_btn = jQuery("#weekly-report-btn");
             const monthly_report_btn = jQuery("#monthly-report-btn");
@@ -22,26 +18,27 @@ if (window.PAGE_ID === "admin.pages.short-link.stats") {
             let labels = getLabels(weekly_data);
 
             let lineChart = new Chart(document.getElementById("line-chart"), {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: data,
-                    label: "آمار هفتگی بازدید از لینک",
-                    borderColor: "#3e95cd",
-                    fill: false
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        label: "آمار هفتگی بازدید از لینک",
+                        borderColor: "#3e95cd",
+                        fill: false,
+                        responsive: false
+                    }
+                    ]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: 'آمار بازدید از لینک'
+                    }
                 }
-                ]
-            },
-            options: {
-                title: {
-                    display: true,
-                    text: 'آمار بازدید از لینک'
-                }
-            }
             });
 
-            weekly_report_btn.on('click', function (){
+            weekly_report_btn.on('click', function () {
                 let data = getData(weekly_data);
                 let labels = getLabels(weekly_data);
                 console.log(labels);
@@ -58,7 +55,7 @@ if (window.PAGE_ID === "admin.pages.short-link.stats") {
                 lineChart.update();
             });
 
-            monthly_report_btn.on('click', function (){
+            monthly_report_btn.on('click', function () {
                 let data = getData(monthly_data);
                 let labels = getLabels(monthly_data);
                 console.log(labels);
@@ -69,13 +66,13 @@ if (window.PAGE_ID === "admin.pages.short-link.stats") {
                 lineChart.data.datasets.push({
                     label: "آمار ماهانه بازدید از لینک",
                     borderColor: "#3e95cd",
-                    fill: false ,
+                    fill: false,
                     data: data,
                 });
                 lineChart.update();
             });
 
-            yearly_report_btn.on('click', function (){
+            yearly_report_btn.on('click', function () {
                 let data = getData(yearly_data);
                 let labels = getLabels(yearly_data);
                 console.log(labels);
@@ -93,11 +90,11 @@ if (window.PAGE_ID === "admin.pages.short-link.stats") {
                 lineChart.update();
             });
 
-            function getData(data_array){
+            function getData(data_array) {
                 let temp = [];
-                let result= [];
-                for(i in data_array){
-                    for(j in data_array[i] ){
+                let result = [];
+                for (i in data_array) {
+                    for (j in data_array[i]) {
                         temp.push(data_array[i][j]);
                     }
                     result.push(temp.reduce((a, b) => a + b, 0));
@@ -106,10 +103,10 @@ if (window.PAGE_ID === "admin.pages.short-link.stats") {
                 return result;
             }
 
-            function getLabels(data_array){
+            function getLabels(data_array) {
                 return Object.keys(data_array);
             }
-            });
+        });
 
 
     });
