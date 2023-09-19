@@ -27,6 +27,14 @@
         </span>
     </div>
     <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+        <span class="material-switch pull-right">فیلد اجباری باشد؟
+            <input id="is_forced" name="is_forced" type="checkbox" value="1"
+                   @if(old("is_forced", $representative_setting->isForced())) checked @endif/>
+            <label for="is_forced"></label>
+            <input id="is_forced_hidden" name="is_forced" type="hidden" value="0"/>
+        </span>
+    </div>
+    <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
         <span class="material-switch pull-right">امکان انتخاب مشتریان فعلی به عنوان معرف فعال شود؟
             <input id="is_customer_representative_enabled" name="is_customer_representative_enabled" type="checkbox"
                    value="1"

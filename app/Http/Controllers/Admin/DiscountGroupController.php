@@ -4,16 +4,20 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Exception;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use App\Models\DiscountGroup;
 use App\Models\ProductFilter;
 use App\Utils\Common\History;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\Response;
+use PhpParser\Node\Stmt\TryCatch;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Collection;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\Foundation\Application;
+use App\Services\DiscountGroup\DiscountGroupService;
+use App\Utils\CMS\SystemMessageService;
 
 /**
  * @package App\Http\Controllers\Admin
@@ -25,12 +29,15 @@ class DiscountGroupController extends BaseController
     /**
      * @role(super_user, acc_manager)
      */
-    public function index(): Factory|View|Application
+    public function index(Request $request): Factory|View|Application
     {
-        parent::setPageAttribute();
-        /** @var DiscountGroup[]|Collection $discount_groups */
-        $discount_groups = DiscountGroup::query()->paginate(DiscountGroup::getPaginationCount());
-        return view('admin.pages.discount-group.index', compact("discount_groups"));
+        $show_deleted = $this->mustShowDeletedItems($request);
+        $scope = $show_deleted ? "deleted" : "active";
+        parent::setPageAttribute($scope);
+        $discount_groups = $show_deleted ?
+            DiscountGroupService::getDeletedPaginated() :
+            DiscountGroupService::getAllPaginated();
+        return view('admin.pages.discount-group.index', compact('discount_groups', 'show_deleted', 'scope'));
     }
 
     /**
@@ -93,6 +100,35 @@ class DiscountGroupController extends BaseController
     /**
      * @role(super_user, acc_manager)
      */
+    public function softDelete(DiscountGroup $discount_group)
+    {
+        try{
+            $discount_group->delete();
+            SystemMessageService::addSuccessMessage("messages.discount_group.soft_delete_success");
+        }catch(Exception $e){
+            SystemMessageService::addErrorMessage("messages.discount_group.soft_delete_fail");
+        }
+        return redirect()->back();
+    }
+
+    /**
+     * @role(super_user, acc_manager)
+     */
+    public function restore(Request $request, int $discount_group_id)
+    {
+        try{
+            $discount_group = DiscountGroup::onlyTrashed()->find($discount_group_id);
+            $discount_group->restore();
+            SystemMessageService::addSuccessMessage("messages.discount_group.restore_success");
+        }catch(Exception $e){
+            SystemMessageService::addErrorMessage("messages.discount_group.restore_fail");
+        }
+        return redirect()->back();
+    }
+
+    /**
+     * @role(super_user, acc_manager)
+     */
     public function indexProductFilter(DiscountGroup $discount_group): Response
     {
         parent::setPageAttribute($discount_group->id);
@@ -132,5 +168,10 @@ class DiscountGroupController extends BaseController
     public function getModel(): ?string
     {
         return DiscountGroup::class;
+    }
+
+    private function mustShowDeletedItems(Request $request)
+    {
+        return $request->has("deleted") ? true : false;
     }
 }

@@ -17,25 +17,21 @@ use App\Utils\PaymentManager\Exceptions\PaymentInvalidParametersException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
-class Provider
-{
+class Provider {
     const PAYMENT_REDIRECTION_URL = "/payment-redirection";
 
-    public static function getPaymentRedirectionUrl(): string
-    {
+    public static function getPaymentRedirectionUrl(): string {
         return static::PAYMENT_REDIRECTION_URL;
     }
 
-    public static function publishRoutes()
-    {
+    public static function publishRoutes() {
         Route::group(["namespace" => "App\\Utils\\PaymentManager", "middleware" => "web"], function ($router) {
             $router->get(static::PAYMENT_REDIRECTION_URL, "PaymentController@paymentRedirection");
             $router->any(AbstractDriver::CALLBACK_URL_PREFIX . "/{driver_name}", "PaymentController@bankCallback");
         });
     }
 
-    public static function getAllDrivers(): array
-    {
+    public static function getAllDrivers(): array {
         return array_keys(Kernel::$drivers);
     }
 
@@ -45,8 +41,7 @@ class Provider
      * @return string[]|AbstractDriver[]|string
      * @throws PaymentInvalidDriverException
      */
-    public static function getEnabledDrivers(bool $needsData = false, bool $needsString = false)
-    {
+    public static function getEnabledDrivers(bool $needsData = false, bool $needsString = false) {
         $all_drivers_ids = self::getAllDrivers();
         $enabled_driver_names = [];
 
@@ -55,7 +50,7 @@ class Provider
                 $driver_config = ConfigProvider::getConfig($driver_id);
                 if ($driver_config->is_enabled)
                     $enabled_driver_names[] = $driver_id;
-            } catch (PaymentDriverNotConfiguredException $e){
+            } catch (PaymentDriverNotConfiguredException $e) {
                 Log::error("Payment driver not configured.
                  getEnabledDrivers: getConfigData: getDriver:{$e->getMessage()}");
             }
@@ -79,29 +74,26 @@ class Provider
         return $result;
     }
 
-    public static function getDefaultDriver(): string
-    {
+    public static function getDefaultDriver(): string {
         $all_drivers_ids = self::getAllDrivers();
         foreach ($all_drivers_ids as $driver_id) {
             try {
                 $driver_config = ConfigProvider::getConfig($driver_id);
                 if ($driver_config->is_default)
                     return $driver_id;
-            } catch (PaymentDriverNotConfiguredException $e){
-                  Log::error("Payment driver not configured.
+            } catch (PaymentDriverNotConfiguredException $e) {
+                Log::error("Payment driver not configured.
                  getDefaultDriver:getConfigData:getDriver:{$e->getMessage()}");
             }
         }
         return '';
     }
 
-    public static function isDefaultDriver(string $driver_name): bool
-    {
+    public static function isDefaultDriver(string $driver_name): bool {
         return $driver_name === static::getDefaultDriver();
     }
 
-    public static function hasDriver(string $driver_name): bool
-    {
+    public static function hasDriver(string $driver_name): bool {
         return array_key_exists($driver_name, Kernel::$drivers);
     }
 
@@ -110,8 +102,7 @@ class Provider
      * @throws PaymentConnectionException
      * @throws PaymentInvalidParametersException
      */
-    public static function initiatePayment(Invoice $invoice, string $driver_name = null)
-    {
+    public static function initiatePayment(Invoice $invoice, string $driver_name = null) {
         if ($driver_name == null)
             $driver_name = static::getDefaultDriver();
 
@@ -133,7 +124,8 @@ class Provider
 
         try {
             $payment->payment_data = Factory::driver($driver_name)->initiatePayment($payment->amount, $payment->id, [
-                "phone_number" => $invoice->customer->main_phone
+                "phone_number" => $invoice->customer->main_phone,
+                "email" => $invoice->customer->user->email
             ]);
             $payment->save();
         } catch (PaymentConnectionException $e) {

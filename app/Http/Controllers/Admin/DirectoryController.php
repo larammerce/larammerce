@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\Directory\DirectoryType;
 use App\Jobs\ActionDirectoryChildrenBadges;
+use App\Jobs\Directory\SyncDirectories;
 use App\Jobs\UpdateProductsSpecialPrice;
 use App\Models\Directory;
 use App\Models\Product;
+use App\Services\Directory\DirectoryService;
 use App\Utils\CMS\File\ExploreService;
 use App\Utils\Common\History;
 use App\Utils\Common\MessageFactory;
@@ -360,6 +362,16 @@ class DirectoryController extends BaseController
                 }
             });
         return redirect()->route("admin.directory.edit", $directory);
+    }
+
+    public function sync(Request $request, Directory $directory): RedirectResponse {
+        dispatch(new SyncDirectories($directory));
+        return redirect()->back();
+    }
+
+    public function cacheClear(Request $request): RedirectResponse {
+        DirectoryService::clearCache();
+        return redirect()->back();
     }
 
 

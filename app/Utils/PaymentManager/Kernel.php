@@ -9,7 +9,7 @@
 namespace App\Utils\PaymentManager;
 
 use App\Utils\PaymentManager\Drivers\{
-    Mabna, Asan, Pep, Sep, Sepehrpay, Pec, BehPardakht
+    Mabna, Asan, Pep, Sep, Sepehrpay, Pec, BehPardakht, Zarinpal
 };
 
 class Kernel
@@ -24,5 +24,6 @@ class Kernel
         Sepehrpay\Driver::DRIVER_ID => Sepehrpay\Driver::class,
         Pec\Driver::DRIVER_ID => Pec\Driver::class,
         BehPardakht\Driver::DRIVER_ID => BehPardakht\Driver::class,
+        Zarinpal\Driver::DRIVER_ID => Zarinpal\Driver::class,
     ];
 }

@@ -56,4 +56,6 @@ return [
         "thumb" => ["width" => 100, "height" => 100],
         "original" => ["width" => 320, "height" => 320],
     ],
+    "product_watermark" => [
+    ],
 ];
