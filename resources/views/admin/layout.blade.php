@@ -34,15 +34,11 @@
         window.site_url = "{{env("APP_URL")}}";
     </script>
 </head>
-<body>
+<body class="nav-app-open explore-tree-open">
 <div class="header-container">
     <nav class="main-nav">
         <div class="right-tools col-md-5 col-sm-4 col-xs-7">
             <div class="profile hidden-xs hidden-md">
-                <div class="user-photo">
-                    <img class="img-responsive"
-                         src="{{\App\Models\User::getEloquentObject(Auth::user())?->systemUser?->getImagePath() ?? "/admin_dashboard/images/No_image.jpg.png"}}"/>
-                </div>
                 <h5 class="name hidden-sm hidden-xs">{{Auth::user()->name.' '.Auth::user()->family}}</h5>
             </div>
             <div class="action-container">
@@ -93,6 +89,12 @@
             @endforeach
         </ul>
     </nav>
+    <div class="nav-toggle-btn">
+        <button class="toggle-btn">
+            <i class="fa fa-chevron-up up-icon"></i>
+            <i class="fa fa-chevron-down down-icon" style="display: none"></i>
+        </button>
+    </div>
 </div>
 <div class="main-content">
     <div class="file-context-menu">
@@ -141,6 +143,12 @@
             <ul>
                 @yield('bread_crumb')
             </ul>
+        </div>
+        <div class="tree-toggle-btn">
+            <button class="toggle-btn">
+                <i class="fa fa-chevron-left open-icon" style="display: none"></i>
+                <i class="fa fa-chevron-right close-icon"></i>
+            </button>
         </div>
     </div>
 </div>

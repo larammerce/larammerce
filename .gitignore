@@ -71,3 +71,6 @@ demo.retopi.com/
 npm-debug.log
 yarn-error.log
 resources/lang/*.json
+public_html/mag
+public_html/blog
+public_html/magazine
