@@ -80,4 +80,8 @@
     <div>
         <a href="{{route('admin.customer-user.index')}}?follow=3">3)دارای فاکتور پرداخت شده</a>
     </div>
+    <br><br>
+    <div>
+        <a href="{{route('admin.customer-user.index')}}?follow=4">4)دارای فاکتور در انتظار پرداخت</a>
+    </div>
 @endsection
