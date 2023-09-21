@@ -28,27 +28,30 @@ trait FullTextSearch
             return $parent_exact_builder->exactSearch($term);
         }
 
-        $exact_builder = $builder->clone();
-        $exact_builder = $exact_builder->where(static::$IMPORTANT_SEARCH_FIELD, 'like', "$term%");
-        $exact_search_result_count = $exact_builder->count();
-        if ($exactness == 2 or $exact_search_result_count > 0) {
-            if ($exact_search_result_count < 20) {
-                $exact_builder = $exact_builder->orWhere(static::$IMPORTANT_SEARCH_FIELD, 'like', "%$term%");
+        foreach(static::$IMPORTANT_SEARCH_FIELDS as $important_field){
+            $exact_builder = $builder->clone();
+            $exact_builder = $exact_builder->where($important_field, 'like', "$term%");
+            $exact_search_result_count = $exact_builder->count();
+            if ($exactness == 2 or $exact_search_result_count > 0) {
+                if ($exact_search_result_count < 20) {
+                    $exact_builder = $exact_builder->orWhere($important_field, 'like', "%$term%");
+                }
+                return $exact_builder;
             }
-            return $exact_builder;
         }
 
-        $exact_builder = $builder->clone();
+        $non_exact_builder = $builder->clone();
         $reservedSymbols = ['-', '+', '<', '>', '@', '(', ')', '~', '٬'];
         $term = str_replace($reservedSymbols, '', $term);
         $term = preg_replace("/ +/", " ", $term);
         $words = static::getTermWords($term);
+        $important_field = static::$IMPORTANT_SEARCH_FIELDS[0] ?? "id";
         foreach ($words as $word)
             if (!is_numeric($word) and strlen($word) > 1) {
-                $exact_builder->where(static::$IMPORTANT_SEARCH_FIELD, 'LIKE', "%$word%");
+                $non_exact_builder->where($important_field, 'LIKE', "%$word%");
             }
-        if ($exactness == 1 or $exact_builder->count() > 0) {
-            return $exact_builder;
+        if ($exactness == 1 or $non_exact_builder->count() > 0) {
+            return $non_exact_builder;
         }
 
         $columns = implode(',', static::$SEARCHABLE_FIELDS);

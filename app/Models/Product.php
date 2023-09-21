@@ -134,8 +134,7 @@ use Throwable;
  */
 class Product extends BaseModel implements
     CMSExposedNodeInterface, ShareSubjectInterface, PublishScheduleInterface, ImageOwnerInterface,
-    RateOwnerInterface, SeoSubjectInterface, HashInterface
-{
+    RateOwnerInterface, SeoSubjectInterface, HashInterface {
     use Rateable, Seoable, Fileable, FullTextSearch, Badgeable, Translatable;
 
     public $timestamps = true;
@@ -178,7 +177,7 @@ class Product extends BaseModel implements
     protected static array $SORTABLE_FIELDS = ["id", "created_at", "is_active", "is_accessory"];
     protected static int $FILTER_PAGINATION_COUNT = 20;
     protected static array $SEARCHABLE_FIELDS = ["seo_keywords", "title", "code", "description"];
-    protected static ?string $IMPORTANT_SEARCH_FIELD = "title";
+    protected static ?array $IMPORTANT_SEARCH_FIELDS = ["title", "code"];
     protected static ?string $EXACT_SEARCH_ORDER_FIELD = "is_active";
     protected static array $ROLE_PROPERTY_ACCESS = [
         "super_user" => ["*"],
