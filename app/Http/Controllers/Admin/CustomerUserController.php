@@ -40,6 +40,10 @@ class CustomerUserController extends BaseController
                 $customer_users = $customers_query->whereHas('invoices', function (Builder $query){
                     $query->where('sum', '<', 2000000);
                 })->paginate(CustomerUser::getPaginationCount());
+            }elseif(request('follow')=='3'){
+                $customer_users = $customers_query->whereHas('invoices', function (Builder $query){
+                    $query->where('payment_status', 3);
+                })->paginate(CustomerUser::getPaginationCount());
             }    
         }else{
             $customer_users = $customers_query->paginate(CustomerUser::getPaginationCount());
