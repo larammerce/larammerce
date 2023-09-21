@@ -560,6 +560,16 @@ class Product extends BaseModel implements
         }
     }
 
+    public function scopeExactSearch($builder, string $term): Builder {
+        $builder->where(function ($q) use ($term) {
+            foreach (static::$SEARCHABLE_FIELDS as $searchable_field) {
+                $q->orWhere($searchable_field, "=", $term);
+            }
+        })->orWhere("code", "like", "%$term%");
+
+        return $builder;
+    }
+
     public function scopeLatest(Builder $query): Builder {
         return $query->orderBy("id", "DESC");
     }
