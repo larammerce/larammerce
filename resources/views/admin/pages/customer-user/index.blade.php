@@ -84,4 +84,8 @@
     <div>
         <a href="{{route('admin.customer-user.index')}}?follow=4">4)دارای فاکتور در انتظار پرداخت</a>
     </div>
+    <br><br>
+    <div>
+        <a href="{{route('admin.customer-user.index')}}?follow=5">5)دارای فاکتور به تعداد ده عدد یا بیشتر</a>
+    </div>
 @endsection
