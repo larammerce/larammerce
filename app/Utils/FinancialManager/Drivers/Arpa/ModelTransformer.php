@@ -14,7 +14,6 @@ use App\Models\Invoice;
 use App\Models\InvoiceRow;
 use App\Models\User;
 use App\Services\Invoice\NewInvoiceService;
-use App\Utils\CMS\ProductService;
 use App\Utils\FinancialManager\Models\Customer;
 use App\Utils\FinancialManager\Models\Product;
 use Exception;
@@ -152,7 +151,7 @@ class ModelTransformer
         }
     }
 
-    public static function invoiceRowModelToStd(InvoiceRow $invoice_row, $tax_added_to_price = true): stdClass {
+    public static function invoiceRowModelToStd(InvoiceRow $invoice_row): stdClass {
         /** @var NewInvoiceService $new_invoice_service */
         $new_invoice_service = app(NewInvoiceService::class);
 
@@ -161,16 +160,16 @@ class ModelTransformer
         $preInvoiceRowStd->ItemCode = $invoice_row->product->code;
         $preInvoiceRowStd->MjQty = $invoice_row->count;
 
-        $discount_data = $tax_added_to_price ?
-            $new_invoice_service->reverseCalculateProductTaxAndToll($invoice_row->discount_amount) :
-            $new_invoice_service->calculateProductTaxAndToll($invoice_row->discount_amount);
+        $discount_data = $new_invoice_service->isTaxAddedToPrice($invoice_row->product) ?
+            $new_invoice_service->reverseCalculateProductTaxAndToll($invoice_row->discount_amount, product: $invoice_row->product) :
+            $new_invoice_service->calculateProductTaxAndToll($invoice_row->discount_amount, product: $invoice_row->product);
 
         $preInvoiceRowStd->DiscountAmount = intval($discount_data->price * $invoice_row->count);
         $preInvoiceRowStd->DiscountPercent = 0;
 
-        $price_data = $tax_added_to_price ?
-            $new_invoice_service->reverseCalculateProductTaxAndToll($invoice_row->product_price) :
-            $new_invoice_service->calculateProductTaxAndToll($invoice_row->product_price);
+        $price_data = $new_invoice_service->isTaxAddedToPrice($invoice_row->product) ?
+            $new_invoice_service->reverseCalculateProductTaxAndToll($invoice_row->product_price, product: $invoice_row->product) :
+            $new_invoice_service->calculateProductTaxAndToll($invoice_row->product_price, product: $invoice_row->product);
 
         $preInvoiceRowStd->Price = $price_data->price;
         $preInvoiceRowStd->TaxAmount = intval($invoice_row->tax_amount * $invoice_row->count);
@@ -179,7 +178,8 @@ class ModelTransformer
         return $preInvoiceRowStd;
     }
 
-    public static function invoiceModelToStd(Invoice $invoice, $tax_added_to_price = true): stdClass|bool {
+    public static function invoiceModelToStd(Invoice $invoice): stdClass|bool {
+        /** @var NewInvoiceService $new_invoice_service */
         $new_invoice_service = app(NewInvoiceService::class);
 
         try {
@@ -238,10 +238,10 @@ class ModelTransformer
                         $tmp_invoice_row->product_price = (int)($tmp_product_price / $product_package_item->usage_count);
                         $tmp_invoice_row->pure_price = (int)($tmp_pure_price / $product_package_item->usage_count);
 
-                        $pre_invoice_std->items[] = static::invoiceRowModelToStd($tmp_invoice_row, $tax_added_to_price);
+                        $pre_invoice_std->items[] = static::invoiceRowModelToStd($tmp_invoice_row);
                     }
                 } else {
-                    $pre_invoice_std->items[] = static::invoiceRowModelToStd($invoice_row, $tax_added_to_price);
+                    $pre_invoice_std->items[] = static::invoiceRowModelToStd($invoice_row);
                 }
             }
 

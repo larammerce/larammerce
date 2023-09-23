@@ -95,10 +95,10 @@ if (!function_exists("unparse_url")) {
 }
 
 if (!function_exists("get_all_extras_percentage")) {
-    function get_product_all_extras_percentage(): float {
+    function get_product_all_extras_percentage(Product $product = null): float {
         /** @var NewInvoiceService $new_invoice_service */
         $new_invoice_service = app(NewInvoiceService::class);
-        return $new_invoice_service->getProductAllExtrasPercentage();
+        return $new_invoice_service->getProductAllExtrasPercentage($product);
     }
 }
 
@@ -1735,5 +1735,29 @@ if (!function_exists('is_ios')) {
 if (!function_exists('is_android')) {
     function is_android() {
         return DetectService::isAndroid();
+    }
+}
+
+if (!function_exists('is_tax_added_to_price_by_default')) {
+    function is_tax_added_to_price_by_default(): bool {
+        return \App\Utils\FinancialManager\ConfigProvider::isTaxAddedToPriceByDefault();
+    }
+}
+
+if (!function_exists('should_use_per_product_tax_config')) {
+    function should_use_per_product_tax_config(): bool {
+        return \App\Utils\FinancialManager\ConfigProvider::shouldUsePerProductTaxConfig();
+    }
+}
+
+if (!function_exists('get_default_tax_percentage')) {
+    function get_default_tax_percentage(): float {
+        return \App\Utils\FinancialManager\ConfigProvider::getDefaultTaxPercentage();
+    }
+}
+
+if (!function_exists('get_default_toll_percentage')) {
+    function get_default_toll_percentage(): float {
+        return \App\Utils\FinancialManager\ConfigProvider::getDefaultTollPercentage();
     }
 }

@@ -7,7 +7,6 @@ use App\Models\Invoice;
 use App\Models\InvoiceRow;
 use App\Models\User;
 use App\Services\Invoice\NewInvoiceService;
-use App\Utils\CMS\ProductService;
 use App\Utils\FinancialManager\Models\Customer;
 use App\Utils\FinancialManager\Models\Product;
 use Exception;
