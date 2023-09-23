@@ -82,6 +82,10 @@ return [
         "row_validation_failed" => "متاسفانه اطلاعات موجود در خط :row معتبر نمی‌باشد. :message"
     ],
 
+    "debug_log" => [
+        "unknown_debug_log_type_error" => "نوع لاگ مورد نظر معتبر نمی‌باشد",
+    ],
+  
     "discount_group" => [
         "soft_delete_success" => "گروه تخفیف با موفقیت حذف شد.",
         "soft_delete_fail" => "متاسفانه امکان حذف گروه تخفیف مورد نظر وجود ندارد.لطفا با پشتیبان سیستم تماس بگیرید.",

@@ -3,6 +3,7 @@
 namespace App\Utils\CMS\Setting\Excel;
 
 
+use App\Utils\Jalali\JDate;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\DB;
@@ -85,11 +86,19 @@ class ModelExport implements FromQuery, WithHeadings, WithEvents, WithMapping, S
             foreach ($this->columns_division as $key => $headings) {
                 if ($key == $this->model_name) {
                     foreach ($this->fields as $field) {
-                        $mapped_array[] = $row[$field];
+                        $value = $row[$field];
+                        if (str_ends_with($field, "_at")) {
+                            $value = JDate::forge($value)->format("Y/m/d H:i");
+                        }
+                        $mapped_array[] = $value;
                     }
                 } else {
                     foreach ($headings as $heading) {
-                        $mapped_array[] = $row[$this->exportable_relations[$key]["name"]][$heading] ?? '';
+                        $value = $row[$this->exportable_relations[$key]["name"]][$heading] ?? '';;
+                        if (str_ends_with($heading, "_at")) {
+                            $value = JDate::forge($value)->format("Y/m/d H:i");
+                        }
+                        $mapped_array[] = $value;
                     }
                 }
             }

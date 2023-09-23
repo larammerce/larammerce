@@ -37,7 +37,7 @@
           display: block;
           @include border-radius(50%);
           overflow: hidden;
-          background: $color-apps-nav-back;
+          background: $color-dark-2-1;
 
           i {
 
@@ -88,7 +88,7 @@
             font-size: 12px;
             margin-top: 0;
             white-space: nowrap;
-            color: $color-apps-nav-back;
+            color: $color-dark-2-1;
           }
 
           span.real-directory {

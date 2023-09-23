@@ -66,14 +66,14 @@
 
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12"
              style="margin-bottom: 40px;" @roleinput($product, "is_important")>
-    <span class="material-switch pull-right">بین محصولات مهم قرار گیرد ؟ &nbsp
+                <span class="material-switch pull-right">بین محصولات مهم قرار گیرد ؟ &nbsp
                 <input id="is_important" name="is_important" type="checkbox" value="1"
                        @if($product->is_important) checked @endif/>
                 <label for="is_important"></label>
             <input id="is_important_hidden" name="is_important" type="hidden" value="0"/>
             </span>
         </div>
-        <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12"
+        <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12 filled dropzone-group"
             @roleinput($product, "gallery")>
             <span class="label">گالری تصاویر</span>
             <div class="my-dropzone form-control col-lg-12 col-md-12 col-sm-12 col-xs-12"
@@ -140,7 +140,8 @@
             </div>
         </div>
         <hr>
-        <div class="input-group col-lg-12 col-sm-12 col-md-12 col-xs-12 no-padding" @roleinput($product, "badges")>
+        <div
+            class="input-group filled col-lg-12 col-sm-12 col-md-12 col-xs-12 no-padding" @roleinput($product, "badges")>
             <div class="input-group group-sm col-lg-10 col-md-10 col-sm-12 col-xs-12 pull-right">
                 <span class="label">نشان ها</span>
                 <input type="text"
@@ -188,8 +189,9 @@
             <input id="is_accessory_hidden" name="is_accessory" type="hidden" value="0"/>
             </span>
         </div>
-        <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12" @roleinput($product, "accessory_for")>
-            <span class="label">در لوازم جانبی بودن، مربوط به کدام گروه محصولات است؟</span>
+        <div
+            class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12" @roleinput($product, "accessory_for")>
+            <span class="label">در صورت لوازم جانبی بودن، مربوط به کدام گروه محصولات است؟</span>
             <input class="form-control input-sm" name="accessory_for" value="{{ $product->accessory_for }}">
         </div>
         @if($product->is_package)
@@ -228,12 +230,14 @@
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12"
             @roleinput($product, "max_purchase_count")>
             <span class="label">حداکثر تعداد سفارش</span>
-            <input class="form-control input-sm" name="max_purchase_count" value="{{ $product->max_purchase_count }}">
+            <input class="form-control input-sm" name="max_purchase_count"
+                   value="{{ $product->max_purchase_count }}">
         </div>
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12"
             @roleinput($product, "min_purchase_count")>
             <span class="label">حداقل تعداد سفارش</span>
-            <input class="form-control input-sm" name="min_purchase_count" value="{{ $product->min_purchase_count }}">
+            <input class="form-control input-sm" name="min_purchase_count"
+                   value="{{ $product->min_purchase_count }}">
         </div>
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12"
             @roleinput($product, "min_allowed_count")>
@@ -294,7 +298,8 @@
 
         <div class="input-group col-lg-12 col-sm-12 col-md-12 col-xs-12 no-padding"
             @roleinput($product, "latest_special_price")>
-            <div class="input-group with-icon with-unit group-sm col-lg-10 col-md-10 col-sm-12 col-xs-12 pull-right">
+            <div
+                class="input-group with-icon with-unit group-sm col-lg-10 col-md-10 col-sm-12 col-xs-12 pull-right">
                 <span class="label">آخرین قیمت ویژه</span>
                 <i class="fa fa-dollar"></i>
                 <input class="form-control input-sm"
@@ -345,7 +350,8 @@
                 @endforeach
             </ul>
         </div>
-        <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12" @roleinput($product, 'seo_keywords')>
+        <div
+            class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12" @roleinput($product, 'seo_keywords')>
             <span class="label">تگ‌های سئو</span>
             <input class="form-control input-sm" name="seo_keywords" value="{{ $product->seo_keywords }}">
         </div>

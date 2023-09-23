@@ -187,22 +187,22 @@
     <div class="input-group filled group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
         <span class="label">نقش</span>
         <input
-                type="text"
-                multiple
-                class="tags-multi-select attachable"
-                value=""
-                data-initial-value="{{ json_encode($directory->systemRoles) }}"
-                data-user-option-allowed="false"
-                data-url="/admin/system-role"
-                data-load-once="true"
-                placeholder="نقش مورد نظر خود را انتخاب کنید"
-                data-attach="{{route('admin.directory.attach-role', $directory)}}"
-                data-detach="{{route('admin.directory.detach-role', $directory)}}"
+            type="text"
+            multiple
+            class="tags-multi-select attachable"
+            value=""
+            data-initial-value="{{ json_encode($directory->systemRoles) }}"
+            data-user-option-allowed="false"
+            data-url="/admin/system-role"
+            data-load-once="true"
+            placeholder="نقش مورد نظر خود را انتخاب کنید"
+            data-attach="{{route('admin.directory.attach-role', $directory)}}"
+            data-detach="{{route('admin.directory.detach-role', $directory)}}"
         />
     </div>
     <div
-            class="input-group filled group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12"
-            @roleinput($directory, "badges")>
+        class="input-group filled group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12"
+        @roleinput($directory, "badges")>
     <span class="label">نشان</span>
     <input type="text"
            multiple
@@ -233,7 +233,6 @@
         <hr/>
         <h5>فرم اطلاعات کاربران</h5>
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12 article-type">
-            <span class="label">فرم انتخابی برای محصولات این دسته</span>
             <select class="form-control input-sm" name="cmc_id">
                     <?php $customer_meta_categories = get_customer_meta_categories() ?>
                 <option @if(!$directory->hasCustomerMetaCategory()) selected @endif disabled value>
@@ -276,7 +275,6 @@
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
             <span class="label">تنظیم متن اعلان محصولات این شاخه</span>
             <input class="form-control input-sm" name="notice"
-                   placeholder="این متن در تمام محصولات این دسته ثبت خواهد شد"
                    value="{{$directory->notice}}">
         </div>
 
@@ -287,4 +285,9 @@
         @section('form_footer')
             <button type="submit" class="btn btn-default btn-sm">ذخیره</button>
             <input type="submit" class="btn btn-warning btn-sm" name="exit" value="ذخیره و خروج">
+            <a class="btn btn-sm btn-danger virt-form"
+               data-action="{{ route('admin.directory.destroy', $directory) }}"
+               data-method="DELETE" confirm>
+                <i class="fa fa-trash"></i>
+            </a>
         @endsection
