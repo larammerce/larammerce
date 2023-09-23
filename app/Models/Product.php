@@ -221,29 +221,6 @@ class Product extends BaseModel implements
     private CMSSettingHelper $cms_setting_helper;
     private NewInvoiceService $new_invoice_service;
 
-    public function getTaxPercentageAttribute() {
-        $this->new_invoice_service = $this->new_invoice_service ?? app(NewInvoiceService::class);
-        $tax_percentage = $this->attributes["tax_percentage"] ?? 0;
-        if ($tax_percentage > 0) {
-            return $tax_percentage;
-        }
-        return $this->new_invoice_service->getProductTaxPercentage();
-    }
-
-    public function getTollPercentageAttribute() {
-        $this->new_invoice_service = $this->new_invoice_service ?? app(NewInvoiceService::class);
-        $toll_percentage = $this->attributes["toll_percentage"] ?? 0;
-        if ($toll_percentage > 0) {
-            return $toll_percentage;
-        }
-        return $this->new_invoice_service->getProductTollPercentage();
-    }
-
-    public function getIsTaxIncludedAttribute() {
-        $this->new_invoice_service = $this->new_invoice_service ?? app(NewInvoiceService::class);
-        return $this->attributes["is_tax_included"] ?? ConfigProvider::isTaxAddedToPrice();
-    }
-
     public function getIsLocationLimitedAttribute(): bool {
         if (config("cms.general.site.enable_directory_location")) {
             return DirectoryLocationService::isProductLocationLimited($this);
@@ -696,11 +673,13 @@ class Product extends BaseModel implements
 
     public function updateTaxAmount(): void {
         $this->new_invoice_service = $this->new_invoice_service ?? app(NewInvoiceService::class);
-        $priceData = ConfigProvider::isTaxAddedToPrice() ?
+        $priceData = $this->new_invoice_service->isTaxAddedToPrice($this) ?
             $this->new_invoice_service->reverseCalculateProductTaxAndToll(
-                intval($this->latest_sell_price / $this->new_invoice_service->getProductPriceRatio())
+                intval($this->latest_sell_price / $this->new_invoice_service->getProductPriceRatio()),
+                product: $this
             ) : $this->new_invoice_service->calculateProductTaxAndToll(
-                $this->latest_sell_price / $this->new_invoice_service->getProductPriceRatio()
+                $this->latest_sell_price / $this->new_invoice_service->getProductPriceRatio(),
+                product: $this
             );
 
         $this->pure_price = $priceData->price;

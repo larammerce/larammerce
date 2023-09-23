@@ -101,7 +101,7 @@ class ConfigProvider
         return array_filter($rules);
     }
 
-    public static function isTaxAddedToPrice(): bool {
+    public static function isTaxAddedToPriceByDefault(): bool {
         $financial_driver = Provider::getEnabledDriver();
         $tax_added_to_price = true;
         if (strlen($financial_driver) > 0 and Provider::hasDriver($financial_driver)) {
@@ -109,5 +109,35 @@ class ConfigProvider
             $tax_added_to_price = $config->tax_added_to_price;
         }
         return $tax_added_to_price;
+    }
+
+    public static function shouldUsePerProductTaxConfig(): bool {
+        $financial_driver = Provider::getEnabledDriver();
+        $use_per_product_config = false;
+        if (strlen($financial_driver) > 0 and Provider::hasDriver($financial_driver)) {
+            $config = self::getConfig($financial_driver);
+            $use_per_product_config = $config->use_per_product_config;
+        }
+        return $use_per_product_config;
+    }
+
+    public static function getDefaultTaxPercentage(): int {
+        $financial_driver = Provider::getEnabledDriver();
+        $tax_percentage = 0;
+        if (strlen($financial_driver) > 0 and Provider::hasDriver($financial_driver)) {
+            $config = self::getConfig($financial_driver);
+            $tax_percentage = $config->tax_percentage;
+        }
+        return $tax_percentage;
+    }
+
+    public static function getDefaultTollPercentage(): int {
+        $financial_driver = Provider::getEnabledDriver();
+        $toll_percentage = 0;
+        if (strlen($financial_driver) > 0 and Provider::hasDriver($financial_driver)) {
+            $config = self::getConfig($financial_driver);
+            $toll_percentage = $config->toll_percentage;
+        }
+        return $toll_percentage;
     }
 }

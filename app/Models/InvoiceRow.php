@@ -4,8 +4,6 @@ namespace App\Models;
 
 
 use App\Services\Invoice\NewInvoiceService;
-use App\Utils\CMS\ProductService;
-use App\Utils\FinancialManager\ConfigProvider;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
@@ -126,9 +124,9 @@ class InvoiceRow extends BaseModel
         $this->product_price = $this->product->latest_price / $this->new_invoice_service->getProductPriceRatio();
         $this->discount_amount = intval($this->product_price * $discount_percentage / 100);
 
-        $price_data = ConfigProvider::isTaxAddedToPrice() ?
-            $this->new_invoice_service->reverseCalculateProductTaxAndToll($this->product_price - $this->discount_amount) :
-            $this->new_invoice_service->calculateProductTaxAndToll($this->product_price - $this->discount_amount);
+        $price_data = $this->new_invoice_service->isTaxAddedToPrice($this->product) ?
+            $this->new_invoice_service->reverseCalculateProductTaxAndToll($this->product_price - $this->discount_amount, product: $this->product) :
+            $this->new_invoice_service->calculateProductTaxAndToll($this->product_price - $this->discount_amount, product: $this->product);
 
         $this->pure_price = $price_data->price;
         $this->tax_amount = $price_data->tax;
@@ -140,9 +138,9 @@ class InvoiceRow extends BaseModel
         $this->product_price = $this->product->previous_price / $this->new_invoice_service->getProductPriceRatio();
         $this->discount_amount = $this->product_price - ($this->product->latest_price / $this->new_invoice_service->getProductPriceRatio());
 
-        $price_data = ConfigProvider::isTaxAddedToPrice() ?
-            $this->new_invoice_service->reverseCalculateProductTaxAndToll($this->product_price - $this->discount_amount) :
-            $this->new_invoice_service->calculateProductTaxAndToll($this->product_price - $this->discount_amount);
+        $price_data = $this->new_invoice_service->isTaxAddedToPrice($this->product) ?
+            $this->new_invoice_service->reverseCalculateProductTaxAndToll($this->product_price - $this->discount_amount, product: $this->product) :
+            $this->new_invoice_service->calculateProductTaxAndToll($this->product_price - $this->discount_amount, product: $this->product);
 
         $this->pure_price = $price_data->price;
         $this->tax_amount = $price_data->tax;
