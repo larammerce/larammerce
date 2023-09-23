@@ -6,13 +6,6 @@ use App\Utils\FinancialManager\Models\BaseFinancialConfig;
 
 class Config extends BaseFinancialConfig
 {
-    public function __construct()
-    {
-        parent::__construct();
-        $this->username = "";
-        $this->password = "";
-        $this->port = 443;
-    }
 
     /**
      * @rules(input_rule="required_if:is_enabled,true|string")
@@ -42,4 +35,14 @@ class Config extends BaseFinancialConfig
      * @data(input_type="text")
      */
     public $prefix;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->username = "";
+        $this->password = "";
+        $this->host = "";
+        $this->port = 443;
+        $this->prefix = "";
+    }
 }

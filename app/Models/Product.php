@@ -101,6 +101,9 @@ use Throwable;
  * @property integer minimum_allowed_purchase_count
  * @property string main_photo
  * @property string secondary_photo
+ * @property int tax_percentage
+ * @property int toll_percentage
+ * @property bool is_tax_included
  *
  * @property CustomerLocationModel[] location_limitations
  * @property bool is_location_limited
@@ -152,12 +155,11 @@ class Product extends BaseModel implements
 
     protected $fillable = [
         "title", "latest_price", "latest_special_price", "extra_properties", "directory_id", "p_structure_id",
-        "description", "code", "average_rating", "rates_count", "is_active",
-        "min_allowed_count", "max_purchase_count", "min_purchase_count",
-        "is_important", "seo_title", "seo_keywords", "seo_description", "model_id",
-        "has_discount", "previous_price", "is_accessory", "is_visible", "inaccessibility_type",
-        "cmc_id", "notice", "discount_group_id", "priority", "is_discountable", "structure_sort_score",
-        "is_package", "accessory_for", "count", "watermark_uuid",
+        "description", "code", "average_rating", "rates_count", "is_active", "min_allowed_count", "max_purchase_count",
+        "min_purchase_count", "is_important", "seo_title", "seo_keywords", "seo_description", "model_id",
+        "has_discount", "previous_price", "is_accessory", "is_visible", "inaccessibility_type", "cmc_id", "notice",
+        "discount_group_id", "priority", "is_discountable", "structure_sort_score", "is_package", "accessory_for",
+        "count", "is_tax_included", "tax_percentage", "toll_percentage", "watermark_uuid",
         //these are not table fields, these are form sections that role permission system works with
         "tags", "attributes", "gallery", "colors", "badges", "main_photo", "secondary_photo"
     ];
@@ -168,7 +170,8 @@ class Product extends BaseModel implements
         "is_package" => "bool",
         "is_active" => "bool",
         "is_visible" => "bool",
-        "is_discountable" => "bool"
+        "is_discountable" => "bool",
+        "is_tax_included" => "bool",
     ];
 
     protected static ?bool $DISABLE_ON_MIN = null; //TODO: move this to admin layer setting.
@@ -680,11 +683,13 @@ class Product extends BaseModel implements
 
     public function updateTaxAmount(): void {
         $this->new_invoice_service = $this->new_invoice_service ?? app(NewInvoiceService::class);
-        $priceData = ConfigProvider::isTaxAddedToPrice() ?
+        $priceData = $this->new_invoice_service->isTaxAddedToPrice($this) ?
             $this->new_invoice_service->reverseCalculateProductTaxAndToll(
-                intval($this->latest_sell_price / $this->new_invoice_service->getProductPriceRatio())
+                intval($this->latest_sell_price / $this->new_invoice_service->getProductPriceRatio()),
+                product: $this
             ) : $this->new_invoice_service->calculateProductTaxAndToll(
-                $this->latest_sell_price / $this->new_invoice_service->getProductPriceRatio()
+                $this->latest_sell_price / $this->new_invoice_service->getProductPriceRatio(),
+                product: $this
             );
 
         $this->pure_price = $priceData->price;
