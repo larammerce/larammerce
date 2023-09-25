@@ -13,11 +13,16 @@ use App\Models\PStructureAttrValue;
 use App\Services\Directory\DirectoryService;
 use Exception;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use JetBrains\PhpStorm\ArrayShape;
 
 class ProductService
 {
+    public static function clearCache(): void {
+        Cache::tags([Product::class])->flush();
+    }
+
     /**
      * @throws ProductNotFoundException
      */

@@ -221,7 +221,7 @@ class Driver implements BaseDriver
             return false;
         }
         $config = ConfigProvider::getConfig(self::DRIVER_ID);
-        $stdPreInvoice = ModelTransformer::invoiceModelToStd($invoice, $config->tax_added_to_price);
+        $stdPreInvoice = ModelTransformer::invoiceModelToStd($invoice);
         if ($stdPreInvoice !== false) {
             $curl_result = ConnectionFactory::create('/serv/api/PostTransaction', $config)
                 ->withData($stdPreInvoice)->asJson()

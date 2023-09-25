@@ -6,6 +6,7 @@
  * Time: 2:02 PM
  */
 
+use App\Helpers\Common\StringHelper;
 use App\Enums\Directory\DirectoryType;
 use App\Enums\Invoice\PaymentStatus;
 use App\Enums\Setting\CMSSettingKey;
@@ -53,6 +54,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Str;
@@ -95,10 +97,10 @@ if (!function_exists("unparse_url")) {
 }
 
 if (!function_exists("get_all_extras_percentage")) {
-    function get_product_all_extras_percentage(): float {
+    function get_product_all_extras_percentage(Product $product = null): float {
         /** @var NewInvoiceService $new_invoice_service */
         $new_invoice_service = app(NewInvoiceService::class);
-        return $new_invoice_service->getProductAllExtrasPercentage();
+        return $new_invoice_service->getProductAllExtrasPercentage($product);
     }
 }
 
@@ -515,77 +517,114 @@ if (!function_exists('get_directory_products')) {
      * @deprecated
      */
     function get_directory_products($directory, $count = null) {
-        return $count != null ?
-            $directory->products()->mainModels()->visible()->orderBy('priority')->take($count)->get() :
-            $directory->products()->mainModels()->visible()->orderBy('priority')->get();
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $directory->id, "{$count}");
+        if (!Cache::tags([Product::class])->has($cache_key)) {
+            Cache::tags([Product::class])->put($cache_key, $count != null ?
+                $directory->products()->mainModels()->visible()->orderBy('priority')->take($count)->get() :
+                $directory->products()->mainModels()->visible()->orderBy('priority')->get());
+        }
+        return Cache::tags([Product::class])->get($cache_key);
     }
 }
 
 if (!function_exists('get_important_product_leaves')) {
     function get_important_product_leaves(Directory $root_directory, int $count): array|Collection {
-        return $root_directory->leafProducts()->mainModels()->visible()
-            ->where('important_at', '!=', null)
-            ->orderBy('important_at', 'DESC')
-            ->orderBy('updated_at', 'DESC')
-            ->take($count)->get();
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $root_directory->id, "{$count}");
+        if (!Cache::tags([Product::class])->has($cache_key)) {
+            Cache::tags([Product::class])->put($cache_key, $root_directory->leafProducts()->mainModels()->visible()
+                ->where('important_at', '!=', null)
+                ->orderBy('important_at', 'DESC')
+                ->orderBy('updated_at', 'DESC')
+                ->take($count)->get());
+        }
+        return Cache::tags([Product::class])->get($cache_key);
     }
 }
 if (!function_exists('get_visible_product_leaves')) {
     function get_visible_product_leaves(Directory $root_directory, int $count): array|Collection {
-        return $root_directory->leafProducts()->mainModels()->visible()->isActive()
-            ->orderBy('important_at', 'DESC')
-            ->take($count)->get();
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $root_directory->id, "{$count}");
+        if (!Cache::tags([Product::class])->has($cache_key)) {
+            Cache::tags([Product::class])->put($cache_key, $root_directory->leafProducts()->mainModels()->visible()->isActive()
+                ->orderBy("updated_at", "DESC")
+                ->orderBy('important_at', 'DESC')
+                ->take($count)->get());
+        }
+        return Cache::tags([Product::class])->get($cache_key);
     }
 }
 
 if (!function_exists('get_directory_product_leaves')) {
     function get_directory_product_leaves(Directory $root_directory, int $count, $only_active_items = true): array|Collection {
-        $result = $root_directory->leafProducts()->mainModels()->visible();
-        $tmp_result = clone $result;
-        if ($only_active_items or $tmp_result->isActive()->count() >= $count)
-            $result = $result->isActive();
-        return $result->orderBy("important_at", "desc")->take($count)->get();
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $root_directory->id, "{$count}");
+        if (!Cache::tags([Product::class])->has($cache_key)) {
+            $result = $root_directory->leafProducts()->mainModels()->visible();
+            $tmp_result = clone $result;
+            if ($only_active_items or $tmp_result->isActive()->count() >= $count)
+                $result = $result->isActive();
+            Cache::tags([Product::class])->put($cache_key, $result->orderBy("important_at", "desc")->take($count)->get());
+        }
+        return Cache::tags([Product::class])->get($cache_key);
     }
 }
 
 if (!function_exists('latest_products')) {
     function latest_products(int $count = 8): array|Collection {
-        if ($count > 0) {
-            return Product::mainModels()->visible()
-                ->orderBy('important_at', 'DESC')
-                ->orderBy('updated_at', 'DESC')
-                ->where("is_active", true)
-                ->take($count)->get();
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], "{$count}");
+        if (!Cache::tags([Product::class])->has($cache_key)) {
+            if ($count > 0) {
+                Cache::tags([Product::class])->put($cache_key, Product::mainModels()->visible()
+                    ->orderBy('important_at', 'DESC')
+                    ->orderBy('updated_at', 'DESC')
+                    ->where("is_active", true)
+                    ->take($count)->get());
+            } else {
+                Cache::tags([Product::class])->put($cache_key, []);
+            }
         }
-        return [];
+        return Cache::tags([Product::class])->get($cache_key);
     }
 }
 
 if (!function_exists('rated_products')) {
     function rated_products(int $count = 8): array|Collection {
-        if ($count > 0)
-            return Product::mainModels()->visible()->popular()->where("is_active", true)->take($count)->get();
-        return [];
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], "{$count}");
+        if (!Cache::tags([Product::class])->has($cache_key)) {
+            if ($count > 0) {
+                Cache::tags([Product::class])->put($cache_key, Product::mainModels()->visible()->popular()->where("is_active", true)->take($count)->get());
+            } else {
+                Cache::tags([Product::class])->put($cache_key, []);
+            }
+        }
+        return Cache::tags([Product::class])->get($cache_key);
     }
 }
 
 if (!function_exists('custom_query_products')) {
     function custom_query_products(string $identifier): array|Collection {
-        try {
-            return ProductQuery::findByIdentifier($identifier)->getProducts();
-        } catch (Exception $e) {
-            return [];
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $identifier);
+        if (!Cache::tags([Product::class])->has($cache_key)) {
+            try {
+                Cache::tags([Product::class])->put($cache_key, ProductQuery::findByIdentifier($identifier)->getProducts());
+            } catch (Exception $e) {
+                Cache::tags([Product::class])->put($cache_key, []);
+            }
         }
+        return Cache::tags([Product::class])->get($cache_key);
     }
 }
 
 if (!function_exists('custom_query_product_ids')) {
     function custom_query_product_ids(string $identifier): array|Collection {
-        try {
-            return ProductQuery::findByIdentifier($identifier)->getProductIds();
-        } catch (Exception $e) {
-            return [];
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $identifier);
+        if (!Cache::tags([Product::class])->has($cache_key)) {
+            try {
+                Cache::tags([Product::class])->put($cache_key, ProductQuery::findByIdentifier($identifier)->getProductIds());
+            } catch (Exception $e) {
+                Cache::tags([Product::class])->put($cache_key, []);
+            }
         }
+
+        return Cache::tags([Product::class])->get($cache_key);
     }
 }
 
@@ -602,21 +641,31 @@ if (!function_exists('get_product_filter')) {
 
 if (!function_exists('custom_filter_products')) {
     function custom_filter_products(string $identifier): array|Collection {
-        try {
-            return ProductFilter::findByIdentifier($identifier)->getProducts();
-        } catch (Exception $e) {
-            return [];
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $identifier);
+        if (!Cache::tags([Product::class])->has($cache_key)) {
+            try {
+                Cache::tags([Product::class])->put($cache_key, ProductFilter::findByIdentifier($identifier)->getProducts());
+            } catch (Exception $e) {
+                Cache::tags([Product::class])->put($cache_key, []);
+            }
         }
+
+        return Cache::tags([Product::class])->get($cache_key);
     }
 }
 
 if (!function_exists('custom_filter_product_ids')) {
     function custom_filter_product_ids(string $identifier): array|Collection {
-        try {
-            return ProductFilter::findByIdentifier($identifier)->getProductIds();
-        } catch (Exception $e) {
-            return [];
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $identifier);
+        if (!Cache::tags([Product::class])->has($cache_key)) {
+            try {
+                Cache::tags([Product::class])->put($cache_key, ProductFilter::findByIdentifier($identifier)->getProductIds());
+            } catch (Exception $e) {
+                Cache::tags([Product::class])->put($cache_key, []);
+            }
         }
+
+        return Cache::tags([Product::class])->get($cache_key);
     }
 }
 
@@ -628,15 +677,20 @@ if (!function_exists('get_filter_data')) {
 
 if (!function_exists('important_products')) {
     function important_products(int $count = 8): array|Collection {
-        if ($count > 0) {
-            return Product::important()
-                ->orderBy('important_at', 'DESC')
-                ->where("is_active", true)
-                ->mainModels()
-                ->visible()
-                ->take($count)->get();
+        $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], "{$count}");
+        if (!Cache::tags([Product::class])->has($cache_key)) {
+            if ($count > 0) {
+                Cache::tags([Product::class])->put($cache_key, Product::important()
+                    ->orderBy('important_at', 'DESC')
+                    ->where("is_active", true)
+                    ->mainModels()
+                    ->visible()
+                    ->take($count)->get());
+            } else {
+                Cache::tags([Product::class])->put($cache_key, []);
+            }
         }
-        return [];
+        return Cache::tags([Product::class])->get($cache_key);
     }
 }
 
@@ -867,7 +921,7 @@ if (!function_exists('get_configurations')) {
 
 if (!function_exists('get_searched_products')) {
     function get_searched_products() {
-        return Product::search(request('query'))->mainModels()->visible()->get();
+        return Product::search(request('query'), 1)->mainModels()->visible()->get();
     }
 }
 
@@ -1343,29 +1397,7 @@ if (!function_exists("get_shipment_cost")) {
 
 if (!function_exists("build_directories_tree")) {
     function build_directories_tree(?Directory $root = null, array $conditions = [], array $order = []): array {
-        $directories = Directory::permitted()->where($conditions)
-            ->orderBy($order["column"] ?? "priority", $order["direction"] ?? "ASC")->get();
-        $branch = [];
-        $parts = [];
-        $map = [];
-
-        foreach ($directories as $directory) {
-            $map[$directory->id] = $directory;
-            $directory->setRelation("directories", []);
-            if (!isset($parts[$directory->directory_id]))
-                $parts[$directory->directory_id] = [];
-            $parts[$directory->directory_id][] = $directory;
-        }
-
-        foreach ($parts as $parent_id => $children) {
-            if (isset($map[$parent_id]))
-                $map[$parent_id]->setRelation("directories", $children);
-            else {
-                $branch = array_merge($branch, $children);
-            }
-        }
-
-        return $root == null ? $branch : ($map[$root->id]->directories ?? []);
+        return \App\Services\Directory\DirectoryService::buildDirectoriesTree($root, $conditions, $order);
     }
 }
 
@@ -1444,6 +1476,12 @@ if (!function_exists("representative_get_options")) {
 if (!function_exists("representative_is_enabled")) {
     function representative_is_enabled(): bool {
         return \App\Utils\CMS\Setting\Representative\RepresentativeSettingService::isEnabled();
+    }
+}
+
+if (!function_exists("representative_is_forced")) {
+    function representative_is_forced(): bool {
+        return \App\Utils\CMS\Setting\Representative\RepresentativeSettingService::isForced();
     }
 }
 
@@ -1803,5 +1841,29 @@ if (!function_exists('get_related_products_according_to_structures')) {
         })->whereHas("pAttributes", function ($query) use ($values_to_have) {
             $query->whereIn("p_structure_attr_value_id", $values_to_have);
         })->where("is_active", true)->mainModels()->visible()->latest()->take($limit_count)->get();
+    }
+}
+
+if (!function_exists('is_tax_added_to_price_by_default')) {
+    function is_tax_added_to_price_by_default(): bool {
+        return \App\Utils\FinancialManager\ConfigProvider::isTaxAddedToPriceByDefault();
+    }
+}
+
+if (!function_exists('should_use_per_product_tax_config')) {
+    function should_use_per_product_tax_config(): bool {
+        return \App\Utils\FinancialManager\ConfigProvider::shouldUsePerProductTaxConfig();
+    }
+}
+
+if (!function_exists('get_default_tax_percentage')) {
+    function get_default_tax_percentage(): float {
+        return \App\Utils\FinancialManager\ConfigProvider::getDefaultTaxPercentage();
+    }
+}
+
+if (!function_exists('get_default_toll_percentage')) {
+    function get_default_toll_percentage(): float {
+        return \App\Utils\FinancialManager\ConfigProvider::getDefaultTollPercentage();
     }
 }

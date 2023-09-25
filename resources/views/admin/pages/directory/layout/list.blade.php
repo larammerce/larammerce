@@ -1,6 +1,6 @@
 @foreach($directories as $directory)
     <div
-        class="col-lg-offset-1 col-lg-10 col-md-offset-0 col-md-12 col-sm-offset-0 col-sm-12 col-xs-offset-0 col-xs-12 list-row users">
+            class="col-lg-offset-1 col-lg-10 col-md-offset-0 col-md-12 col-sm-offset-0 col-sm-12 col-xs-offset-0 col-xs-12 list-row users">
         <div class="col-lg-1 col-md-2 col-sm-3 col-xs-3 col">
             <div class="img-container" act="file" href="{{route('admin.directory.show', $directory)}}"
                  edit-href="{{route('admin.directory.edit', $directory)}}" data-file-type="App\Models\Directory"
@@ -40,6 +40,11 @@
                 <a class="btn btn-sm btn-success" href="{{route('admin.directory.show', $directory)}}">
                     <i class="fa fa-eye"></i>
                 </a>
+                @if(is_null($directory->directory_id))
+                    <a class="btn btn-sm btn-info" href="{{route('admin.directory.sync', $directory)}}">
+                        <i class="fa fa-refresh"></i>
+                    </a>
+                @endif
             </div>
         </div>
     </div>

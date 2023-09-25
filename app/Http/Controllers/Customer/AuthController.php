@@ -29,7 +29,6 @@ use App\Utils\OneTimeCode\{GenerateCodeNotPossibleException,
 };
 use Exception;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -41,10 +40,8 @@ use Illuminate\View\View;
  * Class AuthController
  * @package App\Http\Controllers\Customer
  */
-class AuthController extends Controller
-{
-    public function __construct()
-    {
+class AuthController extends Controller {
+    public function __construct() {
         parent::__construct();
         $this->middleware('mobile-auth')->only(['showMobileRegister', 'doMobileRegister']);
     }
@@ -53,8 +50,7 @@ class AuthController extends Controller
      * @param $type
      * @return Factory|View
      */
-    public function showAuth($type): Factory|View
-    {
+    public function showAuth($type): Factory|View {
         $type = CustomerAuthType::fix($type);
         return h_view("public.auth-{$type}-show");
     }
@@ -62,8 +58,7 @@ class AuthController extends Controller
     /**
      * @rules(g-recaptcha-response="required|captcha", main_phone="required|mobile_number")
      */
-    public function doMobileAuth(Request $request): RedirectResponse
-    {
+    public function doMobileAuth(Request $request): RedirectResponse {
         $mainPhone = $request->get('main_phone');
 
 
@@ -86,8 +81,7 @@ class AuthController extends Controller
     /**
      * @rules(g-recaptcha-response="required|captcha", email="required|email")
      */
-    public function doEmailAuth(Request $request): RedirectResponse
-    {
+    public function doEmailAuth(Request $request): RedirectResponse {
         $email = $request->get('email');
 
         if (CustomerAuthProvider::isPasswordAuthPossible(CustomerAuthType::EMAIL, $email))
@@ -104,14 +98,12 @@ class AuthController extends Controller
         return redirect()->route('customer-auth.show-check', [CustomerAuthType::EMAIL, email_encode($email)]);
     }
 
-    public function showCheck($type, $value): \Illuminate\Foundation\Application|Factory|View
-    {
+    public function showCheck($type, $value): \Illuminate\Foundation\Application|Factory|View {
         $type = CustomerAuthType::fix($type);
         return h_view("public.auth-{$type}-check", compact('value'));
     }
 
-    public function doCheck(Request $request, $type, $value): RedirectResponse
-    {
+    public function doCheck(Request $request, $type, $value): RedirectResponse {
         $type = CustomerAuthType::fix($type);
         $value = email_decode($value);
         $oneTimeCode = $request->get("one_time_code");
@@ -139,8 +131,7 @@ class AuthController extends Controller
         }
     }
 
-    public function sendAuthConfirm($type, $value): RedirectResponse
-    {
+    public function sendAuthConfirm($type, $value): RedirectResponse {
         $type = CustomerAuthType::fix($type);
         $value = email_decode($value);
         try {
@@ -155,8 +146,7 @@ class AuthController extends Controller
         return redirect()->route('customer-auth.show-check', [$type, email_encode($value)]);
     }
 
-    public function showPasswordAuth($type, $value): \Illuminate\Foundation\Application|Factory|View
-    {
+    public function showPasswordAuth($type, $value): \Illuminate\Foundation\Application|Factory|View {
         $type = CustomerAuthType::fix($type);
         return h_view("public.auth-{$type}-password", compact('value'));
     }
@@ -164,8 +154,7 @@ class AuthController extends Controller
     /**
      * @rules(g-recaptcha-response="required|captcha", password='required')
      */
-    public function doPasswordAuth(Request $request, $type, $value): RedirectResponse
-    {
+    public function doPasswordAuth(Request $request, $type, $value): RedirectResponse {
         $type = CustomerAuthType::fix($type);
         $value = email_decode($value);
         $password = $request->get("password");
@@ -189,8 +178,7 @@ class AuthController extends Controller
         }
     }
 
-    public function showRegister($type, $value): \Illuminate\Foundation\Application|Factory|View
-    {
+    public function showRegister($type, $value): \Illuminate\Foundation\Application|Factory|View {
         $type = CustomerAuthType::fix($type);
         return h_view("public.auth-{$type}-register", compact('value'));
     }
@@ -204,11 +192,10 @@ class AuthController extends Controller
      *     main_phone="required|mobile_number|unique:customer_users",
      *     national_code="nullable|national_code",
      *     representative_username=strlen(request("representative_username") ?? "") > 0 ? "exists:users,username" : "",
-     *     representative_type=strlen(request("representative_type") ?? "") > 0 ? "in:".implode(",", representative_get_options()) : ""
+     *     representative_type=(representative_is_forced() ? "required|" : "") . (strlen(request("representative_type") ?? "") > 0 ? "in:".implode(",", representative_get_options()) : "")
      * )
      */
-    public function doRegister(Request $request, $type, $value): RedirectResponse
-    {
+    public function doRegister(Request $request, $type, $value): RedirectResponse {
         $type = CustomerAuthType::fix($type);
         $value = email_decode($value);
         $data = $request->only(["name", "family", "main_phone", "email", "national_code", "representative_username", "representative_type"]);
@@ -235,8 +222,7 @@ class AuthController extends Controller
     /**
      * @rules(token="required")
      */
-    public function emailConfirmation(): RedirectResponse
-    {
+    public function emailConfirmation(): RedirectResponse {
         try {
             $key = OneTimeCodeProvider::getKey(request('token'));
             $user = User::find($key);
