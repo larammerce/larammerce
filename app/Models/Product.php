@@ -28,7 +28,6 @@ use App\Utils\CMS\Setting\CustomerLocation\CustomerLocationModel;
 use App\Utils\Common\EmailService;
 use App\Utils\Common\ImageService;
 use App\Utils\Common\SMSService;
-use App\Utils\FinancialManager\ConfigProvider;
 use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
 use App\Utils\FinancialManager\Factory;
 use App\Utils\Translation\Traits\Translatable;
@@ -644,7 +643,13 @@ class Product extends BaseModel implements
             $this->specialPrices()->create(["value" => $this->latest_special_price]);
         }
 
-        if ($this->id and ($this->isDirty("latest_special_price") or $this->isDirty("latest_price"))) {
+        if ($this->id and (
+                $this->isDirty("latest_special_price") or
+                $this->isDirty("latest_price") or
+                $this->isDirty("tax_percentage") or
+                $this->isDirty("toll_percentage") or
+                $this->isDirty("is_tax_included")
+            )) {
             $this->updateTaxAmount();
         }
 
