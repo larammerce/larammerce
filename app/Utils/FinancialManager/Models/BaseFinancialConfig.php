@@ -6,15 +6,38 @@ use App\Traits\Inputable;
 use JsonSerializable;
 use Serializable;
 
-abstract class BaseFinancialConfig extends BaseModel implements JsonSerializable, Serializable
-{
+abstract class BaseFinancialConfig extends BaseModel implements JsonSerializable, Serializable {
     use Inputable;
+
+    /**
+     * @rules(input_rule="number")
+     * @data(input_type="number")
+     */
+    public int $tax_percentage;
+
+    /**
+     * @rules(input_rule="number")
+     * @data(input_type="number")
+     */
+    public int $toll_percentage;
+
+    /**
+     * @rules(input_rule="string")
+     * @data(input_type="text")
+     */
+    public string $invoice_tax_heading;
 
     /**
      * @rules(input_rule="bool")
      * @data(input_type="checkbox")
      */
-    public bool $is_enabled;
+    public bool $invoice_show_tax_percentage;
+
+    /**
+     * @rules(input_rule="bool")
+     * @data(input_type="checkbox")
+     */
+    public bool $use_per_product_config;
 
     /**
      * @rules(input_rule="bool")
@@ -34,23 +57,12 @@ abstract class BaseFinancialConfig extends BaseModel implements JsonSerializable
      */
     public bool $tax_added_to_price;
 
-    /**
-     * @rules(input_rule="number")
-     * @data(input_type="number")
-     */
-    public int $tax_percentage;
-
-    /**
-     * @rules(input_rule="number")
-     * @data(input_type="number")
-     */
-    public int $toll_percentage;
 
     /**
      * @rules(input_rule="bool")
      * @data(input_type="checkbox")
      */
-    public bool $use_per_product_config;
+    public bool $is_enabled;
 
 
     public function __construct() {
@@ -65,6 +77,8 @@ abstract class BaseFinancialConfig extends BaseModel implements JsonSerializable
         $this->tax_percentage = 6;
         $this->toll_percentage = 3;
         $this->use_per_product_config = false;
+        $this->invoice_tax_heading = "مالیات و عوارض";
+        $this->invoice_show_tax_percentage = false;
     }
 
     public function serialize(): bool|string|null {

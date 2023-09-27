@@ -9,7 +9,7 @@ return [
     ],
 
     "config" => [
-        "is_enabled"=> "فعالسازی",
+        "is_enabled"=> "استفاده از این نرم افزار به صورت پیش فرض (فعال سازی)",
         "username" => "نام کاربری",
         "password" => "رمز عبور",
         "token" => "توکن",
@@ -22,5 +22,7 @@ return [
         "tax_percentage" => "درصد مالیات",
         "toll_percentage" => "درصد عوارض",
         "use_per_product_config" => "استفاده از تنظیمات مالی برای هر محصول",
+        "invoice_tax_heading" => "عنوان ستون مالیات در فاکتورهای چاپی",
+        "invoice_show_tax_percentage" => "آیا درصد مالیات و عوارض در فاکتورها نمایش داده شود"
     ]
 ];

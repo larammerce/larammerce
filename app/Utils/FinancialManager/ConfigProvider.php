@@ -4,6 +4,7 @@ namespace App\Utils\FinancialManager;
 
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
 use App\Utils\CMS\Setting\FinancialDriver\FinancialDriverService;
+use App\Utils\FinancialManager\Drivers\Local\Config;
 use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
 use App\Utils\FinancialManager\Models\BaseFinancialConfig;
 use App\Utils\Reflection\AnnotationBadKeyException;
@@ -12,8 +13,7 @@ use App\Utils\Reflection\AnnotationNotFoundException;
 use App\Utils\Reflection\AnnotationSyntaxException;
 use ReflectionException;
 
-class ConfigProvider
-{
+class ConfigProvider {
     static array $CACHED_DATA = [];
 
     /**
@@ -139,5 +139,25 @@ class ConfigProvider
             $toll_percentage = $config->toll_percentage;
         }
         return $toll_percentage;
+    }
+
+    public static function getInvoiceTaxHeading(): string {
+        $financial_driver = Provider::getEnabledDriver();
+        if (strlen($financial_driver) > 0 and Provider::hasDriver($financial_driver)) {
+            $config = self::getConfig($financial_driver);
+        } else {
+            $config = new Config();
+        }
+        return $config->invoice_tax_heading;
+    }
+
+    public static function shouldShowTaxPercentageInInvoiceHeading(): bool {
+        $financial_driver = Provider::getEnabledDriver();
+        $show_tax_percentage = false;
+        if (strlen($financial_driver) > 0 and Provider::hasDriver($financial_driver)) {
+            $config = self::getConfig($financial_driver);
+            $show_tax_percentage = $config->invoice_show_tax_percentage;
+        }
+        return $show_tax_percentage;
     }
 }

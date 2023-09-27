@@ -1867,3 +1867,19 @@ if (!function_exists('get_default_toll_percentage')) {
         return \App\Utils\FinancialManager\ConfigProvider::getDefaultTollPercentage();
     }
 }
+
+if (!function_exists("get_invoice_tax_heading")) {
+    function get_invoice_tax_heading(): string {
+        $heading = \App\Utils\FinancialManager\ConfigProvider::getInvoiceTaxHeading();
+        if (should_show_tax_percentage_in_invoice_heading()) {
+            $heading .= " (" . (get_default_tax_percentage() + get_default_toll_percentage()) . "%)";
+        }
+        return $heading;
+    }
+}
+
+if (!function_exists("should_show_tax_percentage_in_invoice_heading")) {
+    function should_show_tax_percentage_in_invoice_heading(): bool {
+        return \App\Utils\FinancialManager\ConfigProvider::shouldShowTaxPercentageInInvoiceHeading();
+    }
+}
