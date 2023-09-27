@@ -11,7 +11,11 @@
     <link rel="stylesheet" href="/admin_dashboard/vendor/jquery-ui/jquery-ui.css">
     <link rel="stylesheet" href="/admin_dashboard/vendor/persianDatepicker/css/persian-datepicker.min.css">
     <link rel="stylesheet" href="/admin_dashboard/vendor/jquery-toast/jquery.toast.min.css">
+<<<<<<< Updated upstream
     <link rel="stylesheet" type="text/css" href="/admin_dashboard/css/app-23-09-19.css"/>
+=======
+    <link rel="stylesheet" type="text/css" href="/admin_dashboard/css/app-23-09-27.css"/>
+>>>>>>> Stashed changes
 
     <link rel="apple-touch-icon" sizes="180x180" href="/admin_dashboard/{{get_identity()["fav"]}}/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/admin_dashboard/{{get_identity()["fav"]}}/favicon-32x32.png">
@@ -172,7 +176,11 @@
     </div>
 </div>
 
+<<<<<<< Updated upstream
 <script data-main="/admin_dashboard/js/all-23-09-19" src="/admin_dashboard/vendor/requirejs/require.js"></script>
+=======
+<script data-main="/admin_dashboard/js/all-23-09-27" src="/admin_dashboard/vendor/requirejs/require.js"></script>
+>>>>>>> Stashed changes
 
 @yield('extra_javascript')
 

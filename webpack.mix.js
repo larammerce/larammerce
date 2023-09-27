@@ -13,7 +13,11 @@ const mix = require('laravel-mix');
 
 mix.setPublicPath('public_html');
 
+<<<<<<< Updated upstream
 mix.sass('resources/assets/sass/app.scss', 'public_html/admin_dashboard/css/app-23-09-19.css');
+=======
+mix.sass('resources/assets/sass/app.scss', 'public_html/admin_dashboard/css/app-23-09-27.css');
+>>>>>>> Stashed changes
 
 mix.sass('resources/assets/sass/tinymce-extras.scss', 'public_html/admin_dashboard/css/tinymce-extras.css');
 
@@ -26,4 +30,8 @@ mix.babel([
     'resources/assets/js/init.js',
     'resources/assets/js/define/*.js',
     'resources/assets/js/require/*.js'
+<<<<<<< Updated upstream
 ], 'public_html/admin_dashboard/js/all-23-09-19.js');
+=======
+], 'public_html/admin_dashboard/js/all-23-09-27.js');
+>>>>>>> Stashed changes
