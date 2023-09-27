@@ -43,7 +43,8 @@ class GenerateFilesCommand extends Command
                 TranslationService::makeTranslationModel($class);
             }
             Artisan::call("migrate", [
-                "--path" => TranslationService::getTranslationMigrationsBasePath()
+                "--path" => TranslationService::getTranslationMigrationsBasePath(),
+                "--force" => true
             ]);
         }
 
