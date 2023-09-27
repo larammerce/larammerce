@@ -233,6 +233,7 @@ Route::group(
                 Route::get("{directory}/special-price", ["as" => "special-price.edit", "uses" => "DirectoryController@editSpecialPrice"]);
                 Route::post("{directory}/special-price", ["as" => "special-price.update", "uses" => "DirectoryController@updateSpecialPrice"]);
                 Route::delete("{directory}/special-price", ["as" => "special-price.destroy", "uses" => "DirectoryController@destroySpecialPrice"]);
+                Route::patch("{directory}/clear-cmc", ["as" => "clear-cmc", "uses" => "DirectoryController@clearCMC"]);
             });
         Route::resource("directory", "DirectoryController", ["as" => "admin"]);
 

@@ -22,10 +22,8 @@ use Illuminate\Http\Request;
  * @package App\Http\Controllers\Admin
  * @role(enabled=true)
  */
-class DirectoryController extends BaseController
-{
-    public function __construct()
-    {
+class DirectoryController extends BaseController {
+    public function __construct() {
         parent::__construct();
         $this->middleware('permission-system');
     }
@@ -33,8 +31,7 @@ class DirectoryController extends BaseController
     /**
      * @role(super_user, cms_manager, stock_manager, acc_manager)
      */
-    public function index(): Factory|View|Application
-    {
+    public function index(): Factory|View|Application {
         parent::setPageAttribute();
         ExploreService::setCurrentDirectory(0);
         $directories = Directory::roots()->permitted()->paginate(Directory::getPaginationCount());
@@ -44,8 +41,7 @@ class DirectoryController extends BaseController
     /**
      * @role(super_user, cms_manager, acc_manager)
      */
-    public function create(): Factory|View|Application
-    {
+    public function create(): Factory|View|Application {
         $directory = null;
         if (request()->has('directory_id'))
             $directory = Directory::find(request()->get('directory_id'));
@@ -56,8 +52,7 @@ class DirectoryController extends BaseController
      * @role(super_user, cms_manager, acc_manager)
      * @rules(title='required', is_internal_link='boolean', priority='required|numeric', has_web_page='boolean')
      */
-    public function store(Request $request): RedirectResponse
-    {
+    public function store(Request $request): RedirectResponse {
         $directory = Directory::create($request->except(["is_location_limited"]));
         $directory->setUrlFull();
 
@@ -73,8 +68,7 @@ class DirectoryController extends BaseController
     /**
      * @role(super_user, cms_manager, acc_manager)
      */
-    public function show(Directory $directory): View|Factory|Application|RedirectResponse
-    {
+    public function show(Directory $directory): View|Factory|Application|RedirectResponse {
         ExploreService::setCurrentDirectory($directory->id);
         parent::setPageAttribute($directory->id);
         if ($directory->products()->count() > 0) {
@@ -94,8 +88,7 @@ class DirectoryController extends BaseController
     /**
      * @role(super_user, cms_manager, acc_manager)
      */
-    public function edit(Directory $directory): Factory|View|Application
-    {
+    public function edit(Directory $directory): Factory|View|Application {
         $directory->load('parentDirectory', 'systemRoles');
         return view('admin.pages.directory.edit', compact('directory'));
     }
@@ -106,8 +99,7 @@ class DirectoryController extends BaseController
      *     image="image|max:2048|dimensions:min_width=".get_image_min_width('directory').",ratio=".get_image_ratio('directory'),
      *     directory_id='exists:directories,id', has_web_page='boolean', notice="max:255")
      */
-    public function update(Request $request, Directory $directory): RedirectResponse
-    {
+    public function update(Request $request, Directory $directory): RedirectResponse {
         $leaf_directory_ids = [];
         if ($request->has("notice") and $request->get("notice") !== $directory->notice) {
             $leaf_directory_ids = $directory->leafProducts()->pluck("id")->toArray();
@@ -135,8 +127,7 @@ class DirectoryController extends BaseController
     /**
      * @role(super_user, cms_manager, acc_manager)
      */
-    public function destroy(Directory $directory): RedirectResponse
-    {
+    public function destroy(Directory $directory): RedirectResponse {
         $parentDirectory = $directory->parentDirectory;
         $directory->delete();
 
@@ -150,8 +141,7 @@ class DirectoryController extends BaseController
      * @role(super_user, cms_manager, acc_manager)
      * @rules(query="required")
      */
-    public function search(Request $request)
-    {
+    public function search(Request $request) {
         return Directory::permitted()->search($request->get('query'))->get();
     }
 
@@ -159,8 +149,7 @@ class DirectoryController extends BaseController
      * @role(super_user, cms_manager, acc_manager)
      * @rules(id="required|exists:system_roles,id")
      */
-    public function attachRole(Request $request, Directory $directory): JsonResponse|RedirectResponse
-    {
+    public function attachRole(Request $request, Directory $directory): JsonResponse|RedirectResponse {
         $directory->systemRoles()->attach($request->get('id'));
         if (RequestService::isRequestAjax()) {
             return response()->json(MessageFactory::create(
@@ -174,8 +163,7 @@ class DirectoryController extends BaseController
      * @role(super_user, cms_manager, acc_manager)
      * @rules(id="required|exists:system_roles,id")
      */
-    public function detachRole(Request $request, Directory $directory): JsonResponse|RedirectResponse
-    {
+    public function detachRole(Request $request, Directory $directory): JsonResponse|RedirectResponse {
         $directory->systemRoles()->detach($request->get('id'));
         if (RequestService::isRequestAjax()) {
             return response()->json(MessageFactory::create(
@@ -195,8 +183,7 @@ class DirectoryController extends BaseController
      * @param Directory $directory
      * @return RedirectResponse|\Illuminate\Http\JsonResponse
      */
-    public function attachBadge(Request $request, Directory $directory)
-    {
+    public function attachBadge(Request $request, Directory $directory) {
         $badge_id = $request->get('id');
         $directory->badges()->attach($badge_id);
         $job = new ActionDirectoryChildrenBadges($directory, $badge_id, ActionDirectoryChildrenBadges::ATTACH);
@@ -226,8 +213,7 @@ class DirectoryController extends BaseController
      * @param Directory $directory
      * @return RedirectResponse|\Illuminate\Http\JsonResponse
      */
-    public function detachBadge(Request $request, Directory $directory)
-    {
+    public function detachBadge(Request $request, Directory $directory) {
         $badge_id = $request->get('id');
         $directory->badges()->detach($badge_id);
         $job = new ActionDirectoryChildrenBadges($directory, $badge_id, ActionDirectoryChildrenBadges::DETACH);
@@ -258,8 +244,7 @@ class DirectoryController extends BaseController
      * @role(super_user, cms_manager, acc_manager)
      * @rules(id="exists:directories,id")
      */
-    public function appliances(Request $request): Factory|View|Application
-    {
+    public function appliances(Request $request): Factory|View|Application {
         $config = [
             "article_management" => false,
             "product_management" => false,
@@ -291,8 +276,7 @@ class DirectoryController extends BaseController
     /**
      * @role(super_user, seo_master, cms_manager, acc_manager)
      */
-    public function removeImage(Directory $directory): RedirectResponse
-    {
+    public function removeImage(Directory $directory): RedirectResponse {
         $directory->removeImage();
         return back();
     }
@@ -300,8 +284,7 @@ class DirectoryController extends BaseController
     /**
      * @role(super_user, seo_master, cms_manager, acc_manager)
      */
-    public function showLinkProduct(Directory $directory): Factory|View|Application
-    {
+    public function showLinkProduct(Directory $directory): Factory|View|Application {
         return view('admin.pages.directory.link-product', compact('directory'));
     }
 
@@ -310,8 +293,7 @@ class DirectoryController extends BaseController
      * @rules(product_id="required|exists:products,id")
      * @role(super_user, seo_master, cms_manager, acc_manager)
      */
-    public function doLinkProduct(Request $request, Directory $directory): RedirectResponse
-    {
+    public function doLinkProduct(Request $request, Directory $directory): RedirectResponse {
         $directory->attachLeafFiles($request->get('product_id'));
         return redirect()->route('admin.directory.show', $directory);
     }
@@ -319,8 +301,7 @@ class DirectoryController extends BaseController
     /**
      * @role(super_user, seo_master, cms_manager, acc_manager)
      */
-    public function unlinkProduct(Directory $directory, Product $product): RedirectResponse
-    {
+    public function unlinkProduct(Directory $directory, Product $product): RedirectResponse {
         $directory->detachLeafFiles($product->id);
         return redirect()->route('admin.directory.show', $directory);
     }
@@ -328,8 +309,7 @@ class DirectoryController extends BaseController
     /**
      * @role(super_user, seo_master, cms_manager, acc_manager)
      */
-    public function editSpecialPrice(Directory $directory): Factory|View|Application
-    {
+    public function editSpecialPrice(Directory $directory): Factory|View|Application {
         return view("admin.pages.directory.special-price.edit", compact("directory"));
     }
 
@@ -337,8 +317,7 @@ class DirectoryController extends BaseController
      * @rules(descent_percentage="required|numeric|between:1,100")
      * @role(super_user, seo_master, cms_manager, acc_manager)
      */
-    public function updateSpecialPrice(Directory $directory): RedirectResponse
-    {
+    public function updateSpecialPrice(Directory $directory): RedirectResponse {
         $job = new UpdateProductsSpecialPrice($directory, request()->get("descent_percentage"));
         dispatch($job);
         return History::redirectBack();
@@ -347,8 +326,7 @@ class DirectoryController extends BaseController
     /**
      * @role(super_user, seo_master, cms_manager, acc_manager)
      */
-    public function destroySpecialPrice(Directory $directory): RedirectResponse
-    {
+    public function destroySpecialPrice(Directory $directory): RedirectResponse {
         $directory->leafProducts()->chunk(100,
             function ($products) {
                 foreach ($products as $product) {
@@ -362,9 +340,14 @@ class DirectoryController extends BaseController
         return redirect()->route("admin.directory.edit", $directory);
     }
 
+    public function clearCMC(Directory $directory): RedirectResponse {
+        $directory->update([
+            "cmc_id" => null,
+        ]);
+        return redirect()->route("admin.directory.edit", $directory);
+    }
 
-    public function getModel(): ?string
-    {
+    public function getModel(): ?string {
         return Directory::class;
     }
 }
