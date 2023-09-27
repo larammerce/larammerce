@@ -4,8 +4,9 @@
             <a href="#" class="directory-name">خانه</a>
         </div>
         <ul class="sub-directories">
+            @php $depth = 0 @endphp
             @foreach(build_directories_tree() as $directory)
-                @include('admin.templates.explore.directory', compact('directory'))
+                @include('admin.templates.explore.directory', compact('directory', "depth"))
             @endforeach
         </ul>
     </div>

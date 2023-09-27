@@ -46,8 +46,8 @@ group by directories.id;
 
 -- get list of products and amount of sales on 2 months
 select agg2.*, p2.`title`, p2.`code`
-from (select product_id, sum(sum_price)
-      from (select products.id as product_id, (invoice_rows.product_price * invoice_rows.count) as sum_price
+from (select product_id, sum(sum_price) as total_sell, sum(buy_count) as total_count
+      from (select products.id as product_id, (invoice_rows.product_price * invoice_rows.count) as sum_price, invoice_rows.count as buy_count
             from products,
                  invoice_rows,
                  invoices

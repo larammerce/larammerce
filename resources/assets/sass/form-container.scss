@@ -4,6 +4,18 @@
             @include main-scroll-content();
             background: $color-toolbar-back;
 
+            &::-webkit-scrollbar {
+                display: block;
+                -webkit-appearance: none;
+                width: 7px;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                border-radius: 4px;
+                background-color: rgba(0, 0, 0, .5);
+                box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+            }
+
             *[class^='col-'] {
                 float: right;
             }
@@ -17,9 +29,10 @@
 
                 .top-bar {
                     width: 100%;
-                    height: 25px;
-                    background-color: $color-apps-nav-back;
+                    height: 60px;
+                    background-color: #ebebec;
                     @include border-radius-top(5px);
+                    border-bottom: 1px solid;
 
                     .button-container {
                         float: left;
@@ -74,11 +87,12 @@
 
                     .title-container {
                         h1 {
-                            font-size: 10px;
-                            font-weight: lighter;
+                            font-size: 20px;
+                            font-weight: 600;
                             margin: 0;
-                            padding: 5px 10px;
-                            color: $color-nav-back;
+                            padding: 10px 20px;
+                            text-align: right;
+                            color: $color-dark-2-1;
                         }
                     }
 

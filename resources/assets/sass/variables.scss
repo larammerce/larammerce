@@ -4,10 +4,11 @@ $font-for-numbers: byekan;
 
 //color variables
 
-$color-main-1: #ffa605;
+$color-main-1: #fa2a20;
 
 $color-dark-1: #111;
 $color-dark-2: #474747;
+$color-dark-2-1: #424242;
 $color-dark-3-1: #666666;
 $color-dark-3: #777777;
 $color-dark-3-1: #888888;
@@ -18,7 +19,6 @@ $color-font-1: #fff;
 
 $color-nav-back: #fff;
 $color-toolbar-back: #ebebec;
-$color-apps-nav-back: #424242;
 $color-search-border: #e0e0e0;
 
 $color-notifications-back: #f44336;
@@ -32,6 +32,7 @@ $color-invoice-sign: #f4554656;
 //size variables
 
 $nav-height: 168px;
+$nav-height-closed: 65px;
 
 $color-success: #1b7f04;
 $color-danger: #7f0404;

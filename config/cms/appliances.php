@@ -73,6 +73,14 @@ return [
                     "route" => "admin.setting.database.export"
                 ]
             ],
+            [
+                "properties" => [
+                    "id" => "product-watermark",
+                    "name" => "general.setting.product_watermark",
+                    "icon" => "icon-product-watermark",
+                    "route" => "admin.setting.product-watermark.edit"
+                ]
+            ]
         ],
         "explore_appliances" => []
     ],
@@ -447,6 +455,14 @@ return [
                     "name" => "general.analytic.action_logs",
                     "icon" => "icon-log",
                     "route" => "admin.action-log.index"
+                ]
+            ],
+            [
+                "properties" => [
+                    "id" => "debug_logs",
+                    "name" => "general.analytic.debug_logs",
+                    "icon" => "icon-debug-logs",
+                    "route" => "admin.debug-log.index"
                 ]
             ],
         ]

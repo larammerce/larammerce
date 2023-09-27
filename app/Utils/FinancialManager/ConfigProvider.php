@@ -4,6 +4,7 @@ namespace App\Utils\FinancialManager;
 
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
 use App\Utils\CMS\Setting\FinancialDriver\FinancialDriverService;
+use App\Utils\FinancialManager\Drivers\Local\Config;
 use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
 use App\Utils\FinancialManager\Models\BaseFinancialConfig;
 use App\Utils\Reflection\AnnotationBadKeyException;
@@ -12,8 +13,7 @@ use App\Utils\Reflection\AnnotationNotFoundException;
 use App\Utils\Reflection\AnnotationSyntaxException;
 use ReflectionException;
 
-class ConfigProvider
-{
+class ConfigProvider {
     static array $CACHED_DATA = [];
 
     /**
@@ -101,7 +101,7 @@ class ConfigProvider
         return array_filter($rules);
     }
 
-    public static function isTaxAddedToPrice(): bool {
+    public static function isTaxAddedToPriceByDefault(): bool {
         $financial_driver = Provider::getEnabledDriver();
         $tax_added_to_price = true;
         if (strlen($financial_driver) > 0 and Provider::hasDriver($financial_driver)) {
@@ -109,5 +109,55 @@ class ConfigProvider
             $tax_added_to_price = $config->tax_added_to_price;
         }
         return $tax_added_to_price;
+    }
+
+    public static function shouldUsePerProductTaxConfig(): bool {
+        $financial_driver = Provider::getEnabledDriver();
+        $use_per_product_config = false;
+        if (strlen($financial_driver) > 0 and Provider::hasDriver($financial_driver)) {
+            $config = self::getConfig($financial_driver);
+            $use_per_product_config = $config->use_per_product_config;
+        }
+        return $use_per_product_config;
+    }
+
+    public static function getDefaultTaxPercentage(): int {
+        $financial_driver = Provider::getEnabledDriver();
+        $tax_percentage = 0;
+        if (strlen($financial_driver) > 0 and Provider::hasDriver($financial_driver)) {
+            $config = self::getConfig($financial_driver);
+            $tax_percentage = $config->tax_percentage;
+        }
+        return $tax_percentage;
+    }
+
+    public static function getDefaultTollPercentage(): int {
+        $financial_driver = Provider::getEnabledDriver();
+        $toll_percentage = 0;
+        if (strlen($financial_driver) > 0 and Provider::hasDriver($financial_driver)) {
+            $config = self::getConfig($financial_driver);
+            $toll_percentage = $config->toll_percentage;
+        }
+        return $toll_percentage;
+    }
+
+    public static function getInvoiceTaxHeading(): string {
+        $financial_driver = Provider::getEnabledDriver();
+        if (strlen($financial_driver) > 0 and Provider::hasDriver($financial_driver)) {
+            $config = self::getConfig($financial_driver);
+        } else {
+            $config = new Config();
+        }
+        return $config->invoice_tax_heading;
+    }
+
+    public static function shouldShowTaxPercentageInInvoiceHeading(): bool {
+        $financial_driver = Provider::getEnabledDriver();
+        $show_tax_percentage = false;
+        if (strlen($financial_driver) > 0 and Provider::hasDriver($financial_driver)) {
+            $config = self::getConfig($financial_driver);
+            $show_tax_percentage = $config->invoice_show_tax_percentage;
+        }
+        return $show_tax_percentage;
     }
 }

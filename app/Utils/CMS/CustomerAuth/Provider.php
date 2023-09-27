@@ -7,7 +7,6 @@ namespace App\Utils\CMS\CustomerAuth;
 use App\Enums\Customer\Gender;
 use App\Jobs\SendEmail;
 use App\Utils\CMS\SystemMessageService;
-use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
 use App\Models\{
     CustomerUser,
     User
@@ -40,7 +39,6 @@ class Provider
      * @throws BadAuthTypeException
      */
     public static function sendOneTimeCode($type, $value) {
-
         OneTimeCodeProvider::generate($value, 1);
         $oneTimeCode = OneTimeCodeProvider::getCode($value);
         switch ($type) {
