@@ -115,8 +115,12 @@ class LiveReportsController extends BaseController {
                                 ->join("invoices", function ($join_l3) use ($start_date, $end_date) {
                                     $join_l3->on("invoices.id", "=", "invoice_rows.invoice_id")
                                         ->whereIn("invoices.payment_status", [PaymentStatus::SUBMITTED, PaymentStatus::CONFIRMED, PaymentStatus::PAID_OUT])
-                                        ->where("invoices.created_at", ">=", $start_date)
-                                        ->where("invoices.created_at", "<=", $end_date);
+                                        ->join("payments", function ($join_l4) use ($start_date, $end_date) {
+                                            $join_l4->on("invoices.id", "=", "payments.invoice_id")
+                                                ->where("payments.status", PaymentStatus::CONFIRMED)
+                                                ->where("invoices.created_at", ">=", $start_date)
+                                                ->where("invoices.created_at", "<=", $end_date);
+                                        });
                                 });
                         });
                 })->groupBy("directories.id")
@@ -129,8 +133,12 @@ class LiveReportsController extends BaseController {
         list($start_date, $end_date) = $this->getTodayRange();
 
         $amount = Invoice::whereIn("payment_status", [PaymentStatus::SUBMITTED, PaymentStatus::CONFIRMED, PaymentStatus::PAID_OUT])
-            ->where("created_at", ">=", $start_date)
-            ->where("created_at", "<=", $end_date)
+            ->join("payments", function ($join_l4) use ($start_date, $end_date) {
+                $join_l4->on("invoices.id", "=", "payments.invoice_id")
+                    ->where("payments.status", PaymentStatus::CONFIRMED)
+                    ->where("invoices.created_at", ">=", $start_date)
+                    ->where("invoices.created_at", "<=", $end_date);
+            })
             ->sum("sum");
 
         return MessageFactory::jsonResponse([], 200, compact("amount"));
@@ -140,8 +148,12 @@ class LiveReportsController extends BaseController {
         list($start_date, $end_date) = $this->getYesterdayRange();
 
         $amount = Invoice::whereIn("payment_status", [PaymentStatus::SUBMITTED, PaymentStatus::CONFIRMED, PaymentStatus::PAID_OUT])
-            ->where("created_at", ">=", $start_date)
-            ->where("created_at", "<=", $end_date)
+            ->join("payments", function ($join_l4) use ($start_date, $end_date) {
+                $join_l4->on("invoices.id", "=", "payments.invoice_id")
+                    ->where("payments.status", PaymentStatus::CONFIRMED)
+                    ->where("invoices.created_at", ">=", $start_date)
+                    ->where("invoices.created_at", "<=", $end_date);
+            })
             ->sum("sum");
 
         return MessageFactory::jsonResponse([], 200, compact("amount"));
@@ -151,8 +163,12 @@ class LiveReportsController extends BaseController {
         list($start_date, $end_date) = $this->getCurrentMonthRange();
 
         $amount = Invoice::whereIn("payment_status", [PaymentStatus::SUBMITTED, PaymentStatus::CONFIRMED, PaymentStatus::PAID_OUT])
-            ->where("created_at", ">=", $start_date)
-            ->where("created_at", "<=", $end_date)
+            ->join("payments", function ($join_l4) use ($start_date, $end_date) {
+                $join_l4->on("invoices.id", "=", "payments.invoice_id")
+                    ->where("payments.status", PaymentStatus::CONFIRMED)
+                    ->where("invoices.created_at", ">=", $start_date)
+                    ->where("invoices.created_at", "<=", $end_date);
+            })
             ->sum("sum");
 
         return MessageFactory::jsonResponse([], 200, compact("amount"));
@@ -162,8 +178,12 @@ class LiveReportsController extends BaseController {
         list($start_date, $end_date) = $this->getCurrentYearRange();
 
         $amount = Invoice::whereIn("payment_status", [PaymentStatus::SUBMITTED, PaymentStatus::CONFIRMED, PaymentStatus::PAID_OUT])
-            ->where("created_at", ">=", $start_date)
-            ->where("created_at", "<=", $end_date)
+            ->join("payments", function ($join_l4) use ($start_date, $end_date) {
+                $join_l4->on("invoices.id", "=", "payments.invoice_id")
+                    ->where("payments.status", PaymentStatus::CONFIRMED)
+                    ->where("invoices.created_at", ">=", $start_date)
+                    ->where("invoices.created_at", "<=", $end_date);
+            })
             ->sum("sum");
 
         return MessageFactory::jsonResponse([], 200, compact("amount"));
@@ -173,8 +193,12 @@ class LiveReportsController extends BaseController {
         list($start_date, $end_date) = $this->getPreviousYearRange();
 
         $amount = Invoice::whereIn("payment_status", [PaymentStatus::SUBMITTED, PaymentStatus::CONFIRMED, PaymentStatus::PAID_OUT])
-            ->where("created_at", ">=", $start_date)
-            ->where("created_at", "<=", $end_date)
+            ->join("payments", function ($join_l4) use ($start_date, $end_date) {
+                $join_l4->on("invoices.id", "=", "payments.invoice_id")
+                    ->where("payments.status", PaymentStatus::CONFIRMED)
+                    ->where("invoices.created_at", ">=", $start_date)
+                    ->where("invoices.created_at", "<=", $end_date);
+            })
             ->sum("sum");
 
         return MessageFactory::jsonResponse([], 200, compact("amount"));
@@ -242,9 +266,16 @@ class LiveReportsController extends BaseController {
             list($end_year, $end_month, $end_day) = $month_range["end"];
             $labels[] = $month_range["label"];
 
+            $start_date = "$start_year-$start_month-$start_day 00:00:00";
+            $end_date = "$end_year-$end_month-$end_day 23:59:59";
+
             $datasets[0]["data"][] = Invoice::whereIn("payment_status", [PaymentStatus::SUBMITTED, PaymentStatus::CONFIRMED, PaymentStatus::PAID_OUT])
-                ->where("created_at", ">=", "$start_year-$start_month-$start_day 00:00:00")
-                ->where("created_at", "<=", "$end_year-$end_month-$end_day 23:59:59")
+                ->join("payments", function ($join_l4) use ($start_date, $end_date) {
+                    $join_l4->on("invoices.id", "=", "payments.invoice_id")
+                        ->where("payments.status", PaymentStatus::CONFIRMED)
+                        ->where("invoices.created_at", ">=", $start_date)
+                        ->where("invoices.created_at", "<=", $end_date);
+                })
                 ->sum("sum");
         }
 

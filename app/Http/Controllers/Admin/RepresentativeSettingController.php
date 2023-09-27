@@ -29,8 +29,9 @@ class RepresentativeSettingController extends BaseController
         try {
             RepresentativeSettingService::update(
                 $request->get("is_enabled"),
+                $request->get("is_forced"),
                 $request->get("is_customer_representative_enabled"),
-                $request->get("options")
+                $request->get("options") ?? []
             );
 
             return History::redirectBack();

@@ -9,149 +9,151 @@ General styling
 ----------------------------------------------------------------------------------------------------*/
 
 @include keyframes(fstAnimationEnter) {
-  from {
-    opacity: 0;
-    @include transform(translate3d(0, -1em, 0));
-  }
-  to {
-    opacity: 1;
-    @include transform(translate3d(0, 0, 0));
-  }
+    from {
+        opacity: 0;
+        @include transform(translate3d(0, -1em, 0));
+    }
+    to {
+        opacity: 1;
+        @include transform(translate3d(0, 0, 0));
+    }
 }
 
 .fstElement {
-  &.fstActive {
-    border-bottom: 1px solid #424242;
-  }
-  display: inline-block;
-  position: relative;
-  border-bottom: 1px solid #ebebec;
-  box-sizing: border-box;
-  color: $fstColorGrayDark1;
-  font-size: 12px;
-  background-color: transparent;
-  width : 100%;
+    &.fstActive {
+        border-bottom: 1px solid #424242;
+    }
 
-  > select,
-  > input {
-    position: absolute;
-    left: -999em;
-  }
+    display: inline-block;
+    position: relative;
+    border: 1px solid $color-dark-3;
+    @include border-radius(4px !important);
+    box-sizing: border-box;
+    color: $fstColorGrayDark1;
+    font-size: 12px;
+    background-color: transparent;
+    width: 100%;
+
+    > select,
+    > input {
+        position: absolute;
+        left: -999em;
+    }
 
 }
 
 .fstToggleBtn {
 
-  font-size: 12px;
-  display: block;
-  position: relative;
-  box-sizing: border-box;
-  padding: em(10, 14) em(20, 14) em(10, 14) em(10, 14);
-  min-width: em(200, 14);
-  cursor: pointer;
+    font-size: 12px;
+    display: block;
+    position: relative;
+    box-sizing: border-box;
+    padding: em(10, 14) em(20, 14) em(10, 14) em(10, 14);
+    min-width: em(200, 14);
+    cursor: pointer;
 
-  &:after {
+    &:after {
 
-    position: absolute;
-    content: "";
-    right: em(10, 14);
-    top: 50%;
-    margin-top: em(-5/2, 14);
-    border: em(5, 14) solid transparent;
-    border-top-color: darken($fstColorGrayLight1, 5%);
+        position: absolute;
+        content: "";
+        right: em(10, 14);
+        top: 50%;
+        margin-top: em(-5/2, 14);
+        border: em(5, 14) solid transparent;
+        border-top-color: darken($fstColorGrayLight1, 5%);
 
-  }
+    }
 
 }
 
 .fstQueryInput {
 
-  @include appearance(none);
-  outline: none;
-  box-sizing: border-box;
-  background: transparent;
-  border: 0;
+    @include appearance(none);
+    outline: none;
+    box-sizing: border-box;
+    background: transparent;
+    border: 0;
 
 }
 
 .fstResults {
 
-  position: absolute;
-  left: -1px;
-  top: 100%;
-  right: -1px;
-  max-height: 30em;
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  border: 1px solid $fstColorGrayLight1;
-  border-top: 0;
-  background-color: #FFF;
+    position: absolute;
+    left: -1px;
+    top: 100%;
+    right: -1px;
+    max-height: 30em;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid $fstColorGrayLight1;
+    border-top: 0;
+    background-color: #FFF;
 
-  display: none;
+    display: none;
 
 }
 
 .fstResultItem {
 
-  font-size: 12px;
-  display: block;
-  padding: em(7, 14) em(10, 14);
-  margin: 0;
-  cursor: pointer;
-  border-top: 1px solid #fff;
+    font-size: 12px;
+    display: block;
+    padding: em(7, 14) em(10, 14);
+    margin: 0;
+    cursor: pointer;
+    border-top: 1px solid #fff;
 
-  &.fstUserOption {
+    &.fstUserOption {
 
-    color: lighten($fstColorGrayDark1, 30%);
+        color: lighten($fstColorGrayDark1, 30%);
 
-  }
+    }
 
-  &.fstFocused {
+    &.fstFocused {
 
-    color: $color-apps-nav-back;
-    background-color: $fstColorMain1;
-    border-color: lighten($fstColorMain1, 10%);
+        color: $color-dark-2-1;
+        background-color: $fstColorMain1;
+        border-color: lighten($fstColorMain1, 10%);
 
-  }
+    }
 
-  &.fstSelected {
+    &.fstSelected {
 
-    color: $color-apps-nav-back;
-    background-color: darken($fstColorMain1, 6%);
-    border-color: lighten($fstColorMain1, 10%);
+        color: $color-dark-2-1;
+        background-color: darken($fstColorMain1, 6%);
+        border-color: lighten($fstColorMain1, 10%);
 
-  }
+    }
 
 }
 
 .fstGroupTitle {
 
-  font-size: 12px;
-  display: block;
-  padding: em(7, 14) em(10, 14);
-  margin: 0;
-  font-weight: bold;
+    font-size: 12px;
+    display: block;
+    padding: em(7, 14) em(10, 14);
+    margin: 0;
+    font-weight: bold;
 
 }
 
 .fstGroup {
 
-  padding-top: 1em;
+    padding-top: 1em;
 
-  &:first-child {
-    padding-top: 0;
-  }
+    &:first-child {
+        padding-top: 0;
+    }
 
 }
 
 .fstNoResults {
 
-  font-size: 12px;
-  display: block;
-  padding: em(10, 14) em(10, 14);
-  margin: 0;
-  color: #999;
+    font-size: 12px;
+    display: block;
+    padding: em(10, 14) em(10, 14);
+    margin: 0;
+    color: #999;
 
 }
 
@@ -161,49 +163,51 @@ Single Mode
 
 .fstSingleMode {
 
-  .fstControls {
-
-    position: absolute;
-    left: -1px;
-    right: -1px;
-    top: 100%;
-    padding: 0.5em;
-    border: 1px solid $fstColorGrayLight1;
-    background-color: #fff;
-
-    display: none;
-
-  }
-
-  .fstQueryInput {
-
-    font-size: 12px;
-    display: block;
-    width: 100%;
-    padding: em(7, 14) em(5, 14);
-    color: #999;
-    border: 1px solid $fstColorGrayLight1;
-
-  }
-
-  &.fstActive {
-
-    z-index: 100;
-
-    &.fstElement,
-    .fstControls,
-    .fstResults {
-    }
     .fstControls {
-      display: block;
-    }
-    .fstResults {
-      display: block;
-      z-index: 10;
-      margin-top: -1px;
+
+        position: absolute;
+        left: -1px;
+        right: -1px;
+        top: 100%;
+        padding: 0.5em;
+        border: 1px solid $fstColorGrayLight1;
+        background-color: #fff;
+
+        display: none;
+
     }
 
-  }
+    .fstQueryInput {
+
+        font-size: 12px;
+        display: block;
+        width: 100%;
+        padding: em(7, 14) em(5, 14);
+        color: #999;
+        border: 1px solid $fstColorGrayLight1;
+
+    }
+
+    &.fstActive {
+
+        z-index: 100;
+
+        &.fstElement,
+        .fstControls,
+        .fstResults {
+        }
+
+        .fstControls {
+            display: block;
+        }
+
+        .fstResults {
+            display: block;
+            z-index: 10;
+            margin-top: -1px;
+        }
+
+    }
 
 }
 
@@ -213,116 +217,117 @@ Multiple mode
 
 .fstChoiceItem {
 
-  display: inline-block;
-  font-size: 1.2em;
-  position: relative;
-  margin: 0 em(5, 12) em(5, 12) 0;
-  padding: em(4, 12) em(4, 12) em(4, 12) em(18, 12);
-  float: right;
-  border-radius: em(3, 12);
-  border: 1px solid $fstColorMain1;
-  cursor: auto;
-  color: $color-apps-nav-back;
-  background-color: $fstColorMain1;
+    display: inline-block;
+    font-size: 1.2em;
+    position: relative;
+    margin: 0 em(5, 12) em(5, 12) 0;
+    padding: em(4, 12) em(4, 12) em(4, 12) em(18, 12);
+    float: right;
+    border-radius: em(3, 12);
+    border: 1px solid $fstColorMain1;
+    cursor: auto;
+    color: $color-dark-2-1;
+    background-color: $fstColorMain1;
 
-  @include animation(fstAnimationEnter 0.2s);
+    @include animation(fstAnimationEnter 0.2s);
 
-  &.mod1 {
+    &.mod1 {
 
-    background-color: #F9F9F9;
-    border: 1px solid $fstColorGrayLight1;
-    color: $fstColorGrayDark1;
+        background-color: #F9F9F9;
+        border: 1px solid $fstColorGrayLight1;
+        color: $fstColorGrayDark1;
 
-    > .fstChoiceRemove {
+        > .fstChoiceRemove {
 
-      color: darken($fstColorGrayLight1, 20%);
+            color: darken($fstColorGrayLight1, 20%);
+
+        }
 
     }
-
-  }
 
 }
 
 .fstChoiceRemove {
 
-  $size: 18;
-  $iconSize: 14;
+    $size: 18;
+    $iconSize: 14;
 
-  margin: 0;
-  padding: 0;
-  border: 0;
-  cursor: pointer;
-  background: none;
-  &::-moz-focus-inner {
+    margin: 0;
     padding: 0;
     border: 0;
-  }
+    cursor: pointer;
+    background: none;
 
-  font-size: em($iconSize, 12);
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: em($size, $iconSize);
-  line-height: em($size, $iconSize);
-  margin-top: em(-$size/2, $iconSize);
-  text-align: center;
-  color: $color-apps-nav-back;
+    &::-moz-focus-inner {
+        padding: 0;
+        border: 0;
+    }
+
+    font-size: em($iconSize, 12);
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: em($size, $iconSize);
+    line-height: em($size, $iconSize);
+    margin-top: em(-$size/2, $iconSize);
+    text-align: center;
+    color: $color-dark-2-1;
 
 }
 
 .fstMultipleMode {
 
-  .fstControls {
+    .fstControls {
 
-    box-sizing: border-box;
-    padding: 0.5em 0.5em 0em 0.5em;
-    overflow: hidden;
-    width: 100%;
-    cursor: text;
-
-  }
-
-  .fstQueryInput {
-
-    font-size: 12px;
-    float: right;
-    padding: em(4, 14) 0;
-    margin: 0 0 em(5, 14) 0;
-    width: 2em;
-    color: #999;
-
-  }
-
-  .fstQueryInputExpanded {
-
-    float: none;
-    width: 100%;
-    padding: em(4, 14) em(5, 14);
-
-  }
-
-  .fstFakeInput {
-
-    font-size: 12px;
-
-  }
-
-  &.fstActive {
-
-    &,
-    .fstResults {
+        box-sizing: border-box;
+        padding: 0.5em 0.5em 0em 0.5em;
+        overflow: hidden;
+        width: 100%;
+        cursor: text;
 
     }
 
-    .fstResults {
+    .fstQueryInput {
 
-      display: block;
-      z-index: 10;
-      border-top: 1px solid $fstColorGrayLight1;
-      opacity: 0.95;
+        font-size: 12px;
+        float: right;
+        padding: em(4, 14) 0;
+        margin: 0 0 em(5, 14) 0;
+        width: 2em;
+        color: #999;
 
     }
 
-  }
+    .fstQueryInputExpanded {
+
+        float: none;
+        width: 100%;
+        padding: em(4, 14) em(5, 14);
+
+    }
+
+    .fstFakeInput {
+
+        font-size: 12px;
+
+    }
+
+    &.fstActive {
+
+        &,
+        .fstResults {
+
+        }
+
+        .fstResults {
+
+            display: block;
+            z-index: 10;
+            border-top: 1px solid $fstColorGrayLight1;
+            opacity: 0.95;
+
+        }
+
+    }
 
 }

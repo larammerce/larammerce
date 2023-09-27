@@ -68,7 +68,7 @@
                                                 <th class="text-center" scope="col">قیمت واحد</th>
                                                 <th class="text-center" scope="col">تعداد</th>
                                                 <th class="text-center" scope="col">تخفیف</th>
-                                                <th class="text-center" scope="col">مالیات</th>
+                                                <th class="text-center" scope="col">{{ get_invoice_tax_heading() }}</th>
                                                 <th class="text-center" scope="col">قیمت کل</th>
                                             </tr>
                                             </thead>

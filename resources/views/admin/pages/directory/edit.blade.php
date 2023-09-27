@@ -153,81 +153,86 @@
                 وب
             </a>
         </div>
+        <hr/>
+        <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+            <span class="label">متادیتای برنامه نویس</span>
+            <input class="form-control input-sm" name="metadata" value="{{ $directory->metadata }}">
+        </div>
     </div>
     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
         <div class="text-editor group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12" @roleinput($directory,
         "description")>
-            <span class="label">متن کوتاه</span>
-            <textarea class="tinymce"
-                      name="description">@if($errors->count() > 0)
-                    {{ old('description') }}
-                @else
-                    {{ $directory->description }}
-                @endif</textarea>
-        </div>
-        <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
-            <label>تصویر</label>
-            @if(!$directory->hasImage())
-                (حداقل کیفیت: {{ get_image_min_height('directory') }}*{{ get_image_min_width('directory') }}
-                و نسبت: {{ get_image_ratio('directory') }})
-                <input class="form-control input-sm" name="image" type="file" multiple="true">
+        <span class="label">متن کوتاه</span>
+        <textarea class="tinymce"
+                  name="description">@if($errors->count() > 0)
+                {{ old('description') }}
             @else
-                <div class="photo-container">
-                    <a href="{{ route('admin.directory.remove-image', $directory)  }}"
-                       class="btn btn-sm btn-danger btn-remove">x</a>
-                    <img src="{{ $directory->getImagePath() }}" style="width: 200px;">
-                </div>
-            @endif
-        </div>
-        <div class="input-group filled group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
-            <span class="label">نقش</span>
-            <input
-                type="text"
-                multiple
-                class="tags-multi-select attachable"
-                value=""
-                data-initial-value="{{ json_encode($directory->systemRoles) }}"
-                data-user-option-allowed="false"
-                data-url="/admin/system-role"
-                data-load-once="true"
-                placeholder="نقش مورد نظر خود را انتخاب کنید"
-                data-attach="{{route('admin.directory.attach-role', $directory)}}"
-                data-detach="{{route('admin.directory.detach-role', $directory)}}"
-            />
-        </div>
-        <div
-            class="input-group filled group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12"
-            @roleinput($directory, "badges")>
-            <span class="label">نشان</span>
-            <input type="text"
-                   multiple
-                   class="tags-multi-select attachable"
-                   value=""
-                   data-initial-value='{{ json_encode($directory->badges) }}'
-                   data-user-option-allowed="false"
-                   data-url="{{route('admin.badge.index')}}"
-                   data-load-once="true"
-                   placeholder="نشان مورد نظر خود را انتخاب کنید"
-                   data-attach="{{route('admin.directory.attach-badge', $directory)}}"
-                   data-detach="{{route('admin.directory.detach-badge', $directory)}}"
-            />
-        </div>
-        <hr/>
-        @if($directory->content_type == \App\Enums\Directory\DirectoryType::PRODUCT)
-            <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
-                <a class="btn btn-sm btn-primary pull-right"
-                   href="{{route('admin.directory-location.index') . '?directory_id=' . $directory->id}}">
-                    تعیین محدوده جغرافیایی
-                </a>
-                <a class="btn btn-sm btn-primary pull-right mr-15"
-                   href="{{route('admin.directory.special-price.edit', $directory)}}">
-                    فروش ویژه گروهی کالاها
-                </a>
+                {{ $directory->description }}
+            @endif</textarea>
+    </div>
+    <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+        <label>تصویر</label>
+        @if(!$directory->hasImage())
+            (حداقل کیفیت: {{ get_image_min_height('directory') }}*{{ get_image_min_width('directory') }}
+            و نسبت: {{ get_image_ratio('directory') }})
+            <input class="form-control input-sm" name="image" type="file" multiple="true">
+        @else
+            <div class="photo-container">
+                <a href="{{ route('admin.directory.remove-image', $directory)  }}"
+                   class="btn btn-sm btn-danger btn-remove">x</a>
+                <img src="{{ $directory->getImagePath() }}" style="width: 200px;">
             </div>
+        @endif
+    </div>
+    <div class="input-group filled group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+        <span class="label">نقش</span>
+        <input
+            type="text"
+            multiple
+            class="tags-multi-select attachable"
+            value=""
+            data-initial-value="{{ json_encode($directory->systemRoles) }}"
+            data-user-option-allowed="false"
+            data-url="/admin/system-role"
+            data-load-once="true"
+            placeholder="نقش مورد نظر خود را انتخاب کنید"
+            data-attach="{{route('admin.directory.attach-role', $directory)}}"
+            data-detach="{{route('admin.directory.detach-role', $directory)}}"
+        />
+    </div>
+    <div
+        class="input-group filled group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12"
+        @roleinput($directory, "badges")>
+    <span class="label">نشان</span>
+    <input type="text"
+           multiple
+           class="tags-multi-select attachable"
+           value=""
+           data-initial-value='{{ json_encode($directory->badges) }}'
+           data-user-option-allowed="false"
+           data-url="{{route('admin.badge.index')}}"
+           data-load-once="true"
+           placeholder="نشان مورد نظر خود را انتخاب کنید"
+           data-attach="{{route('admin.directory.attach-badge', $directory)}}"
+           data-detach="{{route('admin.directory.detach-badge', $directory)}}"
+    />
+    </div>
+    <hr/>
+    @if($directory->content_type == \App\Enums\Directory\DirectoryType::PRODUCT)
+        <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+            <a class="btn btn-sm btn-primary pull-right"
+               href="{{route('admin.directory-location.index') . '?directory_id=' . $directory->id}}">
+                تعیین محدوده جغرافیایی
+            </a>
+            <a class="btn btn-sm btn-primary pull-right mr-15"
+               href="{{route('admin.directory.special-price.edit', $directory)}}">
+                فروش ویژه گروهی کالاها
+            </a>
+        </div>
 
             <hr/>
             <h5>فرم اطلاعات کاربران</h5>
-            <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12 article-type">
+            <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
                 <span class="label">فرم انتخابی برای محصولات این دسته</span>
                 <select class="form-control input-sm" name="cmc_id">
                         <?php $customer_meta_categories = get_customer_meta_categories() ?>
@@ -246,6 +251,8 @@
                         </option>
                     @endforeach
                 </select>
+            </div>
+            <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
                 @if($directory->hasCustomerMetaCategory() and !$directory->hasUniqueCustomerMetaCategory())
                     <p>
                         به دلیل اینکه مالک اصلی این فرم دایرکتوری فعلی نیست، تغییر آن از این قسمت امکان پذیر نمی‌باشد.
@@ -255,36 +262,41 @@
                     </p>
                 @endif
                 <a class="btn btn-sm btn-primary pull-right"
-                   href="{{route("admin.customer-meta-category.create")}}" style="margin-left: 15px">ایجاد فرم جدید
+                   href="{{route("admin.customer-meta-category.create")}}" style="margin-left: 5px">ایجاد فرم جدید
                 </a>
                 <a class="btn btn-sm btn-primary pull-right {{$directory->hasUniqueCustomerMetaCategory() ? "" : "disabled"}}"
                    href="{{$directory->hasUniqueCustomerMetaCategory() ? route("admin.customer-meta-category.edit", $directory->customerMetaCategory) : "#"}}"
-                   style="margin-left: 15px">تغییر فرم جاری
+                   style="margin-left: 5px; margin-bottom: 5px">تغییر فرم جاری
+                </a>
+                <a class="btn btn-sm btn-danger pull-right virt-form {{$directory->hasUniqueCustomerMetaCategory() ? "" : "disabled"}}"
+                   href="{{$directory->hasUniqueCustomerMetaCategory() ? route("admin.directory.clear-cmc", $directory) : "#"}}"
+                   style="margin-left: 5px; margin-bottom: 5px"
+                   data-method="PATCH" confirm>
+                    قطع اتصال فرم جاری
                 </a>
                 <a class="btn btn-sm btn-primary pull-right virt-form {{($directory->hasCustomerMetaCategory() and !$directory->hasUniqueCustomerMetaCategory()) ? "" : "disabled"}}"
                    data-action="{{ route('admin.customer-meta-category.clone', $directory)}}"
-                   style="margin-left: 15px" data-method="PUT" confirm>شخصی
+                   style="margin-left: 5px; margin-bottom: 5px" data-method="PUT" confirm>شخصی
                     سازی فرم برای این دسته بندی
                 </a>
             </div>
 
-            <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
-                <span class="label">تنظیم متن اعلان محصولات این شاخه</span>
-                <input class="form-control input-sm" name="notice"
-                       placeholder="این متن در تمام محصولات این دسته ثبت خواهد شد"
-                       value="{{$directory->notice}}">
-            </div>
+        <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+            <span class="label">تنظیم متن اعلان محصولات این شاخه</span>
+            <input class="form-control input-sm" name="notice"
+                   value="{{$directory->notice}}">
+        </div>
 
         @endif
-    </div>
-@endsection
+        </div>
+        @endsection
 
-@section('form_footer')
-    <button type="submit" class="btn btn-default btn-sm">ذخیره</button>
-    <input type="submit" class="btn btn-warning btn-sm" name="exit" value="ذخیره و خروج">
-    <a class="btn btn-sm btn-danger virt-form"
-       data-action="{{ route('admin.directory.destroy', $directory) }}"
-       data-method="DELETE" confirm>
-        <i class="fa fa-trash"></i>
-    </a>
-@endsection
+        @section('form_footer')
+            <button type="submit" class="btn btn-default btn-sm">ذخیره</button>
+            <input type="submit" class="btn btn-warning btn-sm" name="exit" value="ذخیره و خروج">
+            <a class="btn btn-sm btn-danger virt-form"
+               data-action="{{ route('admin.directory.destroy', $directory) }}"
+               data-method="DELETE" confirm>
+                <i class="fa fa-trash"></i>
+            </a>
+        @endsection
