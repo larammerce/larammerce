@@ -230,47 +230,56 @@
             </a>
         </div>
 
-        <hr/>
-        <h5>فرم اطلاعات کاربران</h5>
-        <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12 article-type">
-            <select class="form-control input-sm" name="cmc_id">
-                    <?php $customer_meta_categories = get_customer_meta_categories() ?>
-                <option @if(!$directory->hasCustomerMetaCategory()) selected @endif disabled value>
-                    بدون فرم
-                </option>
-                @if($directory->hasCustomerMetaCategory() and !in_array($directory->cmc_id, $customer_meta_categories->pluck("id")->toArray()))
-                    <option selected value="{{$directory->cmc_id}}">
-                        {{$directory->customerMetaCategory->title}} - شخصی سازی شده
+            <hr/>
+            <h5>فرم اطلاعات کاربران</h5>
+            <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                <span class="label">فرم انتخابی برای محصولات این دسته</span>
+                <select class="form-control input-sm" name="cmc_id">
+                        <?php $customer_meta_categories = get_customer_meta_categories() ?>
+                    <option @if(!$directory->hasCustomerMetaCategory()) selected @endif disabled value>
+                        بدون فرم
                     </option>
+                    @if($directory->hasCustomerMetaCategory() and !in_array($directory->cmc_id, $customer_meta_categories->pluck("id")->toArray()))
+                        <option selected value="{{$directory->cmc_id}}">
+                            {{$directory->customerMetaCategory->title}} - شخصی سازی شده
+                        </option>
+                    @endif
+                    @foreach($customer_meta_categories as $index => $customer_meta_category)
+                        <option value="{{ $customer_meta_category->id }}"
+                                @if($directory->cmc_id == $customer_meta_category->id) selected @endif>
+                            {{ $customer_meta_category->title }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                @if($directory->hasCustomerMetaCategory() and !$directory->hasUniqueCustomerMetaCategory())
+                    <p>
+                        به دلیل اینکه مالک اصلی این فرم دایرکتوری فعلی نیست، تغییر آن از این قسمت امکان پذیر نمی‌باشد.
+                        در صورت نیاز به تغییر این فرم به صورت کلی از بخش مدیریت فرم ها و یا دایرکتوری اصلی اقدام کنید.
+                        <br/>
+                        در غیراینصورت یا فرم مورد نظر را شخصی سازی کنید یا غرم جدید ایجاد کنید.
+                    </p>
                 @endif
-                @foreach($customer_meta_categories as $index => $customer_meta_category)
-                    <option value="{{ $customer_meta_category->id }}"
-                            @if($directory->cmc_id == $customer_meta_category->id) selected @endif>
-                        {{ $customer_meta_category->title }}
-                    </option>
-                @endforeach
-            </select>
-            @if($directory->hasCustomerMetaCategory() and !$directory->hasUniqueCustomerMetaCategory())
-                <p>
-                    به دلیل اینکه مالک اصلی این فرم دایرکتوری فعلی نیست، تغییر آن از این قسمت امکان پذیر نمی‌باشد.
-                    در صورت نیاز به تغییر این فرم به صورت کلی از بخش مدیریت فرم ها و یا دایرکتوری اصلی اقدام کنید.
-                    <br/>
-                    در غیراینصورت یا فرم مورد نظر را شخصی سازی کنید یا غرم جدید ایجاد کنید.
-                </p>
-            @endif
-            <a class="btn btn-sm btn-primary pull-right"
-               href="{{route("admin.customer-meta-category.create")}}" style="margin-left: 15px">ایجاد فرم جدید
-            </a>
-            <a class="btn btn-sm btn-primary pull-right {{$directory->hasUniqueCustomerMetaCategory() ? "" : "disabled"}}"
-               href="{{$directory->hasUniqueCustomerMetaCategory() ? route("admin.customer-meta-category.edit", $directory->customerMetaCategory) : "#"}}"
-               style="margin-left: 15px">تغییر فرم جاری
-            </a>
-            <a class="btn btn-sm btn-primary pull-right virt-form {{($directory->hasCustomerMetaCategory() and !$directory->hasUniqueCustomerMetaCategory()) ? "" : "disabled"}}"
-               data-action="{{ route('admin.customer-meta-category.clone', $directory)}}"
-               style="margin-left: 15px" data-method="PUT" confirm>شخصی
-                سازی فرم برای این دسته بندی
-            </a>
-        </div>
+                <a class="btn btn-sm btn-primary pull-right"
+                   href="{{route("admin.customer-meta-category.create")}}" style="margin-left: 5px">ایجاد فرم جدید
+                </a>
+                <a class="btn btn-sm btn-primary pull-right {{$directory->hasUniqueCustomerMetaCategory() ? "" : "disabled"}}"
+                   href="{{$directory->hasUniqueCustomerMetaCategory() ? route("admin.customer-meta-category.edit", $directory->customerMetaCategory) : "#"}}"
+                   style="margin-left: 5px; margin-bottom: 5px">تغییر فرم جاری
+                </a>
+                <a class="btn btn-sm btn-danger pull-right virt-form {{$directory->hasUniqueCustomerMetaCategory() ? "" : "disabled"}}"
+                   href="{{$directory->hasUniqueCustomerMetaCategory() ? route("admin.directory.clear-cmc", $directory) : "#"}}"
+                   style="margin-left: 5px; margin-bottom: 5px"
+                   data-method="PATCH" confirm>
+                    قطع اتصال فرم جاری
+                </a>
+                <a class="btn btn-sm btn-primary pull-right virt-form {{($directory->hasCustomerMetaCategory() and !$directory->hasUniqueCustomerMetaCategory()) ? "" : "disabled"}}"
+                   data-action="{{ route('admin.customer-meta-category.clone', $directory)}}"
+                   style="margin-left: 5px; margin-bottom: 5px" data-method="PUT" confirm>شخصی
+                    سازی فرم برای این دسته بندی
+                </a>
+            </div>
 
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
             <span class="label">تنظیم متن اعلان محصولات این شاخه</span>
