@@ -23,8 +23,7 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use stdClass;
 
-class NewInvoiceService
-{
+class NewInvoiceService {
     private Request $request;
     private CMSSettingHelper $setting_service;
 
@@ -93,7 +92,7 @@ class NewInvoiceService
     }
 
     public function getProductTollPercentage(Product $product = null): float {
-        if (ConfigProvider::shouldUsePerProductTaxConfig() and !is_null($product)) {
+        if (ConfigProvider::shouldUsePerProductTaxConfig() and !is_null($product) and !is_null($product->toll_percentage)) {
             return $product->toll_percentage;
         } else {
             return ConfigProvider::getDefaultTollPercentage();
@@ -101,7 +100,7 @@ class NewInvoiceService
     }
 
     public function getProductTaxPercentage(Product $product = null): float {
-        if (ConfigProvider::shouldUsePerProductTaxConfig() and !is_null($product)) {
+        if (ConfigProvider::shouldUsePerProductTaxConfig() and !is_null($product) and !is_null($product->tax_percentage)) {
             return $product->tax_percentage;
         } else {
             return ConfigProvider::getDefaultTaxPercentage();
