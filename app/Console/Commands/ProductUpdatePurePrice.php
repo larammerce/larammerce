@@ -51,6 +51,7 @@ class ProductUpdatePurePrice extends Command {
                 foreach ($products as $product) {
                     $this->output->write("updating product {$product->id} : ");
                     $product->updateTaxAmount();
+                    $product->updateEnabledStatus(false);
                     $product->save();
                     $this->output->writeLn("[<fg=green>✔</>]");
                 }
