@@ -624,7 +624,11 @@ class Product extends BaseModel implements
     public function save(array $options = []) {
         //TODO: This method content should be moved to accessor methods.
 
-        if ($this->isDirty("count") or $this->isDirty("latest_price") or $this->isDirty("latest_special_price")) {
+        if ($this->isDirty("count") or
+            $this->isDirty("latest_price") or
+            $this->isDirty("latest_special_price") or
+            $this->isDirty("min_allowed_count")
+        ) {
             $this->updateEnabledStatus(false);
         }
         $this->color_code = $this->generateColorCode();
@@ -741,7 +745,7 @@ class Product extends BaseModel implements
         return $this->save();
     }
 
-    private function updateEnabledStatus(bool $do_save = true): bool {
+    public function updateEnabledStatus(bool $do_save = true): bool {
         $this->cms_setting_helper = $this->cms_setting_helper ?? app(CMSSettingHelper::class);
         $min_allowed_count = $this->cms_setting_helper->getCMSSettingAsBool(CMSSettingKey::DISABLE_PRODUCT_ON_MIN) ?
             $this->min_allowed_count : 0;
