@@ -141,7 +141,7 @@ class ProductQuery extends BaseModel
                     break;
             }
         }
-        return $products_query->visible()->skip($this->skip_count)->take($this->take_count);
+        return $products_query->where("is_visible", true)->skip($this->skip_count)->take($this->take_count);
     }
 
     /**
