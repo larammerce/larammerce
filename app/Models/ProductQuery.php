@@ -141,7 +141,7 @@ class ProductQuery extends BaseModel
                     break;
             }
         }
-        return $products_query->skip($this->skip_count)->take($this->take_count);
+        return $products_query->visible()->skip($this->skip_count)->take($this->take_count);
     }
 
     /**
@@ -154,7 +154,7 @@ class ProductQuery extends BaseModel
 
     public function getProducts()
     {
-        return Product::mainModels()->visible()->whereIn("id", $this->getProductIds())->get();
+        return Product::mainModels()->whereIn("id", $this->getProductIds())->get();
     }
 
     public function setDataAttribute($value)
