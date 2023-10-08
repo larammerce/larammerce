@@ -716,7 +716,7 @@ class Product extends BaseModel implements
         if ($std_product === false) {
             Log::warning("product.updater.$this->id : can not fetch product stock data from fin man server " .
                 $this->code);
-            $this->makeDisabled();
+            $this->count = 0;
             return false;
         } else if ($std_product === true) {
             return true; //state for fin-man local.
