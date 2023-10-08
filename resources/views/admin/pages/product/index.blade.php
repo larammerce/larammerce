@@ -64,7 +64,7 @@
 
             </ul>
             <ul class="has-divider-left">
-                <li class="btn btn-default" href="{{route('admin.directory.cache-clear')}}" act="link">
+                <li class="btn btn-default" href="{{route('admin.product.cache-clear')}}" act="link">
                     <i class="fa fa-edit"></i>تخلیه کش
                 </li>
             </ul>

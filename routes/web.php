@@ -163,7 +163,7 @@ Route::group(
             }
         );
         Route::resource("discount-group", "DiscountGroupController", ["as" => "admin"]);
-        
+
         //DiscountCard
         Route::group(["prefix" => "discount-card", "as" => "admin.discount-card."],
             function () {
@@ -299,7 +299,7 @@ Route::group(
                 Route::put("{product}/publish", ["as" => "publish", "uses" => "ProductController@publish"]);
                 Route::put("{product}/clone", ["as" => "clone", "uses" => "ProductController@cloneModel"]);
                 Route::get("{product}/models", ["as" => "models", "uses" => "ProductController@models"]);
-                Route::get("cache-clear", ["as" => "cache-clear", "uses" => "DirectoryController@cacheClear"]);
+                Route::get("cache-clear", ["as" => "cache-clear", "uses" => "ProductController@cacheClear"]);
             });
         Route::resource("product", "ProductController", ["as" => "admin"]);
 
