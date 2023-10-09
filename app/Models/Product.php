@@ -1102,9 +1102,7 @@ class Product extends BaseModel implements
 
     public function getSeoTitle()
     {
-        if ($this->seo_title !== null and strlen($this->seo_title) > 0)
-            return $this->seo_title;
-        return $this->title . " - " . $this->directory->title;
+        return $this->seo_title ?? $this->title . " - " . $this->directory?->title;
     }
 
     public function getSeoUrl(): string
@@ -1114,12 +1112,12 @@ class Product extends BaseModel implements
 
     public function getSeoDescription()
     {
-        return $this->seo_description;
+        return $this->seo_description ?? "";
     }
 
-    public function getSeoKeywords()
+    public function getSeoKeywords(): string
     {
-        return $this->seo_keywords;
+        return $this->seo_keywords ?? "";
     }
 
     public function attachFileTo(?Directory $dest): void
