@@ -138,7 +138,8 @@ use Throwable;
  */
 class Product extends BaseModel implements
     CMSExposedNodeInterface, ShareSubjectInterface, PublishScheduleInterface, ImageOwnerInterface,
-    RateOwnerInterface, SeoSubjectInterface, HashInterface {
+    RateOwnerInterface, SeoSubjectInterface, HashInterface
+{
     use Rateable, Seoable, Fileable, FullTextSearch, Badgeable, Translatable;
 
     public $timestamps = true;
@@ -220,38 +221,44 @@ class Product extends BaseModel implements
     private CMSSettingHelper $cms_setting_helper;
     private NewInvoiceService $new_invoice_service;
 
-    public function getIsLocationLimitedAttribute(): bool {
+    public function getIsLocationLimitedAttribute(): bool
+    {
         if (config("cms.general.site.enable_directory_location")) {
             return DirectoryLocationService::isProductLocationLimited($this);
         }
         return false;
     }
 
-    public function getLocationLimitationsAttribute(): array {
+    public function getLocationLimitationsAttribute(): array
+    {
         if (config("cms.general.site.enable_directory_location")) {
             return DirectoryLocationService::getProductLocationLimitations($this);
         }
         return [];
     }
 
-    public function getCanDeliverAttribute(): bool {
+    public function getCanDeliverAttribute(): bool
+    {
         if (config("cms.general.site.enable_directory_location")) {
             return DirectoryLocationService::canDeliverProduct($this);
         }
         return true;
     }
 
-    public function getIsLikedAttribute(): bool {
+    public function getIsLikedAttribute(): bool
+    {
         return is_customer() and
             get_customer_user()->wishList()->where("product_id", $this->id)->count() > 0;
     }
 
-    public function getIsNeededAttribute(): bool {
+    public function getIsNeededAttribute(): bool
+    {
         return is_customer() and get_customer_user() != false and
             get_customer_user()->needList()->where("product_id", $this->id)->count() > 0;
     }
 
-    public function getIsNewAttribute(): bool {
+    public function getIsNewAttribute(): bool
+    {
         $this->cms_setting_helper = $this->cms_setting_helper ?? app(CMSSettingHelper::class);
         if ($this->created_at === null)
             return false;
@@ -259,11 +266,13 @@ class Product extends BaseModel implements
         return Carbon::now()->lessThan($this->created_at->addDays($new_product_delay_days));
     }
 
-    public function getIsImportantAttribute(): bool {
+    public function getIsImportantAttribute(): bool
+    {
         return isset($this->attributes["important_at"]) and $this->attributes["important_at"] !== null;
     }
 
-    public function setIsImportantAttribute($value): void {
+    public function setIsImportantAttribute($value): void
+    {
         if ($value) {
             $this->attributes["important_at"] = Carbon::now();
         } else {
@@ -271,7 +280,8 @@ class Product extends BaseModel implements
         }
     }
 
-    public function setPStructureIdAttribute(int $p_structure_id): void {
+    public function setPStructureIdAttribute(int $p_structure_id): void
+    {
         try {
             $p_structure = PStructure::findOrFail($p_structure_id);
             $this->pAttributes()->whereNotIn("p_structure_attr_key_id",
@@ -282,39 +292,48 @@ class Product extends BaseModel implements
         }
     }
 
-    public function getMainPhotoAttribute(): string {
+    public function getMainPhotoAttribute(): string
+    {
         return ImageService::getImage($this, "preview");
     }
 
-    public function getSecondaryPhotoAttribute(): string {
+    public function getSecondaryPhotoAttribute(): string
+    {
         return ImageService::getImage($this->getSecondaryPhoto(), "preview");
     }
 
-    public function getFinManPriceAttribute(): int {
+    public function getFinManPriceAttribute(): int
+    {
         return $this->getStandardLatestPrice();
     }
 
-    public function getStatusAttribute(): string {
+    public function getStatusAttribute(): string
+    {
         return $this->is_active ? "active" : "not-active";
     }
 
-    public function getUrlAttribute(): string {
+    public function getUrlAttribute(): string
+    {
         return $this->getFrontUrl();
     }
 
-    public function getIsMainModelAttribute(): bool {
+    public function getIsMainModelAttribute(): bool
+    {
         return $this->isMainModel();
     }
 
-    public function getMinimumAllowedPurchaseCountAttribute(): int {
+    public function getMinimumAllowedPurchaseCountAttribute(): int
+    {
         return $this->getMinimumAllowedPurchaseCount();
     }
 
-    public function getMaximumAllowedPurchaseCountAttribute(): int {
+    public function getMaximumAllowedPurchaseCountAttribute(): int
+    {
         return $this->getMaximumAllowedPurchaseCount();
     }
 
-    public function getHasDiscountAttribute(): bool {
+    public function getHasDiscountAttribute(): bool
+    {
         try {
             return (!AdminRequestService::isInAdminArea() and ($this->attributes["has_discount"] ?? false) and
                     (($this->attributes["latest_special_price"] != 0) or
@@ -325,7 +344,8 @@ class Product extends BaseModel implements
         }
     }
 
-    public function getLatestPriceAttribute(): int {
+    public function getLatestPriceAttribute(): int
+    {
         try {
             if ($this->has_discount and !AdminRequestService::isInAdminArea())
                 return ($this->is_package and $this->attributes["latest_price"] == 0) ?
@@ -338,7 +358,8 @@ class Product extends BaseModel implements
         }
     }
 
-    public function getPurePriceAttribute(): int {
+    public function getPurePriceAttribute(): int
+    {
         try {
             return ($this->is_package and $this->attributes["pure_price"] == 0) ?
                 $this->productPackage->getPurePrice() : $this->attributes["pure_price"];
@@ -347,7 +368,8 @@ class Product extends BaseModel implements
         }
     }
 
-    public function getTaxAmountAttribute(): int {
+    public function getTaxAmountAttribute(): int
+    {
         try {
             return ($this->is_package and $this->attributes["tax_amount"] == 0) ?
                 $this->productPackage->getTaxAmount() : $this->attributes["tax_amount"];
@@ -356,7 +378,8 @@ class Product extends BaseModel implements
         }
     }
 
-    public function getTollAmountAttribute(): int {
+    public function getTollAmountAttribute(): int
+    {
         try {
             return ($this->is_package and $this->attributes["toll_amount"] == 0) ?
                 $this->productPackage->getTollAmount() : $this->attributes["toll_amount"];
@@ -365,7 +388,8 @@ class Product extends BaseModel implements
         }
     }
 
-    public function getPreviousPriceAttribute(): int {
+    public function getPreviousPriceAttribute(): int
+    {
         if ($this->has_discount and !AdminRequestService::isInAdminArea())
             return $this->is_package ? $this->productPackage->getLatestPrice() :
                 $this->attributes["latest_price"];
@@ -374,7 +398,8 @@ class Product extends BaseModel implements
                 $this->attributes["previous_price"];
     }
 
-    public function getLatestSellPriceAttribute(): int {
+    public function getLatestSellPriceAttribute(): int
+    {
         if ($this->is_package) {
             $product_package = $this->productPackage;
             if (
@@ -394,102 +419,125 @@ class Product extends BaseModel implements
                 $this->attributes["latest_price"];
     }
 
-    public function getCountAttribute(): int {
+    public function getCountAttribute(): int
+    {
         return $this->is_package ? ($this->productPackage?->getCount() ?? 0) :
             ($this->attributes["count"] ?? 0);
     }
 
-    public function setModelIdAttribute($value) {
+    public function setModelIdAttribute($value)
+    {
         $this->attributes["model_id"] = $value ?? $this->id;
     }
 
-    public function setExtraPropertiesAttribute(?array $extra_properties) {
+    public function setExtraPropertiesAttribute(?array $extra_properties)
+    {
         $this->attributes["extra_properties"] = json_encode(array_filter($extra_properties,
             function ($iter_property) {
                 return $iter_property["key"] !== null;
             }) ?? []);
     }
 
-    public function getExtraProperties() {
+    public function getExtraProperties()
+    {
         return json_decode($this->extra_properties);
     }
 
-    public function directory(): BelongsTo {
+    public function directory(): BelongsTo
+    {
         return $this->belongsTo(Directory::class, "directory_id", "id");
     }
 
-    public function directoryLocations(): HasMany {
+    public function directoryLocations(): HasMany
+    {
         return $this->hasMany(DirectoryLocation::class, "directory_id", "directory_id");
     }
 
-    public function directories(): BelongsToMany {
+    public function directories(): BelongsToMany
+    {
         return $this->belongsToMany(Directory::class, "directory_product", "product_id", "directory_id");
     }
 
-    public function productStructure(): BelongsTo {
+    public function productStructure(): BelongsTo
+    {
         return $this->belongsTo(PStructure::class, "p_structure_id", "id");
     }
 
-    public function colors(): BelongsToMany {
+    public function colors(): BelongsToMany
+    {
         return $this->belongsToMany(Color::class, "product_color", "product_id", "color_id");
     }
 
-    public function prices(): HasMany {
+    public function prices(): HasMany
+    {
         return $this->hasMany(ProductPrice::class, "product_id", "id");
     }
 
-    public function specialPrices(): HasMany {
+    public function specialPrices(): HasMany
+    {
         return $this->hasMany(ProductSpecialPrice::class, "product_id", "id");
     }
 
-    public function images(): HasMany {
+    public function images(): HasMany
+    {
         return $this->hasMany(ProductImage::class, "product_id");
     }
 
-    public function attributeKeys(): BelongsToMany {
+    public function attributeKeys(): BelongsToMany
+    {
         return $this->belongsToMany(PStructureAttrKey::class, "p_attr_assignments",
             "product_id", "p_structure_attr_key_id")->distinct("id");
     }
 
-    public function attributeValues(): BelongsToMany {
+    public function attributeValues(): BelongsToMany
+    {
         return $this->belongsToMany(PStructureAttrValue::class, "p_attr_assignments",
             "product_id", "p_structure_attr_value_id");
     }
 
-    public function invoices(): BelongsToMany {
+    public function invoices(): BelongsToMany
+    {
         return $this->belongsToMany(Product::class, "invoice_rows", "product_id", "invoice_id");
     }
 
-    public function wishLists(): BelongsToMany {
+    public function wishLists(): BelongsToMany
+    {
         return $this->belongsToMany(CustomerUser::class, "customer_wish_lists", "product_id", "customer_user_id");
     }
 
-    public function needLists(): BelongsToMany {
+    public function needLists(): BelongsToMany
+    {
         return $this->belongsToMany(CustomerUser::class, "customer_need_lists",
             "product_id", "customer_user_id")->withTimestamps();
     }
 
-    public function cartRows(): HasMany {
+    public function cartRows(): HasMany
+    {
         return $this->hasMany(CartRow::class, "product_id");
     }
 
-    public function tags(): MorphToMany {
+    public function tags(): MorphToMany
+    {
         return $this->morphToMany(Tag::class, "taggable");
     }
 
-    public function pAttributes(): HasMany {
+    public function pAttributes(): HasMany
+    {
         return $this->hasMany(PAttr::class, "product_id", "id");
     }
 
-    public function invoiceRows(): HasMany {
+    public function invoiceRows(): HasMany
+    {
         return $this->hasMany(InvoiceRow::class, "product_id", "id");
     }
 
-    public function customerMetaCategory(): BelongsTo {
+    public function customerMetaCategory(): BelongsTo
+    {
         return $this->belongsTo(CustomerMetaCategory::class, "cmc_id", "id");
     }
 
-    public function discountGroup(): BelongsTo {
+    public function discountGroup(): BelongsTo
+    {
         return $this->belongsTo(DiscountGroup::class, "discount_group_id", "id")
             ->whereRaw(DB::raw($this->has_discount ? "1=0" : "1=1"))
             ->where("is_active", true)->where(function ($query) {
@@ -497,30 +545,36 @@ class Product extends BaseModel implements
             });
     }
 
-    public function productPackage(): HasOne {
+    public function productPackage(): HasOne
+    {
         return $this->hasOne(ProductPackage::class, 'product_id');
     }
 
-    public function productPackages(): BelongsToMany {
+    public function productPackages(): BelongsToMany
+    {
         return $this->belongsToMany(ProductPackage::class,
             "product_package_items", "product_id", "package_id");
     }
 
-    public function productPackageItems(): HasMany {
+    public function productPackageItems(): HasMany
+    {
         return $this->hasMany(ProductPackageItem::class, "product_id");
     }
 
-    public function getMainProduct(): ?Product {
+    public function getMainProduct(): ?Product
+    {
         if ($this->model_id === $this->id)
             return $this;
         return Product::find($this->model_id);
     }
 
-    public function accessories(): Builder {
+    public function accessories(): Builder
+    {
         return static::where("is_accessory", true)->where("accessory_for", $this->model_id);
     }
 
-    public function accessoryFor(): Builder {
+    public function accessoryFor(): Builder
+    {
         return static::where("is_accessory", false)->where("model_id", $this->accessory_for);
     }
 
@@ -531,7 +585,8 @@ class Product extends BaseModel implements
      * @throws ProductPackageItemInvalidIdException
      * @throws ProductPackageNotExistsException
      */
-    public function syncPackageItems($package_items) {
+    public function syncPackageItems($package_items)
+    {
         $productPackage = $this->productPackage;
         if ($productPackage != null) {
             $items_to_attach = collect();
@@ -562,29 +617,36 @@ class Product extends BaseModel implements
         }
     }
 
-    public function scopeExactSearch($builder, string $term): Builder {
+    public function scopeExactSearch($builder, string $term): Builder
+    {
         $builder->where(function ($q) use ($term) {
             foreach (static::$SEARCHABLE_FIELDS as $searchable_field) {
                 $q->orWhere($searchable_field, "=", $term);
             }
-        })->orWhere("code", "like", "%$term%");
+        })
+            ->orWhere("code", "like", "%$term%")
+            ->orWhere("seo_keywords", "like", "%term%");
 
         return $builder;
     }
 
-    public function scopeLatest(Builder $query): Builder {
+    public function scopeLatest(Builder $query): Builder
+    {
         return $query->orderBy("id", "DESC");
     }
 
-    public function scopeExcept(Builder $query, $id): Builder {
+    public function scopeExcept(Builder $query, $id): Builder
+    {
         return $query->where("id", "!=", $id);
     }
 
-    public function scopeMainModels(Builder $query): Builder {
+    public function scopeMainModels(Builder $query): Builder
+    {
         return $query->groupBy(["color_code", "model_id", "is_active"]);
     }
 
-    public function scopeModels(Builder $query, Product $product, bool $onlyOthers = true): Builder {
+    public function scopeModels(Builder $query, Product $product, bool $onlyOthers = true): Builder
+    {
         $result = $query->whereNotNull("model_id")
             ->where("model_id", "=", $product->model_id);
         if ($onlyOthers)
@@ -592,15 +654,18 @@ class Product extends BaseModel implements
         return $result;
     }
 
-    public function scopeImportant(Builder $query): Builder {
+    public function scopeImportant(Builder $query): Builder
+    {
         return $query->where("important_at", '!=', null);
     }
 
-    public function scopeVisible(Builder $query): Builder {
+    public function scopeVisible(Builder $query): Builder
+    {
         return $query->where("is_visible", true);
     }
 
-    public function scopeIsActive(Builder $query): Builder {
+    public function scopeIsActive(Builder $query): Builder
+    {
         if (config("cms.general.site.show_deactivated_products")) {
             return $query->where("latest_price", ">", "0");
         } else {
@@ -608,11 +673,13 @@ class Product extends BaseModel implements
         }
     }
 
-    public function scopeHasDiscount(Builder $query): Builder {
+    public function scopeHasDiscount(Builder $query): Builder
+    {
         return $query->where("has_discount", true);
     }
 
-    public function delete() {
+    public function delete()
+    {
         $this->rates()->delete();
         $this->tags()->detach();
         $this->review()->delete();
@@ -621,7 +688,8 @@ class Product extends BaseModel implements
         return parent::delete();
     }
 
-    public function save(array $options = []) {
+    public function save(array $options = [])
+    {
         //TODO: This method content should be moved to accessor methods.
 
         if ($this->isDirty("count") or
@@ -669,7 +737,8 @@ class Product extends BaseModel implements
         return $result;
     }
 
-    public function update(array $attributes = [], array $options = []): bool {
+    public function update(array $attributes = [], array $options = []): bool
+    {
         try {
             return parent::update($attributes, $options);
         } catch (QueryException $e) {
@@ -681,7 +750,8 @@ class Product extends BaseModel implements
         }
     }
 
-    public function generateColorCode(): string {
+    public function generateColorCode(): string
+    {
         $result = "";
         foreach ($this->colors()->orderBy("id")->get() as $color) {
             $result .= "#{$color->id}";
@@ -690,7 +760,8 @@ class Product extends BaseModel implements
         return $result;
     }
 
-    public function updateTaxAmount(): void {
+    public function updateTaxAmount(): void
+    {
         $this->new_invoice_service = $this->new_invoice_service ?? app(NewInvoiceService::class);
         $priceData = $this->new_invoice_service->isTaxAddedToPrice($this) ?
             $this->new_invoice_service->reverseCalculateProductTaxAndToll(
@@ -706,7 +777,8 @@ class Product extends BaseModel implements
         $this->toll_amount = $priceData->toll;
     }
 
-    public function updateFinData(): bool {
+    public function updateFinData(): bool
+    {
         try {
             $std_product = Factory::driver()->getProduct($this->code);
         } catch (FinancialDriverInvalidConfigurationException $e) {
@@ -733,7 +805,8 @@ class Product extends BaseModel implements
         }
     }
 
-    public function buildStructureSortScore(PStructureAttrKey $key): bool {
+    public function buildStructureSortScore(PStructureAttrKey $key): bool
+    {
         $p_attr = DB::table(DB::raw('p_attr_assignments as paa1'))
             ->where('paa1.p_structure_attr_key_id', $key->id)
             ->where('paa1.product_id', $this->id)
@@ -745,7 +818,8 @@ class Product extends BaseModel implements
         return $this->save();
     }
 
-    public function updateEnabledStatus(bool $do_save = true): bool {
+    public function updateEnabledStatus(bool $do_save = true): bool
+    {
         $this->cms_setting_helper = $this->cms_setting_helper ?? app(CMSSettingHelper::class);
         $min_allowed_count = $this->cms_setting_helper->getCMSSettingAsBool(CMSSettingKey::DISABLE_PRODUCT_ON_MIN) ?
             $this->min_allowed_count : 0;
@@ -754,7 +828,8 @@ class Product extends BaseModel implements
         return $this->makeDisabled($do_save);
     }
 
-    private function makeDisabled(bool $do_save = true): bool {
+    private function makeDisabled(bool $do_save = true): bool
+    {
         if ($this->is_active) {
             $this->is_active = false;
             try {
@@ -771,7 +846,8 @@ class Product extends BaseModel implements
         return true;
     }
 
-    private function makeEnabled(bool $do_save = true): bool {
+    private function makeEnabled(bool $do_save = true): bool
+    {
         if (!$this->is_active) {
             $this->is_active = true;
             try {
@@ -796,13 +872,15 @@ class Product extends BaseModel implements
         return true;
     }
 
-    private function deleteFromCarts(): void {
+    private function deleteFromCarts(): void
+    {
         $this->cartRows()->delete();
         Log::info("product.notification.$this->id : product ran out. (to customers)");
         //TODO: notify customer about that
     }
 
-    private function sendNotificationToStockManagers(int $status): void {
+    private function sendNotificationToStockManagers(int $status): void
+    {
         if (config("cms.general.site.stock_manager_notification") === false)
             return;
 
@@ -843,32 +921,39 @@ class Product extends BaseModel implements
         }
     }
 
-    public function hasImage(): bool {
+    public function hasImage(): bool
+    {
         $main_photo = $this->getMainPhoto();
         return $main_photo != null and strlen($main_photo->getImagePath()) > 0;
     }
 
-    public function getImagePath(): string {
+    public function getImagePath(): string
+    {
         return $this->getMainPhoto()->getImagePath();
     }
 
-    public function setImagePath(): void {
+    public function setImagePath(): void
+    {
         // the process is in handled in ProductImage model
     }
 
-    public function removeImage(): void {
+    public function removeImage(): void
+    {
         // the process is in handled in ProductImage model
     }
 
-    public function getDefaultImagePath(): string {
+    public function getDefaultImagePath(): string
+    {
         return "/admin_dashboard/images/No_image.jpg.png";
     }
 
-    public function getImageCategoryName(): string {
+    public function getImageCategoryName(): string
+    {
         return "product";
     }
 
-    public function getMainPhoto(): ?ProductImage {
+    public function getMainPhoto(): ?ProductImage
+    {
         if (isset($this->attributes["main_photo"])) {
             $photo = new ProductImage();
             $photo->setFullPath($this->attributes["main_photo"]);
@@ -884,7 +969,8 @@ class Product extends BaseModel implements
         return $this->images()->main()->first();
     }
 
-    public function getSecondaryPhoto(): ?ProductImage {
+    public function getSecondaryPhoto(): ?ProductImage
+    {
         if (isset($this->attributes["secondary_photo"])) {
             $photo = new ProductImage();
             $photo->setFullPath($this->attributes["secondary_photo"]);
@@ -900,15 +986,18 @@ class Product extends BaseModel implements
         return $this->images()->secondary()->first();
     }
 
-    public function parentField(): string {
+    public function parentField(): string
+    {
         return "directory_id";
     }
 
-    public function getName(): string {
+    public function getName(): string
+    {
         return $this->title;
     }
 
-    public function getAdminUrl(): string {
+    public function getAdminUrl(): string
+    {
         try {
             return route("admin.product.show", $this);
         } catch (UrlGenerationException $e) {
@@ -916,19 +1005,22 @@ class Product extends BaseModel implements
         }
     }
 
-    public function hasValue($value): bool {
+    public function hasValue($value): bool
+    {
         return $this->pAttributes->contains(function ($v, $k) use ($value) {
             return $v->p_structure_attr_value_id == $value->id;
         });
     }
 
-    public static function getFilterPaginationCount(): int {
+    public static function getFilterPaginationCount(): int
+    {
         if (request()->has("pagination_count"))
             return request("pagination_count");
         return self::$FILTER_PAGINATION_COUNT;
     }
 
-    public function getFrontUrl(): string {
+    public function getFrontUrl(): string
+    {
         try {
             return lm_route("public.view-product", $this) . "/" . url_encode($this->title);
         } catch (UrlGenerationException $e) {
@@ -937,7 +1029,8 @@ class Product extends BaseModel implements
     }
 
     // Todo : this method must be checked check
-    public function getMaximumAllowedPurchaseCount() {
+    public function getMaximumAllowedPurchaseCount()
+    {
         $this->cms_setting_helper = $this->cms_setting_helper ?? app(CMSSettingHelper::class);
         try {
             $min_allowed_count = $this->cms_setting_helper->getCMSSettingAsBool(CMSSettingKey::DISABLE_PRODUCT_ON_MIN) ?
@@ -949,11 +1042,13 @@ class Product extends BaseModel implements
         }
     }
 
-    public function getMinimumAllowedPurchaseCount(): int {
+    public function getMinimumAllowedPurchaseCount(): int
+    {
         return $this->min_purchase_count ?: 1;
     }
 
-    public function getSearchUrl(): string {
+    public function getSearchUrl(): string
+    {
         try {
             return route("admin.product.edit", $this);
         } catch (UrlGenerationException $e) {
@@ -961,20 +1056,24 @@ class Product extends BaseModel implements
         }
     }
 
-    public function getStandardLatestPrice(): int {
+    public function getStandardLatestPrice(): int
+    {
         $this->new_invoice_service = $this->new_invoice_service ?? app(NewInvoiceService::class);
         return intval($this->latest_price / $this->new_invoice_service->getProductPriceRatio());
     }
 
-    public function isMainModel(): bool {
+    public function isMainModel(): bool
+    {
         return $this->model_id == null or $this->model_id == $this->id;
     }
 
-    public function getModels(array $with_relations = []): Collection|array {
+    public function getModels(array $with_relations = []): Collection|array
+    {
         return Product::models($this, true)->with($with_relations)->get();
     }
 
-    public function getPAttributes($show_type): array {
+    public function getPAttributes($show_type): array
+    {
         $result = [];
         $pAttributes = $this->pAttributes()->whereHas("key", function ($q) use ($show_type) {
             $q->where("show_type", $show_type);
@@ -996,29 +1095,35 @@ class Product extends BaseModel implements
     /**
      * @return string
      */
-    function getTitle(): string {
+    function getTitle(): string
+    {
         return $this->title;
     }
 
-    public function getSeoTitle() {
+    public function getSeoTitle()
+    {
         if ($this->seo_title !== null and strlen($this->seo_title) > 0)
             return $this->seo_title;
         return $this->title . " - " . $this->directory->title;
     }
 
-    public function getSeoUrl(): string {
+    public function getSeoUrl(): string
+    {
         return $this->getMainProduct()->getFrontUrl();
     }
 
-    public function getSeoDescription() {
+    public function getSeoDescription()
+    {
         return $this->seo_description;
     }
 
-    public function getSeoKeywords() {
+    public function getSeoKeywords()
+    {
         return $this->seo_keywords;
     }
 
-    public function attachFileTo(?Directory $dest): void {
+    public function attachFileTo(?Directory $dest): void
+    {
         $this->directory_id = $dest?->id;
         $this->save();
         $dest?->attachLeafFiles($this->id);
@@ -1029,7 +1134,8 @@ class Product extends BaseModel implements
      * @param Directory|null $dest
      * @return mixed
      */
-    public function detachFile($dest = null) {
+    public function detachFile($dest = null)
+    {
         if ($this->directory != null) {
             $destParentDirectoriesIds = [];
             if ($dest != null) {
@@ -1055,7 +1161,8 @@ class Product extends BaseModel implements
     /**
      * @return Model|CMSExposedNodeInterface
      */
-    public function cloneFile() {
+    public function cloneFile()
+    {
         if ($this->model_id == null)
             $this->update(["model_id" => $this->id]);
 
@@ -1080,12 +1187,14 @@ class Product extends BaseModel implements
      * @return void
      * @throws Throwable
      */
-    public function generateNewUrls($dest) {
+    public function generateNewUrls($dest)
+    {
         // TODO: Implement generateNewUrls() method.
         $this->save();
     }
 
-    public function getHash() {
+    public function getHash()
+    {
         return md5($this->title . "#" .
             ($this->latest_price != null ? $this->latest_price : 0) . "#" .
             $this->extra_properties . "#" .
@@ -1104,7 +1213,8 @@ class Product extends BaseModel implements
         );
     }
 
-    public function isImageLocal() {
+    public function isImageLocal()
+    {
         return true;
     }
 
@@ -1114,7 +1224,8 @@ class Product extends BaseModel implements
      *
      * @return array
      */
-    public function toArray(): array {
+    public function toArray(): array
+    {
         $this->cms_setting_helper = $this->cms_setting_helper ?? app(CMSSettingHelper::class);
         $parent_result = parent::toArray();
 
@@ -1129,7 +1240,8 @@ class Product extends BaseModel implements
         return $parent_result;
     }
 
-    public static function create(array $attributes = []) {
+    public static function create(array $attributes = [])
+    {
         if (!isset($attributes["cmc_id"]) and isset($attributes["directory_id"])) {
             $parent_directory = Directory::find($attributes["directory_id"]);
             if ($parent_directory !== null and $parent_directory->hasCustomerMetaCategory()) {
@@ -1139,11 +1251,13 @@ class Product extends BaseModel implements
         return static::query()->create($attributes);
     }
 
-    public function hasCustomerMetaCategory(): bool {
+    public function hasCustomerMetaCategory(): bool
+    {
         return $this->cmc_id !== null;
     }
 
-    private function updateModelsCount() {
+    private function updateModelsCount()
+    {
         $models = Product::models($this, false)->get();
         $count = count($models);
         foreach ($models as $model) {
