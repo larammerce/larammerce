@@ -8,6 +8,7 @@
 
 namespace App\Traits;
 
+use App\Helpers\StringHelper;
 use Illuminate\Database\Eloquent\Builder;
 
 trait FullTextSearch
@@ -24,8 +25,11 @@ trait FullTextSearch
     public function scopeSearch(Builder $builder, string $term, int $exactness = 0): Builder
     {
         $parent_exact_builder = $builder->clone();
-        if ($exactness == 3 or $parent_exact_builder->exactSearch($term)->count() > 0) {
-            return $parent_exact_builder->exactSearch($term);
+        $terms_to_search = StringHelper::generateSpaceCombinations($term, 2);
+        foreach($terms_to_search as $term_to_search) {
+            if ($exactness == 3 or $parent_exact_builder->exactSearch($term_to_search)->count() > 0) {
+                return $parent_exact_builder->exactSearch($term_to_search);
+            }
         }
 
         $exact_builder = $builder->clone();
