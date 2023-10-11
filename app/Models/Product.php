@@ -625,7 +625,7 @@ class Product extends BaseModel implements
             }
         })
             ->orWhere("code", "like", "%$term%")
-            ->orWhere("seo_keywords", "like", "%term%");
+            ->orWhere("seo_keywords", "like", "%$term%");
 
         return $builder;
     }
