@@ -30,6 +30,7 @@ use Yangqi\Htmldom\Htmldom;
  * @property integer id
  * @property integer directory_id
  * @property string blade_name
+ * @property string custom_blade_name
  * @property string data
  * @property string image_path
  * @property string seo_description
@@ -91,6 +92,11 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
     {
         $this->loadContents();
         return $this->cached_attributes["contents"];
+    }
+
+    public function getCustomBladeNameAttribute(): string
+    {
+        return "{$this->blade_name}-{$this->id}";
     }
 
     public function putContent($key, $value)
@@ -366,9 +372,9 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
         }
     }
 
-    private function updateBladeContent(array $contents, $blade_path, $relative_blade_postfix = null)
+    private function updateBladeContent(array $contents, $original_blade_path, $relative_blade_postfix = null)
     {
-        $blade_content = TemplateService::getBladeContent($blade_path);
+        $blade_content = TemplateService::getBladeContent($original_blade_path);
         $html = null;
         $content_tags = null;
         if ($blade_content != "" and strlen($blade_content) > 0) {
@@ -378,7 +384,7 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
         if ($content_tags != null)
             $this->setContentTags($contents, $content_tags);
         if ($html != null) {
-            $blade_name = $this->blade_name;
+            $blade_name = $this->custom_blade_name;
             if ($relative_blade_postfix != null)
                 $blade_name .= $relative_blade_postfix;
             TemplateService::setBladeContent(TemplateService::getViewPath($blade_name), $html);

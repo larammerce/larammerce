@@ -78,6 +78,9 @@ class WebPageController extends BaseController
      */
     public function update(Request $request, WebPage $web_page): RedirectResponse
     {
+        if (!$request->has("data")) {
+            $request->merge(["data" => []]);
+        }
         $web_page->update($request->all());
         if (isset($web_page->blade_name) and $web_page->blade_name != null) {
             $template = new TemplateModel($web_page->blade_name,
