@@ -2011,6 +2011,7 @@ if (!function_exists('get_related_products_according_to_structures')) {
             ->take($limit_count)
             ->get();
 
+        return $products;
     }
 }
 
