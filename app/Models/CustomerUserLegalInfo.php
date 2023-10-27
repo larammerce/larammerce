@@ -2,6 +2,11 @@
 
 namespace App\Models;
 
+use App\Utils\CRMManager\Enums\CRMLeadType;
+use App\Utils\CRMManager\Interfaces\CRMLeadInterface;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 /**
  * @property integer id
  * @property integer customer_user_id
@@ -13,6 +18,9 @@ namespace App\Models;
  * @property string fin_relation
  * @property integer state_id
  * @property integer city_id
+ * @property string crm_relation
+ * @property Carbon created_at
+ * @property Carbon updated_at
  *
  * @property CustomerUser customerUser
  * @property State state
@@ -21,14 +29,13 @@ namespace App\Models;
  * Class CustomerUserLegalInfo
  * @package App\Models
  */
-class CustomerUserLegalInfo extends BaseModel
-{
+class CustomerUserLegalInfo extends BaseModel implements CRMLeadInterface {
     protected $table = 'customer_users_legal_info';
     public $timestamps = false;
 
     protected $fillable = [
         'customer_user_id', 'company_name', 'economical_code', 'national_id',
-        'registration_code', 'company_phone', 'state_id', 'city_id', 'fin_relation'
+        'registration_code', 'company_phone', 'state_id', 'city_id', 'fin_relation', 'crm_relation'
     ];
 
     protected static array $SORTABLE_FIELDS = ['id'];
@@ -40,38 +47,76 @@ class CustomerUserLegalInfo extends BaseModel
         'national_id',
         'registration_code',
         'company_phone',
-        'fin_relation'
+        'fin_relation',
+        'crm_relation'
     ];
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function customerUser()
-    {
-        return $this->belongsTo('\\App\\Models\\CustomerUser', 'customer_user_id');
+    public function customerUser(): BelongsTo {
+        return $this->belongsTo(CustomerUser::class, 'customer_user_id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function state()
-    {
-        return $this->belongsTo('\\App\\Models\\State', 'state_id');
+    public function state(): BelongsTo {
+        return $this->belongsTo(State::class, 'state_id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function city()
-    {
-        return $this->belongsTo('\\App\\Models\\City', 'city_id');
+    public function city(): BelongsTo {
+        return $this->belongsTo(City::class, 'city_id');
     }
 
     /**
      * @return string
      */
-    public function getSearchUrl(): string
-    {
+    public function getSearchUrl(): string {
         return '';
+    }
+
+    function leadGetRelation(): string {
+        return $this->crm_relation ?? "";
+    }
+
+    function leadSetRelation(string $lead_id): void {
+        $this->update([
+            "crm_relation" => $lead_id
+        ]);
+    }
+
+    function leadGetFullName(): string {
+        return $this->company_name;
+    }
+
+    function leadGetFirstName(): string {
+        return $this->customerUser->user?->name ?? "";
+    }
+
+    function leadGetLastName(): string {
+        return $this->customerUser->user?->family ?? "";
+    }
+
+    function leadGetSource(): string {
+        return "Website registration";
+    }
+
+    function leadGetMainPhone(): string {
+        return $this->company_phone ?? "";
+    }
+
+    function leadGetSecondaryPhone(): string {
+        return $this->customerUser?->main_phone ?? "";
+    }
+
+    function leadHasSecondaryPhone(): bool {
+        return true;
+    }
+
+    function leadGetEmail(): string {
+        return $this->customerUser->user->email ?? "";
+    }
+
+    function leadGetType(): string {
+        return CRMLeadType::CORPORATE;
+    }
+
+    function leadGetCreatedAt(): Carbon {
+        return $this->created_at ?? Carbon::now();
     }
 }

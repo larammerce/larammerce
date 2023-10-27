@@ -50,6 +50,9 @@ Route::group(
                 Route::get("sms-driver", ["as" => "sms-driver.edit", "uses" => "SMSDriverController@edit"]);
                 Route::put("sms-driver", ["as" => "sms-driver.update", "uses" => "SMSDriverController@update"]);
 
+                Route::get("crm-driver", ["as" => "crm-driver.edit", "uses" => "CRMDriverController@edit"]);
+                Route::put("crm-driver", ["as" => "crm-driver.update", "uses" => "CRMDriverController@update"]);
+
                 Route::get("language", ["as" => "language.edit", "uses" => "LanguageSettingController@edit"]);
                 Route::put("language", ["as" => "language.update", "uses" => "LanguageSettingController@update"]);
 
