@@ -57,6 +57,12 @@ abstract class BaseFinancialConfig extends BaseModel implements JsonSerializable
      */
     public bool $tax_added_to_price;
 
+    /**
+     * @rules(input_rule="bool")
+     * @data(input_type="checkbox")
+     */
+    public bool $is_national_code_required;
+
 
     /**
      * @rules(input_rule="bool")
@@ -79,6 +85,7 @@ abstract class BaseFinancialConfig extends BaseModel implements JsonSerializable
         $this->use_per_product_config = false;
         $this->invoice_tax_heading = "مالیات و عوارض";
         $this->invoice_show_tax_percentage = false;
+        $this->is_national_code_required = true;
     }
 
     public function serialize(): bool|string|null {
