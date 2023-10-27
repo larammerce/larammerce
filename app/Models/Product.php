@@ -103,6 +103,7 @@ use Throwable;
  * @property int tax_percentage
  * @property int toll_percentage
  * @property bool is_tax_included
+ * @property bool use_default_tax_params
  *
  * @property CustomerLocationModel[] location_limitations
  * @property bool is_location_limited
@@ -159,7 +160,7 @@ class Product extends BaseModel implements
         "min_purchase_count", "is_important", "seo_title", "seo_keywords", "seo_description", "model_id",
         "has_discount", "previous_price", "is_accessory", "is_visible", "inaccessibility_type", "cmc_id", "notice",
         "discount_group_id", "priority", "is_discountable", "structure_sort_score", "is_package", "accessory_for",
-        "count", "is_tax_included", "tax_percentage", "toll_percentage", "watermark_uuid",
+        "count", "is_tax_included", "tax_percentage", "toll_percentage", "watermark_uuid", "use_default_tax_params",
         //these are not table fields, these are form sections that role permission system works with
         "tags", "attributes", "gallery", "colors", "badges", "main_photo", "secondary_photo"
     ];
@@ -172,6 +173,7 @@ class Product extends BaseModel implements
         "is_visible" => "bool",
         "is_discountable" => "bool",
         "is_tax_included" => "bool",
+        "use_default_tax_params" => "bool"
     ];
 
     protected static ?bool $DISABLE_ON_MIN = null; //TODO: move this to admin layer setting.
