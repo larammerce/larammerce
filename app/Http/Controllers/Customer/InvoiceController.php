@@ -63,7 +63,7 @@ class InvoiceController extends BaseController {
 
         $customer = get_customer_user();
 
-        if ($customer->national_code == null) {
+        if (\App\Utils\FinancialManager\ConfigProvider::isNationalCodeRequired() and $customer->national_code == null) {
             SystemMessageService::addWarningMessage("messages.customer_user.no_national_code");
             return redirect()->route("customer.profile.show-edit-profile");
         }
