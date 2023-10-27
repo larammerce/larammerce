@@ -92,7 +92,8 @@ class NewInvoiceService {
     }
 
     public function getProductTollPercentage(Product $product = null): float {
-        if (ConfigProvider::shouldUsePerProductTaxConfig() and !is_null($product) and !is_null($product->toll_percentage)) {
+        if (ConfigProvider::shouldUsePerProductTaxConfig() and !is_null($product) and
+            !$product->use_default_tax_params and !is_null($product->toll_percentage)) {
             return $product->toll_percentage;
         } else {
             return ConfigProvider::getDefaultTollPercentage();
@@ -100,7 +101,8 @@ class NewInvoiceService {
     }
 
     public function getProductTaxPercentage(Product $product = null): float {
-        if (ConfigProvider::shouldUsePerProductTaxConfig() and !is_null($product) and !is_null($product->tax_percentage)) {
+        if (ConfigProvider::shouldUsePerProductTaxConfig() and !is_null($product) and
+            !$product->use_default_tax_params and !is_null($product->tax_percentage)) {
             return $product->tax_percentage;
         } else {
             return ConfigProvider::getDefaultTaxPercentage();
@@ -150,6 +152,16 @@ class NewInvoiceService {
         $result->price = $this->getProductPurePrice($product_total_price, product: $product);
         $result->tax = $this->getProductTaxAmount($result->price, $count, product: $product);
         $result->toll = intval($product_total_price - ($result->price + $result->tax));
+
+        if ($result->toll < 0) {
+            $result->price = $result->price + $result->toll;
+            $result->toll = 0;
+        }
+
+        if ($result->tax < 0) {
+            $result->price = $result->price + $result->tax;
+            $result->tax = 0;
+        }
 
         return $result;
     }
