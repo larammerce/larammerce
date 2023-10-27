@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Directory;
+use App\Models\CustomerUser;
+use App\Utils\CRMManager\Factory;
 use Illuminate\Console\Command;
 
-class TestCommand extends Command
-{
+class TestCommand extends Command {
     /**
      * The name and signature of the console command.
      *
@@ -26,21 +26,14 @@ class TestCommand extends Command
      *
      * @return mixed
      */
-    public function handle()
-    {
+    public function handle() {
         $this->info("Hello world !");
 
-        $data = json_decode(file_get_contents(base_path("data/menu.json")));
+        $driver = Factory::driver();
 
-        foreach ($data as $row) {
-            if(!isset($row->title)){
-                echo $row->id . "->" . $row->metadata . "\n";
-            }else{
-                Directory::where("id", $row->id)
-                    ->update([
-                        "title" => $row->title
-                    ]);
-            }
-        }
+        /** @var CustomerUser $customer_user */
+//        $customer_user = CustomerUser::where("main_phone", "09399791134")->first();
+        $customer_user = CustomerUser::where("main_phone", "09214141040")->first();
+        $driver->searchLead($customer_user);
     }
 }

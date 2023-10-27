@@ -294,6 +294,14 @@ return [
             ],
             [
                 "properties" => [
+                    "id" => "crm_driver",
+                    "name" => "general.setting.crm_driver",
+                    "icon" => "icon-crm-driver",
+                    "route" => "admin.setting.crm-driver.edit"
+                ]
+            ],
+            [
+                "properties" => [
                     "id" => "payment_driver",
                     "name" => "general.setting.payment_driver",
                     "icon" => "icon-payment-driver",
