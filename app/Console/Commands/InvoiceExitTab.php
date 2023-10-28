@@ -10,8 +10,7 @@ use App\Utils\FinancialManager\Factory;
 use App\Utils\FinancialManager\Provider;
 use Illuminate\Console\Command;
 
-class InvoiceExitTab extends Command
-{
+class InvoiceExitTab extends Command {
     /**
      * The name and signature of the console command.
      *
@@ -31,8 +30,7 @@ class InvoiceExitTab extends Command
      *
      * @return void
      */
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
     }
 
@@ -42,8 +40,7 @@ class InvoiceExitTab extends Command
      * @return mixed
      * @throws \Throwable
      */
-    public function handle()
-    {
+    public function handle() {
         $id = $this->option('id');
         $this->output->write("Checking invoice [id: {$id}] ...\t");
 
@@ -70,8 +67,7 @@ class InvoiceExitTab extends Command
         return 1;
     }
 
-    public function updateShipmentStatus($invoice)
-    {
+    public function updateShipmentStatus($invoice) {
         $invoice->shipment_status = ShipmentStatus::WAREHOUSE_EXIT_TAB;
         $invoice->save();
     }
@@ -79,20 +75,21 @@ class InvoiceExitTab extends Command
     /**
      * @param Invoice $invoice
      */
-    public function notifyCustomer(Invoice $invoice)
-    {
+    public function notifyCustomer(Invoice $invoice) {
         if ($this->option('no-notify')) {
             $this->output->write("[<fg=yellow>no-notify</>]");
             return;
         }
-        SMSService::send(
-            'sms-invoice-exit-tab',
-            $invoice->customer->main_phone,
-            [
-                'invoiceTrackingCode' => $invoice->tracking_code,
-            ],
-            [
-                'customerName' => $invoice->customer->user->name,
-            ]);
+        if (\App\Utils\SMSManager\ConfigProvider::canSendSMSForInvoiceSent()) {
+            SMSService::send(
+                'sms-invoice-exit-tab',
+                $invoice->customer->main_phone,
+                [
+                    'invoiceTrackingCode' => $invoice->tracking_code,
+                ],
+                [
+                    'customerName' => $invoice->customer->user->name,
+                ]);
+        }
     }
 }

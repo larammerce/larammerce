@@ -270,13 +270,15 @@ class InvoiceController extends BaseController {
 
         if ($invoice->createFinManRelation()) {
 
-            SMSService::send("sms-invoice-submitted", $customer_user->main_phone,
-                [
-                    "trackingCode" => $invoice->tracking_code
-                ],
-                [
-                    "customerName" => $customer_user->user->name
-                ]);
+            if (\App\Utils\SMSManager\ConfigProvider::canSendSMSForInvoiceSubmit()) {
+                SMSService::send("sms-invoice-submitted", $customer_user->main_phone,
+                    [
+                        "trackingCode" => $invoice->tracking_code
+                    ],
+                    [
+                        "customerName" => $customer_user->user->name
+                    ]);
+            }
 
             if (config('mail-notifications.invoices.new_invoice')) {
                 $subject = 'New Order';
