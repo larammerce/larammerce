@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 /**
  *
@@ -206,6 +207,9 @@ class Directory extends BaseModel implements ImageOwnerInterface, HashInterface,
     }
 
     public function scopeVisible(Builder $builder): Builder {
+        // Check if the directories table has the `is_hidden` column
+        if (!Schema::hasColumn("directories", "is_hidden"))
+            return $builder;
         return $builder->where("is_hidden", false);
     }
 
