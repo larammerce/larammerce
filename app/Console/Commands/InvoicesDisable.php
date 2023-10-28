@@ -4,10 +4,10 @@ namespace App\Console\Commands;
 
 use App\Models\Invoice;
 use App\Utils\Common\SMSService;
+use App\Utils\SMSManager\ConfigProvider;
 use Illuminate\Console\Command;
 
-class InvoicesDisable extends Command
-{
+class InvoicesDisable extends Command {
     /**
      * The name and signature of the console command.
      *
@@ -27,8 +27,7 @@ class InvoicesDisable extends Command
      *
      * @return void
      */
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
     }
 
@@ -37,8 +36,7 @@ class InvoicesDisable extends Command
      *
      * @return integer
      */
-    public function handle()
-    {
+    public function handle() {
         $this->output->write("Disabling invoice [id: " . $this->option('id') . "] ... \t ", false);
         $invoice = Invoice::find($this->option('id'));
         if ($invoice != null) {
@@ -46,7 +44,7 @@ class InvoicesDisable extends Command
                 $this->output->writeln("[<fg=green>✔</>]");
                 $this->notifyCustomer($invoice);
                 return 0; // success.
-            }else {
+            } else {
                 $this->output->writeln("[<fg=red>✘</>]");
                 return 2;
             }
@@ -58,16 +56,17 @@ class InvoicesDisable extends Command
     /**
      * @param Invoice $invoice
      */
-    public function notifyCustomer(Invoice $invoice)
-    {
-        SMSService::send(
-            "sms-invoice-disabled",
-            $invoice->customer->main_phone,
-            [
-                'invoiceTrackingCode' => $invoice->tracking_code,
-            ],
-            [
-                'customerName' => $invoice->customer->user->name,
-            ]);
+    public function notifyCustomer(Invoice $invoice) {
+        if (ConfigProvider::canSendSMSForInvoiceCancel()) {
+            SMSService::send(
+                "sms-invoice-disabled",
+                $invoice->customer->main_phone,
+                [
+                    'invoiceTrackingCode' => $invoice->tracking_code,
+                ],
+                [
+                    'customerName' => $invoice->customer->user->name,
+                ]);
+        }
     }
 }

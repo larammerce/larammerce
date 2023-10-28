@@ -6,6 +6,7 @@ use App\Models\CartRow;
 use App\Utils\CMS\Setting\CartNotification\CartNotificationService;
 use App\Utils\Common\EmailService;
 use App\Utils\Common\SMSService;
+use App\Utils\SMSManager\ConfigProvider;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
