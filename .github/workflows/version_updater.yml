@@ -10,10 +10,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Setup SSH Key from Secrets
+        env:
+          PRIVATE_KEY: ${{ secrets.GH_ACTIONS_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Checkout repo with SSH
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0  # Fetch all history so we can list all branches
+          fetch-depth: 0
+          ssh-key: ${{ secrets.GH_ACTIONS_SSH_KEY }}
 
       - name: Determine highest version from branches
         id: get-version
