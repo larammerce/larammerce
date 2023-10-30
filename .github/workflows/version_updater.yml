@@ -4,13 +4,26 @@ on:
   push:
     branches:
       - production
+      - 'version/v*'
 
 jobs:
   update-version:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check if commit is made by GitHub Actions
+        id: check-author
+        run: |
+          COMMIT_AUTHOR=$(git log -1 --pretty=format:'%ae')
+          if [[ "$COMMIT_AUTHOR" == "actions@github.com" ]]; then
+            echo "Commit made by GitHub Actions, exiting."
+            echo "::set-output name=skip::true"
+          else
+            echo "::set-output name=skip::false"
+          fi
+
       - name: Setup SSH Key from Secrets
+        if: steps.check-author.outputs.skip != 'true'
         env:
           PRIVATE_KEY: ${{ secrets.GH_ACTIONS_SSH_KEY }}
         run: |
@@ -25,37 +38,34 @@ jobs:
           fetch-depth: 0
           ssh-key: ${{ secrets.GH_ACTIONS_SSH_KEY }}
 
-      - name: Determine highest version from branches
+      - name: Determine version and update
         id: get-version
         run: |
-          VERSION=$(git branch -r | grep 'version/v' | sed 's/.*version\///' | sort -V | tail -n 1)
-          BASE_MAJOR=$(echo $VERSION | cut -d. -f1)
-          BASE_MINOR=$(echo $VERSION | cut -d. -f2)
-          BASE_MINOR=$(($BASE_MINOR + 1))
-          echo "::set-output name=base_version::v$BASE_MAJOR.$BASE_MINOR"
+          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
 
-      - name: Read and update .version file
-        id: update-version
-        run: |
-          CURRENT=$(cat .version)
-          BASE_VERSION=$(echo ${{ steps.get-version.outputs.base_version }} | sed 's/v//')
-          if [[ -z "$CURRENT" ]]; then
-            NEW_VERSION="$BASE_VERSION.001"
-          else
-            CUR_MAJOR=$(echo $CURRENT | cut -d. -f1)
-            CUR_MINOR=$(echo $CURRENT | cut -d. -f2)
-            CUR_PATCH=$(echo $CURRENT | cut -d. -f3)
-            if [[ "$CUR_MAJOR.$CUR_MINOR" != "$BASE_VERSION" ]]; then
-              NEW_VERSION="$BASE_VERSION.001"
+          # Check if this is a version branch or the production branch
+          if [[ $BRANCH_NAME == version/v* ]]; then
+            BASE_VERSION=${BRANCH_NAME/version\/v/}
+            if [[ ! -f ".version" ]]; then
+              echo "::set-output name=new_version::${BASE_VERSION}.001"
             else
-              CUR_PATCH=$(($CUR_PATCH + 1))
-              NEW_VERSION="$BASE_VERSION.$CUR_PATCH"
+              CUR_PATCH=$(cat .version | cut -d. -f3)
+              CUR_PATCH=$(printf "%03d" $(($CUR_PATCH + 1)))
+              echo "::set-output name=new_version::${BASE_VERSION}.$CUR_PATCH"
             fi
+          else
+            VERSION=$(git branch -r | grep 'version/v' | sed 's/.*version\///' | sort -V | tail -n 1)
+            BASE_MAJOR=$(printf "%d" $(echo $VERSION | cut -d. -f1))
+            BASE_MINOR=$(printf "%02d" $(($(echo $VERSION | cut -d. -f2) + 1)))
+            echo "::set-output name=new_version::${BASE_MAJOR}.${BASE_MINOR}.001"
           fi
-          echo "$NEW_VERSION" > .version
+
+      - name: Write and update .version file
+        if: steps.check-author.outputs.skip != 'true'
+        run: |
+          echo "${{ steps.get-version.outputs.new_version }}" > .version
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git add .version
-          git commit -m "Update .version to $NEW_VERSION"
+          git commit -m "Update .version to ${{ steps.get-version.outputs.new_version }}"
           git push
-
