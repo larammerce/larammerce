@@ -1,0 +1,97 @@
+name: Update Version
+
+on:
+  push:
+    branches:
+      - production
+      - 'version/v*'
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup SSH Key from Secrets
+        if: steps.check-author.outputs.skip != 'true'
+        env:
+          PRIVATE_KEY: ${{ secrets.GH_ACTIONS_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Checkout repo with SSH
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          ssh-key: ${{ secrets.GH_ACTIONS_SSH_KEY }}
+
+      - name: Check if commit is made by GitHub Actions
+        id: check-author
+        run: |
+          COMMIT_AUTHOR=$(git log -1 --pretty=format:'%ae')
+          if [[ "$COMMIT_AUTHOR" == "actions@github.com" ]]; then
+            echo "Commit made by GitHub Actions, exiting."
+            echo "::set-output name=skip::true"
+          else
+            echo "::set-output name=skip::false"
+          fi
+
+      - name: Determine version and update
+        id: get-version
+        run: |
+          # Extract branch/tag name from GITHUB_REF (e.g., refs/heads/version/v2.08 -> version/v2.08)
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+
+          # Check if this is a version branch or the production branch
+          if [[ $BRANCH_NAME == version/v* ]]; then
+            BASE_VERSION=${BRANCH_NAME#version/}
+            if [[ ! -f ".version" ]]; then
+              echo "::set-output name=new_version::${BASE_VERSION}.001"
+            else
+              CURRENT_VERSION=$(cat .version)
+              CUR_MAJOR=$(echo $CURRENT_VERSION | cut -d. -f1)
+              CUR_MINOR=$(echo $CURRENT_VERSION | cut -d. -f2)
+              CUR_PATCH=$(echo $CURRENT_VERSION | cut -d. -f3)
+              # Check if current major.minor from .version file matches the branch's version
+              if [[ "$CUR_MAJOR.$CUR_MINOR" == "$BASE_VERSION" ]]; then
+                CUR_PATCH=$(printf "%03d" $(($CUR_PATCH + 1)))
+                echo "::set-output name=new_version::${BASE_VERSION}.$CUR_PATCH"
+              else
+                echo "::set-output name=new_version::${BASE_VERSION}.001"
+              fi
+            fi
+          else
+            VERSION=$(git branch -r | grep 'version/v' | sed 's/.*version\///' | sort -V | tail -n 1)
+            BASE_MAJOR=$(echo $VERSION | cut -d. -f1 | sed 's/v//')
+            BASE_MINOR=$(printf "%02d" $(($(echo $VERSION | cut -d. -f2) + 1)))
+            NEW_BASE_VERSION="v${BASE_MAJOR}.${BASE_MINOR}"
+
+            # Check if .version file exists
+            if [[ ! -f ".version" ]]; then
+              echo "::set-output name=new_version::${NEW_BASE_VERSION}.001"
+            else
+              CURRENT_VERSION=$(cat .version)
+              CUR_MAJOR=$(echo $CURRENT_VERSION | cut -d. -f1)
+              CUR_MINOR=$(echo $CURRENT_VERSION | cut -d. -f2)
+              CUR_PATCH=$(echo $CURRENT_VERSION | cut -d. -f3)
+              # Check if current major.minor from .version file matches the highest branch version
+              if [[ "$CUR_MAJOR.$CUR_MINOR" == "$NEW_BASE_VERSION" ]]; then
+                CUR_PATCH=$(printf "%03d" $(($CUR_PATCH + 1)))
+                echo "::set-output name=new_version::${NEW_BASE_VERSION}.$CUR_PATCH"
+              else
+                echo "::set-output name=new_version::${NEW_BASE_VERSION}.001"
+              fi
+            fi
+          fi
+
+      - name: Write and update .version file
+        if: steps.check-author.outputs.skip != 'true'
+        run: |
+          echo "${{ steps.get-version.outputs.new_version }}" > .version
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add .version
+          git commit -m "Update .version to ${{ steps.get-version.outputs.new_version }}"
+          git push
