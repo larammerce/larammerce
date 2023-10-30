@@ -87,26 +87,16 @@ class VersionHelper {
      * @throws Exception
      */
     private static function fetchVersionFromGithub(string $branch): string {
-        $apiUrl = self::GITHUB_API_URL . self::REPO_OWNER . '/' . self::REPO_NAME . '/contents/' . self::VERSION_FILE . '?ref=' . $branch;
+        # Fetch the data using address https://raw.githubusercontent.com/larammerce/larammerce/production/.version
+        $rawUrl = 'https://raw.githubusercontent.com/' . self::REPO_OWNER . '/' . self::REPO_NAME . '/' . $branch . '/' . self::VERSION_FILE;
 
-        // Initiate a cURL session to fetch data from GitHub's API
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $apiUrl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'VersionHelper');
-
-        $response = curl_exec($ch);
-        curl_close($ch);
-
-        // Decode the response to fetch the content of the .version file
-        $data = json_decode($response, true);
-
-        if (isset($data['content'])) {
-            // GitHub returns the content in Base64 encoding, so we decode it
-            return trim(base64_decode($data['content']));
+        # Use file_get_contents to fetch the data
+        try {
+            return file_get_contents($rawUrl);
+        } catch (Exception $e) {
+            throw new Exception('Failed to fetch version from GitHub.');
         }
 
-        throw new Exception('Failed to fetch version from GitHub.');
     }
 }
 
