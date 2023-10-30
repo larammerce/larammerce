@@ -40,10 +40,23 @@ jobs:
           fi
           echo "$BASE_VERSION.$SUB_VERSION" > .version
 
-      - name: Commit and push if there are changes
+      - name: Setup GitHub CLI
+        run: |
+          sudo apt-get install -y gh
+          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Commit and create a PR if there are changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add .version
           git commit -m "Update .version file" || echo "No changes to commit"
-          git push
+
+          if [ "$(git log -1 --pretty=%B)" == "Update .version file" ]; then
+            git checkout -b version-update-branch
+            git push origin version-update-branch
+
+            # Create PR using gh cli
+            gh pr create --base production --head version-update-branch --title "Update .version file" --body "Automated version bump" --repo $GITHUB_REPOSITORY --label "automated-pr" --reviewer "your_github_username"
+          fi
+
