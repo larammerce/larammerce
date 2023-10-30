@@ -55,7 +55,7 @@ jobs:
             fi
           else
             VERSION=$(git branch -r | grep 'version/v' | sed 's/.*version\///' | sort -V | tail -n 1)
-            BASE_MAJOR=$(printf "%d" $(echo $VERSION | cut -d. -f1))
+            BASE_MAJOR=$(echo $VERSION | cut -d. -f1 | sed 's/v//')
             BASE_MINOR=$(printf "%02d" $(($(echo $VERSION | cut -d. -f2) + 1)))
             echo "::set-output name=new_version::${BASE_MAJOR}.${BASE_MINOR}.001"
           fi
