@@ -6,57 +6,46 @@ on:
       - production
 
 jobs:
-  update_version:
+  update-version:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repo
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Fetch all history so we can list all branches
 
-      - name: Extract max version from branch names
+      - name: Determine highest version from branches
+        id: get-version
         run: |
-          VERSION=$(git branch -r | grep "version/v" | sed 's/.*version\/v//g' | sort -V | tail -1)
-          echo "MAX_VERSION=$VERSION" >> $GITHUB_ENV
+          VERSION=$(git branch -r | grep 'version/v' | sed 's/.*version\///' | sort -V | tail -n 1)
+          BASE_MAJOR=$(echo $VERSION | cut -d. -f1)
+          BASE_MINOR=$(echo $VERSION | cut -d. -f2)
+          BASE_MINOR=$(($BASE_MINOR + 1))
+          echo "::set-output name=base_version::v$BASE_MAJOR.$BASE_MINOR"
 
-      - name: Update .version file
+      - name: Read and update .version file
+        id: update-version
         run: |
-          MAX_VERSION=$(echo $MAX_VERSION | sed 's/v//g') # remove v prefix
-          if [ -f .version ]; then
-            CURRENT_VERSION=$(cat .version)
-            BASE_VERSION=$(echo $CURRENT_VERSION | awk -F. '{print $1"."$2}')
-            SUB_VERSION=$(echo $CURRENT_VERSION | awk -F. '{print $3}')
-
-            if [ "$BASE_VERSION" == "$MAX_VERSION" ]; then
-              SUB_VERSION=$(printf "%03d" $((SUB_VERSION+1)))
-            else
-              BASE_VERSION=$MAX_VERSION
-              SUB_VERSION=001
-            fi
+          CURRENT=$(cat .version)
+          BASE_VERSION=$(echo ${{ steps.get-version.outputs.base_version }} | sed 's/v//')
+          if [[ -z "$CURRENT" ]]; then
+            NEW_VERSION="$BASE_VERSION.001"
           else
-            BASE_VERSION=$MAX_VERSION
-            SUB_VERSION=001
+            CUR_MAJOR=$(echo $CURRENT | cut -d. -f1)
+            CUR_MINOR=$(echo $CURRENT | cut -d. -f2)
+            CUR_PATCH=$(echo $CURRENT | cut -d. -f3)
+            if [[ "$CUR_MAJOR.$CUR_MINOR" != "$BASE_VERSION" ]]; then
+              NEW_VERSION="$BASE_VERSION.001"
+            else
+              CUR_PATCH=$(($CUR_PATCH + 1))
+              NEW_VERSION="$BASE_VERSION.$CUR_PATCH"
+            fi
           fi
-          echo "$BASE_VERSION.$SUB_VERSION" > .version
-
-      - name: Setup GitHub CLI
-        run: |
-          sudo apt-get install -y gh
-          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
-
-      - name: Commit and create a PR if there are changes
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          echo "$NEW_VERSION" > .version
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
           git add .version
-          git commit -m "Update .version file" || echo "No changes to commit"
-
-          if [ "$(git log -1 --pretty=%B)" == "Update .version file" ]; then
-            git checkout -b version-update-branch
-            git push origin version-update-branch
-
-            # Create PR using gh cli
-            gh pr create --base production --head version-update-branch --title "Update .version file" --body "Automated version bump" --repo $GITHUB_REPOSITORY --label "automated-pr" --reviewer "your_github_username"
-          fi
+          git commit -m "Update .version to $NEW_VERSION"
+          git push
 
