@@ -1,0 +1,49 @@
+name: Update Version
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  update_version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Extract max version from branch names
+        run: |
+          VERSION=$(git branch -r | grep "version/v" | sed 's/.*version\/v//g' | sort -V | tail -1)
+          echo "MAX_VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Update .version file
+        run: |
+          MAX_VERSION=$(echo $MAX_VERSION | sed 's/v//g') # remove v prefix
+          if [ -f .version ]; then
+            CURRENT_VERSION=$(cat .version)
+            BASE_VERSION=$(echo $CURRENT_VERSION | awk -F. '{print $1"."$2}')
+            SUB_VERSION=$(echo $CURRENT_VERSION | awk -F. '{print $3}')
+
+            if [ "$BASE_VERSION" == "$MAX_VERSION" ]; then
+              SUB_VERSION=$(printf "%03d" $((SUB_VERSION+1)))
+            else
+              BASE_VERSION=$MAX_VERSION
+              SUB_VERSION=001
+            fi
+          else
+            BASE_VERSION=$MAX_VERSION
+            SUB_VERSION=001
+          fi
+          echo "$BASE_VERSION.$SUB_VERSION" > .version
+
+      - name: Commit and push if there are changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .version
+          git commit -m "Update .version file" || echo "No changes to commit"
+          git push

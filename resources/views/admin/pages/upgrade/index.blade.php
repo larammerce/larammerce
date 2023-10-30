@@ -44,20 +44,25 @@
         </div>
     </div>
     @if(isset($public_key))
-        <div class="alert alert-success" role="alert">
-            <h4 class="alert-heading">بسیار عالی!</h4>
-            <p>تنظیمات با موفقیت ذخیره شدند، حالا باید کلید عمومی زیر را کپی کنید و در ریپازیتوری گیت خود قرار دهید تا
-                این سرور دسترسی‌های لازم برای اتصال به سرور گیت را داشته باشد.</p>
-            <hr>
-            <p class="mb-0">لطفا دقت کنید که حتما این کد را کپی کنید، چون در صورت خروج از این صفحه دیگر به آن دسترسی
-                ندارید.</p>
-        </div>
-        <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
-            <span class="label">کلید پابلیک </span>
-            <textarea act="tag" class="form-control input-sm" name="fields"
-                      data-field-name="title"
-                      rows="15" dir="ltr"
-                      data-container=".form-layout-container">{{$public_key}}</textarea>
+        <div class="col-md-12">
+            <div class="alert alert-success" role="alert">
+                <h4 class="alert-heading">بسیار عالی!</h4>
+                <p>تنظیمات با موفقیت ذخیره شدند، حالا باید کلید عمومی زیر را کپی کنید و در ریپازیتوری گیت خود قرار دهید
+                    تا
+                    این سرور دسترسی‌های لازم برای اتصال به سرور گیت را داشته باشد.
+                </p>
+                <hr>
+                <p class="mb-0">لطفا دقت کنید که حتما این کد را کپی کنید، چون در صورت خروج از این صفحه دیگر به آن دسترسی
+                    ندارید.
+                </p>
+            </div>
+            <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                <span class="label">کلید پابلیک </span>
+                <textarea act="tag" class="form-control input-sm" name="fields"
+                          data-field-name="title"
+                          rows="15" dir="ltr"
+                          data-container=".form-layout-container">{{$public_key}}</textarea>
+            </div>
         </div>
     @endif
 
