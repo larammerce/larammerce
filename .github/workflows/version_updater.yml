@@ -45,19 +45,28 @@ jobs:
 
           # Check if this is a version branch or the production branch
           if [[ $BRANCH_NAME == version/v* ]]; then
-            BASE_VERSION=${BRANCH_NAME/version\/v/}
-            if [[ ! -f ".version" ]]; then
-              echo "::set-output name=new_version::${BASE_VERSION}.001"
-            else
-              CUR_PATCH=$(cat .version | cut -d. -f3)
-              CUR_PATCH=$(printf "%03d" $(($CUR_PATCH + 1)))
-              echo "::set-output name=new_version::${BASE_VERSION}.$CUR_PATCH"
-            fi
+          BASE_VERSION=${BRANCH_NAME#version/v}
+          if [[ ! -f ".version" ]]; then
+          echo "::set-output name=new_version::${BASE_VERSION}.001"
           else
-            VERSION=$(git branch -r | grep 'version/v' | sed 's/.*version\///' | sort -V | tail -n 1)
-            BASE_MAJOR=$(echo $VERSION | cut -d. -f1 | sed 's/v//')
-            BASE_MINOR=$(printf "%02d" $(($(echo $VERSION | cut -d. -f2) + 1)))
-            echo "::set-output name=new_version::${BASE_MAJOR}.${BASE_MINOR}.001"
+          CURRENT_VERSION=$(cat .version)
+          CUR_MAJOR=$(echo $CURRENT_VERSION | cut -d. -f1)
+          CUR_MINOR=$(echo $CURRENT_VERSION | cut -d. -f2)
+          CUR_PATCH=$(echo $CURRENT_VERSION | cut -d. -f3)
+
+          # Check if current major.minor from .version file matches the branch's version
+          if [[ "$CUR_MAJOR.$CUR_MINOR" == "$BASE_VERSION" ]]; then
+          CUR_PATCH=$(printf "%03d" $(($CUR_PATCH + 1)))
+          echo "::set-output name=new_version::${BASE_VERSION}.$CUR_PATCH"
+          else
+          echo "::set-output name=new_version::${BASE_VERSION}.001"
+          fi
+          fi
+          else
+          VERSION=$(git branch -r | grep 'version/v' | sed 's/.*version\///' | sort -V | tail -n 1)
+          BASE_MAJOR=$(echo $VERSION | cut -d. -f1 | sed 's/v//')
+          BASE_MINOR=$(printf "%02d" $(($(echo $VERSION | cut -d. -f2) + 1)))
+          echo "::set-output name=new_version::${BASE_MAJOR}.${BASE_MINOR}.001"
           fi
 
       - name: Write and update .version file
