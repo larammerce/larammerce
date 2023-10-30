@@ -8,6 +8,7 @@ const mix = require('laravel-mix');
  | Mix provides a clean, fluent API for defining some Webpack build steps
  | for your Laravel application. By default, we are compiling the Sass
  | file for the application as well as bundling up all the JS files.
+ | Add a comment to see if the versioning works well or not.
  |
  */
 
