@@ -135,7 +135,12 @@
         </ul>
     </div>
     <div class="explore-map col-md-2 hidden-sm hidden-xs">
-        @include('admin.templates.explore.map')
+        <div class="explore-map-scroll-container">
+            @include('admin.templates.explore.map')
+        </div>
+        <div class="version-container">
+            نسخه: {{lm_get_current_version()}}
+        </div>
     </div>
     <div class="explore-view-container col-md-10 col-sm-12 col-xs-12">
         @yield('main_content')

@@ -61,8 +61,7 @@ use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 if (!function_exists("unparse_url")) {
-    function unparse_url(array $parsed_url, array $ommit = []): string
-    {
+    function unparse_url(array $parsed_url, array $ommit = []): string {
         $url = '';
 
         $p = array();
@@ -98,8 +97,7 @@ if (!function_exists("unparse_url")) {
 }
 
 if (!function_exists("get_all_extras_percentage")) {
-    function get_product_all_extras_percentage(Product $product = null): float
-    {
+    function get_product_all_extras_percentage(Product $product = null): float {
         /** @var NewInvoiceService $new_invoice_service */
         $new_invoice_service = app(NewInvoiceService::class);
         return $new_invoice_service->getProductAllExtrasPercentage($product);
@@ -107,8 +105,7 @@ if (!function_exists("get_all_extras_percentage")) {
 }
 
 if (!function_exists("locale_url")) {
-    function locale_url(string $normal_url): string
-    {
+    function locale_url(string $normal_url): string {
         if (count(config("translation.locales")) <= 1)
             return $normal_url;
 
@@ -119,24 +116,21 @@ if (!function_exists("locale_url")) {
 }
 
 if (!function_exists("lm_route")) {
-    function lm_route($name, $parameters = [], $absolute = true): string
-    {
+    function lm_route($name, $parameters = [], $absolute = true): string {
         $route_result = route($name, $parameters, $absolute);
         return locale_url($route_result);
     }
 }
 
 if (!function_exists("lm_url")) {
-    function lm_url($path = null, $parameters = [], $secure = null): string
-    {
+    function lm_url($path = null, $parameters = [], $secure = null): string {
         $url_result = url($path, $parameters, $secure);
         return locale_url($url_result);
     }
 }
 
 if (!function_exists("get_identity")) {
-    function get_identity(): array
-    {
+    function get_identity(): array {
         $default = config("cms.identity.default");
         return config("cms.identity.$default", []);
     }
@@ -144,16 +138,14 @@ if (!function_exists("get_identity")) {
 
 //Blade Directive
 if (!function_exists('role_input')) {
-    function role_input(BaseModel $model, $input): string
-    {
+    function role_input(BaseModel $model, $input): string {
         return $model->isInputAllowed($input) ? "" : "not-allowed";
     }
 }
 
 //Blade Directive
 if (!function_exists('shorten_text')) {
-    function shorten_text($text, $wordsCount = 75)
-    {
+    function shorten_text($text, $wordsCount = 75) {
         $textParts = explode(' ', strip_tags($text));
         if (count(is_countable($textParts) ? $textParts : []) <= $wordsCount)
             return $text;
@@ -163,8 +155,7 @@ if (!function_exists('shorten_text')) {
 
 //TODO: must be moved to a private helpers file.
 if (!function_exists('get_unshared_content')) {
-    function get_unshared_content(string $identifier, WebPage $web_page): string
-    {
+    function get_unshared_content(string $identifier, WebPage $web_page): string {
         $data = unserialize($web_page->data);
         if ($data != '' and $data != null and isset($data[$identifier]))
             return $data[$identifier]->getContent();
@@ -177,8 +168,7 @@ if (!function_exists('get_gallery')) {
      * @param string $galleryName
      * @return bool|Gallery
      */
-    function get_gallery(string $galleryName)
-    {
+    function get_gallery(string $galleryName) {
         $result = Gallery::where("identifier", $galleryName)->first();
         if ($result != null)
             return $result;
@@ -195,8 +185,7 @@ if (!function_exists('get_gallery_items')) {
      * @return GalleryItem[]
      */
     function get_gallery_items(string $gallery_name, int $count = -1,
-                               bool   $random_select = false)
-    {
+                               bool   $random_select = false) {
         $gallery = false;
         if (DetectService::isMobile())
             $gallery = get_gallery($gallery_name . "_mobile");
@@ -223,15 +212,13 @@ if (!function_exists('get_locale')) {
      * this function returns the current locale of application
      * @return string
      */
-    function get_locale(): string
-    {
+    function get_locale(): string {
         return app()->getLocale();
     }
 }
 
 if (!function_exists('get_user')) {
-    function get_user(string $guard = null): bool|Authenticatable|null
-    {
+    function get_user(string $guard = null): bool|Authenticatable|null {
         if (auth($guard)->check()) {
             if (!auth('web_eloquent')->check()) {
                 $user = User::getEloquentObject(auth($guard)->user());
@@ -244,8 +231,7 @@ if (!function_exists('get_user')) {
 }
 
 if (!function_exists('get_customer_user')) {
-    function get_customer_user(string $guard = null): bool|CustomerUser
-    {
+    function get_customer_user(string $guard = null): bool|CustomerUser {
         if (auth($guard)->check() and get_user($guard)?->is_customer_user)
             return get_user($guard)?->customerUser;
         return false;
@@ -253,8 +239,7 @@ if (!function_exists('get_customer_user')) {
 }
 
 if (!function_exists('get_customer_legal_info')) {
-    function get_customer_legal_info(): bool|CustomerUserLegalInfo
-    {
+    function get_customer_legal_info(): bool|CustomerUserLegalInfo {
         $customer = get_customer_user();
         if ($customer)
             return $customer->legalInfo;
@@ -263,8 +248,7 @@ if (!function_exists('get_customer_legal_info')) {
 }
 
 if (!function_exists('customer_need_list_exists')) {
-    function customer_need_list_exist(Product $product): bool
-    {
+    function customer_need_list_exist(Product $product): bool {
         if (!isset($product->is_in_need_list)) {
             try {
                 $product->is_in_need_list = get_customer_user()->needList->contains($product->id);
@@ -278,8 +262,7 @@ if (!function_exists('customer_need_list_exists')) {
 }
 
 if (!function_exists('customer_cart_count')) {
-    function customer_cart_count(): int
-    {
+    function customer_cart_count(): int {
         $customer = get_customer_user();
         if ($customer !== false) {
             return $customer->cartRows()->count();
@@ -290,8 +273,7 @@ if (!function_exists('customer_cart_count')) {
 }
 
 if (!function_exists('pending_invoices_count')) {
-    function pending_invoices_count(): bool|int
-    {
+    function pending_invoices_count(): bool|int {
         //TODO: I thinks this should be a model scope.
         $customer = get_customer_user();
         if ($customer !== false) {
@@ -306,8 +288,7 @@ if (!function_exists('pending_invoices_count')) {
 }
 
 if (!function_exists('get_local_cart')) {
-    function get_local_cart(bool $full_data = false): array
-    {
+    function get_local_cart(bool $full_data = false): array {
         $cart_data = [];
         if (key_exists(env("SITE_LOCAL_CART_COOKIE_NAME"), $_COOKIE)) {
             $cart_data = json_decode($_COOKIE[env("SITE_LOCAL_CART_COOKIE_NAME")], true);
@@ -337,8 +318,7 @@ if (!function_exists('get_local_cart')) {
 
 if (!function_exists('get_system_user')) {
 
-    function get_system_user(string $guard = null): ?SystemUser
-    {
+    function get_system_user(string $guard = null): ?SystemUser {
         if (auth($guard)->check() and auth($guard)->user()->is_system_user)
             return SystemUser::where('user_id', auth($guard)->id())->first();
         return null;
@@ -351,8 +331,7 @@ if (!function_exists('get_system_users')) {
      * @param string|null $guard
      * @return SystemUser[]|bool
      */
-    function get_system_users(string $guard = null)
-    {
+    function get_system_users(string $guard = null) {
         if (auth($guard)->check() and auth($guard)->user()->is_system_user)
             return SystemUser::all();
         return false;
@@ -364,8 +343,7 @@ if (!function_exists('is_customer')) {
      * @param string|null $guard
      * @return bool
      */
-    function is_customer(string $guard = null): bool
-    {
+    function is_customer(string $guard = null): bool {
         return auth($guard)->check() and auth($guard)->user()->is_customer_user;
     }
 }
@@ -374,8 +352,7 @@ if (!function_exists('app_navbar_directories')) {
     /**
      * @return mixed
      */
-    function app_navbar_directories(array $conditions = [])
-    {
+    function app_navbar_directories(array $conditions = []) {
         $tree = build_directories_tree(conditions: $conditions);
         return array_filter($tree, function ($root_item) {
             return $root_item->show_in_app_navbar;
@@ -384,8 +361,7 @@ if (!function_exists('app_navbar_directories')) {
 }
 
 if (!function_exists('navbar_directories')) {
-    function navbar_directories(array $conditions = []): array
-    {
+    function navbar_directories(array $conditions = []): array {
         $tree = build_directories_tree(conditions: $conditions);
         return array_filter($tree, function ($root_item) {
             return $root_item->show_in_navbar;
@@ -394,8 +370,7 @@ if (!function_exists('navbar_directories')) {
 }
 
 if (!function_exists('footer_directories')) {
-    function footer_directories(array $conditions = []): array
-    {
+    function footer_directories(array $conditions = []): array {
         $tree = build_directories_tree(conditions: $conditions);
         return array_filter($tree, function ($root_item) {
             return $root_item->show_in_footer;
@@ -407,15 +382,13 @@ if (!function_exists('mobile_footer_directories')) {
     /**
      * @deprecated
      */
-    function mobile_footer_directories(array $conditions = []): array
-    {
+    function mobile_footer_directories(array $conditions = []): array {
         return only_footer_directories($conditions);
     }
 }
 
 if (!function_exists('only_footer_directories')) {
-    function only_footer_directories(array $conditions = []): array
-    {
+    function only_footer_directories(array $conditions = []): array {
         $tree = build_directories_tree(conditions: $conditions);
         return array_filter($tree, function ($root_item) {
             return !$root_item->show_in_navbar and $root_item->show_in_footer;
@@ -427,8 +400,7 @@ if (!function_exists('directory_url')) {
     /**
      * @deprecated
      */
-    function directory_url(Directory $directory, bool $forMenu = false): string
-    {
+    function directory_url(Directory $directory, bool $forMenu = false): string {
         if ($forMenu and
             $directory->content_type === DirectoryType::PRODUCT and
             $directory->directories()->count() > 0)
@@ -438,8 +410,7 @@ if (!function_exists('directory_url')) {
 }
 
 if (!function_exists('is_directory_group_manual')) {
-    function is_directory_group_manual(): bool
-    {
+    function is_directory_group_manual(): bool {
         /** @var CMSSettingHelper $setting_service */
         $setting_service = app(CMSSettingHelper::class);
         return $setting_service->getCMSSettingAsBool('is_directory_group_manual');
@@ -447,8 +418,7 @@ if (!function_exists('is_directory_group_manual')) {
 }
 
 if (!function_exists('directory_make_children_groups')) {
-    function directory_make_children_groups(?Directory $directory, int $column_count): array
-    {
+    function directory_make_children_groups(?Directory $directory, int $column_count): array {
         if ($directory == null)
             return [];
 
@@ -489,8 +459,7 @@ if (!function_exists('get_product_root')) {
     /**
      * @deprecated
      */
-    function get_product_root()
-    {
+    function get_product_root() {
         return Directory::roots()->from(DirectoryType::PRODUCT)->first();
     }
 }
@@ -499,15 +468,13 @@ if (!function_exists('get_products_root_list_with_type')) {
     /**
      * @deprecated
      */
-    function get_products_root_list_with_type($data_type = null)
-    {
+    function get_products_root_list_with_type($data_type = null) {
         return Directory::roots()->from($data_type)->orderBy('priority', 'ASC')->get();
     }
 }
 
 if (!function_exists("get_directory")) {
-    function get_directory($directory_id): ?Directory
-    {
+    function get_directory($directory_id): ?Directory {
         return Directory::find($directory_id);
     }
 }
@@ -516,8 +483,7 @@ if (!function_exists('get_directory_root')) {
     /**
      * @deprecated
      */
-    function get_directory_root($data_type = null)
-    {
+    function get_directory_root($data_type = null) {
         return ($data_type != null and is_numeric($data_type)) ?
             Directory::roots()->from(DirectoryType::REAL)->where("data_type", $data_type)->first()
             : Directory::roots()->from(DirectoryType::REAL)->first();
@@ -528,8 +494,7 @@ if (!function_exists('get_directory_children_chunk')) {
     /**
      * @deprecated
      */
-    function get_directory_children_chunk($directory, $chunk)
-    {
+    function get_directory_children_chunk($directory, $chunk) {
         return $directory != null ?
             $directory->directories()->where("is_internal_link", "is", false)->with('directories')
                 ->orderBy('priority')->get()->chunk($chunk) : null;
@@ -540,8 +505,7 @@ if (!function_exists('get_directory_children')) {
     /**
      * @deprecated
      */
-    function get_directory_children($directory, $count = null)
-    {
+    function get_directory_children($directory, $count = null) {
         return $directory != null ?
             ($count != null) ? $directory->directories()->with('directories')->orderBy('priority')->take($count)->get()
                 : $directory->directories()->with('directories')->orderBy('priority')->get() : null;
@@ -552,8 +516,7 @@ if (!function_exists('get_directory_products')) {
     /**
      * @deprecated
      */
-    function get_directory_products($directory, $count = null)
-    {
+    function get_directory_products($directory, $count = null) {
         $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $directory->id, "{$count}");
         if (!Cache::tags([Product::class])->has($cache_key)) {
             Cache::tags([Product::class])->put($cache_key, $count != null ?
@@ -565,8 +528,7 @@ if (!function_exists('get_directory_products')) {
 }
 
 if (!function_exists('get_important_product_leaves')) {
-    function get_important_product_leaves(Directory $root_directory, int $count): array|Collection
-    {
+    function get_important_product_leaves(Directory $root_directory, int $count): array|Collection {
         $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $root_directory->id, "{$count}");
         if (!Cache::tags([Product::class])->has($cache_key)) {
             Cache::tags([Product::class])->put($cache_key, $root_directory->leafProducts()->mainModels()->visible()
@@ -579,8 +541,7 @@ if (!function_exists('get_important_product_leaves')) {
     }
 }
 if (!function_exists('get_visible_product_leaves')) {
-    function get_visible_product_leaves(Directory $root_directory, int $count): array|Collection
-    {
+    function get_visible_product_leaves(Directory $root_directory, int $count): array|Collection {
         $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $root_directory->id, "{$count}");
         if (!Cache::tags([Product::class])->has($cache_key)) {
             Cache::tags([Product::class])->put($cache_key, $root_directory->leafProducts()->mainModels()->visible()->isActive()
@@ -593,8 +554,7 @@ if (!function_exists('get_visible_product_leaves')) {
 }
 
 if (!function_exists('get_directory_product_leaves')) {
-    function get_directory_product_leaves(Directory $root_directory, int $count, $only_active_items = true): array|Collection
-    {
+    function get_directory_product_leaves(Directory $root_directory, int $count, $only_active_items = true): array|Collection {
         $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $root_directory->id, "{$count}");
         if (!Cache::tags([Product::class])->has($cache_key)) {
             $result = $root_directory->leafProducts()->mainModels()->visible();
@@ -608,8 +568,7 @@ if (!function_exists('get_directory_product_leaves')) {
 }
 
 if (!function_exists('latest_products')) {
-    function latest_products(int $count = 8): array|Collection
-    {
+    function latest_products(int $count = 8): array|Collection {
         $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], "{$count}");
         if (!Cache::tags([Product::class])->has($cache_key)) {
             if ($count > 0) {
@@ -627,8 +586,7 @@ if (!function_exists('latest_products')) {
 }
 
 if (!function_exists('rated_products')) {
-    function rated_products(int $count = 8): array|Collection
-    {
+    function rated_products(int $count = 8): array|Collection {
         $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], "{$count}");
         if (!Cache::tags([Product::class])->has($cache_key)) {
             if ($count > 0) {
@@ -642,8 +600,7 @@ if (!function_exists('rated_products')) {
 }
 
 if (!function_exists('custom_query_products')) {
-    function custom_query_products(string $identifier): array|Collection
-    {
+    function custom_query_products(string $identifier): array|Collection {
         $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $identifier);
         if (!Cache::tags([Product::class])->has($cache_key)) {
             try {
@@ -657,8 +614,7 @@ if (!function_exists('custom_query_products')) {
 }
 
 if (!function_exists('custom_query_product_ids')) {
-    function custom_query_product_ids(string $identifier): array|Collection
-    {
+    function custom_query_product_ids(string $identifier): array|Collection {
         $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $identifier);
         if (!Cache::tags([Product::class])->has($cache_key)) {
             try {
@@ -673,8 +629,7 @@ if (!function_exists('custom_query_product_ids')) {
 }
 
 if (!function_exists('get_product_filter')) {
-    function get_product_filter(string $identifier): ProductFilter
-    {
+    function get_product_filter(string $identifier): ProductFilter {
         try {
 
             return ProductFilter::findByIdentifier($identifier);
@@ -685,8 +640,7 @@ if (!function_exists('get_product_filter')) {
 }
 
 if (!function_exists('custom_filter_products')) {
-    function custom_filter_products(string $identifier): array|Collection
-    {
+    function custom_filter_products(string $identifier): array|Collection {
         $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $identifier);
         if (!Cache::tags([Product::class])->has($cache_key)) {
             try {
@@ -701,8 +655,7 @@ if (!function_exists('custom_filter_products')) {
 }
 
 if (!function_exists('custom_filter_product_ids')) {
-    function custom_filter_product_ids(string $identifier): array|Collection
-    {
+    function custom_filter_product_ids(string $identifier): array|Collection {
         $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $identifier);
         if (!Cache::tags([Product::class])->has($cache_key)) {
             try {
@@ -717,15 +670,13 @@ if (!function_exists('custom_filter_product_ids')) {
 }
 
 if (!function_exists('get_filter_data')) {
-    function get_filter_data(array $product_ids): array
-    {
+    function get_filter_data(array $product_ids): array {
         return \App\Services\Product\ProductService::getFilterData($product_ids);
     }
 }
 
 if (!function_exists('important_products')) {
-    function important_products(int $count = 8): array|Collection
-    {
+    function important_products(int $count = 8): array|Collection {
         $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], "{$count}");
         if (!Cache::tags([Product::class])->has($cache_key)) {
             if ($count > 0) {
@@ -744,8 +695,7 @@ if (!function_exists('important_products')) {
 }
 
 if (!function_exists('get_customer_addresses')) {
-    function get_customer_addresses()
-    {
+    function get_customer_addresses() {
         return get_customer_user()->addresses;
     }
 }
@@ -754,8 +704,7 @@ if (!function_exists('get_district')) {
     /**
      * @deprecated
      */
-    function get_district(CustomerAddress $address): string
-    {
+    function get_district(CustomerAddress $address): string {
         return $address->district ? $address->district->name : '';
     }
 }
@@ -764,8 +713,7 @@ if (!function_exists('get_city')) {
     /**
      * @deprecated
      */
-    function get_city(CustomerAddress $address): string
-    {
+    function get_city(CustomerAddress $address): string {
         return $address->city ? $address->city->name : '';
     }
 }
@@ -774,8 +722,7 @@ if (!function_exists('get_state')) {
     /**
      * @deprecated
      */
-    function get_state(CustomerAddress $address): string
-    {
+    function get_state(CustomerAddress $address): string {
         return $address->state ? $address->state->name : '';
     }
 }
@@ -784,8 +731,7 @@ if (!function_exists('get_state_json_by_id')) {
     /**
      * @deprecated
      */
-    function get_state_json_by_id($id)
-    {
+    function get_state_json_by_id($id) {
         $state = State::find($id);
         return $state ? json_encode($state) : json_encode([]);
     }
@@ -795,8 +741,7 @@ if (!function_exists('get_city_json_by_id')) {
     /**
      * @deprecated
      */
-    function get_city_json_by_id($id)
-    {
+    function get_city_json_by_id($id) {
         $city = City::find($id);
         return $city ? json_encode($city) : json_encode([]);
     }
@@ -806,23 +751,20 @@ if (!function_exists('get_district_json_by_id')) {
     /**
      * @deprecated
      */
-    function get_district_json_by_id($id)
-    {
+    function get_district_json_by_id($id) {
         $district = District::find($id);
         return $district ? json_encode($district) : json_encode([]);
     }
 }
 
 if (!function_exists('get_invoices')) {
-    function get_invoices()
-    {
+    function get_invoices() {
         return get_customer_user()->invoices()->orderBy('id', 'DESC')->paginate(Invoice::getFrontPaginationCount());
     }
 }
 
 if (!function_exists('get_blog_categories')) {
-    function get_blog_categories($directory)
-    {
+    function get_blog_categories($directory) {
         if (count(is_countable($directory->directories) ? $directory->directories : []) > 0)
             return $directory->directories;
         else if ($directory->directory_id != null)
@@ -832,15 +774,13 @@ if (!function_exists('get_blog_categories')) {
 }
 
 if (!function_exists('get_popular_blog')) {
-    function get_popular_blog($count, $type)
-    {
+    function get_popular_blog($count, $type) {
         return Article::popular()->from($type)->with('directory')->take($count)->get();
     }
 }
 
 if (!function_exists('get_latest_blog')) {
-    function get_latest_blog($type, $count)
-    {
+    function get_latest_blog($type, $count) {
         if (config("wp.enabled")) {
             return WPPost::latest()->take($count)->get();
         }
@@ -849,8 +789,7 @@ if (!function_exists('get_latest_blog')) {
 }
 
 if (!function_exists('get_suggested_blog')) {
-    function get_suggested_blog($type, $count)
-    {
+    function get_suggested_blog($type, $count) {
         if (config("wp.enabled")) {
             //TODO: this algorithm should be changed for fetching suggested blog.
             return WPPost::latest()->skip(2)->take($count)->get();
@@ -860,8 +799,7 @@ if (!function_exists('get_suggested_blog')) {
 }
 
 if (!function_exists('get_system_messages')) {
-    function get_system_messages()
-    {
+    function get_system_messages() {
         try {
             $messages = SystemMessageService::getMessages();
             SystemMessageService::flushMessages();
@@ -873,15 +811,13 @@ if (!function_exists('get_system_messages')) {
 }
 
 if (!function_exists('has_system_messages')) {
-    function has_system_messages(): bool
-    {
+    function has_system_messages(): bool {
         return SystemMessageService::hasMessages();
     }
 }
 
 if (!function_exists('get_months')) {
-    function get_months(): array
-    {
+    function get_months(): array {
         return [
             "فروردین",
             "اردیبهشت",
@@ -900,8 +836,7 @@ if (!function_exists('get_months')) {
 }
 
 if (!function_exists('get_years')) {
-    function get_years(): array
-    {
+    function get_years(): array {
         $start_year = 1300;
         $end_year = JDateTime::date('Y', time(), false);
         return range($start_year, $end_year);
@@ -909,8 +844,7 @@ if (!function_exists('get_years')) {
 }
 
 if (!function_exists('hide_number')) {
-    function hide_number($number)
-    {
+    function hide_number($number) {
         for ($i = 3; $i < strlen($number) - 3; $i++)
             $number[$i] = '*';
         return $number;
@@ -918,8 +852,7 @@ if (!function_exists('hide_number')) {
 }
 
 if (!function_exists('hide_text')) {
-    function hide_text($text): string
-    {
+    function hide_text($text): string {
         return substr($text, 0, 4) . "*******" . substr($text, strlen($text) - 4);
     }
 }
@@ -928,22 +861,19 @@ if (!function_exists('get_payment_drivers')) {
     /**
      * @throws \App\Utils\PaymentManager\Exceptions\PaymentInvalidDriverException
      */
-    function get_payment_drivers()
-    {
+    function get_payment_drivers() {
         return Provider::getEnabledDrivers(true);
     }
 }
 
 if (!function_exists('is_default_payment_driver')) {
-    function is_default_payment_driver($driver): bool
-    {
+    function is_default_payment_driver($driver): bool {
         return Provider::isDefaultDriver($driver);
     }
 }
 
 if (!function_exists('get_disabled_setting_appliances')) {
-    function get_disabled_setting_appliances(): array
-    {
+    function get_disabled_setting_appliances(): array {
         $disabled_setting_appliances = env('DISABLED_APPLIANCES', '');
         if (strlen($disabled_setting_appliances) == 0)
             return [];
@@ -955,15 +885,13 @@ if (!function_exists('is_selected')) {
     /**
      * @deprecated
      */
-    function is_selected(Directory $directory): bool
-    {
+    function is_selected(Directory $directory): bool {
         return Request::segment(1) == $directory->url_part;
     }
 }
 
 if (!function_exists('get_configurations')) {
-    function get_configurations($needsJson = false, $prefix = "")
-    {
+    function get_configurations($needsJson = false, $prefix = "") {
         $prefixLength = strlen($prefix);
         $envFileAddress = public_path() . "/../.env";
         $envFile = fopen($envFileAddress, "r");
@@ -992,15 +920,13 @@ if (!function_exists('get_configurations')) {
 }
 
 if (!function_exists('get_searched_products')) {
-    function get_searched_products()
-    {
+    function get_searched_products() {
         return Product::search(request('query'), 1)->mainModels()->visible()->get();
     }
 }
 
 if (!function_exists('get_digits')) {
-    function get_digits($lang)
-    {
+    function get_digits($lang) {
         $digits = [
             "fa" => explode(",", "۱,۲,۳,۴,۵,۶,۷,۸,۹,۰"),
             "en" => explode(",", "1,2,3,4,5,6,7,8,9,0")
@@ -1018,8 +944,7 @@ if (!function_exists('convert_digits')) {
      * @param string $to
      * @return string
      */
-    function convert_digits($number, string $from = "en", string $to = "fa"): string
-    {
+    function convert_digits($number, string $from = "en", string $to = "fa"): string {
         $fromList = get_digits($from);
         $toList = get_digits($to);
         $number = "{$number}";
@@ -1036,8 +961,7 @@ if (!function_exists('format_price')) {
      * @param string $lang
      * @return string
      */
-    function format_price($price, string $lang = "fa"): string
-    {
+    function format_price($price, string $lang = "fa"): string {
         $price = intval($price);
         $separator = $lang == "fa" ? "،" : ",";
         $price = number_format($price, 0, '.', $separator);
@@ -1048,8 +972,7 @@ if (!function_exists('format_price')) {
 }
 
 if (!function_exists('is_paste_possible')) {
-    function is_paste_possible($directory): bool
-    {
+    function is_paste_possible($directory): bool {
         try {
             return ClipBoardService::isPastePossible($directory);
         } catch (EmptyClipBoardException|InvalidTypeException $e) {
@@ -1059,30 +982,26 @@ if (!function_exists('is_paste_possible')) {
 }
 
 if (!function_exists('get_product_color_models')) {
-    function get_product_color_models(Product $product)
-    {
+    function get_product_color_models(Product $product) {
         return Product::models($product, false)
             ->orderBy('id', 'DESC')->groupBy('color_code')->get();
     }
 }
 
 if (!function_exists('get_product_last_color')) {
-    function get_product_last_color(Product $product): Color
-    {
+    function get_product_last_color(Product $product): Color {
         return $product->colors()->orderBy('id', 'DESC')->first();
     }
 }
 
 if (!function_exists('get_product_accessories')) {
-    function get_product_accessories(Product $product)
-    {
+    function get_product_accessories(Product $product) {
         return $product->accessories()->mainModels()->visible()->get();
     }
 }
 
 if (!function_exists('get_product_related_articles')) {
-    function get_product_related_articles(Product $product, $type, int $count = 3)
-    {
+    function get_product_related_articles(Product $product, $type, int $count = 3) {
         $tags = $product->tags()->get()->pluck("id");
         return Article::from($type)->whereHas("tags", function ($query) use ($tags) {
             $query->whereIn("id", $tags);
@@ -1095,8 +1014,7 @@ if (!function_exists('get_product_related_products')) {
      * @param int $count
      * @return mixed
      */
-    function get_product_related_products(Product $product, int $count = 5)
-    {
+    function get_product_related_products(Product $product, int $count = 5) {
         $directory = $product->directory;
         $leafProducts = new Collection();
         $products = $directory->products()->mainModels()->visible()
@@ -1118,8 +1036,7 @@ if (!function_exists('get_product_similar_products')) {
      * @param int $key_id
      * @return Product[]
      */
-    function get_product_similar_products(Product $product, int $count = 5, int $key_id = 0)
-    {
+    function get_product_similar_products(Product $product, int $count = 5, int $key_id = 0) {
         if ($key_id === 0) {
             $key_id = $product->attributeKeys()->where("is_sortable", true)
                 ->pluck("p_structure_attr_keys.id")->get(0);
@@ -1167,8 +1084,7 @@ if (!function_exists('get_product_similar_products')) {
 }
 
 if (!function_exists('get_related_products_with_directory_level')) {
-    function get_related_products_with_directory_level(Product $product, int $count = 5, int $level = 1)
-    {
+    function get_related_products_with_directory_level(Product $product, int $count = 5, int $level = 1) {
         $directory = $product->directory;
         if ($level > 1) {
             while ($level != 1) {
@@ -1181,8 +1097,7 @@ if (!function_exists('get_related_products_with_directory_level')) {
     }
 }
 if (!function_exists('get_product_attributes')) {
-    function get_product_attributes(Product $product = null)
-    {
+    function get_product_attributes(Product $product = null) {
         if ($product != null) {
             $attributes = PAttr::getProductAttributes($product);
             return $attributes['attributes'];
@@ -1196,8 +1111,7 @@ if (!function_exists('get_product_most_privileged_key_attributes')) {
     /**
      * @deprecated
      */
-    function get_product_most_privileged_key_attributes(int $count = 9): array
-    {
+    function get_product_most_privileged_key_attributes(int $count = 9): array {
         $id = PStructureAttrKey::orderBy('priority', 'DESC')->pluck('id')->first();
         $attributeValues = PStructureAttrValue::with('key')->where('p_structure_attr_key_id', $id)
             ->inRandomOrder()
@@ -1207,15 +1121,13 @@ if (!function_exists('get_product_most_privileged_key_attributes')) {
 }
 
 if (!function_exists('get_product_by_id')) {
-    function get_product_by_id($id): ?Product
-    {
+    function get_product_by_id($id): ?Product {
         return ($id != null) ? Product::find($id) : null;
     }
 }
 
 if (!function_exists('get_article_related_products')) {
-    function get_article_related_products(Article $article, int $count = 3)
-    {
+    function get_article_related_products(Article $article, int $count = 3) {
         $tags = $article->tags()->get()->pluck('id');
         return Product::mainModels()->visible()->whereHas('tags', function ($query) use ($tags) {
             $query->whereIn('id', $tags);
@@ -1224,8 +1136,7 @@ if (!function_exists('get_article_related_products')) {
 }
 
 if (!function_exists('get_article_related_articles')) {
-    function get_article_related_articles(Article $article, int $count = 4)
-    {
+    function get_article_related_articles(Article $article, int $count = 4) {
         return $article->directory->articles()->latest()->except($article->id)->take($count)->get();
     }
 }
@@ -1234,15 +1145,13 @@ if (!function_exists('get_experts')) {
     /**
      * @deprecated
      */
-    function get_experts(int $count = 4)
-    {
+    function get_experts(int $count = 4) {
         return SystemUser::where('is_expert', true)->take($count)->get();
     }
 }
 
 if (!function_exists('recaptcha_enabled')) {
-    function recaptcha_enabled(): bool
-    {
+    function recaptcha_enabled(): bool {
         return !str_contains(env("TEMPORARILY_DISABLED_RULES", ""), "g-recaptcha-response");
     }
 }
@@ -1252,8 +1161,7 @@ if (!function_exists('get_same_models_products')) {
      * @param $product
      * @return array
      */
-    function get_same_models_products($product): array
-    {
+    function get_same_models_products($product): array {
         $products = Product::models($product, false)
             ->with('productStructure', 'images', 'rates')
             ->get();
@@ -1263,8 +1171,7 @@ if (!function_exists('get_same_models_products')) {
 
 
 if (!function_exists('check_cart')) {
-    function check_cart($product_id): bool
-    {
+    function check_cart($product_id): bool {
         $customer = get_customer_user();
         if ($customer !== false) {
             return $customer->cartRows()->where("product_id", $product_id)->count() > 0;
@@ -1281,8 +1188,7 @@ if (!function_exists('check_cart')) {
 }
 
 if (!function_exists('get_cart_information')) {
-    function get_cart_information($product_id)
-    {
+    function get_cart_information($product_id) {
         $customer = get_customer_user();
         $selected_row = null;
         if ($customer !== false) {
@@ -1303,8 +1209,7 @@ if (!function_exists('get_cart_information')) {
 }
 
 if (!function_exists('get_cart')) {
-    function get_cart(): \Illuminate\Database\Eloquent\Collection|array
-    {
+    function get_cart(): \Illuminate\Database\Eloquent\Collection|array {
         $customer = get_customer_user();
         if ($customer !== false) {
             $cart_rows = $customer->cartRows()->with('product')->orderBy('id', 'DESC')->get();
@@ -1319,8 +1224,7 @@ if (!function_exists('get_breadcrumb')) {
     /**
      * @deprecated
      */
-    function get_breadcrumb(Directory $directory): string
-    {
+    function get_breadcrumb(Directory $directory): string {
         if (!(isset($directory->parentDirectory)))
             return '<li class="active">' . $directory->title . '</li>';
         else {
@@ -1331,8 +1235,7 @@ if (!function_exists('get_breadcrumb')) {
 }
 
 if (!function_exists('get_minimum_purchase_free_shipment')) {
-    function get_minimum_purchase_free_shipment()
-    {
+    function get_minimum_purchase_free_shipment() {
         try {
             return ShipmentCostService::getRecord()->getMinimumPurchaseFreeShipment();
         } catch (Exception $e) {
@@ -1342,8 +1245,7 @@ if (!function_exists('get_minimum_purchase_free_shipment')) {
     }
 }
 if (!function_exists('product_disable_on_min')) {
-    function product_disable_on_min(): ?string
-    {
+    function product_disable_on_min(): ?string {
         /** @var CMSSettingHelper $setting_service */
         $setting_service = app(CMSSettingHelper::class);
         return $setting_service->getCMSSettingAsBool(CMSSettingKey::DISABLE_PRODUCT_ON_MIN);
@@ -1354,8 +1256,7 @@ if (!function_exists('get_state_deactivate_product')) {
     /**
      * @deprecated
      */
-    function get_state_deactivate_product($product)
-    {
+    function get_state_deactivate_product($product) {
         return $product->inaccessibility_type;
     }
 }
@@ -1364,8 +1265,7 @@ if (!function_exists('get_inquiry_call_number')) {
     /**
      * @deprecated
      */
-    function get_inquiry_call_number(): string
-    {
+    function get_inquiry_call_number(): string {
         /** @var \App\Helpers\CMSSettingHelper $setting_service */
         $setting_service = app(CMSSettingHelper::class);
         return $setting_service->getCMSSettingAsString(CMSSettingKey::INQUIRY_CALL_NUMBER);
@@ -1373,8 +1273,7 @@ if (!function_exists('get_inquiry_call_number')) {
 }
 
 if (!function_exists('customer_can_edit_profile')) {
-    function customer_can_edit_profile(): bool
-    {
+    function customer_can_edit_profile(): bool {
         /** @var \App\Helpers\CMSSettingHelper $setting_service */
         $setting_service = app(CMSSettingHelper::class);
         return $setting_service->getCMSSettingAsBool(CMSSettingKey::CUSTOMER_CAN_EDIT_PROFILE);
@@ -1382,8 +1281,7 @@ if (!function_exists('customer_can_edit_profile')) {
 }
 
 if (!function_exists('get_root_directory_per_directory')) {
-    function get_root_directory_per_directory(Directory $directory)
-    {
+    function get_root_directory_per_directory(Directory $directory) {
         foreach ($directory->getParentDirectories() as $dir) {
             if ($dir->directory_id == null)
                 return $dir;
@@ -1398,8 +1296,7 @@ if (!function_exists('h_view')) {
      * @param array $data
      * @return Factory|Application|View
      */
-    function h_view($template = null, array $data = [])
-    {
+    function h_view($template = null, array $data = []) {
         if (DetectService::isMobile() and view()->exists($template . "_mobile"))
             $template = $template . "_mobile";
         elseif (request()->has("app") and request("app") and view()->exists($template . "_app"))
@@ -1414,22 +1311,19 @@ if (!function_exists('h_view')) {
 }
 
 if (!function_exists("is_multi_lang")) {
-    function is_multi_lang(): bool
-    {
+    function is_multi_lang(): bool {
         return \App\Utils\CMS\Setting\Language\LanguageSettingService::isMultiLangSystem();
     }
 }
 
 if (!function_exists("is_rtl")) {
-    function is_rtl()
-    {
+    function is_rtl() {
         return \App\Utils\CMS\Setting\Language\LanguageSettingService::isRTLSystem();
     }
 }
 
 if (!function_exists('get_cms_setting')) {
-    function get_cms_setting(string $key): string
-    {
+    function get_cms_setting(string $key): string {
         /** @var CMSSettingHelper $setting_service */
         $setting_service = app(CMSSettingHelper::class);
         return $setting_service->getCMSSettingAsString($key);
@@ -1437,8 +1331,7 @@ if (!function_exists('get_cms_setting')) {
 }
 
 if (!function_exists('get_template_views')) {
-    function get_template_views(): array
-    {
+    function get_template_views(): array {
         return array_map(function ($blade_name) {
             return str_replace(".blade.php", "", $blade_name);
         }, \App\Utils\CMS\Template\TemplateService::getOriginalBlades(true));
@@ -1446,8 +1339,7 @@ if (!function_exists('get_template_views')) {
 }
 
 if (!function_exists("get_current_customer_location_title")) {
-    function get_current_customer_location_title(): string
-    {
+    function get_current_customer_location_title(): string {
         $customer_location = \App\Utils\CMS\Setting\CustomerLocation\CustomerLocationService::getRecord();
         if ($customer_location != null)
             return "{$customer_location->getState()->name}، {$customer_location->getCity()->name}";
@@ -1456,8 +1348,7 @@ if (!function_exists("get_current_customer_location_title")) {
 }
 
 if (!function_exists("get_current_customer_location_data")) {
-    function get_current_customer_location_data(): ?array
-    {
+    function get_current_customer_location_data(): ?array {
         $customer_location = \App\Utils\CMS\Setting\CustomerLocation\CustomerLocationService::getRecord("");
         if ($customer_location != null)
             return [
@@ -1469,15 +1360,13 @@ if (!function_exists("get_current_customer_location_data")) {
 }
 
 if (!function_exists("get_customer_meta_categories")) {
-    function get_customer_meta_categories(): \Illuminate\Database\Eloquent\Collection|array
-    {
+    function get_customer_meta_categories(): \Illuminate\Database\Eloquent\Collection|array {
         return CustomerMetaCategory::main()->get();
     }
 }
 
 if (!function_exists("cmc_get_options")) {
-    function cmc_get_options($identifier, $customer_meta_category): array
-    {
+    function cmc_get_options($identifier, $customer_meta_category): array {
         try {
             return explode(";", cmc_get_content($identifier, $customer_meta_category));
         } catch (Exception $e) {
@@ -1487,8 +1376,7 @@ if (!function_exists("cmc_get_options")) {
 }
 
 if (!function_exists("cmc_get_content")) {
-    function cmc_get_content($identifier, $customer_meta_category): string
-    {
+    function cmc_get_content($identifier, $customer_meta_category): string {
         try {
             return (Arr::first($customer_meta_category->data_object, function ($iter_item) use ($identifier) {
                 return $iter_item->input_identifier === $identifier;
@@ -1500,8 +1388,7 @@ if (!function_exists("cmc_get_content")) {
 }
 
 if (!function_exists("get_shipment_cost")) {
-    function get_shipment_cost(Invoice $invoice, $state_id = 0): int
-    {
+    function get_shipment_cost(Invoice $invoice, $state_id = 0): int {
         if ($state_id !== 0)
             $invoice->state_id = $state_id;
         return $invoice->calculateShipmentCost();
@@ -1509,15 +1396,13 @@ if (!function_exists("get_shipment_cost")) {
 }
 
 if (!function_exists("build_directories_tree")) {
-    function build_directories_tree(?Directory $root = null, array $conditions = [], array $order = []): array
-    {
+    function build_directories_tree(?Directory $root = null, array $conditions = [], array $order = []): array {
         return \App\Services\Directory\DirectoryService::buildDirectoriesTree($root, $conditions, $order);
     }
 }
 
 if (!function_exists("clean_cart_cookie")) {
-    function clean_cart_cookie()
-    {
+    function clean_cart_cookie() {
         CartProvider::cleanCookie();
     }
 }
@@ -1526,8 +1411,7 @@ if (!function_exists("get_structure_sort_title")) {
     /**
      * @param PStructureAttrKey[] $keys
      */
-    function get_structure_sort_title($keys)
-    {
+    function get_structure_sort_title($keys) {
         $sort_data_title = false;
         foreach ($keys as $key) {
             if ($key->is_sortable) {
@@ -1543,8 +1427,7 @@ if (!function_exists("get_structure_sort_title")) {
 }
 
 if (!function_exists("get_logistics_schedule")) {
-    function get_logistics_schedule(bool $contains_disabled = true)
-    {
+    function get_logistics_schedule(bool $contains_disabled = true) {
         $data = LogisticService::getPublicTableCells();
         if (!$contains_disabled) {
             foreach ($data as $day_index => $day) {
@@ -1561,64 +1444,55 @@ if (!function_exists("get_logistics_schedule")) {
 }
 
 if (!function_exists("day_of_week")) {
-    function day_of_week(int $diff)
-    {
+    function day_of_week(int $diff) {
         return \App\Utils\Jalali\JDate::forge(\Illuminate\Support\Carbon::now()->addDay($diff))->format("%A");
     }
 }
 
 if (!function_exists("get_current_formal_date")) {
-    function get_current_formal_date()
-    {
+    function get_current_formal_date() {
         return \App\Utils\Common\TimeService::getCurrentFormalDate();
     }
 }
 
 if (!function_exists("get_current_date")) {
-    function get_current_date()
-    {
+    function get_current_date() {
         return \App\Utils\Common\TimeService::getCurrentDate();
     }
 }
 
 if (!function_exists("get_max_transaction_amount")) {
-    function get_max_transaction_amount(): int
-    {
+    function get_max_transaction_amount(): int {
         return \App\Utils\PaymentManager\ConfigProvider::getMaxTransactionAmount();
     }
 }
 
 if (!function_exists("representative_get_options")) {
-    function representative_get_options(): array
-    {
+    function representative_get_options(): array {
         return \App\Utils\CMS\Setting\Representative\RepresentativeSettingService::getOptions();
     }
 }
 
 if (!function_exists("representative_is_enabled")) {
-    function representative_is_enabled(): bool
-    {
+    function representative_is_enabled(): bool {
         return \App\Utils\CMS\Setting\Representative\RepresentativeSettingService::isEnabled();
     }
 }
 
 if (!function_exists("representative_is_forced")) {
-    function representative_is_forced(): bool
-    {
+    function representative_is_forced(): bool {
         return \App\Utils\CMS\Setting\Representative\RepresentativeSettingService::isForced();
     }
 }
 
 if (!function_exists("representative_is_customer_representative_enabled")) {
-    function representative_is_customer_representative_enabled(): bool
-    {
+    function representative_is_customer_representative_enabled(): bool {
         return \App\Utils\CMS\Setting\Representative\RepresentativeSettingService::isCustomerRepresentativeEnabled();
     }
 }
 
 if (!function_exists("get_product_model_options_multi_level")) {
-    function get_product_model_options_multi_level(Product $product): array
-    {
+    function get_product_model_options_multi_level(Product $product): array {
         return \App\Services\Product\ProductModelService::getProductModelOptionsMultiLevel($product);
     }
 }
@@ -1629,8 +1503,7 @@ if (!function_exists('get_image_ratio')) {
      * @param string $category
      * @return string
      */
-    function get_image_ratio($category)
-    {
+    function get_image_ratio($category) {
         return config("cms.images.{$category}.ratio");
     }
 }
@@ -1641,8 +1514,7 @@ if (!function_exists('get_image_min_width')) {
      * @param string $category
      * @return integer
      */
-    function get_image_min_width($category)
-    {
+    function get_image_min_width($category) {
         return config("cms.images.{$category}.original.width");
     }
 }
@@ -1653,8 +1525,7 @@ if (!function_exists('get_image_min_height')) {
      * @param string $category
      * @return integer
      */
-    function get_image_min_height($category)
-    {
+    function get_image_min_height($category) {
         return config("cms.images.{$category}.original.height");
     }
 }
@@ -1665,43 +1536,37 @@ if (!function_exists('get_video_max_size')) {
      * @param string $category
      * @return integer
      */
-    function get_file_max_size($category)
-    {
+    function get_file_max_size($category) {
         return config("cms.files.{$category}.original.size");
     }
 }
 
 if (!function_exists('get_article_type')) {
-    function get_article_type($type)
-    {
+    function get_article_type($type) {
         return config('cms.template.article-types.' . $type);
     }
 }
 
 if (!function_exists('get_product_type')) {
-    function get_product_type($type)
-    {
+    function get_product_type($type) {
         return config('cms.template.product-types.' . $type);
     }
 }
 
 if (!function_exists('get_article_types')) {
-    function get_article_types()
-    {
+    function get_article_types() {
         return config('cms.template.article-types');
     }
 }
 
 if (!function_exists('get_product_types')) {
-    function get_product_types()
-    {
+    function get_product_types() {
         return config('cms.template.product-types');
     }
 }
 
 if (!function_exists('get_product_inaccessibility_types')) {
-    function get_product_inaccessibility_types()
-    {
+    function get_product_inaccessibility_types() {
         return config('cms.template.product-inaccessibility-types');
     }
 }
@@ -1711,8 +1576,7 @@ if (!function_exists('get_article_list_blade')) {
      * @param \App\Models\Directory $directory
      * @return mixed
      */
-    function get_article_list_blade($directory)
-    {
+    function get_article_list_blade($directory) {
         $content_type = get_article_type($directory->data_type)['title'];
         if ($directory->directory_id == null) {
             $category_blade = "public.{$content_type}-categories";
@@ -1724,23 +1588,20 @@ if (!function_exists('get_article_list_blade')) {
 }
 
 if (!function_exists('get_article_single_blade')) {
-    function get_article_single_blade($type)
-    {
+    function get_article_single_blade($type) {
         $content_type = get_article_type($type)['title'];
         return "public.{$content_type}-single";
     }
 }
 
 if (!function_exists('url_encode')) {
-    function url_encode($string)
-    {
+    function url_encode($string) {
         return str_replace(" ", "-", trim($string));
     }
 }
 
 if (!function_exists('email_encode')) {
-    function email_encode($email)
-    {
+    function email_encode($email) {
         $email = strtolower($email);
         $email = str_replace("@", "AT", $email);
         $email = str_replace(".", "DOT", $email);
@@ -1750,8 +1611,7 @@ if (!function_exists('email_encode')) {
 
 
 if (!function_exists('email_decode')) {
-    function email_decode($email)
-    {
+    function email_decode($email) {
         $email = str_replace("AT", "@", $email);
         $email = str_replace("DOT", ".", $email);
         return $email;
@@ -1759,37 +1619,32 @@ if (!function_exists('email_decode')) {
 }
 
 if (!function_exists('getUnreadMessage')) {
-    function getUnreadMessage()
-    {
+    function getUnreadMessage() {
         return App\Models\WebFormMessage::where("user_id", null);
     }
 }
 
 if (!function_exists("drop_non_ascii")) {
-    function drop_non_ascii(string $input = null): ?string
-    {
+    function drop_non_ascii(string $input = null): ?string {
         return $input !== null ? preg_replace('/[[:^print:]]/', '', $input) : null;
     }
 }
 
 if (!function_exists("drop_non_digits")) {
-    function drop_non_digits(string $input = null): ?string
-    {
+    function drop_non_digits(string $input = null): ?string {
         return $input !== null ? preg_replace("/[^0-9]/", '', $input) : null;
     }
 }
 
 if (!function_exists("get_controller_entity_name")) {
-    function get_controller_entity_name($controller_name): string
-    {
+    function get_controller_entity_name($controller_name): string {
         $short_class_name = last(explode("\\", $controller_name));
         return Str::snake(str_replace("Controller", "", $short_class_name));
     }
 }
 
 if (!function_exists("get_controller_entity_names")) {
-    function get_controller_entity_names($namespace = "\\App\\Http\\Controllers\\Admin"): array
-    {
+    function get_controller_entity_names($namespace = "\\App\\Http\\Controllers\\Admin"): array {
         $result = [];
         foreach ((new ReflectiveNamespace($namespace))->getclassNames() as $class_name) {
             $result[$class_name] = get_controller_entity_name($class_name);
@@ -1799,8 +1654,7 @@ if (!function_exists("get_controller_entity_names")) {
 }
 
 if (!function_exists("get_models_entity_names")) {
-    function get_models_entity_names($namespace = "\\App\\Models"): array
-    {
+    function get_models_entity_names($namespace = "\\App\\Models"): array {
         $result = [];
         foreach ((new ReflectiveNamespace($namespace))->getclassNames() as $class_name) {
             $result[$class_name] = get_model_entity_name($class_name);
@@ -1810,16 +1664,14 @@ if (!function_exists("get_models_entity_names")) {
 }
 
 if (!function_exists("get_model_entity_name")) {
-    function get_model_entity_name($model_name): string
-    {
+    function get_model_entity_name($model_name): string {
         $model_name = last(explode("\\", $model_name));
         return Str::snake($model_name);
     }
 }
 
 if (!function_exists("get_model_entity_names")) {
-    function get_model_entity_names($namespace = "\\App\\Models"): array
-    {
+    function get_model_entity_names($namespace = "\\App\\Models"): array {
         $result = [];
         foreach ((new ReflectiveNamespace($namespace))->getclassNames() as $class_name) {
             $result[$class_name] = get_model_entity_name($class_name);
@@ -1829,8 +1681,7 @@ if (!function_exists("get_model_entity_names")) {
 }
 
 if (!function_exists("str_to_dashed")) {
-    function str_to_dashed($input): string
-    {
+    function str_to_dashed($input): string {
         return strtolower(
             str_replace("_", "-",
                 preg_replace('/(?<!^)[A-Z]/', '-$0', $input)
@@ -1840,15 +1691,13 @@ if (!function_exists("str_to_dashed")) {
 }
 
 if (!function_exists("history_back")) {
-    function history_back(): ?string
-    {
+    function history_back(): ?string {
         return \App\Utils\Common\History::back();
     }
 }
 
 if (!function_exists("modal_html")) {
-    function modal_html(): string
-    {
+    function modal_html(): string {
         $path = \Illuminate\Support\Facades\Request::path();
         $modal_route = \App\Models\ModalRoute::findRoute($path);
         if ($modal_route != null) {
@@ -1872,8 +1721,7 @@ if (!function_exists("modal_html")) {
 }
 
 if (!function_exists('is_manual_stock')) {
-    function is_manual_stock(): bool
-    {
+    function is_manual_stock(): bool {
         try {
             $financial_driver = \App\Utils\FinancialManager\Provider::getEnabledDriver();
             $financial_driver_config = ConfigProvider::getConfig($financial_driver);
@@ -1886,8 +1734,7 @@ if (!function_exists('is_manual_stock')) {
 
 
 if (!function_exists('get_os')) {
-    function get_os()
-    {
+    function get_os() {
         if (DetectService::isAndroid())
             return OSType::Android;
         else if (DetectService::isIOS())
@@ -1897,39 +1744,34 @@ if (!function_exists('get_os')) {
 }
 
 if (!function_exists('is_desktop')) {
-    function is_desktop()
-    {
+    function is_desktop() {
 
         return DetectService::isDesktop();
     }
 }
 
 if (!function_exists('is_mobile')) {
-    function is_mobile()
-    {
+    function is_mobile() {
         return DetectService::isMobile();
     }
 }
 
 if (!function_exists('is_tablet')) {
-    function is_tablet()
-    {
+    function is_tablet() {
         return DetectService::isTablet();
     }
 }
 
 
 if (!function_exists('is_ios')) {
-    function is_ios()
-    {
+    function is_ios() {
         return DetectService::isIOS();
     }
 }
 
 
 if (!function_exists('is_android')) {
-    function is_android()
-    {
+    function is_android() {
         return DetectService::isAndroid();
     }
 }
@@ -1946,8 +1788,7 @@ if (!function_exists('get_related_products_according_to_structures')) {
         array|Collection $keys_to_be_the_same,
         array|Collection $keys_to_be_different,
         int              $limit_count = 5
-    )
-    {
+    ) {
         if ($keys_to_be_the_same instanceof Collection) {
             $keys_to_be_the_same = $keys_to_be_the_same->all();
         }
@@ -2016,36 +1857,31 @@ if (!function_exists('get_related_products_according_to_structures')) {
 }
 
 if (!function_exists('is_tax_added_to_price_by_default')) {
-    function is_tax_added_to_price_by_default(): bool
-    {
+    function is_tax_added_to_price_by_default(): bool {
         return \App\Utils\FinancialManager\ConfigProvider::isTaxAddedToPriceByDefault();
     }
 }
 
 if (!function_exists('should_use_per_product_tax_config')) {
-    function should_use_per_product_tax_config(): bool
-    {
+    function should_use_per_product_tax_config(): bool {
         return \App\Utils\FinancialManager\ConfigProvider::shouldUsePerProductTaxConfig();
     }
 }
 
 if (!function_exists('get_default_tax_percentage')) {
-    function get_default_tax_percentage(): float
-    {
+    function get_default_tax_percentage(): float {
         return \App\Utils\FinancialManager\ConfigProvider::getDefaultTaxPercentage();
     }
 }
 
 if (!function_exists('get_default_toll_percentage')) {
-    function get_default_toll_percentage(): float
-    {
+    function get_default_toll_percentage(): float {
         return \App\Utils\FinancialManager\ConfigProvider::getDefaultTollPercentage();
     }
 }
 
 if (!function_exists("get_invoice_tax_heading")) {
-    function get_invoice_tax_heading(): string
-    {
+    function get_invoice_tax_heading(): string {
         $heading = \App\Utils\FinancialManager\ConfigProvider::getInvoiceTaxHeading();
         if (should_show_tax_percentage_in_invoice_heading()) {
             $heading .= " (" . (get_default_tax_percentage() + get_default_toll_percentage()) . "%)";
@@ -2055,8 +1891,27 @@ if (!function_exists("get_invoice_tax_heading")) {
 }
 
 if (!function_exists("should_show_tax_percentage_in_invoice_heading")) {
-    function should_show_tax_percentage_in_invoice_heading(): bool
-    {
+    function should_show_tax_percentage_in_invoice_heading(): bool {
         return \App\Utils\FinancialManager\ConfigProvider::shouldShowTaxPercentageInInvoiceHeading();
     }
 }
+
+if (!function_exists("lm_get_current_version")) {
+    function lm_get_current_version(bool $only_major_version = false): string {
+        return \App\Helpers\VersionHelper::getCurrentVersion($only_major_version);
+    }
+}
+
+if (!function_exists("lm_get_latest_patch_version")) {
+    function lm_get_latest_patch_version(bool $only_major_version = false): string {
+        return \App\Helpers\VersionHelper::getLatestPatchVersion($only_major_version);
+    }
+}
+
+if (!function_exists("lm_get_latest_stable_version")) {
+    function lm_get_latest_stable_version(bool $only_major_version = false): string {
+        return \App\Helpers\VersionHelper::getLatestStableVersion($only_major_version);
+    }
+}
+
+
