@@ -45,7 +45,7 @@ jobs:
 
           # Check if this is a version branch or the production branch
           if [[ $BRANCH_NAME == version/v* ]]; then
-          BASE_VERSION=${BRANCH_NAME#version/v}
+          BASE_VERSION=${BRANCH_NAME#version/}
           if [[ ! -f ".version" ]]; then
           echo "::set-output name=new_version::${BASE_VERSION}.001"
           else
@@ -66,8 +66,9 @@ jobs:
           VERSION=$(git branch -r | grep 'version/v' | sed 's/.*version\///' | sort -V | tail -n 1)
           BASE_MAJOR=$(echo $VERSION | cut -d. -f1 | sed 's/v//')
           BASE_MINOR=$(printf "%02d" $(($(echo $VERSION | cut -d. -f2) + 1)))
-          echo "::set-output name=new_version::${BASE_MAJOR}.${BASE_MINOR}.001"
+          echo "::set-output name=new_version::v${BASE_MAJOR}.${BASE_MINOR}.001"
           fi
+
 
       - name: Write and update .version file
         if: steps.check-author.outputs.skip != 'true'
