@@ -11,17 +11,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check if commit is made by GitHub Actions
-        id: check-author
-        run: |
-          COMMIT_AUTHOR=$(git log -1 --pretty=format:'%ae')
-          if [[ "$COMMIT_AUTHOR" == "actions@github.com" ]]; then
-            echo "Commit made by GitHub Actions, exiting."
-            echo "::set-output name=skip::true"
-          else
-            echo "::set-output name=skip::false"
-          fi
-
       - name: Setup SSH Key from Secrets
         if: steps.check-author.outputs.skip != 'true'
         env:
@@ -37,6 +26,17 @@ jobs:
         with:
           fetch-depth: 0
           ssh-key: ${{ secrets.GH_ACTIONS_SSH_KEY }}
+
+      - name: Check if commit is made by GitHub Actions
+        id: check-author
+        run: |
+          COMMIT_AUTHOR=$(git log -1 --pretty=format:'%ae')
+          if [[ "$COMMIT_AUTHOR" == "actions@github.com" ]]; then
+            echo "Commit made by GitHub Actions, exiting."
+            echo "::set-output name=skip::true"
+          else
+            echo "::set-output name=skip::false"
+          fi
 
       - name: Determine version and update
         id: get-version
