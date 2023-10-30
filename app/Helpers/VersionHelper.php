@@ -92,7 +92,7 @@ class VersionHelper {
 
         # Use file_get_contents to fetch the data
         try {
-            return file_get_contents($rawUrl);
+            return trim(file_get_contents($rawUrl));
         } catch (Exception $e) {
             throw new Exception('Failed to fetch version from GitHub.');
         }
