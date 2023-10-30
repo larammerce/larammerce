@@ -41,34 +41,50 @@ jobs:
       - name: Determine version and update
         id: get-version
         run: |
-          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+          # Extract branch/tag name from GITHUB_REF (e.g., refs/heads/version/v2.08 -> version/v2.08)
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
 
           # Check if this is a version branch or the production branch
           if [[ $BRANCH_NAME == version/v* ]]; then
-          BASE_VERSION=${BRANCH_NAME#version/}
-          if [[ ! -f ".version" ]]; then
-          echo "::set-output name=new_version::${BASE_VERSION}.001"
+            BASE_VERSION=${BRANCH_NAME#version/}
+            if [[ ! -f ".version" ]]; then
+              echo "::set-output name=new_version::${BASE_VERSION}.001"
+            else
+              CURRENT_VERSION=$(cat .version)
+              CUR_MAJOR=$(echo $CURRENT_VERSION | cut -d. -f1)
+              CUR_MINOR=$(echo $CURRENT_VERSION | cut -d. -f2)
+              CUR_PATCH=$(echo $CURRENT_VERSION | cut -d. -f3)
+              # Check if current major.minor from .version file matches the branch's version
+              if [[ "$CUR_MAJOR.$CUR_MINOR" == "$BASE_VERSION" ]]; then
+                CUR_PATCH=$(printf "%03d" $(($CUR_PATCH + 1)))
+                echo "::set-output name=new_version::${BASE_VERSION}.$CUR_PATCH"
+              else
+                echo "::set-output name=new_version::${BASE_VERSION}.001"
+              fi
+            fi
           else
-          CURRENT_VERSION=$(cat .version)
-          CUR_MAJOR=$(echo $CURRENT_VERSION | cut -d. -f1)
-          CUR_MINOR=$(echo $CURRENT_VERSION | cut -d. -f2)
-          CUR_PATCH=$(echo $CURRENT_VERSION | cut -d. -f3)
+            VERSION=$(git branch -r | grep 'version/v' | sed 's/.*version\///' | sort -V | tail -n 1)
+            BASE_MAJOR=$(echo $VERSION | cut -d. -f1 | sed 's/v//')
+            BASE_MINOR=$(printf "%02d" $(($(echo $VERSION | cut -d. -f2) + 1)))
+            NEW_BASE_VERSION="v${BASE_MAJOR}.${BASE_MINOR}"
 
-          # Check if current major.minor from .version file matches the branch's version
-          if [[ "$CUR_MAJOR.$CUR_MINOR" == "$BASE_VERSION" ]]; then
-          CUR_PATCH=$(printf "%03d" $(($CUR_PATCH + 1)))
-          echo "::set-output name=new_version::${BASE_VERSION}.$CUR_PATCH"
-          else
-          echo "::set-output name=new_version::${BASE_VERSION}.001"
+            # Check if .version file exists
+            if [[ ! -f ".version" ]]; then
+              echo "::set-output name=new_version::${NEW_BASE_VERSION}.001"
+            else
+              CURRENT_VERSION=$(cat .version)
+              CUR_MAJOR=$(echo $CURRENT_VERSION | cut -d. -f1)
+              CUR_MINOR=$(echo $CURRENT_VERSION | cut -d. -f2)
+              CUR_PATCH=$(echo $CURRENT_VERSION | cut -d. -f3)
+              # Check if current major.minor from .version file matches the highest branch version
+              if [[ "$CUR_MAJOR.$CUR_MINOR" == "$NEW_BASE_VERSION" ]]; then
+                CUR_PATCH=$(printf "%03d" $(($CUR_PATCH + 1)))
+                echo "::set-output name=new_version::${NEW_BASE_VERSION}.$CUR_PATCH"
+              else
+                echo "::set-output name=new_version::${NEW_BASE_VERSION}.001"
+              fi
+            fi
           fi
-          fi
-          else
-          VERSION=$(git branch -r | grep 'version/v' | sed 's/.*version\///' | sort -V | tail -n 1)
-          BASE_MAJOR=$(echo $VERSION | cut -d. -f1 | sed 's/v//')
-          BASE_MINOR=$(printf "%02d" $(($(echo $VERSION | cut -d. -f2) + 1)))
-          echo "::set-output name=new_version::v${BASE_MAJOR}.${BASE_MINOR}.001"
-          fi
-
 
       - name: Write and update .version file
         if: steps.check-author.outputs.skip != 'true'
