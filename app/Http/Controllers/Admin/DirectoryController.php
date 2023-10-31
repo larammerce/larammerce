@@ -73,7 +73,7 @@ class DirectoryController extends BaseController {
     public function show(Directory $directory): View|Factory|Application|RedirectResponse {
         ExploreService::setCurrentDirectory($directory->id);
         parent::setPageAttribute($directory->id);
-        if ($directory->leafProducts()->count() > 0) {
+        if ($directory->directories()->count() == 0 and $directory->leafProducts()->count() > 0) {
             return redirect()->to(route('admin.product.index') . '?directory_id=' . $directory->id);
         } else if ($directory->articles()->count() > 0) {
             return redirect()->to(route('admin.article.index') . '?directory_id=' . $directory->id);
