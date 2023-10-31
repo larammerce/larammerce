@@ -39,6 +39,7 @@ return [
         "payment_driver" => 'درگاه های پرداخت',
         "financial_driver" => 'حسابداری و انبارداری',
         "sms_driver" => 'ارسال پیامک',
+        "crm_driver" => 'اتصال سی آر ام',
         "language" => 'زبان ها',
         "color_management" => "مدیریت رنگ‌ها",
         "representative" => "مدیریت معرفین",
@@ -107,7 +108,7 @@ return [
         1 => "قبل از خرید",
         2 => "بعد از خرید"
     ],
-  
+
     "debug_log_type" => [
         "default" => "پیش فرض",
         "data_tmp" => "داده های موقت"

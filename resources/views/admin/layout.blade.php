@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/admin_dashboard/vendor/jquery-ui/jquery-ui.css">
     <link rel="stylesheet" href="/admin_dashboard/vendor/persianDatepicker/css/persian-datepicker.min.css">
     <link rel="stylesheet" href="/admin_dashboard/vendor/jquery-toast/jquery.toast.min.css">
-    <link rel="stylesheet" type="text/css" href="/admin_dashboard/css/app-23-09-27.css"/>
+    <link rel="stylesheet" type="text/css" href="/admin_dashboard/css/app-23-10-28.css"/>
 
     <link rel="apple-touch-icon" sizes="180x180" href="/admin_dashboard/{{get_identity()["fav"]}}/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/admin_dashboard/{{get_identity()["fav"]}}/favicon-32x32.png">
@@ -135,7 +135,12 @@
         </ul>
     </div>
     <div class="explore-map col-md-2 hidden-sm hidden-xs">
-        @include('admin.templates.explore.map')
+        <div class="explore-map-scroll-container">
+            @include('admin.templates.explore.map')
+        </div>
+        <div class="version-container">
+            نسخه: {{lm_get_current_version()}}
+        </div>
     </div>
     <div class="explore-view-container col-md-10 col-sm-12 col-xs-12">
         @yield('main_content')
@@ -172,7 +177,7 @@
     </div>
 </div>
 
-<script data-main="/admin_dashboard/js/all-23-09-27" src="/admin_dashboard/vendor/requirejs/require.js"></script>
+<script data-main="/admin_dashboard/js/all-23-10-28" src="/admin_dashboard/vendor/requirejs/require.js"></script>
 
 @yield('extra_javascript')
 

@@ -63,7 +63,7 @@ class InvoiceController extends BaseController {
 
         $customer = get_customer_user();
 
-        if ($customer->national_code == null) {
+        if (\App\Utils\FinancialManager\ConfigProvider::isNationalCodeRequired() and $customer->national_code == null) {
             SystemMessageService::addWarningMessage("messages.customer_user.no_national_code");
             return redirect()->route("customer.profile.show-edit-profile");
         }
@@ -270,13 +270,15 @@ class InvoiceController extends BaseController {
 
         if ($invoice->createFinManRelation()) {
 
-            SMSService::send("sms-invoice-submitted", $customer_user->main_phone,
-                [
-                    "trackingCode" => $invoice->tracking_code
-                ],
-                [
-                    "customerName" => $customer_user->user->name
-                ]);
+            if (\App\Utils\SMSManager\ConfigProvider::canSendSMSForInvoiceSubmit()) {
+                SMSService::send("sms-invoice-submitted", $customer_user->main_phone,
+                    [
+                        "trackingCode" => $invoice->tracking_code
+                    ],
+                    [
+                        "customerName" => $customer_user->user->name
+                    ]);
+            }
 
             if (config('mail-notifications.invoices.new_invoice')) {
                 $subject = 'New Order';

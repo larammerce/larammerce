@@ -50,6 +50,9 @@ Route::group(
                 Route::get("sms-driver", ["as" => "sms-driver.edit", "uses" => "SMSDriverController@edit"]);
                 Route::put("sms-driver", ["as" => "sms-driver.update", "uses" => "SMSDriverController@update"]);
 
+                Route::get("crm-driver", ["as" => "crm-driver.edit", "uses" => "CRMDriverController@edit"]);
+                Route::put("crm-driver", ["as" => "crm-driver.update", "uses" => "CRMDriverController@update"]);
+
                 Route::get("language", ["as" => "language.edit", "uses" => "LanguageSettingController@edit"]);
                 Route::put("language", ["as" => "language.update", "uses" => "LanguageSettingController@update"]);
 
@@ -163,7 +166,7 @@ Route::group(
             }
         );
         Route::resource("discount-group", "DiscountGroupController", ["as" => "admin"]);
-        
+
         //DiscountCard
         Route::group(["prefix" => "discount-card", "as" => "admin.discount-card."],
             function () {
@@ -299,7 +302,7 @@ Route::group(
                 Route::put("{product}/publish", ["as" => "publish", "uses" => "ProductController@publish"]);
                 Route::put("{product}/clone", ["as" => "clone", "uses" => "ProductController@cloneModel"]);
                 Route::get("{product}/models", ["as" => "models", "uses" => "ProductController@models"]);
-                Route::get("cache-clear", ["as" => "cache-clear", "uses" => "DirectoryController@cacheClear"]);
+                Route::get("cache-clear", ["as" => "cache-clear", "uses" => "ProductController@cacheClear"]);
             });
         Route::resource("product", "ProductController", ["as" => "admin"]);
 

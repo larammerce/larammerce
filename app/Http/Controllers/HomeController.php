@@ -101,8 +101,18 @@ class HomeController extends Controller {
 
     public function showWebPage(Directory $directory, $cart_rows): Factory|Application|View {
         $web_page = $directory->webPage;
-        return h_view("public." . $web_page->blade_name,
-            compact("web_page", "directory", "cart_rows"));
+
+        // Check laravel view exists
+        try {
+            return h_view("public." . $web_page->custom_blade_name,
+                compact("web_page", "directory", "cart_rows")
+            );
+        } catch (Exception $e) {
+            return h_view("public." . $web_page->blade_name,
+                compact("web_page", "directory", "cart_rows")
+            );
+        }
+
     }
 
     public function showProduct(Product $product): Factory|Application|View {
@@ -136,9 +146,15 @@ class HomeController extends Controller {
         }
         if ($needs_landing) {
             $web_page = $directory->webPage;
-            if ($web_page != null)
-                return h_view("public." . $web_page->blade_name,
-                    compact("directory", "web_page", "cart_rows"))->with($filter_data);
+            if ($web_page != null) {
+                try {
+                    return h_view("public." . $web_page->custom_blade_name,
+                        compact("directory", "web_page", "cart_rows"))->with($filter_data);
+                } catch (Exception $e) {
+                    return h_view("public." . $web_page->blade_name,
+                        compact("directory", "web_page", "cart_rows"))->with($filter_data);
+                }
+            }
         }
         return h_view("public.product-filter",
             compact("directory", "cart_rows"))->with($filter_data);

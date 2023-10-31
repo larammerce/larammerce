@@ -160,4 +160,14 @@ class ConfigProvider {
         }
         return $show_tax_percentage;
     }
+
+    public static function isNationalCodeRequired(): bool {
+        $financial_driver = Provider::getEnabledDriver();
+        $is_national_code_required = true;
+        if (strlen($financial_driver) > 0 and Provider::hasDriver($financial_driver)) {
+            $config = self::getConfig($financial_driver);
+            $is_national_code_required = $config->is_national_code_required;
+        }
+        return $is_national_code_required;
+    }
 }

@@ -1836,11 +1836,23 @@ if (!function_exists('get_related_products_according_to_structures')) {
         $values_to_have = $product->pAttributes()->whereIn("p_structure_attr_key_id", $keys_to_be_the_same)
             ->pluck("p_structure_attr_value_id")->toArray();
 
-        return Product::whereHas("pAttributes", function ($query) use ($values_to_not_to_have) {
+        $products = Product::whereHas("pAttributes", function ($query) use ($values_to_not_to_have) {
             $query->whereNotIn("p_structure_attr_value_id", $values_to_not_to_have);
-        })->whereHas("pAttributes", function ($query) use ($values_to_have) {
-            $query->whereIn("p_structure_attr_value_id", $values_to_have);
-        })->where("is_active", true)->mainModels()->visible()->latest()->take($limit_count)->get();
+        })
+            ->whereHas("pAttributes", function ($query) use ($values_to_have) {
+                $query
+                    ->whereIn("p_structure_attr_value_id", $values_to_have)
+                    ->groupBy("products.id")
+                    ->havingRaw('COUNT(DISTINCT p_structure_attr_value_id) = ?', [count($values_to_have)]);
+            })
+            ->where("is_active", true)
+            ->mainModels()
+            ->visible()
+            ->latest()
+            ->take($limit_count)
+            ->get();
+
+        return $products;
     }
 }
 
@@ -1883,3 +1895,23 @@ if (!function_exists("should_show_tax_percentage_in_invoice_heading")) {
         return \App\Utils\FinancialManager\ConfigProvider::shouldShowTaxPercentageInInvoiceHeading();
     }
 }
+
+if (!function_exists("lm_get_current_version")) {
+    function lm_get_current_version(bool $only_major_version = false): string {
+        return \App\Helpers\VersionHelper::getCurrentVersion($only_major_version);
+    }
+}
+
+if (!function_exists("lm_get_latest_patch_version")) {
+    function lm_get_latest_patch_version(bool $only_major_version = false): string {
+        return \App\Helpers\VersionHelper::getLatestPatchVersion($only_major_version);
+    }
+}
+
+if (!function_exists("lm_get_latest_stable_version")) {
+    function lm_get_latest_stable_version(bool $only_major_version = false): string {
+        return \App\Helpers\VersionHelper::getLatestStableVersion($only_major_version);
+    }
+}
+
+

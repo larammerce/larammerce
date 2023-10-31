@@ -4,10 +4,8 @@ namespace App\Utils\SMSManager\Drivers\Kavenegar;
 
 use App\Utils\SMSManager\Models\BaseSMSConfig;
 
-class Config extends BaseSMSConfig
-{
-    public function __construct()
-    {
+class Config extends BaseSMSConfig {
+    public function __construct() {
         parent::__construct();
         $this->host = 'api.kavenegar.com';
         $this->port = 443;

@@ -9,6 +9,7 @@ use App\Models\Invoice;
 use App\Models\Payment;
 use App\Utils\CMS\SystemMessageService;
 use App\Utils\Common\EmailService;
+use App\Utils\Common\SMSService;
 use App\Utils\FinancialManager\Factory as FinManFactory;
 use App\Utils\PaymentManager\Exceptions\PaymentCallbackInvalidParametersException;
 use App\Utils\PaymentManager\Exceptions\PaymentConnectionException;
@@ -27,24 +28,21 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
-class PaymentController extends BaseController
-{
+class PaymentController extends BaseController {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     /**
      * @param Request $request
      * @return \Illuminate\Contracts\View\Factory|Application|RedirectResponse|View
      */
-    public function paymentRedirection(Request $request): Application|\Illuminate\Contracts\View\Factory|View|RedirectResponse
-    {
+    public function paymentRedirection(Request $request): Application|\Illuminate\Contracts\View\Factory|View|RedirectResponse {
         $form = $request->session()->pull(Kernel::$sessionKey . ":form-object");
         if ($form !== null and $form !== false)
             return view('public.payment-redirection', ['form' => $form]);
         return redirect()->route('customer.invoice.index');
     }
 
-    public function bankCallback(Request $request, string $driver_name): RedirectResponse
-    {
+    public function bankCallback(Request $request, string $driver_name): RedirectResponse {
         try {
             $driver = Factory::driver($driver_name);
             $payment_data = json_encode($request->all());
@@ -118,6 +116,17 @@ class PaymentController extends BaseController
                 $payment->save();
 
                 SystemMessageService::addSuccessMessage("system_messages.payment.successful");
+
+                if (\App\Utils\SMSManager\ConfigProvider::canSendSMSForInvoicePaid()) {
+                    SMSService::send("sms-invoice-paid", $invoice->customer->main_phone,
+                        [
+                            "trackingCode" => $invoice->tracking_code
+                        ],
+                        [
+                            "customerName" => $invoice->customer->user->name
+                        ]
+                    );
+                }
 
                 if (config('mail-notifications.invoices.new_invoice_payment')) {
                     $subject = 'سفارش جدید';

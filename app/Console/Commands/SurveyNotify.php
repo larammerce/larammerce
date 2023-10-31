@@ -5,12 +5,12 @@ namespace App\Console\Commands;
 use App\Models\Invoice;
 use App\Utils\CMS\Setting\Survey\SurveyService;
 use App\Utils\Common\SMSService;
+use App\Utils\SMSManager\ConfigProvider;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use function GuzzleHttp\Psr7\str;
 
-class SurveyNotify extends Command
-{
+class SurveyNotify extends Command {
     /**
      * The name and signature of the console command.
      *
@@ -30,8 +30,7 @@ class SurveyNotify extends Command
      *
      * @return void
      */
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
     }
 
@@ -41,8 +40,7 @@ class SurveyNotify extends Command
      * @return mixed
      * @throws \Throwable
      */
-    public function handle()
-    {
+    public function handle() {
         $survey_config = SurveyService::getRecord();
         if (is_string($survey_config->getDefaultSurveyUrl()) and strlen($survey_config->getDefaultSurveyUrl()) > 0) {
             $un_notified_invoices = Invoice::where("is_active", true)->where("survey_notified_at", null)->get();
@@ -70,13 +68,14 @@ class SurveyNotify extends Command
     /**
      * @param Invoice $invoice
      */
-    public function notifyCustomer(Invoice $invoice)
-    {
-        SMSService::send("sms-invoice-survey", $invoice->customer->main_phone, [
-            "tracking_code" => $invoice->tracking_code
-        ], [
-            "customer_name" => $invoice->customer->user->name,
-            "url" => route("customer.invoice.survey.show", $invoice)
-        ]);
+    public function notifyCustomer(Invoice $invoice) {
+        if (ConfigProvider::canSendSMSForInvoiceSurvey()) {
+            SMSService::send("sms-invoice-survey", $invoice->customer->main_phone, [
+                "tracking_code" => $invoice->tracking_code
+            ], [
+                "customer_name" => $invoice->customer->user->name,
+                "url" => route("customer.invoice.survey.show", $invoice)
+            ]);
+        }
     }
 }

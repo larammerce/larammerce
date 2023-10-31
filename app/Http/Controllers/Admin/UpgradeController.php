@@ -15,8 +15,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
-class UpgradeController extends BaseController
-{
+class UpgradeController extends BaseController {
 
     public function index(Request $request): Factory|View|Application {
         $record = SystemUpgradeSettingService::getRecord();
