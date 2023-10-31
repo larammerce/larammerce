@@ -114,7 +114,8 @@ class NewInvoiceService {
     }
 
     public function isTaxAddedToPrice(Product $product = null): bool {
-        if (ConfigProvider::shouldUsePerProductTaxConfig() and !is_null($product)) {
+        if (ConfigProvider::shouldUsePerProductTaxConfig() and !is_null($product) and
+            !$product->use_default_tax_params) {
             return $product->is_tax_included;
         } else {
             return ConfigProvider::isTaxAddedToPriceByDefault();
