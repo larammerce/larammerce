@@ -40,6 +40,7 @@ jobs:
 
       - name: Determine version and update
         id: get-version
+        if: steps.check-author.outputs.skip != 'true'
         run: |
           # Extract branch/tag name from GITHUB_REF (e.g., refs/heads/version/v2.08 -> version/v2.08)
           BRANCH_NAME=${GITHUB_REF#refs/heads/}
