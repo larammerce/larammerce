@@ -63,7 +63,7 @@ class ProductImageController extends BaseController {
      * @role(super_user, cms_manager)
      */
     public function destroy(ProductImage $product_image): JsonResponse|RedirectResponse {
-        $product_image->delete();
+        ProductImageService::dropImage($product_image);
         if (RequestService::isRequestAjax())
             return response()->json(MessageFactory::create(
                 ['messages.product_image.image_deleted'], 200
