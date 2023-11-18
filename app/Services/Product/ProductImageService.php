@@ -21,6 +21,19 @@ class ProductImageService {
         ]);
     }
 
+    public static function dropImage(ProductImage $image): void {
+        $product = $image->product;
+        $image->delete();
+        if ($product->main_photo === $image->getImagePath())
+            $product->update([
+                "main_photo" => null
+            ]);
+        if ($product->secondary_photo === $image->getImagePath())
+            $product->update([
+                "secondary_photo" => null
+            ]);
+    }
+
     public static function setImageAsSecondary(ProductImage $image): void {
         $product = $image->product;
         $product->images()->update([
