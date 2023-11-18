@@ -3,7 +3,6 @@
 namespace App\Services\Product;
 
 use App\Models\ProductImage;
-use App\Utils\Common\ImageService;
 
 class ProductImageService {
     public static function setImageAsMain(ProductImage $image): void {
@@ -18,7 +17,7 @@ class ProductImageService {
             "is_main" => true
         ]);
         $product->update([
-            "main_photo" => ImageService::getImage($image, "preview")
+            "main_photo" => $image->getImagePath()
         ]);
     }
 
@@ -31,7 +30,7 @@ class ProductImageService {
             "is_secondary" => true
         ]);
         $product->update([
-            "secondary_photo" => ImageService::getImage($image, "preview")
+            "secondary_photo" => $image->getImagePath()
         ]);
     }
 }
