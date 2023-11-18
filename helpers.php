@@ -531,7 +531,7 @@ if (!function_exists('get_important_product_leaves')) {
     function get_important_product_leaves(Directory $root_directory, int $count): array|Collection {
         $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $root_directory->id, "{$count}");
         if (!Cache::tags([Product::class])->has($cache_key)) {
-            Cache::tags([Product::class])->put($cache_key, $root_directory->leafProducts()->mainModels()->visible()
+            Cache::tags([Product::class])->put($cache_key, $root_directory->leafProducts()->mainModels()->visible()->isActive()
                 ->where('important_at', '!=', null)
                 ->orderBy('important_at', 'DESC')
                 ->orderBy('updated_at', 'DESC')
