@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
-use App\Utils\CRMManager\Enums\CRMLeadType;
+use App\Utils\CRMManager\Enums\CRMPersonType;
+use App\Utils\CRMManager\Interfaces\CRMAccountInterface;
 use App\Utils\CRMManager\Interfaces\CRMLeadInterface;
+use App\Utils\CRMManager\Interfaces\CRMOpportunityInterface;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Database\Eloquent\Model;
@@ -28,7 +30,12 @@ use Illuminate\Support\Facades\Log;
  * @property boolean is_cart_checked
  * @property string bank_account_card_number
  * @property string bank_account_uuid
- * @property string crm_relation
+ * @property string crm_lead_id
+ * @property string crm_account_id
+ * @property bool crm_must_push_op
+ * @property string crm_op_id
+ * @property Carbon crm_op_created_at
+ * @property Carbon crm_op_updated_at
  *
  * @property User user
  * @property Product[] wishList
@@ -42,20 +49,27 @@ use Illuminate\Support\Facades\Log;
  * Class CustomerUser
  * @package App\Models
  */
-class CustomerUser extends BaseModel implements CRMLeadInterface {
+class CustomerUser extends BaseModel implements CRMLeadInterface, CRMAccountInterface, CRMOpportunityInterface {
 
     protected $table = 'customer_users';
 
     protected $fillable = [
         'user_id', 'main_phone', 'is_legal_person', 'national_code', 'is_initiated', 'fin_relation', 'is_active',
-        'credit', 'is_cart_checked', 'bank_account_card_number', 'bank_account_uuid', "crm_relation"
+        'credit', 'is_cart_checked', 'bank_account_card_number', 'bank_account_uuid', "crm_lead_id", "crm_account_id",
+        "crm_must_push_op", "crm_op_id", "crm_op_created_at", "crm_op_updated_at"
     ];
 
     protected $casts = [
         "is_cart_checked" => "bool",
         "is_active" => "bool",
         "is_initiated" => "bool",
-        "is_legal_person" => "bool"
+        "is_legal_person" => "bool",
+        "crm_must_push_op" => "bool",
+    ];
+
+    protected $dates = [
+        "crm_op_created_at",
+        "crm_op_updated_at"
     ];
 
     protected static array $SORTABLE_FIELDS = ['id', 'main_phone', 'is_active', 'credit'];
@@ -65,7 +79,7 @@ class CustomerUser extends BaseModel implements CRMLeadInterface {
         'main_phone',
         'national_code',
         'fin_relation',
-        "crm_relation"
+        "crm_lead_id"
     ];
 
     public function user(): BelongsTo {
@@ -159,53 +173,61 @@ class CustomerUser extends BaseModel implements CRMLeadInterface {
         return $this->hasMany(CustomerMetaItem::class, "customer_user_id", "id");
     }
 
-    function leadGetFullName(): string {
+    function crmGetFullName(): string {
         return $this->user->full_name ?? "";
     }
 
-    function leadGetFirstName(): string {
+    function crmGetFirstName(): string {
         return $this->user->name ?? "";
     }
 
-    function leadGetLastName(): string {
+    function crmGetLastName(): string {
         return $this->user->family ?? "";
     }
 
-    function leadGetSource(): string {
+    function crmGetSource(): string {
         return "Website registration";
     }
 
-    function leadGetMainPhone(): string {
+    function crmGetMainPhone(): string {
         return $this->main_phone ?? "";
     }
 
-    function leadGetSecondaryPhone(): string {
+    function crmGetSecondaryPhone(): string {
         return $this->main_address?->phone_number ?? "";
     }
 
-    function leadHasSecondaryPhone(): bool {
+    function crmHasSecondaryPhone(): bool {
         return !is_null($this->main_address);
     }
 
-    function leadGetEmail(): string {
+    function crmGetEmail(): string {
         return $this->user->email ?? "";
     }
 
-    function leadGetRelation(): string {
-        return $this->crm_relation ?? "";
+    function crmGetLeadId(): string {
+        return $this->crm_lead_id ?? "";
     }
 
-    function leadSetRelation(string $lead_id): void {
+    function crmSetLeadId(string $lead_id): void {
         $this->update([
-            "crm_relation" => $lead_id
+            "crm_lead_id" => $lead_id
         ]);
     }
 
-    function leadGetType(): string {
-        return CRMLeadType::INDIVIDUAL;
+    function crmGetPersonType(): string {
+        return CRMPersonType::INDIVIDUAL;
     }
 
-    function leadGetCreatedAt(): Carbon {
+    function crmGetCreatedAt(): Carbon {
         return $this->created_at ?? Carbon::now();
+    }
+
+    function crmGetAccountId(): string {
+        return $this->crm_account_id ?? "";
+    }
+
+    function crmSetAccountId(string $account_id): void {
+        $this->update(["crm_account_id" => $account_id]);
     }
 }

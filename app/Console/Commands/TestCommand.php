@@ -33,7 +33,7 @@ class TestCommand extends Command {
 
         /** @var CustomerUser $customer_user */
 //        $customer_user = CustomerUser::where("main_phone", "09399791134")->first();
-        $customer_user = CustomerUser::where("main_phone", "09214141040")->first();
-        $driver->searchLead($customer_user);
+        $customer_user = CustomerUser::where("main_phone", "09129791146")->first();
+        $driver->createAccount($customer_user);
     }
 }

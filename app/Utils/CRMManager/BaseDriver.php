@@ -8,6 +8,7 @@
 
 namespace App\Utils\CRMManager;
 
+use App\Utils\CRMManager\Interfaces\CRMAccountInterface;
 use App\Utils\CRMManager\Interfaces\CRMLeadInterface;
 use App\Utils\CRMManager\Models\BaseCRMConfig;
 use stdClass;
@@ -28,4 +29,10 @@ interface BaseDriver {
     public function updateLead(CRMLeadInterface $lead): bool;
 
     public function createOrUpdateLead(CRMLeadInterface $lead): bool;
+
+    public function createAccount(CRMAccountInterface $account): bool;
+
+    public function createOpportunity(CRMOpportunityInterface $opportunity): bool;
+
+    public function updateOpportunity(CRMOpportunityInterface $opportunity): bool;
 }

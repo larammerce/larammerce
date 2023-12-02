@@ -147,7 +147,7 @@ class DiscountGroup extends BaseModel
     {
         $value = $this->value;
         $steps_data = ($this->steps_data !== null and strlen($this->steps_data)) ? json_decode($this->steps_data) : null;
-        if ($steps_data !== null) {
+        if ($steps_data !== null) { 
             foreach ($steps_data as $step) {
                 if ($discountable_amount > $step->amount and $step->value > $value) {
                     $value = $step->value;

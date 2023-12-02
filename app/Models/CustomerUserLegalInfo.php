@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-use App\Utils\CRMManager\Enums\CRMLeadType;
+use App\Utils\CRMManager\Enums\CRMPersonType;
+use App\Utils\CRMManager\Interfaces\CRMAccountInterface;
 use App\Utils\CRMManager\Interfaces\CRMLeadInterface;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string fin_relation
  * @property integer state_id
  * @property integer city_id
- * @property string crm_relation
+ * @property string crm_account_id
  * @property Carbon created_at
  * @property Carbon updated_at
  *
@@ -29,13 +30,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Class CustomerUserLegalInfo
  * @package App\Models
  */
-class CustomerUserLegalInfo extends BaseModel implements CRMLeadInterface {
+class CustomerUserLegalInfo extends BaseModel implements CRMAccountInterface {
     protected $table = 'customer_users_legal_info';
     public $timestamps = false;
 
     protected $fillable = [
         'customer_user_id', 'company_name', 'economical_code', 'national_id',
-        'registration_code', 'company_phone', 'state_id', 'city_id', 'fin_relation', 'crm_relation'
+        'registration_code', 'company_phone', 'state_id', 'city_id', 'fin_relation', 'crm_account_id'
     ];
 
     protected static array $SORTABLE_FIELDS = ['id'];
@@ -48,7 +49,7 @@ class CustomerUserLegalInfo extends BaseModel implements CRMLeadInterface {
         'registration_code',
         'company_phone',
         'fin_relation',
-        'crm_relation'
+        'crm_lead_id'
     ];
 
     public function customerUser(): BelongsTo {
@@ -70,53 +71,51 @@ class CustomerUserLegalInfo extends BaseModel implements CRMLeadInterface {
         return '';
     }
 
-    function leadGetRelation(): string {
-        return $this->crm_relation ?? "";
-    }
-
-    function leadSetRelation(string $lead_id): void {
-        $this->update([
-            "crm_relation" => $lead_id
-        ]);
-    }
-
-    function leadGetFullName(): string {
+    function crmGetFullName(): string {
         return $this->company_name;
     }
 
-    function leadGetFirstName(): string {
+    function crmGetFirstName(): string {
         return $this->customerUser->user?->name ?? "";
     }
 
-    function leadGetLastName(): string {
+    function crmGetLastName(): string {
         return $this->customerUser->user?->family ?? "";
     }
 
-    function leadGetSource(): string {
+    function crmGetSource(): string {
         return "Website registration";
     }
 
-    function leadGetMainPhone(): string {
+    function crmGetMainPhone(): string {
         return $this->company_phone ?? "";
     }
 
-    function leadGetSecondaryPhone(): string {
+    function crmGetSecondaryPhone(): string {
         return $this->customerUser?->main_phone ?? "";
     }
 
-    function leadHasSecondaryPhone(): bool {
+    function crmHasSecondaryPhone(): bool {
         return true;
     }
 
-    function leadGetEmail(): string {
+    function crmGetEmail(): string {
         return $this->customerUser->user->email ?? "";
     }
 
-    function leadGetType(): string {
-        return CRMLeadType::CORPORATE;
+    function crmGetCreatedAt(): Carbon {
+        return $this->created_at ?? Carbon::now();
     }
 
-    function leadGetCreatedAt(): Carbon {
-        return $this->created_at ?? Carbon::now();
+    function crmGetAccountId(): string {
+        return $this->crm_account_id ?? "";
+    }
+
+    function crmSetAccountId(string $account_id): void {
+        $this->update(["crm_account_id" => $account_id]);
+    }
+
+    function crmGetPersonType(): string {
+        return CRMPersonType::CORPORATE;
     }
 }

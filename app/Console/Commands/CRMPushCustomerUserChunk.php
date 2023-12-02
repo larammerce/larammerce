@@ -43,9 +43,9 @@ class CRMPushCustomerUserChunk extends Command {
             return 1;
         }
 
-        // Get 10 old CustomerUsers which have not crm_relation field
+        // Get 10 old CustomerUsers which have not crm_lead_id field
         /** @var CustomerUser[] $customerUsers */
-        $customerUsers = CustomerUser::where('crm_relation', null)->orWhere('crm_relation', '')
+        $customerUsers = CustomerUser::where('crm_lead_id', null)->orWhere('crm_lead_id', '')
             ->orderBy("id", "ASC")->limit(10)->get();
 
         // Push them to CRM
