@@ -16,6 +16,7 @@
 
 @section('form_attributes')
     action="{{route('admin.setting.language.store')}}" method="POST"
+    action="{{route('admin.setting.language.item.store')}}" method="POST"
 @endsection
 
 @section('form_body')
