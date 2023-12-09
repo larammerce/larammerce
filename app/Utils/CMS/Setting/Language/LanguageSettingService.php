@@ -10,7 +10,9 @@ use App\Utils\Reflection\AnnotationBadKeyException;
 use App\Utils\Reflection\AnnotationBadScopeException;
 use App\Utils\Reflection\AnnotationNotFoundException;
 use App\Utils\Reflection\AnnotationSyntaxException;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Str;
+use Lcobucci\JWT\Exception;
 use ReflectionException;
 
 /**
@@ -88,6 +90,48 @@ class LanguageSettingService extends BaseCMSConfigManager
         static::setDefaultLocaleToEnvFile($default_locale);
     }
 
+    /**
+     * @throws
+     */
+    public static function setOne(string $lang_id, bool $is_enabled, bool $is_default): LanguageSettingModel
+    {
+        if(static::checkIfLanguageIsSet($lang_id))
+            throw new \Exception('This language is already set!');
+
+        if ($is_enabled && !static::checkIfEnvKeyContainsTheValue('SITE_ENABLED_LOCALES',$lang_id))
+            static::addValueToEnvKey('SITE_ENABLED_LOCALES',$lang_id);
+        if ($is_default)
+            static::setDefaultLocaleToEnvFile($lang_id);
+
+        foreach (static::getAll() as $language_id => $lang_config){
+            if ($lang_config->is_default && $lang_id != $language_id)
+                static::updateRecord($language_id, $lang_config->is_enabled, false);
+        }
+        static::addValueToEnvKey('SITE_AVAILABLE_LOCALES',$lang_id);
+        $language_model = new LanguageSettingModel($lang_id, $is_enabled, $is_default);
+        LanguageSettingService::setRecordWithoutValidation($language_model);
+        return $language_model;
+    }
+
+    private static function checkIfLanguageIsSet(string $lang_id): bool
+    {
+        $languages = array_keys(static::getAll());
+        if (in_array($lang_id, $languages, true)) return true;
+
+        return false;
+    }
+
+    private static function checkIfEnvKeyContainsTheValue(string $key, string $value): bool
+    {
+        if(in_array($value ,explode(',', env($key)), true)) return true;
+
+        return false;
+    }
+
+    public static function getAvailableChoices()
+    {
+        return Lang::get('language');
+    }
 
     /**
      * @throws AnnotationNotFoundException
@@ -139,6 +183,22 @@ class LanguageSettingService extends BaseCMSConfigManager
     {
         $key = "SITE_DEFAULT_LOCALE";
         static::setEnvConfig($key, $language);
+    }
+
+
+    /**
+     * @throws \Exception
+     */
+    private static function addValueToEnvKey(string $key, string $value , string $seperator = ','): void
+    {
+        $existingValue = env($key);
+
+        if (in_array($existingValue, ['', ' ']))
+            $newValue = $existingValue . trim($value);
+        else
+            $newValue = $existingValue . $seperator . trim($value);
+
+        static::setEnvConfig($key, $newValue);
     }
 
     private static function setEnvConfig(string $key, string $value): void

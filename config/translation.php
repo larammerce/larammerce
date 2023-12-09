@@ -87,7 +87,7 @@ return [
     | All available locales that can be selected.
     |
     */
-    "available_locales" => ["fa", "en", "ar", "tr"],
+    "available_locales" => explode(',', env('SITE_AVAILABLE_LOCALES',)),
 
     /*
     |--------------------------------------------------------------------------
