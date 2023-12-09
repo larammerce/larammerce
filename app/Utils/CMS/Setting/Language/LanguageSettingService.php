@@ -109,7 +109,7 @@ class LanguageSettingService extends BaseCMSConfigManager
         }
         static::addValueToEnvKey('SITE_AVAILABLE_LOCALES',$lang_id);
         $language_model = new LanguageSettingModel($lang_id, $is_enabled, $is_default);
-        LanguageSettingService::setRecordWithoutValidation($language_model);
+        static::setRecordWithoutValidation($language_model);
         return $language_model;
     }
 

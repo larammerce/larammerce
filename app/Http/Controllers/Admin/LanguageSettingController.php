@@ -50,7 +50,7 @@ class LanguageSettingController extends BaseController
     /**
      * @role(super_user, cms_manager, acc_manager)
      */
-    public function add(): View
+    public function create(): View
     {
         $available_languages = LanguageSettingService::getAvailableChoices();
         return view('admin.pages.language.create',
@@ -71,7 +71,7 @@ class LanguageSettingController extends BaseController
                 $request->has('is_enabled'),
                 $request->has('is_default'),
             );
-            SystemMessageService::addSuccessMessage('زبان با موفقیت اضافه شد');
+            SystemMessageService::addSuccessMessage('messages.languages.language_added_successfully');
             return redirect()->back();
         } catch (\Throwable $e) {
             SystemMessageService::addErrorMessage($e->getMessage());

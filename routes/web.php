@@ -55,8 +55,8 @@ Route::group(
 
                 Route::get("language", ["as" => "language.edit", "uses" => "LanguageSettingController@edit"]);
                 Route::put("language", ["as" => "language.update", "uses" => "LanguageSettingController@update"]);
-                Route::post("language/store", ["as" => "language.store", "uses" => "LanguageSettingController@store"]);
-                Route::get("language/add", ["as" => "language.add", "uses" => "LanguageSettingController@add"]);
+                Route::get("language/item", ["as" => "language.item.create", "uses" => "LanguageSettingController@create"]);
+                Route::post("language/item", ["as" => "language.item.store", "uses" => "LanguageSettingController@store"]);
 
                 Route::get("representative", ["as" => "representative.edit", "uses" => "RepresentativeSettingController@edit"]);
                 Route::put("representative", ["as" => "representative.update", "uses" => "RepresentativeSettingController@update"]);
