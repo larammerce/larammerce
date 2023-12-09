@@ -15,7 +15,11 @@
 @endsection
 
 @section('form_attributes')
+<<<<<<< HEAD
     action="{{route('admin.setting.language.store')}}" method="POST"
+=======
+    action="{{route('admin.setting.language.item.store')}}" method="POST"
+>>>>>>> df185b5 (Add dynamic language system)
 @endsection
 
 @section('form_body')
