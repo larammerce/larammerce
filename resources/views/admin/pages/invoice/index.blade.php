@@ -39,6 +39,8 @@
             </ul>
         </div>
         <div class="inner-container has-toolbar has-pagination">
+
+
             <div class="view-port">
                 @include('admin.pages.invoice.layout.'.LayoutService::getRecord("Invoice")->getMethod())
             </div>
@@ -65,4 +67,88 @@
             "parentId" => $scope ?? null
         ])
     </div>
+@endsection
+
+@section('side_bar')
+    {{-- Invoice Filter Form--}}
+    <form action="{{route('admin.invoice.index')}}" method="GET" class="pb-100">
+        <div class="form-group">
+            <div class="">تاریخ ایجاد فاکتور</div>
+            <div>
+                <label for="create-date-from">از</label>
+                <input id="create-date-from" class="form-control" type="date" value="{{ old('create_date_from',now()) }}" name="create_date_from">
+                <label for="create-date-to">تا</label>
+                <input id="create-date-to" class="form-control" type="date" value="{{ old('create_date_to',now()) }}" name="create_date_to">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="">تاریخ پرداخت فاکتور</div>
+            <div>
+                <label for="payment-date-from">از</label>
+                <input id="payment-date-from" type="date" class="form-control" value="{{ old('payment_date_from',now()) }}" name="payment_date_from">
+                <label for="payment-date-to">تا</label>
+                <input id="payment-date-to" type="date" class="form-control" value="{{ old('payment_date_to',now()) }}" name="payment_date_to">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="">بازه مبلغ فاکتور</div>
+            <div>
+                <label for="price-from">از</label>
+                <input id="price-from" class="form-control" type="number" value="{{ old('price_from','') }}" name="price_from">
+                <label for="price-to">تا</label>
+                <input id="price-to" class="form-control" type="number" value="{{ old('price_to','') }}" name="price_to">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="pb-10">نام و نام خانوادگی</div>
+            <div class="pb-20">
+                <input id="first-name" class="form-control" type="text" placeholder="نام" value="{{ old('first_name','') }}" name="first_name">
+            </div>
+            <div>
+                <input id="last-name" class="form-control" type="text" placeholder="نام خانوادگی" value="{{ old('last_name','') }}" name="last_name">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="payment-status">وضعیت فاکتور</label>
+            <select id="payment-status" name="payment_status" class="form-control"
+                    class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                <option selected type="number" value="">همه</option>
+                @foreach(App\Enums\Invoice\PaymentStatus::values() as $value)
+                    @switch($value)
+                        @case('0')
+                            <option value="{{$value}}">در حال انتظار</option>
+                            @break
+                        @case('1')
+                            <option value="{{$value}}">ثبت شده</option>
+                            @break
+                        @case('2')
+                            <option value="{{$value}}">تایید شده</option>
+                            @break
+                        @case('3')
+                            <option value="{{$value}}">پرداخت شده</option>
+                            @break
+                        @case('4')
+                            <option value="{{$value}}">ناموفق</option>
+                            @break
+                        @case('5')
+                            <option value="{{$value}}">لغو شده</option>
+                            @break
+                        @case('6')
+                            <option value="{{$value}}">هزینه برگشت داده شده</option>
+                            @break
+                    @endswitch
+                @endforeach
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="tracking-code">کد ملی</label>
+            <input id="tracking-code" class="form-control" type="text" value="{{ old('national_code','') }}" name="national_code">
+        </div>
+        <div class="form-group pb-10">
+            <label for="contact-number">شماره تماس</label>
+            <input id="contact-number" class="form-control" type="text" value="{{ old('user_number','') }}" name="user_number">
+        </div>
+        <input type="submit" class="btn btn-warning">
+    </form>
+    {{-- Invoice Filter Form--}}
 @endsection

@@ -36,7 +36,7 @@ return [
     | and never fallback to the translator one.
     |
     */
-    "locale" => null,
+    "locale" => env('SITE_DEFAULT_LOCALE', 'fa'),
 
     /*
     |--------------------------------------------------------------------------
@@ -87,7 +87,28 @@ return [
     | All available locales that can be selected.
     |
     */
-    "available_locales" => explode(',', env('SITE_AVAILABLE_LOCALES','fa,en',)),
+    "available_locales" => explode(',', env('SITE_AVAILABLE_LOCALES','fa')),
+
+    /*
+    |--------------------------------------------------------------------------
+    | All locales default data
+    |--------------------------------------------------------------------------
+    |
+    | All available locales that can be selected.
+    |
+    */
+    'all_locales_data' => [
+        'ar' => ['name' => 'العربیه',],
+        'fa' => ['name' => 'فارسی',],
+        'en' => ['name' => 'English',],
+        'tr' => ['name' => 'Türkçe',],
+        'tr' => ['name' => 'Deutsch',],
+        'tr' => ['name' => 'Pусский',],
+        'tr' => ['name' => 'Italiano',],
+        'tr' => ['name' => 'Le français',],
+        'tr' => ['name' => 'Español',],
+    ],
+
 
     /*
     |--------------------------------------------------------------------------
