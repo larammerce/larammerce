@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Interfaces\FileHandlerInterface;
+use App\Interfaces\Repositories\InvoiceRepositoryInterface;
 use App\Interfaces\Repositories\SettingRepositoryInterface;
+use App\Repositories\Eloquent\InvoiceRepositoryEloquent;
 use App\Repositories\Eloquent\SettingRepositoryEloquent;
 use App\Services\Common\EnvFile\EnvFileHandler;
 use App\Services\Invoice\NewInvoiceService;
@@ -79,5 +81,6 @@ class AppServiceProvider extends ServiceProvider {
 
         //Repositories
         $this->app->bind(SettingRepositoryInterface::class, SettingRepositoryEloquent::class);
+        $this->app->bind(InvoiceRepositoryInterface::class, InvoiceRepositoryEloquent::class);
     }
 }

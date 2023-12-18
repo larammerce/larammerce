@@ -39,6 +39,84 @@
             </ul>
         </div>
         <div class="inner-container has-toolbar has-pagination">
+
+            {{-- Invoice Filter Form--}}
+            <form action="{{route('admin.invoice.index')}}" method="GET" class="">
+                <div>
+                    <div class="">تاریخ ایجاد فاکتور</div>
+                    <div>
+                        <label for="create-date-from">از</label>
+                        <input id="create-date-from" type="date" name="create_date_from">
+                        <label for="create-date-to">تا</label>
+                        <input id="create-date-to" type="date" name="create_date_to">
+                    </div>
+                </div>
+                <div>
+                    <div class="">تاریخ پرداخت فاکتور</div>
+                    <div>
+                        <label for="payment-date-from">از</label>
+                        <input id="payment-date-from" type="date" name="payment_date_from">
+                        <label for="payment-date-to">تا</label>
+                        <input id="payment-date-to" type="date" name="payment_date_to">
+                    </div>
+                </div>
+                <div>
+                    <label for="payment-status" class="">وضعیت فاکتور</label>
+                    <select id="payment-status" name="payment_status"
+                            class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                        <option selected type="number" value="">همه</option>
+                        @foreach(App\Enums\Invoice\PaymentStatus::values() as $value)
+                            @switch($value)
+                                @case('0')
+                                    <option value="{{$value}}" >در حال انتظار</option>
+                                    @break
+                                @case('1')
+                                    <option value="{{$value}}" >ثبت شده</option>
+                                    @break
+                                @case('2')
+                                    <option value="{{$value}}" >تایید شده</option>
+                                    @break
+                                @case('3')
+                                    <option value="{{$value}}" >پرداخت شده</option>
+                                    @break
+                                @case('4')
+                                    <option value="{{$value}}" >ناموفق</option>
+                                    @break
+                                @case('5')
+                                    <option value="{{$value}}" >لغو شده</option>
+                                    @break
+                                @case('6')
+                                    <option value="{{$value}}" >هزینه برگشت داده شده</option>
+                                    @break
+                            @endswitch
+                        @endforeach
+                    </select>
+                </div>
+                <div class="">بازه مبلغ فاکتور</div>
+                <div>
+                    <label for="price-from">از</label>
+                    <input id="price-from" type="number" name="price_from">
+                    <label for="price-to">تا</label>
+                    <input id="price-to" type="number" name="price_to">
+                </div>
+                <div>
+                    <label for="first-name">نام</label>
+                    <input id="first-name" type="text" name="first_name">
+                    <label for="last-name"> نام خانوادگی</label>
+                    <input id="last-name" type="text" name="last_name">
+                </div>
+                <div>
+                    <label for="tracking-code">کد ملی</label>
+                    <input id="tracking-code" type="text" name="national_code">
+                </div>
+                <div>
+                    <label for="contact-number">شماره تماس کاربر</label>
+                    <input id="contact-number" type="text" name="user_number">
+                </div>
+                <input type="submit">
+            </form>
+            {{-- Invoice Filter Form--}}
+
             <div class="view-port">
                 @include('admin.pages.invoice.layout.'.LayoutService::getRecord("Invoice")->getMethod())
             </div>
