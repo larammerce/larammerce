@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\Invoice\ShipmentStatus;
+use App\Interfaces\Repositories\InvoiceRepositoryInterface;
 use App\Models\CustomerUser;
 use App\Models\Invoice;
 use App\Utils\Common\History;
@@ -21,9 +22,28 @@ use Illuminate\Http\Request;
  * @role(enabled=true)
  */
 class InvoiceController extends BaseController {
+
+    public function __construct(
+        protected InvoiceRepositoryInterface $invoiceRepository,
+    )
+    {
+        parent::__construct();
+    }
+
     /**
      * @role(super_user, stock_manager, acc_manager)
      * @rules(customer_user_id="exists:customer_users,id",
+     *     first_name="nullable|required_with:last_name|string",
+     *     last_name="nullable|required_with:first_name|string",
+     *     create_date_from="nullable|date",
+     *     create_date_to="nullable|date",
+     *     payment_date_from="nullable|date",
+     *     payment_date_to="nullable|date",
+     *     price_from="nullable|numeric",
+     *     price_to="nullable|numeric",
+     *     national_code="nullable|string",
+     *     user_number="nullable|string",
+     *     payment_status="nullable|numeric",
      *     start_hour="date_format:H:i",
      *     finish_hour="date_format:H:i",
      *     first_date="date",
@@ -40,23 +60,28 @@ class InvoiceController extends BaseController {
             parent::setPageAttribute(request()->get("customer_user_id"));
             $customerUser = CustomerUser::find(request()->get('customer_user_id'));
             $invoices = Invoice::where("customer_user_id", request()->get("customer_user_id"))
-                ->with(['customer', 'products'])->paginate(Invoice::getPaginationCount());
+                ->with(['customer', 'products']);
         } else {
             parent::setPageAttribute();
             if ($request->has('start_hour')) {
                 if ($last_delivery_date === '') {
                     $invoices = Invoice::whereBetween('delivery_finish_time', [$delivery_start_time, $delivery_finish_time])
-                        ->with('customer', 'products')->paginate(Invoice::getPaginationCount());
+                        ->with('customer', 'products');
                 } else {
                     $invoices = Invoice::whereBetween('delivery_finish_time', [$delivery_start_time, $delivery_finish_time])
                         ->whereBetween('delivery_date', [$first_delivery_date, $last_delivery_date])
-                        ->with('customer', 'products')->paginate(Invoice::getPaginationCount());
+                        ->with('customer', 'products');
                 }
 
             } else {
-                $invoices = Invoice::with(['customer', 'products'])->paginate(Invoice::getPaginationCount());
+                $invoices = Invoice::with(['customer', 'products']);
             }
         }
+
+        $invoices = $this->invoiceRepository
+            ->findByQueryAndFilters($invoices, $request)
+            ->paginate(Invoice::getPaginationCount());
+
         return view('admin.pages.invoice.index', compact('invoices', 'customerUser'));
     }
 

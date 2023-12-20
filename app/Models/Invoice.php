@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\Invoice\NewInvoiceType;
 use App\Enums\Invoice\PaymentStatus;
 use App\Services\Invoice\NewInvoiceService;
+use App\Traits\HasQueries;
 use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
 use App\Utils\FinancialManager\Factory;
 use App\Utils\ShipmentService\Factory as ShipmentFactory;
@@ -72,6 +73,8 @@ use Illuminate\Support\Facades\DB;
  * @package App\Models
  */
 class Invoice extends BaseModel {
+    use HasQueries;
+
     protected $table = 'invoices';
     protected $fillable = [
         'payment_type', 'customer_user_id', 'customer_address', 'sum', 'payment_status', 'payment_id', 'has_paper',

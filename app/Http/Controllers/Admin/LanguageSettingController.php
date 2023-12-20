@@ -53,11 +53,7 @@ class LanguageSettingController extends BaseController
     public function create(): View
     {
         $available_languages = LanguageSettingService::getAvailableChoices();
-        return view('admin.pages.language.create',
-            [
-                'available_languages' => $available_languages
-            ]
-        );
+        return view('admin.pages.language.create', compact('available_languages'));
     }
 
     /**
@@ -66,13 +62,9 @@ class LanguageSettingController extends BaseController
     public function store(Request $request): RedirectResponse
     {
         try {
-            LanguageSettingService::setOne(
-                $request->input('language_id'),
-                $request->has('is_enabled'),
-                $request->has('is_default'),
-            );
+            LanguageSettingService::setOne($request);
             SystemMessageService::addSuccessMessage('messages.languages.language_added_successfully');
-            return redirect()->back();
+            return redirect()->to(route('admin.setting.language.edit'));
         } catch (\Throwable $e) {
             SystemMessageService::addErrorMessage($e->getMessage());
             return History::redirectBack();

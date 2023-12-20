@@ -175,4 +175,7 @@ return [
     'payment_driver' => [
         'invalid_record' => 'تنظیمات ایجاد شده نامعتبر است، لطفا مجددا تلاش کنید.',
     ],
+    'language_setting' => [
+        'language_already_set' => 'این زبان از قبل تنظیم شده است.',
+    ]
 ];
