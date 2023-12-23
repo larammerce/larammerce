@@ -428,8 +428,13 @@ class InvoiceController extends BaseController {
      */
     public function enable(Invoice $invoice) {
         if (get_customer_user()->id == $invoice->customer_user_id) {
+        /*     $invoice->update([
+                "created_at" => Carbon::now()
+            ]); */
             $invoice->updateRows();
             $invoice->customPush();
+   /*           dd($invoice);
+            die;    */
             if ($invoice->rows()->count() > 0) {
                 if ($invoice->createFinManRelation())
                     SystemMessageService::addSuccessMessage("system_messages.invoice.enabled");
@@ -438,7 +443,9 @@ class InvoiceController extends BaseController {
             } else
                 SystemMessageService::addWarningMessage("system_messages.invoice.is_empty");
         }
-
+        
+            $newCreatedAt = now();
+            $invoice->created_at = $newCreatedAt;
         return redirect()->back();
     }
 
@@ -449,8 +456,7 @@ class InvoiceController extends BaseController {
         }
         $invoice->update([
                 "survey_viewed_at" => Carbon::now()
-            ]
-        );
+            ]);
 
         $survey_url = $survey_config->getDefaultSurveyUrl();
         if ($survey_config->hasCustomState($invoice->state_id)) {
