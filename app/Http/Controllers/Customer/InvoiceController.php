@@ -428,13 +428,9 @@ class InvoiceController extends BaseController {
      */
     public function enable(Invoice $invoice) {
         if (get_customer_user()->id == $invoice->customer_user_id) {
-        /*     $invoice->update([
-                "created_at" => Carbon::now()
-            ]); */
+            
             $invoice->updateRows();
-            $invoice->customPush();
-   /*           dd($invoice);
-            die;    */
+            $invoice->customPush(); 
             if ($invoice->rows()->count() > 0) {
                 if ($invoice->createFinManRelation())
                     SystemMessageService::addSuccessMessage("system_messages.invoice.enabled");
