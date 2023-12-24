@@ -3,6 +3,7 @@
 
 namespace App\Models;
 
+use App\Services\Invoice\NewInvoiceService;
 use App\Utils\CRMManager\Enums\CRMOpItemDiscountType;
 use App\Utils\CRMManager\Interfaces\CRMOpItemInterface;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -123,18 +124,34 @@ class CartRow extends BaseModel implements CRMOpItemInterface {
     }
 
     public function crmGetOpProductUnitPrice(): float {
-        // TODO: Implement crmGetOpProductUnitPrice() method.
+        return $this->crmGetOpListPrice() - $this->crmGetOpProductDiscountAmount();
     }
 
     public function crmGetOpVatPercentage(): int {
-        // TODO: Implement crmGetOpVatPercentage() method.
+        /** @var NewInvoiceService $new_invoice_service */
+        $new_invoice_service = app(NewInvoiceService::class);
+        return $new_invoice_service->getProductAllExtrasPercentage($this->product);
     }
 
     public function crmGetOpVatAmount(): float {
-        // TODO: Implement crmGetOpVatAmount() method.
+        /** @var NewInvoiceService $new_invoice_service */
+        $new_invoice_service = app(NewInvoiceService::class);
+        return $new_invoice_service->getProductAllExtrasAmount($this->product);
     }
 
     public function crmGetOpGrandTotal(): float {
         // TODO: Implement crmGetOpGrandTotal() method.
+    }
+
+    public function crmGetOpItemPrice(): float {
+        // TODO: Implement crmGetOpItemPrice() method.
+    }
+
+    public function crmGetOpItemQuantity(): float {
+        // TODO: Implement crmGetOpItemQuantity() method.
+    }
+
+    public function crmGetOpItemAmount(): float {
+        // TODO: Implement crmGetOpItemAmount() method.
     }
 }

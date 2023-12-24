@@ -22,11 +22,11 @@ interface CRMOpportunityInterface {
 
     public function crmGetOpUpdatedAt(): Carbon;
 
-    public function crmSetOpRelCreatedAt(Carbon $created_at);
+    public function crmSetOpRelCreatedAt(Carbon $created_at): void;
 
     public function crmGetOpRelCreatedAt(): Carbon;
 
-    public function crmSetOpRelUpdatedAt(Carbon $updated_at);
+    public function crmSetOpRelUpdatedAt(Carbon $updated_at): void;
 
     public function crmGetOpRelUpdatedAt(): Carbon;
 

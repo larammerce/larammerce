@@ -16,5 +16,8 @@ return [
     ],
     "drivers" => [
         "sarv" => "سرو سی آر ام"
+    ],
+    "entities" => [
+        "opportunity" => "فرصت",
     ]
 ];

@@ -28,7 +28,7 @@ class Kernel extends ConsoleKernel {
         $schedule->command('short-links:store')->dailyAt('00:01');
         $schedule->command('logistic-table:update')->dailyAt('00:11');
         $schedule->command('sitemap:generate')->dailyAt('00:21');
-        $schedule->command('crm:push-customers')->everyMinute();
+        $schedule->command('crm:push-leads')->everyMinute();
         $schedule->command('crm:push-legal-info')->everyMinute();
     }
 

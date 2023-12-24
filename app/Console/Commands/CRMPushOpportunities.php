@@ -7,13 +7,13 @@ use App\Utils\CRMManager\Exceptions\CRMDriverInvalidConfigurationException;
 use App\Utils\CRMManager\Factory;
 use Illuminate\Console\Command;
 
-class CRMPushCustomerUserChunk extends Command {
+class CRMPushOpportunities extends Command {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'crm:push-customers';
+    protected $signature = 'crm:push-opportunities';
 
     /**
      * The console command description.

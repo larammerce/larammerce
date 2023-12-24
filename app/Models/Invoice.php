@@ -8,6 +8,7 @@ use App\Services\Invoice\NewInvoiceService;
 use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
 use App\Utils\FinancialManager\Factory;
 use App\Utils\ShipmentService\Factory as ShipmentFactory;
+use Carbon\Carbon;
 use DateTime;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -60,6 +61,11 @@ use Illuminate\Support\Facades\DB;
  * @property integer direct_discount
  * @property int sum_of_rows
  *
+ * @property int crm_op_id
+ * @property Carbon crm_op_created_at
+ * @property Carbon crm_op_updated_at
+ * @property int crm_invoice_id
+ *
  * @property State state
  * @property Product[] products
  * @property CustomerUser customer
@@ -77,7 +83,7 @@ class Invoice extends BaseModel {
         'payment_type', 'customer_user_id', 'customer_address', 'sum', 'payment_status', 'payment_id', 'has_paper',
         'shipment_method', 'shipment_status', 'phone_number', 'transferee_name', 'fin_relation', 'is_legal', 'state_id',
         'is_active', 'is_warned', 'has_shipment_cost', 'shipment_driver', 'shipment_data', 'discount_card_id',
-        'survey_notified_at', 'survey_viewed_at'
+        'survey_notified_at', 'survey_viewed_at', 'crm_op_id', 'crm_invoice_id', 'crm_op_created_at', 'crm_op_updated_at'
     ];
     protected $casts = [
         "survey_notified_at" => "timestamp",
@@ -175,6 +181,7 @@ class Invoice extends BaseModel {
         }
 
         $this->is_active = true;
+        $this->created_at = Carbon::now();
         $this->fin_relation = $preInvoiceAddResult;
         $this->save();
 

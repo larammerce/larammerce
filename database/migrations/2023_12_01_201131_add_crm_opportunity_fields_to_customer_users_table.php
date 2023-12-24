@@ -20,6 +20,8 @@ class AddCrmOpportunityFieldsToCustomerUsersTable extends Migration {
 
         Schema::table('invoices', function (Blueprint $table) {
             $table->string("crm_op_id")->nullable()->index();
+            $table->timestamp("crm_op_created_at")->nullable();
+            $table->timestamp("crm_op_updated_at")->nullable();
             $table->string("crm_invoice_id")->nullable()->index();
         });
 

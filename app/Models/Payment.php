@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property DateTime created_at
  * @property DateTime updated_at
  * @property integer status
+ * @property int crm_payment_id
  *
  * @property Invoice invoice
  *
@@ -36,7 +37,7 @@ class Payment extends BaseModel {
     protected $table = 'payments';
 
     protected $fillable = [
-        'invoice_id', 'amount', 'driver', 'payment_data', 'status'
+        'invoice_id', 'amount', 'driver', 'payment_data', 'status', 'crm_payment_id'
     ];
 
     protected static array $SORTABLE_FIELDS = ['id', 'amount', 'created_at'];

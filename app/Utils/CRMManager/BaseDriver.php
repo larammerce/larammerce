@@ -9,7 +9,10 @@
 namespace App\Utils\CRMManager;
 
 use App\Utils\CRMManager\Interfaces\CRMAccountInterface;
+use App\Utils\CRMManager\Interfaces\CRMInvoiceInterface;
 use App\Utils\CRMManager\Interfaces\CRMLeadInterface;
+use App\Utils\CRMManager\Interfaces\CRMOpportunityInterface;
+use App\Utils\CRMManager\Interfaces\CRMPaymentInterface;
 use App\Utils\CRMManager\Models\BaseCRMConfig;
 use stdClass;
 
@@ -35,4 +38,8 @@ interface BaseDriver {
     public function createOpportunity(CRMOpportunityInterface $opportunity): bool;
 
     public function updateOpportunity(CRMOpportunityInterface $opportunity): bool;
+
+    public function createInvoice(CRMInvoiceInterface $invoice);
+
+    public function createPayment(CRMPaymentInterface $payment);
 }

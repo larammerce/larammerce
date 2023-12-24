@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Utils\CRMManager\Enums\CRMPersonType;
 use App\Utils\CRMManager\Interfaces\CRMAccountInterface;
 use App\Utils\CRMManager\Interfaces\CRMLeadInterface;
+use App\Utils\CRMManager\Interfaces\CRMOpItemInterface;
 use App\Utils\CRMManager\Interfaces\CRMOpportunityInterface;
 use Carbon\Carbon;
 use DateTime;
@@ -229,5 +230,60 @@ class CustomerUser extends BaseModel implements CRMLeadInterface, CRMAccountInte
 
     function crmSetAccountId(string $account_id): void {
         $this->update(["crm_account_id" => $account_id]);
+    }
+
+    public function crmGetOpId(): string {
+        return $this->crm_op_id;
+    }
+
+    public function crmSetOpId(string $op_id) {
+        $this->update([
+            "crm_op_id" => $op_id
+        ]);
+    }
+
+    public function crmGetOpName(): string {
+        return $this->user->full_name . " - " . trans("crm.entities.opportunity");
+    }
+
+    /**
+     * @return array<CRMOpItemInterface>
+     */
+    public function crmGetOpItems(): array {
+        return $this->cartRows;
+    }
+
+    public function crmGetOpAmount(): float {
+        return $this->cartRows()->with("product")->get()->sum(function (CartRow $cart_row) {
+            return $cart_row->product->getStandardLatestPrice() * $cart_row->count;
+        });
+    }
+
+    public function crmGetOpCreatedAt(): Carbon {
+        return $this->created_at;
+    }
+
+    public function crmGetOpUpdatedAt(): Carbon {
+        return $this->updated_at;
+    }
+
+    public function crmSetOpRelCreatedAt(Carbon $created_at): void {
+        $this->update([
+            "crm_op_created_at" => $created_at
+        ]);
+    }
+
+    public function crmGetOpRelCreatedAt(): Carbon {
+        return $this->crm_op_created_at;
+    }
+
+    public function crmSetOpRelUpdatedAt(Carbon $updated_at): void {
+        $this->update([
+            "crm_op_updated_at" => $updated_at
+        ]);
+    }
+
+    public function crmGetOpRelUpdatedAt(): Carbon {
+        return $this->crm_op_updated_at;
     }
 }

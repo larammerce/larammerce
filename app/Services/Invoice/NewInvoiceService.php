@@ -182,4 +182,7 @@ class NewInvoiceService {
     public function getProductPriceRatio(): float {
         return doubleval(env('SITE_PRICE_RATIO', '1.0'));
     }
+
+    public function getProductAllExtrasAmount(Product $product) {
+    }
 }

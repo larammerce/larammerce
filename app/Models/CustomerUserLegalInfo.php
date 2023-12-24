@@ -48,8 +48,7 @@ class CustomerUserLegalInfo extends BaseModel implements CRMAccountInterface {
         'national_id',
         'registration_code',
         'company_phone',
-        'fin_relation',
-        'crm_lead_id'
+        'fin_relation'
     ];
 
     public function customerUser(): BelongsTo {
