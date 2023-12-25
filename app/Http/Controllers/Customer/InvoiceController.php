@@ -439,6 +439,9 @@ class InvoiceController extends BaseController {
                 SystemMessageService::addWarningMessage("system_messages.invoice.is_empty");
         }
 
+        $newCreatedAt = now();
+        $invoice->created_at = $newCreatedAt;
+
         return redirect()->back();
     }
 
