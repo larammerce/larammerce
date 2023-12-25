@@ -121,7 +121,6 @@ class Provider
     {
         if (!self::isGenerateCodeAllowed($key))
             throw new GenerateCodeNotPossibleException("You are not allowed to generate code at the moment.");
-
         $oneTimeCode = '';
         if ($justNumeric)
             $oneTimeCode = static::generateString($length, '123456789');

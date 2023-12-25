@@ -427,7 +427,7 @@ class InvoiceController extends BaseController {
      */
     public function enable(Invoice $invoice) {
         if (get_customer_user()->id == $invoice->customer_user_id) {
-            $invoice->updateRows();
+            $invoice->updateRlows();
             $invoice->customPush();
             if ($invoice->rows()->count() > 0) {
                 if ($invoice->createFinManRelation())
@@ -437,6 +437,9 @@ class InvoiceController extends BaseController {
             } else
                 SystemMessageService::addWarningMessage("system_messages.invoice.is_empty");
         }
+
+        $newCreatedAt = now();
+        $invoice->created_at = $newCreatedAt;
 
         return redirect()->back();
     }
