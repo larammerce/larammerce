@@ -427,7 +427,7 @@ class InvoiceController extends BaseController {
      */
     public function enable(Invoice $invoice) {
         if (get_customer_user()->id == $invoice->customer_user_id) {
-            $invoice->updateRlows();
+            $invoice->updateRows();
             $invoice->customPush();
             if ($invoice->rows()->count() > 0) {
                 if ($invoice->createFinManRelation())
