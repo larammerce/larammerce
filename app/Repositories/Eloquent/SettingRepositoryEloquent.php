@@ -88,7 +88,7 @@ class SettingRepositoryEloquent implements SettingRepositoryInterface
         return $setting;
     }
 
-    public function update(Setting $setting, string $key, ?string $value, Authenticatable|User|null $user = null, bool $is_system_setting = false): Setting {
+    public function update(Setting $setting, ?string $key, ?string $value, Authenticatable|User|null $user = null, bool $is_system_setting = false): Setting {
         $this->clearCache();
         $setting->key = $key;
         $setting->value = $value ?? '';
