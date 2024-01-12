@@ -661,6 +661,14 @@ Route::group(
     }
 );
 
+Route::group([
+    "prefix" => "public",
+    "as" => "public.",
+    "namespace" => "Public"
+], function () {
+    Route::get("product-listing/emalls", ["as" => "product-listing.emalls", "uses" => "ProductListingController@emalls"]);
+});
+
 //Public routes
 Route::post("/message/save", ["as" => "message-save", "uses" => "MessageController@saveMessage"]);
 Route::post("/newsletter/subscribe", ["as" => "newsletter", "uses" => "NewsletterController@save"]);
