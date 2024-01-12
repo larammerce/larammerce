@@ -19,7 +19,9 @@ interface CRMOpItemInterface {
 
     public function crmGetOpSubTotal(): float;
 
-    public function crmGetOpDiscountType(): float;
+    public function crmGetOpDiscountType(): string;
+
+    public function crmGetOpDiscountValue(): float;
 
     public function crmGetOpProductDiscountAmount(): float;
 

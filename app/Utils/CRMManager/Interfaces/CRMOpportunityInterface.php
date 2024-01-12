@@ -30,4 +30,6 @@ interface CRMOpportunityInterface {
 
     public function crmGetOpRelUpdatedAt(): Carbon;
 
+    public function crmGetAccountId(): string;
+
 }

@@ -13,7 +13,11 @@ use App\Utils\CRMManager\BaseDriver;
 use App\Utils\CRMManager\ConfigProvider;
 use App\Utils\CRMManager\Interfaces\CRMAccountInterface;
 use App\Utils\CRMManager\Interfaces\CRMBasePersonInterface;
+use App\Utils\CRMManager\Interfaces\CRMInvoiceInterface;
 use App\Utils\CRMManager\Interfaces\CRMLeadInterface;
+use App\Utils\CRMManager\Interfaces\CRMOpItemInterface;
+use App\Utils\CRMManager\Interfaces\CRMOpportunityInterface;
+use App\Utils\CRMManager\Interfaces\CRMPaymentInterface;
 use App\Utils\CRMManager\Models\BaseCRMConfig;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -250,6 +254,104 @@ class Driver implements BaseDriver {
         return $relation;
     }
 
+    public function createOpportunity(CRMOpportunityInterface $opportunity): bool {
+        $this->authenticate();
+        $config = ConfigProvider::getConfig(self::DRIVER_ID);
+
+        $response = ConnectionFactory::createV4("/service2/v4_1/rest.php?utype={$config->utype}", $config)
+            ->withData(
+                [
+                    "method" => "set_entry",
+                    "input_type" => "JSON",
+                    "response_type" => "JSON",
+                    "rest_data" => [
+                        "session" => $config->session_id,
+                        "module_name" => "Opportunities",
+                        "name_value_list" => [
+                            "name" => $opportunity->crmGetOpName(),
+                            "account_id" => $opportunity->crmGetAccountId(),
+                            "assigned_user_id" => $config->username,
+                            "lineitems" => $this->buildLineItems($opportunity->crmGetOpItems()),
+                            "amount" => $opportunity->crmGetOpAmount(),
+                            "currency_id" => "-99",
+                            "currency_exchange_rate" => "1",
+                            "date_closed" => $opportunity->crmGetOpCreatedAt()->addMonths(2)->format("Y-m-d"),
+                            "pipeline" => "pl0_sales_stage_dom",
+                            "sales_stage" => "makeorder",
+                            "lead_source" => "Website registration",
+                            "forecast" => "include",
+                            "probability" => "10"
+                        ],
+                        "meta_data" => true,
+                    ],
+                ]
+            )
+            ->asJson()
+            ->post();
+
+        if ($response->server_response_status != "200" or is_null($response->id)) {
+            Log::error("Sarv create opportunity has failed. " . json_encode($response));
+            return "";
+        }
+        $relation = $response->id;
+        $opportunity->crmSetOpId($relation);
+
+        return $relation;
+    }
+
+    public function updateOpportunity(CRMOpportunityInterface $opportunity): bool {
+        $this->authenticate();
+        $config = ConfigProvider::getConfig(self::DRIVER_ID);
+
+        $response = ConnectionFactory::createV4("/service2/v4_1/rest.php?utype={$config->utype}", $config)
+            ->withData(
+                [
+                    "method" => "set_entry",
+                    "input_type" => "JSON",
+                    "response_type" => "JSON",
+                    "rest_data" => [
+                        "session" => $config->session_id,
+                        "module_name" => "Opportunities",
+                        "name_value_list" => [
+                            "name" => $opportunity->crmGetOpName(),
+                            "account_id" => $opportunity->crmGetAccountId(),
+                            "assigned_user_id" => $config->username,
+                            "lineitems" => [],
+                            "amount" => $opportunity->crmGetOpAmount(),
+                            "currency_id" => "-99",
+                            "currency_exchange_rate" => "1",
+                            "date_closed" => $opportunity->crmGetOpCreatedAt()->addMonths(2)->format("Y-m-d"),
+                            "pipeline" => "pl0_sales_stage_dom",
+                            "sales_stage" => "makeorder",
+                            "lead_source" => "Website registration",
+                            "forecast" => "include",
+                            "probability" => "10"
+                        ],
+                        "meta_data" => true,
+                    ],
+                ]
+            )
+            ->asJson()
+            ->post();
+
+        if ($response->server_response_status != "200" or is_null($response->id)) {
+            Log::error("Sarv create opportunity has failed. " . json_encode($response));
+            return "";
+        }
+        $relation = $response->id;
+        $opportunity->crmSetOpId($relation);
+
+        return $relation;
+    }
+
+    public function createInvoice(CRMInvoiceInterface $invoice) {
+        // TODO: Implement createInvoice() method.
+    }
+
+    public function createPayment(CRMPaymentInterface $payment) {
+        // TODO: Implement createPayment() method.
+    }
+
     /**
      * @param CRMBasePersonInterface $base_person
      * @param bool $separated
@@ -286,4 +388,48 @@ class Driver implements BaseDriver {
             }, $numbers);
         }
     }
+
+    /**
+     * @param array<CRMOpItemInterface> $line_items
+     * @return array<array>
+     */
+    private function buildLineItems(array $line_items): array {
+        $result = [
+            "lineitems" => [
+                "products" => []
+            ]
+        ];
+
+        foreach ($line_items as $index => $item) {
+            $result['lineitems']['products'][] = [
+                "group_id" => 1, // Assuming a constant group_id
+                "number" => $index + 1,
+                "type_item" => "product",
+                "name" => $item->crmGetOpItemName(),
+                "product_id" => $item->crmGetOpItemId(),
+                "product_code" => $item->crmGetOpItemCode(),
+                "part_number" => "PN-" . $item->crmGetOpItemId(), // Assuming a part number format
+                "main_unit_type" => "box",
+                "secondary_unit_type" => "",
+                "description" => "",
+                "item_description" => "",
+                "currency_id" => "-99", // Assuming a constant currency id
+                "product_qty" => $item->crmGetOpItemQuantity(),
+                "product_second_qty" => 0, // Assuming a constant value
+                "product_list_price" => $item->crmGetOpListPrice(),
+                "sub_total" => $item->crmGetOpSubTotal(),
+                "discount" => $item->crmGetOpDiscountValue(),
+                "product_discount" => $item->crmGetOpProductDiscountAmount(),
+                "product_discount_amount" => -($item->crmGetOpProductDiscountAmount()),
+                "discount_amount" => $item->crmGetOpProductDiscountAmount(),
+                "product_unit_price" => $item->crmGetOpProductUnitPrice(),
+                "vat" => $item->crmGetOpVatPercentage(),
+                "vat_amt" => $item->crmGetOpVatAmount(),
+                "grand_total" => $item->crmGetOpGrandTotal()
+            ];
+        }
+
+        return $result;
+    }
+
 }

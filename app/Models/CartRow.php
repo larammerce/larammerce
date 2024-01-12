@@ -86,41 +86,61 @@ class CartRow extends BaseModel implements CRMOpItemInterface {
         return $this->crmGetOpListPrice() * $this->count;
     }
 
-    public function crmGetOpDiscountType(): float {
+    public function crmGetOpDiscountType(): string {
         $product = $this->product;
-        if ($product->has_discount) {
-            if ($product->latest_special_price !== $product->latest_price) {
-                return CRMOpItemDiscountType::AMOUNT;
-            }
-        } else {
-            if ($product->is_discountable and !is_null($product->discountGroup)) {
-                if ($product->discountGroup->is_percentage) {
-                    return CRMOpItemDiscountType::PERCENTAGE;
-                } else {
+        if ($product->is_discountable) {
+            if ($product->has_discount) {
+                if ($product->latest_special_price !== $product->latest_price) {
                     return CRMOpItemDiscountType::AMOUNT;
+                }
+            } else {
+                if (!is_null($product->discountGroup)) {
+                    if ($product->discountGroup->is_percentage) {
+                        return CRMOpItemDiscountType::PERCENTAGE;
+                    } else {
+                        return CRMOpItemDiscountType::AMOUNT;
+                    }
                 }
             }
         }
         return CRMOpItemDiscountType::AMOUNT;
     }
 
-    public function crmGetOpProductDiscountAmount(): float {
+    public function crmGetOpDiscountValue(): float {
         $product = $this->product;
-        if ($product->has_discount) {
-            if ($product->latest_special_price !== $product->latest_price) {
-                return $product->getStandardLatestPrice() - $product->getStandardSpecialPrice();
-            }
-        } else {
-            if ($product->is_discountable and !is_null($product->discountGroup)) {
-                if ($product->discountGroup->is_percentage) {
-                    $discount_percentage = $product->discountGroup->value;
-                    return (int)($product->getStandardLatestPrice() * $discount_percentage / 100);
-                } else {
+        if ($product->is_discountable) {
+            if ($product->has_discount) {
+                if ($product->latest_special_price !== $product->latest_price) {
+                    return $product->getStandardLatestPrice() - $product->getStandardSpecialPrice();
+                }
+            } else {
+                if (!is_null($product->discountGroup)) {
                     return $product->discountGroup->value;
                 }
             }
         }
-        return CRMOpItemDiscountType::AMOUNT;
+        return 0;
+    }
+
+    public function crmGetOpProductDiscountAmount(): float {
+        $product = $this->product;
+        if ($product->is_discountable) {
+            if ($product->has_discount) {
+                if ($product->latest_special_price !== $product->latest_price) {
+                    return $product->getStandardLatestPrice() - $product->getStandardSpecialPrice();
+                }
+            } else {
+                if (!is_null($product->discountGroup)) {
+                    if ($product->discountGroup->is_percentage) {
+                        $discount_percentage = $product->discountGroup->value;
+                        return (int)($product->getStandardLatestPrice() * $discount_percentage / 100);
+                    } else {
+                        return $product->discountGroup->value;
+                    }
+                }
+            }
+        }
+        return 0;
     }
 
     public function crmGetOpProductUnitPrice(): float {
