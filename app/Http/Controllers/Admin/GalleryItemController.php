@@ -84,7 +84,6 @@ class GalleryItemController extends BaseController
     public function update(Request $request, GalleryItem $gallery_item): RedirectResponse
     {
         $gallery_item->update($request->all());
-
         $gallery_item->save();
 
         if ($request->hasFile('image'))
