@@ -38,6 +38,7 @@ use Yangqi\Htmldom\Htmldom;
  * @property string seo_title
  * @property DateTime created_at
  * @property DateTime updated_at
+ * @property string raw_blade_name
  *
  * @property array contents
  *
@@ -120,6 +121,10 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract 
             }
         }
         return $tmp_blade_name;
+    }
+
+    public function getRawBladeNameAttribute(): string {
+        return $this->attributes["blade_name"];
     }
 
     public function setDataAttribute($data): void {
