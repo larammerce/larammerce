@@ -77,7 +77,7 @@ class WebPageController extends BaseController {
         $web_page->update($request->all());
         if (isset($web_page->blade_name) and $web_page->blade_name != null) {
             $template = new TemplateModel($web_page->raw_blade_name,
-                TemplateService::getBladePath($web_page->blade_name));
+                TemplateService::getBladePath($web_page->raw_blade_name));
             $galleryTags = $template->selectDirectiveTags(Directives::GALLERY);
             foreach ($galleryTags as $galleryTag) {
                 $galleryName = $galleryTag->attr[Directives::GALLERY];
