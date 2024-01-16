@@ -23,7 +23,7 @@
         </div>
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
             <span class="label">نام بلید</span>
-            <input class="form-control input-sm" value="{{ $web_page->blade_name }}" disabled>
+            <input class="form-control input-sm" value="{{ $web_page->raw_blade_name }}" disabled>
         </div>
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
             <label>تصویر</label>

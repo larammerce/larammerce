@@ -20,7 +20,7 @@
             </div>
             <div class="col-lg-5 col-md-6 col-sm-9 col-xs-6 col">
                 <div class="label">نام بلید</div>
-                <div>{{$web_page->blade_name}}</div>
+                <div>{{$web_page->raw_blade_name}}</div>
             </div>
             <div class="col-lg-5 col-md-6 col-sm-12 col-xs-6 col col-action">
                 <div class="label">عملیات</div>

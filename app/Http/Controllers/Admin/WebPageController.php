@@ -60,7 +60,7 @@ class WebPageController extends BaseController {
      */
     public function edit(WebPage $web_page): Factory|View|Application {
         $web_page->load('directory', 'tags');
-        if (strlen($web_page->blade_name) !== 0) {
+        if (strlen($web_page->raw_blade_name) !== 0) {
             return view('admin.pages.web-page.edit')->with(compact("web_page"));
         }
         return view('admin.pages.web-page.initial')->with(compact("web_page"));
@@ -75,7 +75,7 @@ class WebPageController extends BaseController {
             $request->merge(["data" => []]);
         }
         $web_page->update($request->all());
-        if (isset($web_page->blade_name) and $web_page->blade_name != null) {
+        if (isset($web_page->raw_blade_name) and $web_page->raw_blade_name != null) {
             $template = new TemplateModel($web_page->raw_blade_name,
                 TemplateService::getBladePath($web_page->raw_blade_name));
             $galleryTags = $template->selectDirectiveTags(Directives::GALLERY);

@@ -215,14 +215,14 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract 
     private function loadBladeContents() {
         $tmp_contents = $this->contents;
         $this->contents = [];
-        if ($this->blade_name != null and strlen($this->blade_name) > 0) {
-            $blade_path = TemplateService::getBladePath($this->attributes["blade_name"]);
+        if ($this->raw_blade_name != null and strlen($this->raw_blade_name) > 0) {
+            $blade_path = TemplateService::getBladePath($this->raw_blade_name);
             $bladeContent = TemplateService::getBladeContent($blade_path);
             $html = new Htmldom($bladeContent);
             $content_tags = $html->find("[" . Directives::CONTENT . "]");
 
             foreach (RelativeBladeType::values() as $relative_blade_postfix) {
-                $relativeBladePath = TemplateService::getBladePath($this->blade_name . $relative_blade_postfix);
+                $relativeBladePath = TemplateService::getBladePath($this->raw_blade_name . $relative_blade_postfix);
                 $relativeBladeContent = TemplateService::getBladeContent($relativeBladePath);
                 if ($relativeBladeContent != "") {
                     $relativeHtml = new Htmldom($relativeBladeContent);
@@ -344,10 +344,10 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract 
     }
 
     private function saveBladeContents() {
-        if ($this->blade_name != null and strlen($this->blade_name) > 0) {
-            $this->updateBladeContent($this->contents, TemplateService::getBladePath($this->blade_name));
+        if ($this->raw_blade_name != null and strlen($this->raw_blade_name) > 0) {
+            $this->updateBladeContent($this->contents, TemplateService::getBladePath($this->raw_blade_name));
             foreach (RelativeBladeType::values() as $relative_blade_postfix) {
-                $relative_blade_path = TemplateService::getBladePath($this->blade_name . $relative_blade_postfix);
+                $relative_blade_path = TemplateService::getBladePath($this->raw_blade_name . $relative_blade_postfix);
                 $this->updateBladeContent($this->contents, $relative_blade_path, $relative_blade_postfix);
             }
         }
