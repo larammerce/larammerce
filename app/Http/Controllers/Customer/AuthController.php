@@ -106,7 +106,7 @@ class AuthController extends Controller {
     public function doCheck(Request $request, $type, $value): RedirectResponse {
         $type = CustomerAuthType::fix($type);
         $value = email_decode($value);
-        $oneTimeCode = $request->get("one_time_code");
+        $oneTimeCode = $request->get("one_time_code");  
         try {
             $customer_user = CustomerAuthProvider::validateByCode($type, $value, $oneTimeCode);
             if ($customer_user != null) {
