@@ -101,7 +101,6 @@ class HomeController extends Controller {
 
     public function showWebPage(Directory $directory, $cart_rows): Factory|Application|View {
         $web_page = $directory->webPage;
-
         // Check laravel view exists
         try {
             return h_view("public." . $web_page->custom_blade_name,

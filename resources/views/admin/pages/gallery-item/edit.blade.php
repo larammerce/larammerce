@@ -60,11 +60,11 @@
         @foreach($gallery_item->gallery->getGalleryFields() as $key => $field)
             @if(strpos($key, 'description') !== false)
                 <textarea class="tinymce"
-                          name="data__field__{{ $key }}">@if($errors->count() > 0){{ old('data__field__'.$key) }}@else{{ $gallery_item->getField($key)->getContent() }}@endif</textarea>
+                          name="data[{{ $key }}]">{{ $gallery_item->getField($key)->getContent() }}</textarea>
             @else
                 <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
                     <span class="label">{{ $field->getTitle() }}</span>
-                    <input class="form-control input-sm" name="data__field__{{ $key }}"
+                    <input class="form-control input-sm" name="data[{{ $key }}]"
                            value="{{ $gallery_item->getField($key)->getContent() }}">
                 </div>
             @endif
