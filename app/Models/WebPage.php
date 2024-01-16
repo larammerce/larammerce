@@ -232,7 +232,7 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
         $tmp_contents = $this->contents;
         $this->contents = [];
         if ($this->blade_name != null and strlen($this->blade_name) > 0) {
-            $blade_path = TemplateService::getBladePath($this->blade_name);
+            $blade_path = TemplateService::getBladePath($this->attributes["blade_name"]);
             $bladeContent = TemplateService::getBladeContent($blade_path);
             $html = new Htmldom($bladeContent);
             $content_tags = $html->find("[" . Directives::CONTENT . "]");
