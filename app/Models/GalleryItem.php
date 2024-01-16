@@ -9,6 +9,7 @@ use DateTime;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Utils\Translation\Traits\Translatable;
 
 /**
  * @property integer id
@@ -24,8 +25,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * Class GalleryItem
  * @package App\Models
  */
-class GalleryItem extends BaseModel implements ImageOwnerInterface
-{
+class GalleryItem extends BaseModel implements ImageOwnerInterface {
+    use Translatable;
+
+    private $fields;
     protected $table = "gallery_items";
     protected $hidden = ["data"];
     protected $appends = ["fields"];
@@ -37,23 +40,24 @@ class GalleryItem extends BaseModel implements ImageOwnerInterface
         "id", "priority", "is_active"
     ];
 
-    private $fields;
+    protected static string $TRANSLATION_EDIT_FORM = "admin.pages.gallery-item.translate";
 
-    public function __construct(array $attributes = [])
-    {
+    protected static array $TRANSLATABLE_FIELDS = [
+        "data" => ["text", "custom"],
+    ];
+
+    public function __construct(array $attributes = []) {
         $this->fields = [];
         parent::__construct($attributes);
     }
 
-    public function getFieldsAttribute()
-    {
+    public function getFieldsAttribute(): array {
         return $this->getFields();
     }
 
-    private function loadFields()
-    {
+    private function loadFields(): bool {
         $result = true;
-        if (count(is_countable($this->fields)?$this->fields :[]) == 0) {
+        if (count(is_countable($this->fields) ? $this->fields : []) == 0) {
             if ($this->data != null and strlen($this->data) > 0) {
                 try {
                     $this->fields = unserialize($this->data);
@@ -69,8 +73,7 @@ class GalleryItem extends BaseModel implements ImageOwnerInterface
         return $result;
     }
 
-    public function getField($id)
-    {
+    public function getField($id) {
         if ($this->loadFields()) {
             if (key_exists($id, $this->fields)) {
                 return $this->fields[$id];
@@ -79,54 +82,38 @@ class GalleryItem extends BaseModel implements ImageOwnerInterface
         return new GalleryItemField($id, "NULL");
     }
 
-    public function getFields()
-    {
+    public function getFields() {
         if ($this->loadFields())
             return $this->fields;
         return [];
     }
 
-    public function setFields($galleryFields)
-    {
+    public function setFields($galleryFields) {
         $this->fields = $galleryFields;
-        $this->data = serialize($this->fields);
+        $this->attributes["data"] = serialize($this->fields);
     }
 
-    public function mergeFields($galleryFields)
-    {
-        $this->loadFields();
-        foreach ($galleryFields as $id => $content) {
-            if (is_null($content->getContent())  and key_exists($id, $this->fields)) {
-                $galleryFields[$id] = $this->fields[$id];
-            }
+    public function setDataAttribute($data) {
+        $fields = [];
+
+        if (!is_array($data))
+            dd($data);
+
+        foreach ($data as $key => $value) {
+            $newField = new GalleryItemField($key, $value);
+            $fields[$key] = $newField;
         }
-        $this->setFields($galleryFields);
+        $this->setFields($fields);
     }
 
-    /**
-     * @param array $options
-     * @return bool|
-     */
-    public function save(array $options = [])
-    {
-        $gallery = null;
-        if (request()->has("gallery_id")) {
-            $gallery = Gallery::find(request()->get("gallery_id"));
-        } else {
-            if (isset($this->gallery_id)) {
-                $gallery = $this->gallery;
-            }
+    public function fillData($passed_data): string {
+        $fields = [];
+        foreach ($passed_data as $key => $value) {
+            $newField = new GalleryItemField($key, $value);
+            $fields[$key] = $newField;
         }
-        if ($gallery != null) {
-            $fields = [];
-            foreach ($gallery->getGalleryFields() as $id => $galleryField) {
-                $newField = new GalleryItemField($id, request()->get("data__field__" . $id));
-                $fields[$id] = $newField;
-            }
-            $this->mergeFields($fields);
-            return parent::save($options);
-        }
-        return false;
+
+        return serialize($fields);
     }
 
     /*
@@ -136,21 +123,18 @@ class GalleryItem extends BaseModel implements ImageOwnerInterface
     /**
      * @return BelongsTo
      */
-    public function gallery()
-    {
+    public function gallery() {
         return $this->belongsTo("\\App\\Models\\Gallery", "gallery_id");
     }
 
-    public function scopeVisible(Builder $query)
-    {
+    public function scopeVisible(Builder $query) {
         $query->where("is_active", true);
     }
 
     /*
      * Accessor Methods
      */
-    public function getDataObjAttribute()
-    {
+    public function getDataObjAttribute() {
         return json_decode($this->data);
     }
 
@@ -158,49 +142,41 @@ class GalleryItem extends BaseModel implements ImageOwnerInterface
     /*
      * Image Methods
      */
-    public function hasImage()
-    {
+    public function hasImage() {
         return isset($this->image_path);
     }
 
-    public function getImagePath()
-    {
+    public function getImagePath() {
         return $this->image_path;
     }
 
-    public function setImagePath()
-    {
+    public function setImagePath() {
         $tmpImage = ImageService::saveImage($this->getImageCategoryName());
         $this->image_path = $tmpImage->destinationPath . "/" . $tmpImage->name;
         $this->save();
     }
 
-    public function removeImage()
-    {
+    public function removeImage() {
         $this->image_path = null;
         $this->save();
     }
 
-    public function getDefaultImagePath()
-    {
+    public function getDefaultImagePath() {
         return "/admin_dashboard/images/No_image.jpg.png";
     }
 
-    public function getImageCategoryName()
-    {
+    public function getImageCategoryName() {
         return "not_categorized";
     }
 
     /**
      * @return string
      */
-    public function getSearchUrl(): string
-    {
+    public function getSearchUrl(): string {
         return "";
     }
 
-    public function isImageLocal()
-    {
+    public function isImageLocal() {
         return true;
     }
 }
