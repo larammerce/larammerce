@@ -7,8 +7,8 @@
  */
 
 return [
-    "account_activation" => "لینک فعال سازی حساب کاربری",
-    "email_activation" => "لینک فعال سازی حساب ایمیل",
-    "change_password" => "تغییر کلمه عبور",
-    "auth_code" => "کد یکبار مصرف",
+    "account_activation" => "Account activation link",
+    "email_activation" => "Email account activation link",
+    "change_password" => "Change password",
+    "auth_code" => "One time code",
 ];

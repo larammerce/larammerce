@@ -3,23 +3,23 @@
 return [
     '400' => [
         'code' => '',
-        'title' => 'مشکل در عملیات',
-        'message' => 'در اجرای عملیات مورد نظر شما مشکلی پیش آمده است.'
+        'title' => 'Problem in operation',
+        'message' => 'There is a problem with the operation you want.'
     ],
     '404' => [
-        'code' => '۴۰۴',
-        'title' => 'صفحه مورد نظر یافت نشد.',
-        'message' => 'صفحه مورد نظر شما موجود نمی باشد.',
+        'code' => '404',
+        'title' => 'The requested page could not be found.',
+        'message' => 'The page you want is not available.',
     ],
     '403' => [
-        'code' => '۴۰۳',
-        'title' => 'اجازه دسترسی وجود ندارد.',
-        'message' => 'متاسفانه شما اجازه‌ی دسترسی به این قسمت را ندارید.',
+        'code' => '403',
+        'title' => 'Access is not allowed.',
+        'message' => 'Unfortunately, you do not have permission to access this section.',
     ],
     '500' => [
-        'code' => '۵۰۰',
-        'title' => 'بروز مشکل در سایت',
-        'message' => 'متاسفانه مشکلی در سایت پیش آمده، لطفا کمی بعد مجددا تلاش کنید.',
+        'code' => '500',
+        'title' => 'There is a problem on the site',
+        'message' => 'Unfortunately, there is a problem with the site, please try again later.',
     ]
 
 ];
