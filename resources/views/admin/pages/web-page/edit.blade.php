@@ -6,9 +6,13 @@
 
 @endsection
 
-@section('form_title')ویرایش صفحه وب@endsection
+@section('form_title')
+    ویرایش صفحه وب
+@endsection
 
-@section('form_attributes') action="{{route('admin.web-page.update', $web_page)}}" method="POST" enctype="multipart/form-data" form-with-hidden-checkboxes @endsection
+@section('form_attributes')
+    action="{{route('admin.web-page.update', $web_page)}}" method="POST" enctype="multipart/form-data" form-with-hidden-checkboxes
+@endsection
 
 @section('form_body')
     {{ method_field('PUT')}}
@@ -19,7 +23,7 @@
         </div>
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
             <span class="label">نام بلید</span>
-            <input class="form-control input-sm" value="{{ $web_page->blade_name }}" disabled>
+            <input class="form-control input-sm" value="{{ $web_page->raw_blade_name }}" disabled>
         </div>
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
             <label>تصویر</label>
@@ -63,7 +67,7 @@
             <span class="label">توضیحات سئو</span>
             <textarea class="form-control input-sm" name="seo_description">{{ $web_page->seo_description }}</textarea>
         </div>
-        @foreach(TemplateService::getGalleries($web_page->blade_name, $web_page->directory->id) as $gallery)
+        @foreach(TemplateService::getGalleries($web_page->raw_blade_name, $web_page->directory->id) as $gallery)
             <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
                 <h5>{{$gallery->title}}</h5>
                 <a href="{{route('admin.gallery.edit', $gallery->model)}}" class="btn btn-sm btn-primary">
