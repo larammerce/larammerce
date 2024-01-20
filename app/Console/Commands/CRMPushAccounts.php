@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\CustomerUser;
+use App\Models\CustomerUserLegalInfo;
 use App\Utils\CRMManager\Exceptions\CRMDriverInvalidConfigurationException;
 use App\Utils\CRMManager\Factory;
 use Illuminate\Console\Command;
@@ -49,7 +50,16 @@ class CRMPushAccounts extends Command {
 
         // Push them to CRM
         foreach ($customer_users as $customer_user) {
-            $driver->createOrUpdateLead($customer_user);
+            $driver->createAccount($customer_user);
+        }
+
+        // Get 10 old CustomerUsers which have not crm_lead_id field
+        /** @var CustomerUserLegalInfo[] $customer_legal_items */
+        $customer_legal_items = CustomerUserLegalInfo::where('crm_account_id', null)->orWhere('crm_account_id', '')->orderBy("id", "DESC")->limit(10)->get();
+
+        // Push them to CRM
+        foreach ($customer_legal_items as $customer_legal_item) {
+            $driver->createAccount($customer_legal_item);
         }
     }
 }

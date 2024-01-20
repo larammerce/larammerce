@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\CustomerUser;
+use App\Models\CustomerUserLegalInfo;
 use App\Utils\CRMManager\Exceptions\CRMDriverInvalidConfigurationException;
 use App\Utils\CRMManager\Factory;
 use Illuminate\Console\Command;
@@ -44,13 +45,13 @@ class CRMPushLeads extends Command {
         }
 
         // Get 10 old CustomerUsers which have not crm_lead_id field
-        /** @var CustomerUser[] $customerUsers */
-        $customerUsers = CustomerUser::where('crm_lead_id', null)->orWhere('crm_lead_id', '')
+        /** @var CustomerUser[] $customer_users */
+        $customer_users = CustomerUser::where('crm_lead_id', null)->orWhere('crm_lead_id', '')
             ->orderBy("id", "ASC")->limit(10)->get();
 
         // Push them to CRM
-        foreach ($customerUsers as $customerUser) {
-            $driver->createOrUpdateLead($customerUser);
+        foreach ($customer_users as $customer_user) {
+            $driver->createOrUpdateLead($customer_user);
         }
     }
 }
