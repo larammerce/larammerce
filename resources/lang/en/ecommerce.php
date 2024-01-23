@@ -8,6 +8,6 @@ return [
     ],
     'user' => [
         'address' => 'Address',
-        'zipCode' => ' Zip Code',
+        'zipCode' => ' Zip code',
     ]
 ];
