@@ -46,6 +46,11 @@ return [
         "env_file" => "مدیریت فایل محیطی",
         "export_database" => "پشتیبان گیری",
         "product_watermark" => "مدیریت واترمارک",
+        "queue" => "صف های پردازش",
+        "queue_count" => "تعداد پروسه ها",
+        "queue_count_failed" => "تعداد پروسه های ناموفق",
+        "queue_resume" => "ادامه",
+        "queue_stop" => "توقف",
     ],
     "shop" => [
         "products" => "محصولات",

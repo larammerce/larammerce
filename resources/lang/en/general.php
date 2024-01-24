@@ -20,7 +20,12 @@ return [
         "gallery_management" => "Galleries",
         "web_form_management" => "Forms",
         "web_page_management" => "Web pages",
-        "product_query_management" => "Product queries"
+        "product_query_management" => "Product queries",
+        "queue" => "Processes",
+        "queue_count_processing" => "Processing count",
+        "queue_count_failed" => "Failed count",
+        "queue_resume" => "Resume",
+        "queue_stop" => "Stop",
     ],
     "shop" => [
         "products" => "Products",
