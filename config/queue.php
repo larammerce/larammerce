@@ -93,5 +93,16 @@ return [
     'names' => [
         'admin' => env("APP_NAME", "ECOMMERCE") . '_ADMIN',
         'customer' => env("APP_NAME", "ECOMMERCE") . '_CUSTOMER'
-    ]
+    ],
+
+    /*
+     |--------------------------------------------------------------------------
+     | Queues
+     |--------------------------------------------------------------------------
+     |
+     | Here you may specify the names of your queues
+     |
+     */
+
+    'queues' => explode(',', trim(env('QUEUES', 'default'))),
 ];
