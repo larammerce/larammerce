@@ -43,7 +43,7 @@ class SettingController extends BaseController {
 
     /**
      * @role(super_user, cms_manager)
-     * @rules(key="required", value="required", is_private="boolean")
+     * @rules(key="required", value="nullable", is_private="boolean")
      */
     public function store(Request $request): RedirectResponse {
         if ($request->has('is_private'))
@@ -65,7 +65,7 @@ class SettingController extends BaseController {
 
     /**
      * @role(super_user, cms_manager)
-     * @rules(key="required", value="required")
+     * @rules(key="required", value="nullable")
      */
     public function update(Request $request, Setting $setting): RedirectResponse {
         RequestService::setAttr('user_id', $request->get('is_private') ? auth('web')->id() : null);
