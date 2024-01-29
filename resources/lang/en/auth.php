@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'failed' => 'These credentials do not match our records.',
+    'failed' => 'These credentials do not match our records. ',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.', 
     'not_logged_in' => 'Please login to your account first.',
     'forbidden' => 'Unfortunately, you do not have access to this section.'

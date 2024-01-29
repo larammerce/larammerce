@@ -2,7 +2,7 @@
 
 return [
     "config" => [
-        "token" => "Token",
+        "token" => "Token ",
         "utype" => "Name of organization",
         "host" => "Host (server domain)",
         "port" => "Port",

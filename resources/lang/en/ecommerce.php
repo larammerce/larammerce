@@ -2,7 +2,7 @@
 
 return [
     'product' => [
-        'filter' => 'Product filters',
+        'filter' => 'Product filters ',
         'show' => 'Show products',
         'other_models' => 'Other models'
     ],

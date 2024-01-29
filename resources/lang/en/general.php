@@ -1,7 +1,7 @@
 <?php
 return [
     "appliances" => [
-        "setting" => "Setting",
+        "setting" => "Setting ",
         "shop" => "Shop",
         "directory" => "File management",
         "analytic" => "Analysis",

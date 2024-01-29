@@ -7,7 +7,7 @@
  */
 
 return [
-    "account_activation" => "Account activation link",
+    "account_activation" => "Account activation link ",
     "email_activation" => "Email account activation link",
     "change_password" => "Change password",
     "auth_code" => "One time code",
