@@ -2,7 +2,7 @@
 
 return [
     'shipment_status' => [
-        'Awaiting approval ',
+        'Awaiting approval',
         'Order preparation',
         'Permit to leave the warehouse',
         'Send to delivery agent',

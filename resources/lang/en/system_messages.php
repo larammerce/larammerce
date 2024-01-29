@@ -2,7 +2,7 @@
 
 return [
     'user' => [
-        'password_changed' => 'Password changed successfully. ',
+        'password_changed' => 'Password changed successfully.',
         'wrong_password' => 'Password entered is incorrect.',
         'not_found' => 'User was not found.',
         'invalid_token' => 'The link is invalid, please try again.',

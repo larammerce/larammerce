@@ -3,7 +3,7 @@
 return [
     '400' => [
         'code' => '',
-        'title' => 'Problem in operation ',
+        'title' => 'Problem in operation',
         'message' => 'There is a problem with the operation you want.'
     ],
     '404' => [

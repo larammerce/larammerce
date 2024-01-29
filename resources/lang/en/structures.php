@@ -2,7 +2,7 @@
 return [
     'attributes' =>
         [
-            'tracking_code' => 'Tracking Code ',
+            'tracking_code' => 'Tracking Code',
             'id' => 'ID',
             'directory_id' => 'Parent folder ID',
             'system_user_id' => 'System user ID',

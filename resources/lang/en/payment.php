@@ -8,7 +8,7 @@
 
 return [
     "drivers" => [
-        "sep" => "Saman Electronic Payment ",
+        "sep" => "Saman Electronic Payment",
         "local" => "Payment with virtual wallet",
         "mabna" => "Mabna Card Aria",
         "pep" => "Pasargad Electronic Payment",

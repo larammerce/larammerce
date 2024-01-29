@@ -8,7 +8,7 @@
 
 return [
     "directory" => [
-        "role_attached" => "The role was successfully added to the folder ",
+        "role_attached" => "The role was successfully added to the folder",
         "role_detached" => "The role was successfully removed from the folder",
         "badge_attached" => "Badge successfully added to this folder",
         "badge_detached" => "The badge has been successfully removed from this folder",

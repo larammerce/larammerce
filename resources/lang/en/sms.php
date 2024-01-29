@@ -2,7 +2,7 @@
 
 return [
     "drivers" => [
-        "file" => "Save to file (do not send) ",
+        "file" => "Save to file (do not send)",
         "farapayamak" => "SMS short message system",
         "kavenegar" => "Kaveh Nagar short message service",
     ],

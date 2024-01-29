@@ -2,7 +2,7 @@
 
 return [
     "drivers" => [
-        "local" => "Default financial management ",
+        "local" => "Default financial management",
         "arpa" => "ARPA financial management",
         "hamkaran" => "Financial management of system partners (Sepidar)",
         "taraznegar" => "Balance sheet financial management",
