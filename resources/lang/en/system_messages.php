@@ -24,7 +24,7 @@ return [
         'edit' => [
             'error_occurred' => 'An error occurred while editing the user profile. Please try again.',
         ],
-        "login_message" => ": name Dear, Your login was successful.",
+        "login_message" => ":name Dear, Your login was successful.",
         "no_mobile_auth" => "You do not have permission to access this section.",
         "sms_not_sent" => "An error occurred while sending SMS, please try again.",
         "mobile_auth_code_sent" => "Verification code was sent to: phone_number.",
