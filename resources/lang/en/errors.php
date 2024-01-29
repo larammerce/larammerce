@@ -13,13 +13,13 @@ return [
     ],
     '403' => [
         'code' => '403',
-        'title' => 'Access is not allowed.',
+        'title' => 'Access denind.',
         'message' => 'Unfortunately, you do not have permission to access this section.',
     ],
     '500' => [
         'code' => '500',
-        'title' => 'There is a problem on the site',
-        'message' => 'Unfortunately, there is a problem with the site, please try again later.',
+        'title' => 'An issue has occurred on the website.',
+        'message' => 'Unfortunately, an issue has occurred on the website. Please try again in a little while.',
     ]
 
 ];
