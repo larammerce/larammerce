@@ -27,7 +27,7 @@ class HomeController extends Controller {
         $url_path = $request->path();
         $shortened_link = $url_path;
         $url_path = ($url_path != "/" ? "/" : "") . $url_path;
-        $url_last_part = last(explode("/", $url_path));
+        $url_last_part = last(explode("/", $url_path));    
         $requested_host = $request->getHost();
         $shortened_url = config('app.shortened_host');
         if ($requested_host === $shortened_url) {
@@ -48,7 +48,9 @@ class HomeController extends Controller {
             /** @var Directory $directory */
             $directory = Directory::whereIn("url_full", $url_paths)->orderBy("has_web_page", "DESC")
                 ->orderBy("updated_at", "desc")->first();
-            $cart_rows = get_cart();
+            $cart_rows = get_cart(); 
+             dd(str_starts_with($url_last_part, "filter-"));
+            die; 
             if ($directory != null) {
                 if (!$directory->is_anonymously_accessible && auth()->guest())
                     return redirect()->guest(route('customer-auth.show-auth',
@@ -160,6 +162,8 @@ class HomeController extends Controller {
     }
 
     private function showProductCustomFilter(Directory $directory, ProductFilter $product_filter, $cart_rows): Factory|Application|View {
+        dd($product_filter);
+        die;
         $product_ids = $product_filter->getQuery()->visible()->pluck("products.id")->toArray();
         if (count($product_ids) > 3000) {
             $filter_data = [

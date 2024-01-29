@@ -8,20 +8,20 @@
 
 return [
     "drivers" => [
-        "sep" => "Electronic payment of Saman Kish",
+        "sep" => "Saman Electronic Payment",
         "local" => "Payment with virtual wallet",
-        "mabna" => "Arya card base",
-        "pep" => "Pasargad electronic payment",
-        "sepehrpay" => "Sepehr electronic payment",
-        "pec" => "Persian e-commerce",
-        "asan" => "Easy Persian payment",
-        "behpardakht" => "To pay the nation",
+        "mabna" => "Mabna Card Aria",
+        "pep" => "Pasargad Electronic Payment",
+        "sepehrpay" => "Sepehr Electronic Payment",
+        "pec" => "Persian E-commerce",
+        "asan" => "Asan Pardakht",
+        "behpardakht" => "Behpardakht Mellat",
         "zarinpal" => "Zarin Pal"
     ],
     "status" => [
-        'Awaiting Payment',
+        'Awaiting payment',
         'Needs to be checked',
-        'successful',
+        'Successful',
         'Cash payment',
         'Unsuccessful',
         'Canceled',
@@ -36,11 +36,11 @@ return [
         "mid" => "Business ID",
         "mcid" => "Commercial certificate identification number",
         "merchant_id" => "Port ID",
-        "username" => "User name",
+        "username" => "Username",
         "password" => "Password",
         "iban" => "Shaba-IBAN",
         "private_key" => "Private key",
-        "pin" => "Pin",
+        "pin" => "PIN",
         "is_enabled"=> "Port activation",
         "is_default" => "Default port"
     ]

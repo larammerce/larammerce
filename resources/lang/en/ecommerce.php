@@ -2,12 +2,12 @@
 
 return [
     'product' => [
-        'filter' => 'Product Filters',
-        'show' => 'Show Products',
-        'other_models' => 'Other Models'
+        'filter' => 'Product filters',
+        'show' => 'Show products',
+        'other_models' => 'Other models'
     ],
     'user' => [
         'address' => 'Address',
-        'zipCode' => ' Zip Code',
+        'zipCode' => ' Zip code',
     ]
 ];

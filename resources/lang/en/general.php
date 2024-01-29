@@ -15,7 +15,7 @@ return [
         "p_structure_management" => "Product templates",
         "p_structure_attr_key_management" => "Product templates ID",
         "tag_management" => "Tags",
-        "state_management" => "province",
+        "state_management" => "Province",
         "setting_management" => "Setting",
         "gallery_management" => "Galleries",
         "web_form_management" => "Forms",
