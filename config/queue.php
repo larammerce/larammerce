@@ -104,5 +104,9 @@ return [
      |
      */
 
-    'queues' => explode(',', trim(env('QUEUES', 'default'))),
+    'queues' => [
+        env("APP_NAME", "ECOMMERCE") . '_ADMIN',
+        env("APP_NAME", "ECOMMERCE") . '_CUSTOMER',
+        'default' ,
+    ],
 ];
