@@ -2,6 +2,8 @@
 
 namespace App\Jobs;
 
+use App\Enums\Queue\QueueDispatchType;
+use App\Enums\Queue\QueuePriority;
 use Illuminate\Bus\Queueable;
 
 abstract class Job
@@ -18,4 +20,17 @@ abstract class Job
     */
 
     use Queueable;
+
+    protected ?QueueDispatchType $dispatchType = null;
+    protected ?QueuePriority $queuePriority = null;
+
+    public function getDispatchType()
+    {
+        return $this->dispatchType;
+    }
+
+    public function getQueuePriority()
+    {
+        return $this->queuePriority;
+    }
 }
