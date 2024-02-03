@@ -39,6 +39,8 @@ interface BaseDriver {
 
     public function updateOpportunity(CRMOpportunityInterface $opportunity): bool;
 
+    public function getOpportunity(CRMOpportunityInterface $opportunity): ?CRMOpportunityInterface;
+
     public function createInvoice(CRMInvoiceInterface $invoice);
 
     public function createPayment(CRMPaymentInterface $payment);

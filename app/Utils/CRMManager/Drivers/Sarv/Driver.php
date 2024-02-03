@@ -15,7 +15,7 @@ use App\Utils\CRMManager\Interfaces\CRMAccountInterface;
 use App\Utils\CRMManager\Interfaces\CRMBasePersonInterface;
 use App\Utils\CRMManager\Interfaces\CRMInvoiceInterface;
 use App\Utils\CRMManager\Interfaces\CRMLeadInterface;
-use App\Utils\CRMManager\Interfaces\CRMOpItemInterface;
+use App\Utils\CRMManager\Interfaces\CRMLineItemInterface;
 use App\Utils\CRMManager\Interfaces\CRMOpportunityInterface;
 use App\Utils\CRMManager\Interfaces\CRMPaymentInterface;
 use App\Utils\CRMManager\Models\BaseCRMConfig;
@@ -271,7 +271,7 @@ class Driver implements BaseDriver {
                             "name" => $opportunity->crmGetOpName(),
                             "account_id" => $opportunity->crmGetAccountId(),
                             "assigned_user_id" => $config->username,
-                            "lineitems" => $this->buildLineItems($opportunity->crmGetOpItems()),
+                            "lineitems" => $this->buildLineItems($opportunity->crmGetLineItems()),
                             "amount" => $opportunity->crmGetOpAmount(),
                             "currency_id" => "-99",
                             "currency_exchange_rate" => "1",
@@ -291,57 +291,20 @@ class Driver implements BaseDriver {
 
         if ($response->server_response_status != "200" or is_null($response->id)) {
             Log::error("Sarv create opportunity has failed. " . json_encode($response));
-            return "";
+            return false;
         }
         $relation = $response->id;
         $opportunity->crmSetOpId($relation);
 
-        return $relation;
+        return true;
+    }
+
+    public function getOpportunity(CRMOpportunityInterface $opportunity): ?CRMOpportunityInterface {
+        return null;
     }
 
     public function updateOpportunity(CRMOpportunityInterface $opportunity): bool {
-        $this->authenticate();
-        $config = ConfigProvider::getConfig(self::DRIVER_ID);
-
-        $response = ConnectionFactory::createV4("/service2/v4_1/rest.php?utype={$config->utype}", $config)
-            ->withData(
-                [
-                    "method" => "set_entry",
-                    "input_type" => "JSON",
-                    "response_type" => "JSON",
-                    "rest_data" => [
-                        "session" => $config->session_id,
-                        "module_name" => "Opportunities",
-                        "name_value_list" => [
-                            "name" => $opportunity->crmGetOpName(),
-                            "account_id" => $opportunity->crmGetAccountId(),
-                            "assigned_user_id" => $config->username,
-                            "lineitems" => [],
-                            "amount" => $opportunity->crmGetOpAmount(),
-                            "currency_id" => "-99",
-                            "currency_exchange_rate" => "1",
-                            "date_closed" => $opportunity->crmGetOpCreatedAt()->addMonths(2)->format("Y-m-d"),
-                            "pipeline" => "pl0_sales_stage_dom",
-                            "sales_stage" => "makeorder",
-                            "lead_source" => "Website registration",
-                            "forecast" => "include",
-                            "probability" => "10"
-                        ],
-                        "meta_data" => true,
-                    ],
-                ]
-            )
-            ->asJson()
-            ->post();
-
-        if ($response->server_response_status != "200" or is_null($response->id)) {
-            Log::error("Sarv create opportunity has failed. " . json_encode($response));
-            return "";
-        }
-        $relation = $response->id;
-        $opportunity->crmSetOpId($relation);
-
-        return $relation;
+        return true;
     }
 
     public function createInvoice(CRMInvoiceInterface $invoice) {
@@ -390,7 +353,7 @@ class Driver implements BaseDriver {
     }
 
     /**
-     * @param array<CRMOpItemInterface> $line_items
+     * @param array<CRMLineItemInterface> $line_items
      * @return array<array>
      */
     private function buildLineItems(array $line_items): array {
@@ -405,27 +368,27 @@ class Driver implements BaseDriver {
                 "group_id" => 1, // Assuming a constant group_id
                 "number" => $index + 1,
                 "type_item" => "product",
-                "name" => $item->crmGetOpItemName(),
-                "product_id" => $item->crmGetOpItemId(),
-                "product_code" => $item->crmGetOpItemCode(),
-                "part_number" => "PN-" . $item->crmGetOpItemId(), // Assuming a part number format
+                "name" => $item->crmGetLineItemName(),
+                "product_id" => $item->crmGetLineItemId(),
+                "product_code" => $item->crmGetLineItemCode(),
+                "part_number" => "PN-" . $item->crmGetLineItemId(), // Assuming a part number format
                 "main_unit_type" => "box",
                 "secondary_unit_type" => "",
                 "description" => "",
                 "item_description" => "",
                 "currency_id" => "-99", // Assuming a constant currency id
-                "product_qty" => $item->crmGetOpItemQuantity(),
+                "product_qty" => $item->crmGetLineItemQuantity(),
                 "product_second_qty" => 0, // Assuming a constant value
-                "product_list_price" => $item->crmGetOpListPrice(),
-                "sub_total" => $item->crmGetOpSubTotal(),
-                "discount" => $item->crmGetOpDiscountValue(),
-                "product_discount" => $item->crmGetOpProductDiscountAmount(),
-                "product_discount_amount" => -($item->crmGetOpProductDiscountAmount()),
-                "discount_amount" => $item->crmGetOpProductDiscountAmount(),
-                "product_unit_price" => $item->crmGetOpProductUnitPrice(),
-                "vat" => $item->crmGetOpVatPercentage(),
-                "vat_amt" => $item->crmGetOpVatAmount(),
-                "grand_total" => $item->crmGetOpGrandTotal()
+                "product_list_price" => $item->crmGetLineItemListPrice(),
+                "sub_total" => $item->crmGetLineItemSubTotal(),
+                "discount" => $item->crmGetLineItemDiscountType(),
+                "product_discount" => $item->crmGetLineItemDiscountValue(),
+                "product_discount_amount" => ($item->crmGetLineItemProductDiscountAmount() * -1),
+                "discount_amount" => ($item->crmGetLineItemProductDiscountAmount() * $item->crmGetLineItemQuantity()),
+                "product_unit_price" => $item->crmGetLineItemProductUnitPrice(),
+                "vat" => $item->crmGetLineItemVatPercentage(),
+                "vat_amt" => $item->crmGetLineItemVatAmount(),
+                "grand_total" => $item->crmGetLineItemGrandTotal()
             ];
         }
 

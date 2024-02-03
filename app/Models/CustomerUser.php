@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Utils\CRMManager\Enums\CRMPersonType;
 use App\Utils\CRMManager\Interfaces\CRMAccountInterface;
 use App\Utils\CRMManager\Interfaces\CRMLeadInterface;
-use App\Utils\CRMManager\Interfaces\CRMOpItemInterface;
+use App\Utils\CRMManager\Interfaces\CRMLineItemInterface;
 use App\Utils\CRMManager\Interfaces\CRMOpportunityInterface;
 use Carbon\Carbon;
 use DateTime;
@@ -247,9 +247,9 @@ class CustomerUser extends BaseModel implements CRMLeadInterface, CRMAccountInte
     }
 
     /**
-     * @return array<CRMOpItemInterface>
+     * @return array<CRMLineItemInterface>
      */
-    public function crmGetOpItems(): array {
+    public function crmGetLineItems(): array {
         return $this->cartRows;
     }
 

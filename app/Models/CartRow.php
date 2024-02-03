@@ -4,8 +4,8 @@
 namespace App\Models;
 
 use App\Services\Invoice\NewInvoiceService;
-use App\Utils\CRMManager\Enums\CRMOpItemDiscountType;
-use App\Utils\CRMManager\Interfaces\CRMOpItemInterface;
+use App\Utils\CRMManager\Enums\CRMLineItemDiscountType;
+use App\Utils\CRMManager\Interfaces\CRMLineItemInterface;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use DateTime;
 
@@ -26,7 +26,7 @@ use DateTime;
  * Class CartRow
  * @package App\Models
  */
-class CartRow extends BaseModel implements CRMOpItemInterface {
+class CartRow extends BaseModel implements CRMLineItemInterface {
     protected $table = 'customer_carts';
     protected $fillable = [
         'customer_user_id', 'product_id', 'count', "cmi_id",
@@ -66,52 +66,52 @@ class CartRow extends BaseModel implements CRMOpItemInterface {
         return $this->belongsTo(CustomerMetaItem::class, "cmi_id", "id");
     }
 
-    public function crmGetOpItemId(): int {
+    public function crmGetLineItemId(): int {
         return $this->product_id;
     }
 
-    public function crmGetOpItemCode(): string {
+    public function crmGetLineItemCode(): string {
         return $this->product->code;
     }
 
-    public function crmGetOpItemName(): string {
+    public function crmGetLineItemName(): string {
         return $this->product->title;
     }
 
-    public function crmGetOpListPrice(): float {
-        return $this->product->getStandardLatestPrice();
+    public function crmGetLineItemListPrice(): float {
+        return $this->product->getSTDPurePrice();
     }
 
-    public function crmGetOpSubTotal(): float {
-        return $this->crmGetOpListPrice() * $this->count;
+    public function crmGetLineItemSubTotal(): float {
+        return $this->product->getSTDPurePrice() * $this->count;
     }
 
-    public function crmGetOpDiscountType(): string {
+    public function crmGetLineItemDiscountType(): string {
         $product = $this->product;
         if ($product->is_discountable) {
             if ($product->has_discount) {
                 if ($product->latest_special_price !== $product->latest_price) {
-                    return CRMOpItemDiscountType::AMOUNT;
+                    return CRMLineItemDiscountType::AMOUNT;
                 }
             } else {
                 if (!is_null($product->discountGroup)) {
                     if ($product->discountGroup->is_percentage) {
-                        return CRMOpItemDiscountType::PERCENTAGE;
+                        return CRMLineItemDiscountType::PERCENTAGE;
                     } else {
-                        return CRMOpItemDiscountType::AMOUNT;
+                        return CRMLineItemDiscountType::AMOUNT;
                     }
                 }
             }
         }
-        return CRMOpItemDiscountType::AMOUNT;
+        return CRMLineItemDiscountType::AMOUNT;
     }
 
-    public function crmGetOpDiscountValue(): float {
+    public function crmGetLineItemDiscountValue(): float {
         $product = $this->product;
         if ($product->is_discountable) {
             if ($product->has_discount) {
-                if ($product->latest_special_price !== $product->latest_price) {
-                    return $product->getStandardLatestPrice() - $product->getStandardSpecialPrice();
+                if ($product->pure_price !== $product->getSTDPurePrice()) {
+                    return $product->getSTDPurePrice() - $product->pure_price;
                 }
             } else {
                 if (!is_null($product->discountGroup)) {
@@ -122,56 +122,38 @@ class CartRow extends BaseModel implements CRMOpItemInterface {
         return 0;
     }
 
-    public function crmGetOpProductDiscountAmount(): float {
-        $product = $this->product;
-        if ($product->is_discountable) {
-            if ($product->has_discount) {
-                if ($product->latest_special_price !== $product->latest_price) {
-                    return $product->getStandardLatestPrice() - $product->getStandardSpecialPrice();
-                }
-            } else {
-                if (!is_null($product->discountGroup)) {
-                    if ($product->discountGroup->is_percentage) {
-                        $discount_percentage = $product->discountGroup->value;
-                        return (int)($product->getStandardLatestPrice() * $discount_percentage / 100);
-                    } else {
-                        return $product->discountGroup->value;
-                    }
-                }
-            }
+    public function crmGetLineItemProductDiscountAmount(): float {
+        if ($this->crmGetLineItemDiscountType() === CRMLineItemDiscountType::AMOUNT) {
+            return $this->crmGetLineItemDiscountValue();
+        } else if ($this->crmGetLineItemDiscountType() === CRMLineItemDiscountType::PERCENTAGE) {
+            return $this->crmGetLineItemListPrice() * $this->crmGetLineItemDiscountValue() / 100;
+        } else {
+            return 0;
         }
-        return 0;
     }
 
-    public function crmGetOpProductUnitPrice(): float {
-        return $this->crmGetOpListPrice() - $this->crmGetOpProductDiscountAmount();
+    public function crmGetLineItemProductUnitPrice(): float {
+        return $this->crmGetLineItemListPrice() - $this->crmGetLineItemProductDiscountAmount();
     }
 
-    public function crmGetOpVatPercentage(): int {
+    public function crmGetLineItemVatPercentage(): int {
         /** @var NewInvoiceService $new_invoice_service */
         $new_invoice_service = app(NewInvoiceService::class);
         return $new_invoice_service->getProductAllExtrasPercentage($this->product);
     }
 
-    public function crmGetOpVatAmount(): float {
+    public function crmGetLineItemVatAmount(): float {
         /** @var NewInvoiceService $new_invoice_service */
         $new_invoice_service = app(NewInvoiceService::class);
-        return $new_invoice_service->getProductAllExtrasAmount($this->product);
+        $std_result = $new_invoice_service->calculateProductTaxAndToll($this->crmGetLineItemProductUnitPrice(), $this->count, $this->product);
+        return ($std_result->tax ?? 0) + ($std_result->toll ?? 0);
     }
 
-    public function crmGetOpGrandTotal(): float {
-        // TODO: Implement crmGetOpGrandTotal() method.
+    public function crmGetLineItemGrandTotal(): float {
+        return $this->crmGetLineItemProductUnitPrice() + $this->crmGetLineItemVatAmount();
     }
 
-    public function crmGetOpItemPrice(): float {
-        // TODO: Implement crmGetOpItemPrice() method.
-    }
-
-    public function crmGetOpItemQuantity(): float {
-        // TODO: Implement crmGetOpItemQuantity() method.
-    }
-
-    public function crmGetOpItemAmount(): float {
-        // TODO: Implement crmGetOpItemAmount() method.
+    public function crmGetLineItemQuantity(): float {
+        return $this->count;
     }
 }

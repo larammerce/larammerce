@@ -1161,7 +1161,7 @@ class Product extends BaseModel implements
         }
     }
 
-    public function getRealPurePrice() {
+    public function getSTDPurePrice() {
         $this->new_invoice_service = $this->new_invoice_service ?? app(NewInvoiceService::class);
         $price_data = $this->new_invoice_service->isTaxAddedToPrice($this) ?
             $this->new_invoice_service->reverseCalculateProductTaxAndToll(

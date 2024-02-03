@@ -12,9 +12,9 @@ interface CRMOpportunityInterface {
     public function crmGetOpName(): string;
 
     /**
-     * @return array<CRMOpItemInterface>
+     * @return array<CRMLineItemInterface>
      */
-    public function crmGetOpItems(): array;
+    public function crmGetLineItems(): array;
 
     public function crmGetOpAmount(): float;
 
