@@ -1,29 +1,36 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: arash
+ * Date: 8/5/17
+ * Time: 6:33 PM
+ */
 
 return [
     'shipment_status' => [
-        'Awaiting approval',
-        'Order preparation',
-        'Permit to leave the warehouse',
-        'Send to delivery agent',
-        'Delivery to the customer',
+        'در انتظار تایید',
+        'اماده‌سازی سفارش',
+        'مجوز خروج از انبار',
+        'تحویل به مامور ارسال',
+        'تحویل به مشتری',
     ],
     'shipment_method' => [
-        'Express',
-        'Post',
+        -1 => "محصولات شامل ارسال نمی‌شوند",
+        0 => 'اکسپرس',
+        1 => 'پست',
     ],
     'payment_type' => [
-        'Online',
-        'Pay on cash',
-        'Online wallet',
+        'آنلاین',
+        'پرداخت در محل',
+        'کیف پول مجازی',
     ],
     'payment_status' => [
-        'Awaiting Payment',
-        'Registered',
-        'Submitted',
-        'Payed',
-        'Bug in payment',
-        'Canceled',
-        'Refund to customer',
+        'در انتظار پرداخت',
+        'ثبت شده',
+        'تایید شده',
+        'پرداخت شده',
+        'اشکال در پرداخت',
+        'لغو شده',
+        'بازپرداخت به مشتری',
     ]
 ];

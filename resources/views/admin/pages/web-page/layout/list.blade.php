@@ -16,7 +16,7 @@
         </div>
         <div class="col-lg-3 col-md-4 col-sm-4 col-xs-6 col">
             <div class="label">نام بلید</div>
-            <div>{{$web_page->blade_name}}</div>
+            <div>{{$web_page->raw_blade_name}}</div>
         </div>
         <div class="col-lg-1 col-md-4 col-sm-2 col-xs-6 col">
             <div class="label">تاریخ ساخت</div>

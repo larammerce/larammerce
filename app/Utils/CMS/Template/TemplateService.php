@@ -100,7 +100,7 @@ class TemplateService {
      * @return array
      */
     public static function getGalleries($bladeName, $directoryId = null) {
-        $template = new TemplateModel($bladeName, static::getBladePath($bladeName));
+        $template = new TemplateModel($bladeName, static::getOriginalBladePath($bladeName));
         return $template->getGalleries($directoryId);
     }
 
