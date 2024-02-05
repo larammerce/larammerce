@@ -2,6 +2,8 @@
 
 namespace App\Jobs;
 
+use App\Enums\Queue\QueueDispatchType;
+use App\Enums\Queue\QueuePriority;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -36,7 +38,7 @@ class ImageResizer extends Job implements ShouldQueue
         $this->imageType = $imageType;
         $this->imageWidth = $imageWidth;
         $this->imageHeight = $imageHeight;
-        $this->queue = config('queue.names.admin');
+        $this->queue = config('queue.names.admin_automatic_default');
     }
 
     /**
@@ -70,5 +72,21 @@ class ImageResizer extends Job implements ShouldQueue
 
         ini_set('memory_limit', '128M');
         ini_set('max_execution_time', 30);
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getDispatchType(): ?int
+    {
+        return QueueDispatchType::AUTOMATIC;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getQueuePriority(): ?int
+    {
+        return QueuePriority::DEFAULT;
     }
 }
