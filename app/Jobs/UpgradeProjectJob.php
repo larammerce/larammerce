@@ -2,6 +2,8 @@
 
 namespace App\Jobs;
 
+use App\Enums\Queue\QueueDispatchType;
+use App\Enums\Queue\QueuePriority;
 use App\Helpers\UpgradeProjectHelper;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -43,7 +45,7 @@ class UpgradeProjectJob extends Job implements ShouldQueue
         $this->larammerce_theme_branch_name = $larammerce_theme_branch_name;
         $this->only_core = $only_core;
         $this->only_theme = $only_theme;
-        $this->queue = config('queue.names.admin');
+        $this->queue = config('queue.names.admin_manual_high');
     }
 
     public function handle() {
@@ -55,5 +57,21 @@ class UpgradeProjectJob extends Job implements ShouldQueue
             $this->only_core,
             $this->only_theme
         );
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getDispatchType(): ?int
+    {
+        return QueueDispatchType::MANUAL;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getQueuePriority(): ?int
+    {
+        return QueuePriority::HIGH;
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Jobs\Product;
 
+use App\Enums\Queue\QueueDispatchType;
+use App\Enums\Queue\QueuePriority;
 use App\Helpers\Common\StringHelper;
 use App\Jobs\Job;
 use App\Models\Color;
@@ -27,7 +29,7 @@ class ProductImportFromJsonFile extends Job implements ShouldQueue {
         $this->json_path = $json_path;
         $this->images_path = $images_path;
         $this->price_ratio = env("FIN_MAN_PRICE_RATIO", 30000);
-        $this->queue = config('queue.names.admin');
+        $this->queue = config('queue.names.admin_automatic_default');
     }
 
     public function handle() {
@@ -402,5 +404,21 @@ class ProductImportFromJsonFile extends Job implements ShouldQueue {
         }
 
         return intval($result / 1000) * 1000;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getDispatchType(): ?int
+    {
+        return QueueDispatchType::AUTOMATIC;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getQueuePriority(): ?int
+    {
+        return QueuePriority::DEFAULT;
     }
 }

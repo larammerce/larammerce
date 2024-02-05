@@ -32,4 +32,20 @@ class SubscribeNewsletter extends Job implements ShouldQueue
     {
         NewsletterFactory::driver()->addSubscriber($this->data);
     }
+
+    /**
+     * @return int|null
+     */
+    public function getDispatchType(): ?int
+    {
+        return null;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getQueuePriority(): ?int
+    {
+        return null;
+    }
 }

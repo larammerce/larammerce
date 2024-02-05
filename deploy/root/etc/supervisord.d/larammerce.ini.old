@@ -1,22 +1,12 @@
-[program:admin-automatic-queue-worker]
+[program:admin-queue-worker]
 process_name=%(program_name)s_%(process_num)02d
-command=/usr/bin/php /var/www/main/artisan queue:listen --queue=${APP_NAME}_ADMIN_automatic_high,${APP_NAME}_ADMIN_automatic_default,${APP_NAME}_ADMIN_automatic_low --memory=5000 --timeout=6000
+command=/usr/bin/php /var/www/main/artisan queue:listen --queue ${APP_NAME}_ADMIN --memory=5000 --timeout=6000
 autostart=true
 autorestart=true
 user=apache
 numprocs=1
 redirect_stderr=true
-stdout_logfile=/var/log/supervisor/${APP_NAME}-admin-automatic-queue-worker.log
-
-[program:admin-manual-queue-worker]
-process_name=%(program_name)s_%(process_num)02d
-command=/usr/bin/php /var/www/main/artisan queue:listen --queue=${APP_NAME}_ADMIN_manual_high,${APP_NAME}_ADMIN_manual_default,${APP_NAME}_ADMIN_manual_low --memory=5000 --timeout=6000
-autostart=true
-autorestart=true
-user=apache
-numprocs=1
-redirect_stderr=true
-stdout_logfile=/var/log/supervisor/${APP_NAME}-admin-manual-queue-worker.log
+stdout_logfile=/var/log/supervisor/${APP_NAME}-admin-queue-worker.log
 
 [program:customer-queue-worker]
 process_name=%(program_name)s_%(process_num)02d
