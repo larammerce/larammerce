@@ -8,103 +8,107 @@
 
 return [
     "directory" => [
-        "role_attached" => "نقش با موفقیت به پوشه اضافه شد",
-        "role_detached" => "نقش با موفقیت از پوشه حذف شد",
-        "badge_attached" => "نشان با موفقیت به این پوشه اضافه شد",
-        "badge_detached" => "نشان با موفقیت از این پوشه حذف شد",
-        "badge_attached_to_products" => "نشان با موفقیت به این پوشه و تمامی کالاهای آن اضافه شد",
-        "badge_detached_from_products" => "نشان با موفقیت از این پوشه و تمامی کالاهای آن حذف شد",
-        "badge_attached_to_articles" => "نشان با موفقیت به این پوشه و تمامی بلاگ های آن اضافه شد",
-        "badge_detached_from_articles" => "نشان با موفقیت از این پوشه و تمامی بلاگ های آن حذف شد",
+        "role_attached" => "The role was successfully added to the folder",
+        "role_detached" => "The role was successfully removed from the folder",
+        "badge_attached" => "Badge successfully added to this folder",
+        "badge_detached" => "The badge has been successfully removed from this folder",
+        "badge_attached_to_products" => "The badge was successfully added to this folder and all its products",
+        "badge_detached_from_products" => "The badge has been successfully removed from this folder and all its products",
+        "badge_attached_to_articles" => "The badge was successfully added to this folder and all its blogs",
+        "badge_detached_from_articles" => "The badge was successfully removed from this folder and all its blogs",
     ],
     "customer_user" => [
-        "activation_failed" => "متاسفانه امکان فعال سازی مشتری مورد نظر در سیستم مالی وجود ندارد. لطفا با پشتیبان سیستم تماس بگیرید",
-        "no_national_code" => "لطفا برای تکمیل سفارش خود، ابتدا کدملی را اضافه نمایید."
+        "activation_failed" => "Unfortunately, it is not possible to activate the desired customer in the financial system. Please contact system support",
+        "no_national_code" => "Please add the national code first to complete your order."
     ],
     "article" => [
-        "tag_attached" => "تگ با موفقیت به بلاگ اضافه شد",
-        "tag_detached" => "تگ با موفقیت از بلاگ حذف شد",
+        "tag_attached" => "The tag has been successfully added to the blog",
+        "tag_detached" => "The tag has been successfully removed from the blog",
     ],
     "product" => [
-        "attribute_attached" => "ویژگی با موفقیت به کالا اضافه شد",
-        "attribute_detached" => "ویژگی با موفقیت از کالا حذف شد",
-        "color_attached" => "رنگ با موفقیت به کالا اضافه شد",
-        "color_detached" => "رنگ با موفقیت از کالا حذف شد",
-        "tag_attached" => "تگ با موفقیت به کالا اضافه شد",
-        "tag_detached" => "تگ با موفقیت از کالا حذف شد",
-        "badge_attached" => "نشان با موفقیت به کالا اضافه شد",
-        "badge_detached" => "نشان با موفقیت از کالا حذف شد",
+        "attribute_attached" => "The feature has been successfully added to the product",
+        "attribute_detached" => "The feature has been successfully removed from the product",
+        "color_attached" => "Color has been successfully added to the item",
+        "color_detached" => "The color has been successfully removed from the item",
+        "tag_attached" => "The tag has been successfully added to the product",
+        "tag_detached" => "The tag has been successfully removed from the product",
+        "badge_attached" => "The badge has been successfully added to the product",
+        "badge_detached" => "The badge has been successfully removed from the item",
     ],
     "p_structure" => [
-        "attribute_key_attached" => "کلید با موفقیت به قالب اضافه شد",
-        "attribute_key_detached" => "کلید با موفقیت از قالب حذف شد",
-        "attribute_key_made_sortable" => "کلید با موفقیت قابل مرتب سازی شد.",
-        "attribute_key_made_not_sortable" => "کلید با موفقیت غیرقابل مرتب سازی شد.",
+        "attribute_key_attached" => "The key has been successfully added to the template",
+        "attribute_key_detached" => "The badge has been successfully removed from the item",
+        "attribute_key_made_sortable" => "The key was successfully sorted.",
+        "attribute_key_made_not_sortable" => "The key was successfully unsorted.",
     ],
     "system_user" => [
-        "role_attached" => "نقش با موفقیت به کاربر سیستمی اضافه شد",
-        "role_detached" => "نقش با موفقیت از کاربر سیستمی حذف شد",
+        "role_attached" => "The role has been successfully added to the system user",
+        "role_detached" => "The role has been successfully removed from the system user",
     ],
     "web_page" => [
-        "tag_attached" => "تگ با موفقیت به صفحه‌وب اضافه شد",
-        "tag_detached" => "تگ با موفقیت از صفحه‌وب حذف شد",
+        "tag_attached" => "The tag has been successfully added to the webpage",
+        "tag_detached" => "The tag has been successfully removed from the webpage",
     ],
     "product_image" => [
-        "image_uploaded" => "عکس با موفقیت آپلود شد",
-        "image_not_uploaded" => "متاسفانه مشکلی در آپلود عکس رخ داد",
-        "image_edited" => "عکس با موفقیت ویرایش شد",
-        "image_deleted" => "عکس با موفقیت حذف شد",
-        "main_image_changed" => "عکس اصلی تعویض شد",
-        "secondary_image_changed" => "عکس ثانویه تعویض شد",
+        "image_uploaded" => "Photo uploaded successfully",
+        "image_not_uploaded" => "Unfortunately, there was a problem uploading the photo",
+        "image_edited" => "Photo edited successfully",
+        "image_deleted" => "Photo deleted successfully",
+        "main_image_changed" => "The original photo was replaced",
+        "secondary_image_changed" => "The secondary photo was replaced",
     ],
     "product_cart" => [
-        "product_attached" => "محصول با موفقیت به سبد خرید اضافه شد",
+        "product_attached" => "The product has been successfully added to the cart",
         "product_not_attached" => [
-            "unknown" => "اضافه شدن محصول به سبد با مشکل مواجه شد",
-            "due_to_duplicate" => "محصول مورد نظر در سبد موجود است",
-            "due_to_invalid_product" => "امکان اضافه شدن محصول به سبد وجود ندارد",
-            "due_to_count_limit" => "به علت محدودیت تعداد آیتم های سبد, امکان اضافه شدن محصول جدید وجود ندارد",
+            "unknown" => "There was a problem adding the product to the cart",
+            "due_to_duplicate" => "The desired product is available in the cart",
+            "due_to_invalid_product" => "It is not possible to add the product to the basket",
+            "due_to_count_limit" => "Due to the limited number of items in the basket, it is not possible to add a new product",
         ],
-        "product_detached" => "محصول با موفقیت از سبد خرید حذف شد",
-        "product_not_detached" => "حذف محصول از سبد با مشکل مواجه شد",
+        "product_detached" => "The product has been successfully removed from the shopping cart",
+        "product_not_detached" => "There was a problem removing the product from the cart",
     ],
     "address" => [
-        "created" => "آدرس شما با موفقیت ذخیره شد.",
-        "invalid" => "آدرس مورد نظر شما در سیستم موجود نمیباشد.",
-        "updated" => "آدرس شما با موفقیت به روز رسانی شد.",
-        "deleted" => "آدرس مورد نظر شما با موفقیت حذف شد.",
-        "set_as_main" => "آدرس اصلی تغییر یافت."
+        "created" => "Your address has been saved successfully.",
+        "invalid" => "The address you want is not available in the system.",
+        "updated" => "Your address has been successfully updated.",
+        "deleted" => "Your desired address has been successfully deleted.",
+        "set_as_main" => "Original address changed."
     ],
 
     "excel" => [
-        "row_not_valid" => "خط :row از فایل اکسل معتبر نمیباشد.",
-        "importable_attributes_not_set" => "فیلد های قابل خروجی گرفتن تعریف نشده اند",
-        "row_validation_failed" => "متاسفانه اطلاعات موجود در خط :row معتبر نمی‌باشد. :message"
+        "row_not_valid" => "The :row line of the Excel file is not valid.",
+        "importable_attributes_not_set" => "Output fields are not defined",
+        "row_validation_failed" => "Unfortunately, the information in the :row line is not valid. :message"
     ],
 
     "debug_log" => [
-        "unknown_debug_log_type_error" => "نوع لاگ مورد نظر معتبر نمی‌باشد",
+        "unknown_debug_log_type_error" => "The desired log type is not valid",
     ],
-  
+
     "discount_group" => [
-        "soft_delete_success" => "گروه تخفیف با موفقیت حذف شد.",
-        "soft_delete_fail" => "متاسفانه امکان حذف گروه تخفیف مورد نظر وجود ندارد.لطفا با پشتیبان سیستم تماس بگیرید.",
-        "restore_success" => "گروه تخفیف با موفقیت بازیابی شد.",
-        "restore_fail" => "متاسفانه امکان بازیابی گروه تخفیف مورد نظر وجود ندارد.لطفا با پشتیبان سیستم تماس بگیرید."
+        "soft_delete_success" => "The discount group was successfully deleted.",
+        "soft_delete_fail" => "Unfortunately, it is not possible to delete the desired discount group. Please contact the system support.",
+        "restore_success" => "The discount group was successfully restored.",
+        "restore_fail" => "Unfortunately, it is not possible to restore the desired discount group. Please contact the system support."
     ],
-  
+
     "product_watermark" => [
         "update" => [
-            "success" => "تنظیمات واترمارک با موفقیت به روز رسانی شد.",
-            "failed" => "متاسفانه تنظیمات واترمارک به روز رسانی نشد."
+            "success" => "Watermark settings have been successfully updated.",
+            "failed" => "Unfortunately, the watermark settings were not updated."
         ],
         "remove_image" => [
-            "success" => "تصویر با موفقیت حذف شد.",
-            "failed" => "متاسفانه تصویر حذف نشد."
+            "success" => "Image deleted successfully.",
+            "failed" => "Unfortunately, the image was not deleted."
         ],
         "process" => [
-            "success" => "تصویر با موفقیت پردازش شد.",
-            "failed" => "متاسفانه تصویر پردازش نشد."
+            "success" => "Image processed successfully.",
+            "failed" => "Unfortunately, the image could not be processed."
         ],
-    ]
+    ],
+
+    "languages" => [
+        "language_added_successfully" => "The desired language has been successfully added.",
+    ],
 ];
