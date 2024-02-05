@@ -47,4 +47,20 @@ class SendSms extends Job implements ShouldQueue
                 $this->text_message->template . ":data:" . json_encode($this->text_message->data));
         }
     }
+
+    /**
+     * @return int|null
+     */
+    public function getDispatchType(): ?int
+    {
+        return null;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getQueuePriority(): ?int
+    {
+        return null;
+    }
 }

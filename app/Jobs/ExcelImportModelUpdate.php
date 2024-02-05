@@ -2,6 +2,8 @@
 
 namespace App\Jobs;
 
+use App\Enums\Queue\QueueDispatchType;
+use App\Enums\Queue\QueuePriority;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -37,5 +39,21 @@ class ExcelImportModelUpdate extends Job implements ShouldQueue
             $updating_values = array_combine($this->importable_attributes, $row);
             $this->model_name::where($this->importable_attributes[0], $row[0])->update($updating_values);
         }
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getDispatchType(): ?int
+    {
+        return null;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getQueuePriority(): ?int
+    {
+        return null;
     }
 }
