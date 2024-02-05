@@ -92,11 +92,11 @@ return [
 
     'names' => [
         'admin_automatic_low' => env("APP_NAME", "ECOMMERCE") . '_ADMIN_automatic_low',
-        'admin_automatic_default' => env("APP_NAME", "ECOMMERCE") . '_ADMIN_automatic_low',
-        'admin_automatic_high' => env("APP_NAME", "ECOMMERCE") . '_ADMIN_automatic_low',
+        'admin_automatic_default' => env("APP_NAME", "ECOMMERCE") . '_ADMIN_automatic_default',
+        'admin_automatic_high' => env("APP_NAME", "ECOMMERCE") . '_ADMIN_automatic_high',
         'admin_manual_low' => env("APP_NAME", "ECOMMERCE") . '_ADMIN_manual_low',
-        'admin_manual_default' => env("APP_NAME", "ECOMMERCE") . '_ADMIN_manual_low',
-        'admin_manual_high' => env("APP_NAME", "ECOMMERCE") . '_ADMIN_manual_low',
+        'admin_manual_default' => env("APP_NAME", "ECOMMERCE") . '_ADMIN_manual_default',
+        'admin_manual_high' => env("APP_NAME", "ECOMMERCE") . '_ADMIN_manual_high',
         'customer' => env("APP_NAME", "ECOMMERCE") . '_CUSTOMER',
     ]
 ];
