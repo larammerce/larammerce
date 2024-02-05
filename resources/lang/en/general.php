@@ -24,8 +24,8 @@ return [
         "queue" => "Processes",
         "queue_count_processing" => "Processing count",
         "queue_count_failed" => "Failed count",
-        "queue_resume" => "Resume",
-        "queue_stop" => "Stop",
+        "queue_running" => "Running",
+        "queue_stopped" => "Stopped",
     ],
     "shop" => [
         "products" => "Products",

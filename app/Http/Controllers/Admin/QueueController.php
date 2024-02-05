@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\QueueHelper;
+use App\Interfaces\Repositories\JobRepository;
 use App\Services\Queue\QueueService;
 use Illuminate\Http\RedirectResponse;
 
@@ -9,7 +11,8 @@ class QueueController extends BaseController
 {
 
     public function __construct(
-        protected QueueService $queueService
+        protected QueueService $queueService,
+        protected JobRepository $jobRepository,
     )
     {
         parent::__construct();
@@ -17,7 +20,7 @@ class QueueController extends BaseController
 
     public function index()
     {
-        $queues = $this->queueService->getAllQueuesData();
+        $queues = $this->queueService->getAllData();
         return view(
             'admin.pages.queue.index',
             compact('queues'
@@ -31,7 +34,6 @@ class QueueController extends BaseController
      */
     public function update(): RedirectResponse
     {
-        dd(request()->get('queue'),request()->get('toggle_status'));
         $this->queueService->toggleState();
         return redirect()->back();
     }

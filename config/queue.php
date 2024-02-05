@@ -107,6 +107,6 @@ return [
     'queues' => [
         env("APP_NAME", "ECOMMERCE") . '_ADMIN',
         env("APP_NAME", "ECOMMERCE") . '_CUSTOMER',
-        'default' ,
+        'default',
     ],
 ];

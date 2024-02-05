@@ -10,8 +10,6 @@ use Illuminate\Support\Facades\DB;
 
 class JobRepositoryImpl implements JobRepository
 {
-    private string $prefix;
-
     /**
      * @param RedisFactory $redis
      */
@@ -19,7 +17,6 @@ class JobRepositoryImpl implements JobRepository
         public RedisFactory $redis,
     )
     {
-        $this->prefix = 'queues:';
     }
 
     /**
@@ -40,17 +37,17 @@ class JobRepositoryImpl implements JobRepository
     public function count(string $queue): int
     {
         return (int) $this->connection()
-            ->llen($this->prefix . $queue);
+            ->llen( $queue);
     }
 
     /**
      * @param string $queue
      * @return array
      */
-    public function getJobs(string $queue): array
+    public function getJobs(string $queue)
     {
         return $this->connection()
-            ->lrange($this->prefix . $queue , 0 , -1);
+            ->lrange($queue , 0 , -1);
     }
 
     protected function connection(): Connection
@@ -59,22 +56,14 @@ class JobRepositoryImpl implements JobRepository
     }
 
     /**
-     * @param string $prefix
-     * @return void
-     */
-    public function setPrefix(string $prefix)
-    {
-        $this->prefix = $prefix;
-    }
-
-    /**
      * @param string $key
      * @param array $data
      * @return void
      */
-    public function pushJobs(string $key, array $data): void
+    public function pushJobs(string $key,array $data): void
     {
-        $this->connection()->lpush($key, $data);
+        if(count($data) == 0) return;
+        $this->connection()->rpush($key, ... $data);
     }
 
     /**
@@ -83,7 +72,7 @@ class JobRepositoryImpl implements JobRepository
      */
     public function deleteKey(string $key): void
     {
-        $this->connection()->unlink($key);
+        $this->connection()->del($key);
     }
 
     /**
@@ -102,17 +91,6 @@ class JobRepositoryImpl implements JobRepository
     public function deleteJobs(string $key): void
     {
         $this->connection()->ltrim($key, 0 , -1);
-    }
-
-    /**
-     * @param string $key
-     * @return array
-     */
-    public function getJobsAndDeleteKey(string $key): array
-    {
-        $jobs = $this->getJobs($key);
-        $this->deleteKey($key);
-        return $jobs;
     }
 
     /**
@@ -137,4 +115,5 @@ class JobRepositoryImpl implements JobRepository
         $this->connection()->del($key);
         $this->connection()->append($key, $status);
     }
+
 }

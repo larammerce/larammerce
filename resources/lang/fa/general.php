@@ -49,8 +49,8 @@ return [
         "queue" => "صف های پردازش",
         "queue_count" => "تعداد پروسه ها",
         "queue_count_failed" => "تعداد پروسه های ناموفق",
-        "queue_resume" => "ادامه",
-        "queue_stop" => "توقف",
+        "queue_running" => "در حال اجرا",
+        "queue_stopped" => "متوقف",
     ],
     "shop" => [
         "products" => "محصولات",
