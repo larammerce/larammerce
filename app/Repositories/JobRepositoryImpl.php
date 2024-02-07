@@ -39,17 +39,6 @@ class JobRepositoryImpl implements JobRepository
         return (int) $this->connection()
             ->llen( $queue);
     }
-
-    /**
-     * @param string $queue
-     * @return array
-     */
-    public function getJobs(string $queue)
-    {
-        return $this->connection()
-            ->lrange($queue , 0 , -1);
-    }
-
     protected function connection(): Connection
     {
         return $this->redis->connection();
@@ -57,40 +46,11 @@ class JobRepositoryImpl implements JobRepository
 
     /**
      * @param string $key
-     * @param array $data
-     * @return void
-     */
-    public function pushJobs(string $key,array $data): void
-    {
-        if(count($data) == 0) return;
-        $this->connection()->rpush($key, ... $data);
-    }
-
-    /**
-     * @param string $key
-     * @return void
-     */
-    public function deleteKey(string $key): void
-    {
-        $this->connection()->del($key);
-    }
-
-    /**
-     * @param string $key
      * @return bool
      */
-    public function checkIfKeyExists(string $key): bool
+    protected function checkIfKeyExists(string $key): bool
     {
         return $this->connection()->exists($key);
-    }
-
-    /**
-     * @param string $key
-     * @return void
-     */
-    public function deleteJobs(string $key): void
-    {
-        $this->connection()->ltrim($key, 0 , -1);
     }
 
     /**

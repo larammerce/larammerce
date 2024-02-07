@@ -90,11 +90,6 @@ return [
         'table' => 'failed_jobs',
     ],
 
-    'names' => [
-        'admin' => env("APP_NAME", "ECOMMERCE") . '_ADMIN',
-        'customer' => env("APP_NAME", "ECOMMERCE") . '_CUSTOMER'
-    ],
-
     /*
      |--------------------------------------------------------------------------
      | Queues
@@ -104,9 +99,9 @@ return [
      |
      */
 
-    'queues' => [
-        env("APP_NAME", "ECOMMERCE") . '_ADMIN',
-        env("APP_NAME", "ECOMMERCE") . '_CUSTOMER',
-        'default',
+    'names' => [
+        'admin' => env("APP_NAME", "ECOMMERCE") . '_ADMIN',
+        'customer' => env("APP_NAME", "ECOMMERCE") . '_CUSTOMER',
+        'default' => 'default'
     ],
 ];

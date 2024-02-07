@@ -14,40 +14,15 @@ class QueueService
     {
     }
 
-    public function pause(string $queue): void
-    {
-        $this->swapData(
-            $queue,
-            QueueHelper::getBufferKey($queue),
-            QueueHelper::getQueueKey($queue),
-        );
-    }
-
-    public function resume(string $queue): void
-    {
-        $this->swapData(
-            $queue,
-            QueueHelper::getQueueKey($queue),
-            QueueHelper::getBufferKey($queue),
-        );
-    }
-
-    public function swapData($queue, $pushKey, $deleteKey): void
-    {
-        $jobs = $this->jobs->getJobs(QueueHelper::getQueueKey($queue));
-        $this->jobs->pushJobs($pushKey, $jobs);
-        $this->jobs->deleteKey($deleteKey);
-    }
-
-    public function getAllData(): array
+    public function getData(): array
     {
         $result = array();
-        foreach(config('queue.queues') as $queue){
-            $processingCount = $this->getQueueCount($queue);
+        foreach($this->getQueues() as $queue){
+            $count = $this->getCount($queue);
             $failedCount = $this->jobs->countFailed($queue);
             [$status] = $this->getStatus($queue);
             $result[$queue] = [
-                'count' => $processingCount,
+                'count' => $count,
                 'failed_count' => $failedCount,
                 'status' => $status
             ];
@@ -55,41 +30,35 @@ class QueueService
         return $result;
     }
 
-    public function toggleState(): void
+    public function toggleStatus(): void
     {
         $queue = request()->input('queue');
         [$status, $statusKey] = $this->getStatus($queue);
-        $newStatus = $this->changeState($queue,$status);
-        $this->jobs->setQueueStatus($statusKey, $newStatus);
+        $queueStatusRunning = QueueStatus::RUNNING;
+        $status = $status == $queueStatusRunning?
+            QueueStatus::STOPPED : $queueStatusRunning;
+        $this->setStatus($statusKey,$status);
     }
 
-    private function getStatus(string $queue): array
+    public function setStatus(string $key,int $status): void
+    {
+        $this->jobs->setQueueStatus($key, $status);
+    }
+
+    public function getStatus(string $queue): array
     {
         $statusKey = QueueHelper::getStatusKey($queue);
         $status = $this->jobs->getQueueStatus($statusKey);
         return [$status , $statusKey];
     }
 
-    private function changeState(string $queue, int $status): int
+    protected function getCount(string $queue): int
     {
-        if ($status == QueueStatus::RUNNING)
-        {
-            $this->pause($queue);
-            $status = QueueStatus::STOPPED;
-        }
-        else if ($status == QueueStatus::STOPPED)
-        {
-            $this->resume($queue);
-            $status = QueueStatus::RUNNING;
-        }
-        return $status;
+        return $this->jobs->count(QueueHelper::getQueueKey($queue));
     }
 
-    protected function getQueueCount(string $queue)
+    private function getQueues(): array
     {
-        if($this->getStatus($queue) == QueueStatus::STOPPED)
-            return $this->jobs->count(QueueHelper::getBufferKey($queue));
-        else
-            return $this->jobs->count(QueueHelper::getQueueKey($queue));
+        return array_values(config('queue.names'));
     }
 }

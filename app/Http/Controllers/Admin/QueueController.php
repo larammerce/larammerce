@@ -20,7 +20,7 @@ class QueueController extends BaseController
 
     public function index()
     {
-        $queues = $this->queueService->getAllData();
+        $queues = $this->queueService->getData();
         return view(
             'admin.pages.queue.index',
             compact('queues'
@@ -34,7 +34,7 @@ class QueueController extends BaseController
      */
     public function update(): RedirectResponse
     {
-        $this->queueService->toggleState();
+        $this->queueService->toggleStatus();
         return redirect()->back();
     }
 
