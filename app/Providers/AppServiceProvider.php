@@ -2,14 +2,21 @@
 
 namespace App\Providers;
 
+use App\Common\CustomCommand;
+use App\Common\CustomListener;
 use App\Interfaces\FileHandlerInterface;
+use App\Interfaces\Repositories\JobRepository;
 use App\Interfaces\Repositories\SettingRepositoryInterface;
 use App\Repositories\Eloquent\SettingRepositoryEloquent;
+use App\Repositories\JobRepositoryImpl;
 use App\Services\Common\EnvFile\EnvFileHandler;
 use App\Services\Invoice\NewInvoiceService;
+use App\Services\Queue\QueueService;
 use App\Utils\CMS\RobotTxt\RobotTxtService;
 use App\Utils\CMS\Setting\Logistic\LogisticService;
 use App\Utils\Validation\ValidationRule;
+use Illuminate\Queue\Console\ListenCommand;
+use Illuminate\Queue\Listener;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
@@ -76,8 +83,10 @@ class AppServiceProvider extends ServiceProvider {
         //Services
         $this->app->singleton(FileHandlerInterface::class, EnvFileHandler::class);
         $this->app->singleton(NewInvoiceService::class);
+        $this->app->singleton(QueueService::class);
 
         //Repositories
         $this->app->bind(SettingRepositoryInterface::class, SettingRepositoryEloquent::class);
+        $this->app->bind(JobRepository::class, JobRepositoryImpl::class);
     }
 }

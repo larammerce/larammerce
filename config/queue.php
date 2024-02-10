@@ -90,8 +90,18 @@ return [
         'table' => 'failed_jobs',
     ],
 
+    /*
+     |--------------------------------------------------------------------------
+     | Queues
+     |--------------------------------------------------------------------------
+     |
+     | Here you may specify the names of your queues
+     |
+     */
+
     'names' => [
         'admin' => env("APP_NAME", "ECOMMERCE") . '_ADMIN',
-        'customer' => env("APP_NAME", "ECOMMERCE") . '_CUSTOMER'
-    ]
+        'customer' => env("APP_NAME", "ECOMMERCE") . '_CUSTOMER',
+        'default' => 'default'
+    ],
 ];

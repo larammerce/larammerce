@@ -73,6 +73,9 @@ Route::group(
                 Route::put("product-watermark/", ["as" => "product-watermark.update", "uses" => "ProductWatermarkController@update"]);
                 Route::any("product-watermark/process", ["as" => "product-watermark.process", "uses" => "ProductWatermarkController@process"]);
                 Route::any("product-watermark/remove-image", ["as" => "product-watermark.remove-image", "uses" => "ProductWatermarkController@removeImage"]);
+
+                Route::get("queue", ["as" => "queue.index", "uses" => "QueueController@index"]);
+                Route::post("queue", ["as" => "queue.update", "uses" => "QueueController@update"]);
             });
         Route::resource("setting", "SettingController", ["as" => "admin"]);
 
