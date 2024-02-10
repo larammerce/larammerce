@@ -55,6 +55,8 @@ Route::group(
 
                 Route::get("language", ["as" => "language.edit", "uses" => "LanguageSettingController@edit"]);
                 Route::put("language", ["as" => "language.update", "uses" => "LanguageSettingController@update"]);
+                Route::get("language/item", ["as" => "language.item.create", "uses" => "LanguageSettingController@create"]);
+                Route::post("language/item", ["as" => "language.item.store", "uses" => "LanguageSettingController@store"]);
 
                 Route::get("representative", ["as" => "representative.edit", "uses" => "RepresentativeSettingController@edit"]);
                 Route::put("representative", ["as" => "representative.update", "uses" => "RepresentativeSettingController@update"]);
@@ -661,6 +663,14 @@ Route::group(
         ]);
     }
 );
+
+Route::group([
+    "prefix" => "public",
+    "as" => "public.",
+    "namespace" => "Public"
+], function () {
+    Route::get("product-listing/emalls", ["as" => "product-listing.emalls", "uses" => "ProductListingController@emalls"]);
+});
 
 //Public routes
 Route::post("/message/save", ["as" => "message-save", "uses" => "MessageController@saveMessage"]);

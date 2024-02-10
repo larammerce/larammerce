@@ -43,6 +43,15 @@ abstract class BaseCMSConfigManager
         }
     }
 
+
+    public static function setRecordWithoutValidation(SettingDataInterface $record, ?string $parent_id = null): void
+    {
+        if (static::$SETTING_TYPE == SettingType::LOCAL_SETTING)
+            CMSFeatureConfigHelper::setLocal(static::getKey($record->getPrimaryKey(), $parent_id), $record, static::$DRIVER);
+        else if (static::$SETTING_TYPE == SettingType::GLOBAL_SETTING)
+            CMSFeatureConfigHelper::setGlobal(static::getKey($record->getPrimaryKey(), $parent_id), $record, static::$DRIVER);
+    }
+
     public static function getRecord(string $name = "", ?string $parent_id = null): ?SettingDataInterface
     {
         if (static::validateName($name)) {

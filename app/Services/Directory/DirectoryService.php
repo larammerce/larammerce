@@ -5,6 +5,7 @@ namespace App\Services\Directory;
 use App\Exceptions\Directory\DirectoryNotFoundException;
 use App\Helpers\Common\StringHelper;
 use App\Models\Directory;
+use App\Utils\CMS\AdminRequestService;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -12,6 +13,10 @@ use Ixudra\Curl\Facades\Curl;
 use stdClass;
 
 class DirectoryService {
+
+    private static string $admin_tag = 'Admin';
+    private static string $customer_tag = 'Customer';
+
     /**
      * @throws DirectoryNotFoundException
      */
@@ -24,12 +29,13 @@ class DirectoryService {
     }
 
     public static function clearCache(): void {
-        Cache::tags([Directory::class])->flush();
+        Cache::tags([static::$admin_tag, static::$customer_tag])->flush();
     }
 
     public static function buildDirectoriesTree(?Directory $root = null, array $conditions = [], array $order = []): array {
+        $tag = static::getCacheTag();
         $cache_key = StringHelper::getCacheKey([static::class, __FUNCTION__], $root?->id ?? 0, json_encode($conditions), json_encode($order));
-        if (!Cache::tags([Directory::class])->has($cache_key)) {
+        if (!Cache::tags([$tag])->has($cache_key)) {
             $directories = Directory::permitted()->where($conditions)
                 ->orderBy($order["column"] ?? "priority", $order["direction"] ?? "ASC")->get();
             $branch = [];
@@ -52,10 +58,10 @@ class DirectoryService {
                 }
             }
 
-            Cache::tags([Directory::class])->put($cache_key, ($root == null ? $branch : ($map[$root->id]->directories ?? [])));
+            Cache::tags([$tag])->put($cache_key, ($root == null ? $branch : ($map[$root->id]->directories ?? [])));
         }
 
-        return Cache::tags([Directory::class])->get($cache_key);
+        return Cache::tags([$tag])->get($cache_key);
     }
 
     public static function syncWithUpstream(Directory $directory): void {
@@ -94,6 +100,12 @@ class DirectoryService {
         foreach ($node_data->sub_nodes as $sub_node) {
             static::createProductDirectoryByNodeData($head_directory, $sub_node);
         }
+    }
+
+    private static function getCacheTag(): string
+    {
+        return AdminRequestService::isInAdminArea() ?
+            static::$admin_tag : static::$customer_tag;
     }
 
     public static function buildUrlPartFromString(string $title): string {
