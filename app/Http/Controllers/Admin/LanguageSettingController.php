@@ -43,7 +43,39 @@ class LanguageSettingController extends BaseController
             return History::redirectBack();
         } catch (NotValidSettingRecordException $e) {
             SystemMessageService::addErrorMessage('system_messages.language.invalid_record');
-            return redirect()->back()->withInput();
+            return redirect('language.edit');
+        }
+    }
+
+    /**
+     * @role(super_user, cms_manager, acc_manager)
+     */
+    public function create(): View
+    {
+        $available_languages = LanguageSettingService::getAvailableChoices();
+        return view('admin.pages.language.create',
+            [
+                'available_languages' => $available_languages
+            ]
+        );
+    }
+
+    /**
+     * @role(super_user, cms_manager, acc_manager)
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        try {
+            LanguageSettingService::setOne(
+                $request->input('language_id'),
+                $request->has('is_enabled'),
+                $request->has('is_default'),
+            );
+            SystemMessageService::addSuccessMessage('messages.languages.language_added_successfully');
+            return redirect()->back();
+        } catch (\Throwable $e) {
+            SystemMessageService::addErrorMessage($e->getMessage());
+            return History::redirectBack();
         }
     }
 

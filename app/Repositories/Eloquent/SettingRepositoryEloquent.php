@@ -64,11 +64,11 @@ class SettingRepositoryEloquent implements SettingRepositoryInterface
         return Setting::cmsRecords()->paginate(Setting::getPaginationCount());
     }
 
-    public function create(string $key, string $value, Authenticatable|User|null $user = null, bool $is_system_setting = false): Setting {
+    public function create(string $key, ?string $value, Authenticatable|User|null $user = null, bool $is_system_setting = false): Setting {
         $this->clearCache();
         $setting = new Setting();
         $setting->key = $key;
-        $setting->value = $value;
+        $setting->value = $value ?? '';
         $setting->user_id = $user?->id;
         $setting->is_system_setting = $is_system_setting;
         $setting->save();
@@ -88,10 +88,10 @@ class SettingRepositoryEloquent implements SettingRepositoryInterface
         return $setting;
     }
 
-    public function update(Setting $setting, string $key, string $value, Authenticatable|User|null $user = null, bool $is_system_setting = false): Setting {
+    public function update(Setting $setting, ?string $key, ?string $value, Authenticatable|User|null $user = null, bool $is_system_setting = false): Setting {
         $this->clearCache();
         $setting->key = $key;
-        $setting->value = $value;
+        $setting->value = $value ?? '';
         $setting->user_id = $user?->id;
         $setting->is_system_setting = $is_system_setting;
         $setting->save();

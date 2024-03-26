@@ -177,16 +177,16 @@
     </div>
 </div>
 
-<script data-main="/admin_dashboard/js/all-23-10-28" src="/admin_dashboard/vendor/requirejs/require.js"></script>
 
 @yield('extra_javascript')
 
 @include('admin.templates.underscore_needle')
 @include('admin.templates.modals.confirm_modal')
 @if(isset(request()->related_model) || isset($related_model))
-    @include('admin.templates.modals.classic_search_modal')
-    @include('admin.templates.modals.excel_export_modal')
+@include('admin.templates.modals.classic_search_modal')
+@include('admin.templates.modals.excel_export_modal')
 @endif
+<script data-main="/admin_dashboard/js/all-23-10-28" src="/admin_dashboard/vendor/requirejs/require.js"></script>
 @yield('outer_content')
 
 
