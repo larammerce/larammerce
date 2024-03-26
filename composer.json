@@ -42,8 +42,10 @@
     "phpoffice/phpspreadsheet": "^1.18",
     "phpseclib/phpseclib": "^2.0",
     "predis/predis": "~1.0@dev",
+    "ramsey/uuid": "^4.7",
     "riverskies/laravel-mobile-detect": "^1.3",
     "sentry/sentry-laravel": "^3.4",
+    "spatie/db-dumper": "^3.4",
     "stevebauman/location": "^6.1",
     "tymon/jwt-auth": "1.0.*@dev",
     "yangqi/htmldom": "dev-master"

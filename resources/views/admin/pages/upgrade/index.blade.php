@@ -17,6 +17,47 @@
 
 @section('form_body')
     <script>window.PAGE_ID = "admin.pages.upgrade.index";</script>
+    <div class="col-md-12">
+        <div class="alert alert-info" role="alert">
+            <p>نسخه نصب شده: <b>{{lm_get_current_version()}}</b></p>
+            <p>به روز رسانی موجود: <b>{{lm_get_latest_patch_version()}}</b></p>
+            <p>آخرین نسخه: <b>{{lm_get_latest_stable_version()}}</b></p>
+        </div>
+        @if(lm_get_current_version() !== lm_get_latest_patch_version())
+            <div class="alert alert-warning" role="alert">
+                <p>
+                    به روز رسانی امنیتی برای
+                    <b>version/{{lm_get_latest_patch_version(true)}}</b>
+                    موجود است، لطفا روی دکمه «به روز رسانی هسته» کلیک نمایید و منتظر بمانید تا پروژه به روز شود.
+                </p>
+            </div>
+        @else
+            <div class="alert alert-success" role="alert">
+                <p>
+                    شما آخرین اصلاحات امنیتی و رفع اشکالات فنی برای نسخه
+                    <b>version/{{lm_get_latest_patch_version(true)}}</b>
+                    را دریافت کرده اید و درحال حاضر سیستم به روز است.
+                    <br>
+                    هیچ به روز رسانی جدیدی برای این نسخه موجود نیست.
+                </p>
+            </div>
+        @endif
+        @if(lm_get_current_version() !== lm_get_latest_stable_version())
+            <div class="alert alert-warning" role="alert">
+                <p>
+                    شما در حال حاضر از نسخه قدیمی نرم‌افزار استفاده می‌نمایید، برای به روز رسانی برنچ هسته را به
+                    <b>version/{{lm_get_latest_stable_version(true)}}</b>
+                    تغییر دهید.
+                    <br>
+                    این تغییر نسخه حتما بایستی با هماهنگی برنامه نویس و یا پشتیبان سیستم انجام شود، چرا که ممکن است نسخه های جدید پلتفرم با پوسته پروژه شما سازگار نباشند.
+                </p>
+            </div>
+        @else
+            <div class="alert alert-success" role="alert">
+                <p>شما از آخرین نسخه نرم افزار استفاده می‌کنید.</p>
+            </div>
+        @endif
+    </div>
     <div class="col-md-9">
         <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
             <span class="label">آدرس گیت هسته</span>
@@ -44,20 +85,25 @@
         </div>
     </div>
     @if(isset($public_key))
-        <div class="alert alert-success" role="alert">
-            <h4 class="alert-heading">بسیار عالی!</h4>
-            <p>تنظیمات با موفقیت ذخیره شدند، حالا باید کلید عمومی زیر را کپی کنید و در ریپازیتوری گیت خود قرار دهید تا
-                این سرور دسترسی‌های لازم برای اتصال به سرور گیت را داشته باشد.</p>
-            <hr>
-            <p class="mb-0">لطفا دقت کنید که حتما این کد را کپی کنید، چون در صورت خروج از این صفحه دیگر به آن دسترسی
-                ندارید.</p>
-        </div>
-        <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
-            <span class="label">کلید پابلیک </span>
-            <textarea act="tag" class="form-control input-sm" name="fields"
-                      data-field-name="title"
-                      rows="15" dir="ltr"
-                      data-container=".form-layout-container">{{$public_key}}</textarea>
+        <div class="col-md-12">
+            <div class="alert alert-success" role="alert">
+                <h4 class="alert-heading">بسیار عالی!</h4>
+                <p>تنظیمات با موفقیت ذخیره شدند، حالا باید کلید عمومی زیر را کپی کنید و در ریپازیتوری گیت خود قرار دهید
+                    تا
+                    این سرور دسترسی‌های لازم برای اتصال به سرور گیت را داشته باشد.
+                </p>
+                <hr>
+                <p class="mb-0">لطفا دقت کنید که حتما این کد را کپی کنید، چون در صورت خروج از این صفحه دیگر به آن دسترسی
+                    ندارید.
+                </p>
+            </div>
+            <div class="input-group group-sm col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                <span class="label">کلید پابلیک </span>
+                <textarea act="tag" class="form-control input-sm" name="fields"
+                          data-field-name="title"
+                          rows="15" dir="ltr"
+                          data-container=".form-layout-container">{{$public_key}}</textarea>
+            </div>
         </div>
     @endif
 

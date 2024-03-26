@@ -50,8 +50,13 @@ Route::group(
                 Route::get("sms-driver", ["as" => "sms-driver.edit", "uses" => "SMSDriverController@edit"]);
                 Route::put("sms-driver", ["as" => "sms-driver.update", "uses" => "SMSDriverController@update"]);
 
+                Route::get("crm-driver", ["as" => "crm-driver.edit", "uses" => "CRMDriverController@edit"]);
+                Route::put("crm-driver", ["as" => "crm-driver.update", "uses" => "CRMDriverController@update"]);
+
                 Route::get("language", ["as" => "language.edit", "uses" => "LanguageSettingController@edit"]);
                 Route::put("language", ["as" => "language.update", "uses" => "LanguageSettingController@update"]);
+                Route::get("language/item", ["as" => "language.item.create", "uses" => "LanguageSettingController@create"]);
+                Route::post("language/item", ["as" => "language.item.store", "uses" => "LanguageSettingController@store"]);
 
                 Route::get("representative", ["as" => "representative.edit", "uses" => "RepresentativeSettingController@edit"]);
                 Route::put("representative", ["as" => "representative.update", "uses" => "RepresentativeSettingController@update"]);
@@ -61,11 +66,25 @@ Route::group(
 
                 Route::get("env-file", ["as" => "env-file.edit", "uses" => "EnvFileController@edit"]);
                 Route::put("env-file", ["as" => "env-file.update", "uses" => "EnvFileController@update"]);
+
+                Route::get("database/export", ["as" => "database.export", "uses" => "DatabaseController@export"]);
+
+                Route::get("product-watermark/edit", ["as" => "product-watermark.edit", "uses" => "ProductWatermarkController@edit"]);
+                Route::put("product-watermark/", ["as" => "product-watermark.update", "uses" => "ProductWatermarkController@update"]);
+                Route::any("product-watermark/process", ["as" => "product-watermark.process", "uses" => "ProductWatermarkController@process"]);
+                Route::any("product-watermark/remove-image", ["as" => "product-watermark.remove-image", "uses" => "ProductWatermarkController@removeImage"]);
             });
         Route::resource("setting", "SettingController", ["as" => "admin"]);
 
         //Upgrade
         Route::any("upgrade", ["as" => "upgrade", "uses" => "UpgradeController@doUpgrade"]);
+        Route::any("upgrade-log", ["as" => "upgrade-log", "uses" => "UpgradeController@readLog"]);
+
+        //DebugLog
+        Route::get("debug-log", ["as" => "admin.debug-log.index", "uses" => "DebugLogController@index"]);
+        Route::get("debug-log/search", ["as" => "admin.debug-log.search", "uses" => "DebugLogController@search"]);
+        Route::get("debug-log/view", ["as" => "admin.debug-log.view", "uses" => "DebugLogController@view"]);
+        Route::get("debug-log/download", ["as" => "admin.debug-log.download", "uses" => "DebugLogController@download"]);
 
         //Shop
         Route::group(["prefix" => "shop", "as" => "admin.shop."],
@@ -144,16 +163,17 @@ Route::group(
                 Route::get("{discount_group}/filter/create", ["as" => "product-filter.create", "uses" => "DiscountGroupController@createProductFilter"]);
                 Route::post("{discount_group}/filter", ["as" => "product-filter.attach", "uses" => "DiscountGroupController@attachProductFilter"]);
                 Route::delete("{discount_group}/filter/{product_filter}", ["as" => "product-filter.detach", "uses" => "DiscountGroupController@detachProductFilter"]);
+                Route::delete("{discount_group}/soft-delete", ["as" => "soft-delete", "uses" => "DiscountGroupController@softDelete"]);
+                Route::patch("{discount_group_id}/restore", ["as" => "restore", "uses" => "DiscountGroupController@restore"]);
             }
         );
         Route::resource("discount-group", "DiscountGroupController", ["as" => "admin"]);
 
-
+        //DiscountCard
         Route::group(["prefix" => "discount-card", "as" => "admin.discount-card."],
             function () {
                 Route::post("notify/{discount_card}", ["as" => "notify", "uses" => "DiscountCardController@notify"]);
             });
-        //DiscountCard
         Route::resource("discount-card", "DiscountCardController", ["as" => "admin"]);
 
         //CustomerUserLegalInfo
@@ -230,6 +250,7 @@ Route::group(
                 Route::get("{directory}/special-price", ["as" => "special-price.edit", "uses" => "DirectoryController@editSpecialPrice"]);
                 Route::post("{directory}/special-price", ["as" => "special-price.update", "uses" => "DirectoryController@updateSpecialPrice"]);
                 Route::delete("{directory}/special-price", ["as" => "special-price.destroy", "uses" => "DirectoryController@destroySpecialPrice"]);
+                Route::patch("{directory}/clear-cmc", ["as" => "clear-cmc", "uses" => "DirectoryController@clearCMC"]);
                 Route::get("{directory}/sync", ["as" => "sync", "uses" => "DirectoryController@sync"]);
                 Route::get("cache-clear", ["as" => "cache-clear", "uses" => "DirectoryController@cacheClear"]);
             });
@@ -283,7 +304,7 @@ Route::group(
                 Route::put("{product}/publish", ["as" => "publish", "uses" => "ProductController@publish"]);
                 Route::put("{product}/clone", ["as" => "clone", "uses" => "ProductController@cloneModel"]);
                 Route::get("{product}/models", ["as" => "models", "uses" => "ProductController@models"]);
-                Route::get("cache-clear", ["as" => "cache-clear", "uses" => "DirectoryController@cacheClear"]);
+                Route::get("cache-clear", ["as" => "cache-clear", "uses" => "ProductController@cacheClear"]);
             });
         Route::resource("product", "ProductController", ["as" => "admin"]);
 
@@ -632,13 +653,21 @@ Route::group(
         "prefix" => "health",
         "as" => "health."
     ],
-    function (){
+    function () {
         Route::get("dbversion", [
             "as" => "dbversion",
             "uses" => "HealthController@getDBVersion"
         ]);
     }
 );
+
+Route::group([
+    "prefix" => "public",
+    "as" => "public.",
+    "namespace" => "Public"
+], function () {
+    Route::get("product-listing/emalls", ["as" => "product-listing.emalls", "uses" => "ProductListingController@emalls"]);
+});
 
 //Public routes
 Route::post("/message/save", ["as" => "message-save", "uses" => "MessageController@saveMessage"]);

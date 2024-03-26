@@ -65,6 +65,22 @@ return [
                     "route" => "admin.setting.language.edit"
                 ]
             ],
+            [
+                "properties" => [
+                    "id" => "export-database",
+                    "name" => "general.setting.export_database",
+                    "icon" => "icon-export-database",
+                    "route" => "admin.setting.database.export"
+                ]
+            ],
+            [
+                "properties" => [
+                    "id" => "product-watermark",
+                    "name" => "general.setting.product_watermark",
+                    "icon" => "icon-product-watermark",
+                    "route" => "admin.setting.product-watermark.edit"
+                ]
+            ]
         ],
         "explore_appliances" => []
     ],
@@ -278,6 +294,14 @@ return [
             ],
             [
                 "properties" => [
+                    "id" => "crm_driver",
+                    "name" => "general.setting.crm_driver",
+                    "icon" => "icon-crm-driver",
+                    "route" => "admin.setting.crm-driver.edit"
+                ]
+            ],
+            [
+                "properties" => [
                     "id" => "payment_driver",
                     "name" => "general.setting.payment_driver",
                     "icon" => "icon-payment-driver",
@@ -439,6 +463,14 @@ return [
                     "name" => "general.analytic.action_logs",
                     "icon" => "icon-log",
                     "route" => "admin.action-log.index"
+                ]
+            ],
+            [
+                "properties" => [
+                    "id" => "debug_logs",
+                    "name" => "general.analytic.debug_logs",
+                    "icon" => "icon-debug-logs",
+                    "route" => "admin.debug-log.index"
                 ]
             ],
         ]

@@ -37,6 +37,10 @@
                         <li class="btn btn-default" href="{{route('admin.product.index')}}" act="link">
                             <i class="fa fa-cubes"></i>محصولات
                         </li>
+                        <li class="btn btn-default" href="{{route('admin.directory.show-link-product', $directory)}}"
+                            act="link">
+                            <i class="fa fa-plus"></i>افزودن محصول مرتبط
+                        </li>
                     @endif
                 </ul>
             @endif

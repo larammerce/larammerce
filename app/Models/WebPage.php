@@ -30,6 +30,7 @@ use Yangqi\Htmldom\Htmldom;
  * @property integer id
  * @property integer directory_id
  * @property string blade_name
+ * @property string custom_blade_name
  * @property string data
  * @property string image_path
  * @property string seo_description
@@ -37,6 +38,7 @@ use Yangqi\Htmldom\Htmldom;
  * @property string seo_title
  * @property DateTime created_at
  * @property DateTime updated_at
+ * @property string raw_blade_name
  *
  * @property array contents
  *
@@ -46,8 +48,7 @@ use Yangqi\Htmldom\Htmldom;
  * Class WebPage
  * @package App\Models
  */
-class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
-{
+class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract {
     use Seoable, Translatable;
 
     protected $table = 'web_pages';
@@ -90,6 +91,10 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
         return $this->cached_attributes["contents"];
     }
 
+    public function getCustomBladeNameAttribute(): string {
+        return "{$this->blade_name}-{$this->id}";
+    }
+
     public function putContent($key, $value) {
         $this->loadContents();
         $this->cached_attributes["contents"][$key] = $value;
@@ -102,17 +107,24 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
     public function getBladeNameAttribute() {
         if (!isset($this->attributes["blade_name"]))
             return null;
-        $locale = $this->getDefaultLocale();
+        $locale = $this->locale();
         $blade_name = $this->attributes["blade_name"];
-        $blade_path = TemplateService::getBladePath($blade_name);
-        if ($locale !== null) {
-            $tmp_blade_name = $blade_name . "___locale_{$locale}";
-            $tmp_blade_path = TemplateService::getBladePath($tmp_blade_name);
-            if (!file_exists($tmp_blade_path))
-                TemplateService::copyBlade($blade_path, $tmp_blade_path);
-            return $tmp_blade_name;
+        $default_template_path = TemplateService::getViewPath($blade_name);
+        $raw_template_path = TemplateService::getBladePath($blade_name);
+        $tmp_blade_name = $blade_name . "___locale_{$locale}";
+        $tmp_blade_path = TemplateService::getViewPath($tmp_blade_name);
+        if (!file_exists($tmp_blade_path)) {
+            if (file_exists($default_template_path)) {
+                TemplateService::copyBlade($default_template_path, $tmp_blade_path);
+            } else {
+                TemplateService::copyBlade($raw_template_path, $tmp_blade_path);
+            }
         }
-        return $blade_name;
+        return $tmp_blade_name;
+    }
+
+    public function getRawBladeNameAttribute(): string {
+        return $this->attributes["blade_name"];
     }
 
     public function setDataAttribute($data): void {
@@ -139,9 +151,7 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
     }
 
     public function getSeoTitle() {
-        if ($this->seo_title !== null and strlen($this->seo_title) > 0)
-            return $this->seo_title;
-        return $this->directory->title;
+        return $this->seo_title ?? $this->directory?->title ?? "";
     }
 
     public function getSeoUrl(): string {
@@ -205,14 +215,14 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
     private function loadBladeContents() {
         $tmp_contents = $this->contents;
         $this->contents = [];
-        if ($this->blade_name != null and strlen($this->blade_name) > 0) {
-            $blade_path = TemplateService::getBladePath($this->blade_name);
+        if ($this->raw_blade_name != null and strlen($this->raw_blade_name) > 0) {
+            $blade_path = TemplateService::getBladePath($this->raw_blade_name);
             $bladeContent = TemplateService::getBladeContent($blade_path);
             $html = new Htmldom($bladeContent);
             $content_tags = $html->find("[" . Directives::CONTENT . "]");
 
             foreach (RelativeBladeType::values() as $relative_blade_postfix) {
-                $relativeBladePath = TemplateService::getBladePath($this->blade_name . $relative_blade_postfix);
+                $relativeBladePath = TemplateService::getBladePath($this->raw_blade_name . $relative_blade_postfix);
                 $relativeBladeContent = TemplateService::getBladeContent($relativeBladePath);
                 if ($relativeBladeContent != "") {
                     $relativeHtml = new Htmldom($relativeBladeContent);
@@ -334,17 +344,17 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
     }
 
     private function saveBladeContents() {
-        if ($this->blade_name != null and strlen($this->blade_name) > 0) {
-            $this->updateBladeContent($this->contents, TemplateService::getBladePath($this->blade_name));
+        if ($this->raw_blade_name != null and strlen($this->raw_blade_name) > 0) {
+            $this->updateBladeContent($this->contents, TemplateService::getBladePath($this->raw_blade_name));
             foreach (RelativeBladeType::values() as $relative_blade_postfix) {
-                $relative_blade_path = TemplateService::getBladePath($this->blade_name . $relative_blade_postfix);
+                $relative_blade_path = TemplateService::getBladePath($this->raw_blade_name . $relative_blade_postfix);
                 $this->updateBladeContent($this->contents, $relative_blade_path, $relative_blade_postfix);
             }
         }
     }
 
-    private function updateBladeContent(array $contents, $blade_path, $relative_blade_postfix = null) {
-        $blade_content = TemplateService::getBladeContent($blade_path);
+    private function updateBladeContent(array $contents, $original_blade_path, $relative_blade_postfix = null) {
+        $blade_content = TemplateService::getBladeContent($original_blade_path);
         $html = null;
         $content_tags = null;
         if ($blade_content != "" and strlen($blade_content) > 0) {
@@ -354,7 +364,7 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
         if ($content_tags != null)
             $this->setContentTags($contents, $content_tags);
         if ($html != null) {
-            $blade_name = $this->blade_name;
+            $blade_name = $this->custom_blade_name;
             if ($relative_blade_postfix != null)
                 $blade_name .= $relative_blade_postfix;
             TemplateService::setBladeContent(TemplateService::getViewPath($blade_name), $html);
@@ -373,12 +383,12 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract
         return $this->directory->getFrontUrl();
     }
 
-    public function getSeoDescription(): ?string {
-        return $this->seo_description;
+    public function getSeoDescription(): string {
+        return $this->seo_description ?? "";
     }
 
-    public function getSeoKeywords(): ?string {
-        return $this->seo_keywords;
+    public function getSeoKeywords(): string {
+        return $this->seo_keywords ?? "";
     }
 
 

@@ -97,10 +97,10 @@ if (!function_exists("unparse_url")) {
 }
 
 if (!function_exists("get_all_extras_percentage")) {
-    function get_product_all_extras_percentage(): float {
+    function get_product_all_extras_percentage(Product $product = null): float {
         /** @var NewInvoiceService $new_invoice_service */
         $new_invoice_service = app(NewInvoiceService::class);
-        return $new_invoice_service->getProductAllExtrasPercentage();
+        return $new_invoice_service->getProductAllExtrasPercentage($product);
     }
 }
 
@@ -531,7 +531,7 @@ if (!function_exists('get_important_product_leaves')) {
     function get_important_product_leaves(Directory $root_directory, int $count): array|Collection {
         $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], $root_directory->id, "{$count}");
         if (!Cache::tags([Product::class])->has($cache_key)) {
-            Cache::tags([Product::class])->put($cache_key, $root_directory->leafProducts()->mainModels()->visible()
+            Cache::tags([Product::class])->put($cache_key, $root_directory->leafProducts()->mainModels()->visible()->isActive()
                 ->where('important_at', '!=', null)
                 ->orderBy('important_at', 'DESC')
                 ->orderBy('updated_at', 'DESC')
@@ -680,14 +680,14 @@ if (!function_exists('important_products')) {
         $cache_key = StringHelper::getCacheKey(["anonymous", __FUNCTION__], "{$count}");
         if (!Cache::tags([Product::class])->has($cache_key)) {
             if ($count > 0) {
-                Cache::tags([Product::class])->put($cache_key,  Product::important()
+                Cache::tags([Product::class])->put($cache_key, Product::important()
                     ->orderBy('important_at', 'DESC')
                     ->where("is_active", true)
                     ->mainModels()
                     ->visible()
                     ->take($count)->get());
-            }else{
-                Cache::tags([Product::class])->put($cache_key,  []);
+            } else {
+                Cache::tags([Product::class])->put($cache_key, []);
             }
         }
         return Cache::tags([Product::class])->get($cache_key);
@@ -921,7 +921,7 @@ if (!function_exists('get_configurations')) {
 
 if (!function_exists('get_searched_products')) {
     function get_searched_products() {
-        return Product::search(request('query'))->mainModels()->visible()->get();
+        return Product::search(request('query'), 1)->mainModels()->visible()->get();
     }
 }
 
@@ -1775,3 +1775,143 @@ if (!function_exists('is_android')) {
         return DetectService::isAndroid();
     }
 }
+
+if (!function_exists('get_related_products_according_to_structures')) {
+    /**
+     * @param Product $product
+     * @param array|Collection $keys_to_be_the_same
+     * @param array|Collection $keys_to_be_different
+     * @return void
+     */
+    function get_related_products_according_to_structures(
+        Product          $product,
+        array|Collection $keys_to_be_the_same,
+        array|Collection $keys_to_be_different,
+        int              $limit_count = 5
+    ) {
+        if ($keys_to_be_the_same instanceof Collection) {
+            $keys_to_be_the_same = $keys_to_be_the_same->all();
+        }
+
+        if ($keys_to_be_different instanceof Collection) {
+            $keys_to_be_different = $keys_to_be_different->all();
+        }
+
+        $keys_to_be_different = array_map(function ($iter_key) {
+            if (is_int($iter_key)) {
+                return $iter_key;
+            }
+
+            if ($iter_key instanceof PStructureAttrKey) {
+                return $iter_key->id;
+            }
+
+            return null;
+        }, $keys_to_be_different);
+
+        // filter not null values for keys_to_be_different
+        $keys_to_be_different = array_filter($keys_to_be_different, function ($iter_key) {
+            return $iter_key !== null;
+        });
+
+        $keys_to_be_the_same = array_map(function ($iter_key) {
+            if (is_int($iter_key)) {
+                return $iter_key;
+            }
+
+            if ($iter_key instanceof PStructureAttrKey) {
+                return $iter_key->id;
+            }
+
+            return null;
+        }, $keys_to_be_the_same);
+
+        // filter not null values for keys_to_be_the_same
+        $keys_to_be_the_same = array_filter($keys_to_be_the_same, function ($iter_key) {
+            return $iter_key !== null;
+        });
+
+        $values_to_not_to_have = $product->pAttributes()->whereIn("p_structure_attr_key_id", $keys_to_be_different)
+            ->pluck("p_structure_attr_value_id")->toArray();
+        $values_to_have = $product->pAttributes()->whereIn("p_structure_attr_key_id", $keys_to_be_the_same)
+            ->pluck("p_structure_attr_value_id")->toArray();
+
+        $products = Product::whereHas("pAttributes", function ($query) use ($values_to_not_to_have) {
+            $query->whereNotIn("p_structure_attr_value_id", $values_to_not_to_have);
+        })
+            ->whereHas("pAttributes", function ($query) use ($values_to_have) {
+                $query
+                    ->whereIn("p_structure_attr_value_id", $values_to_have)
+                    ->groupBy("products.id")
+                    ->havingRaw('COUNT(DISTINCT p_structure_attr_value_id) = ?', [count($values_to_have)]);
+            })
+            ->where("is_active", true)
+            ->mainModels()
+            ->visible()
+            ->latest()
+            ->take($limit_count)
+            ->get();
+
+        return $products;
+    }
+}
+
+if (!function_exists('is_tax_added_to_price_by_default')) {
+    function is_tax_added_to_price_by_default(): bool {
+        return \App\Utils\FinancialManager\ConfigProvider::isTaxAddedToPriceByDefault();
+    }
+}
+
+if (!function_exists('should_use_per_product_tax_config')) {
+    function should_use_per_product_tax_config(): bool {
+        return \App\Utils\FinancialManager\ConfigProvider::shouldUsePerProductTaxConfig();
+    }
+}
+
+if (!function_exists('get_default_tax_percentage')) {
+    function get_default_tax_percentage(): float {
+        return \App\Utils\FinancialManager\ConfigProvider::getDefaultTaxPercentage();
+    }
+}
+
+if (!function_exists('get_default_toll_percentage')) {
+    function get_default_toll_percentage(): float {
+        return \App\Utils\FinancialManager\ConfigProvider::getDefaultTollPercentage();
+    }
+}
+
+if (!function_exists("get_invoice_tax_heading")) {
+    function get_invoice_tax_heading(): string {
+        $heading = \App\Utils\FinancialManager\ConfigProvider::getInvoiceTaxHeading();
+        if (should_show_tax_percentage_in_invoice_heading()) {
+            $heading .= " (" . (get_default_tax_percentage() + get_default_toll_percentage()) . "%)";
+        }
+        return $heading;
+    }
+}
+
+if (!function_exists("should_show_tax_percentage_in_invoice_heading")) {
+    function should_show_tax_percentage_in_invoice_heading(): bool {
+        return \App\Utils\FinancialManager\ConfigProvider::shouldShowTaxPercentageInInvoiceHeading();
+    }
+}
+
+if (!function_exists("lm_get_current_version")) {
+    function lm_get_current_version(bool $only_major_version = false): string {
+        return \App\Helpers\VersionHelper::getCurrentVersion($only_major_version);
+    }
+}
+
+if (!function_exists("lm_get_latest_patch_version")) {
+    function lm_get_latest_patch_version(bool $only_major_version = false): string {
+        return \App\Helpers\VersionHelper::getLatestPatchVersion($only_major_version);
+    }
+}
+
+if (!function_exists("lm_get_latest_stable_version")) {
+    function lm_get_latest_stable_version(bool $only_major_version = false): string {
+        return \App\Helpers\VersionHelper::getLatestStableVersion($only_major_version);
+    }
+}
+
+

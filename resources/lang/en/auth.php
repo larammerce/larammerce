@@ -13,7 +13,9 @@ return [
     |
     */
 
-    'failed' => 'These credentials do not match our records.',
-    'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
+    "failed" => "اطلاعات ورود با سیستم تطابق ندارند.",
+    "throttle" => "تعداد دفعات تلاش شما برای ورود بیشتر از حد مجاز است. لطفا در :seconds ثانیه آینده تلاش کنید.",
+    "not_logged_in" => "لطفا ابتدا به حساب کاربری خود وارد شوید.",
+    "forbidden" => "متاسفانه شما به این بخش دسترسی ندارید."
 
 ];

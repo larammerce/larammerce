@@ -17,16 +17,14 @@ use Illuminate\Http\Request;
  * @package App\Http\Controllers\Admin
  * @role(enabled=true)
  */
-class ProductImageController extends BaseController
-{
+class ProductImageController extends BaseController {
 
     /**
      * @role(super_user, cms_manager)
      * @rules(product_id="required|exists:products,id",
      *     image="required|image|max:2048|dimensions:min_width=".get_image_min_width('product').",ratio=".get_image_ratio('product'))
      */
-    public function store(Request $request): JsonResponse|RedirectResponse
-    {
+    public function store(Request $request): JsonResponse|RedirectResponse {
         try {
             $tmp_image = ImageService::saveImage('product');
             $model = new ProductImage();
@@ -52,8 +50,7 @@ class ProductImageController extends BaseController
     /**
      * @role(super_user, cms_manager)
      */
-    public function update(Request $request, ProductImage $product_image): JsonResponse|RedirectResponse
-    {
+    public function update(Request $request, ProductImage $product_image): JsonResponse|RedirectResponse {
         $product_image->update($request->all());
         if (RequestService::isRequestAjax())
             return response()->json(MessageFactory::create(
@@ -65,9 +62,8 @@ class ProductImageController extends BaseController
     /**
      * @role(super_user, cms_manager)
      */
-    public function destroy(ProductImage $product_image): JsonResponse|RedirectResponse
-    {
-        $product_image->delete();
+    public function destroy(ProductImage $product_image): JsonResponse|RedirectResponse {
+        ProductImageService::dropImage($product_image);
         if (RequestService::isRequestAjax())
             return response()->json(MessageFactory::create(
                 ['messages.product_image.image_deleted'], 200
@@ -78,8 +74,7 @@ class ProductImageController extends BaseController
     /**
      * @role(super_user, cms_manager)
      */
-    public function setAsMainImage(ProductImage $product_image): JsonResponse|RedirectResponse
-    {
+    public function setAsMainImage(ProductImage $product_image): JsonResponse|RedirectResponse {
         ProductImageService::setImageAsMain($product_image);
         if (RequestService::isRequestAjax())
             return response()->json(MessageFactory::create(
@@ -91,9 +86,8 @@ class ProductImageController extends BaseController
     /**
      * @role(super_user, cms_manager)
      */
-    public function setAsSecondaryImage(ProductImage $product_image): JsonResponse|RedirectResponse
-    {
-
+    public function setAsSecondaryImage(ProductImage $product_image): JsonResponse|RedirectResponse {
+        ProductImageService::setImageAsSecondary($product_image);
         if (RequestService::isRequestAjax())
             return response()->json(MessageFactory::create(
                 ['messages.product_image.secondary_image_changed'], 200
@@ -102,8 +96,7 @@ class ProductImageController extends BaseController
     }
 
 
-    public function getModel(): ?string
-    {
+    public function getModel(): ?string {
         return ProductImage::class;
     }
 }

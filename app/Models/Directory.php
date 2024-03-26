@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 /**
  *
@@ -52,6 +53,9 @@ use Illuminate\Support\Facades\DB;
  * @property string metadata
  * @property integer depth
  * @property boolean is_hidden
+ * @property int tax_percentage
+ * @property int toll_percentage
+ * @property bool is_tax_included
  *
  * @property Directory parentDirectory
  * @property Directory[] directories
@@ -85,8 +89,8 @@ class Directory extends BaseModel implements ImageOwnerInterface, HashInterface,
     protected $fillable = [
         "title", "url_part", "url_full", "is_internal_link", "is_anonymously_accessible", "has_web_page", "priority",
         "content_type", "directory_id", "show_in_navbar", "show_in_footer", "cover_image_path", "description",
-        "data_type", "show_in_app_navbar", "is_location_limited", "cmc_id", "depth", "is_hidden",
-        "badges", "force_show_landing", "inaccessibility_type", "notice", "metadata"
+        "data_type", "show_in_app_navbar", "is_location_limited", "cmc_id", "depth", "is_hidden", "toll_percentage",
+        "badges", "force_show_landing", "inaccessibility_type", "notice", "metadata", "is_tax_included", "tax_percentage"
     ];
 
     protected $casts = [
@@ -177,7 +181,7 @@ class Directory extends BaseModel implements ImageOwnerInterface, HashInterface,
     }
 
     protected static function booted(): void {
-        if(!AdminRequestService::isInAdminArea()){
+        if (!AdminRequestService::isInAdminArea()) {
             static::addGlobalScope("visible", function (Builder $builder) {
                 $builder->visible();
             });
@@ -203,6 +207,9 @@ class Directory extends BaseModel implements ImageOwnerInterface, HashInterface,
     }
 
     public function scopeVisible(Builder $builder): Builder {
+        // Check if the directories table has the `is_hidden` column
+        if (!Schema::hasColumn("directories", "is_hidden"))
+            return $builder;
         return $builder->where("is_hidden", false);
     }
 

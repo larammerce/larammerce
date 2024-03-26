@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Enums\Invoice\NewInvoiceType;
 use App\Enums\Invoice\PaymentStatus;
 use App\Services\Invoice\NewInvoiceService;
-use App\Utils\CMS\ProductService;
 use App\Utils\FinancialManager\Exceptions\FinancialDriverInvalidConfigurationException;
 use App\Utils\FinancialManager\Factory;
 use App\Utils\ShipmentService\Factory as ShipmentFactory;

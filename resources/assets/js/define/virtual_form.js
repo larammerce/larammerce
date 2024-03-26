@@ -19,6 +19,10 @@ define('virtual_form', ['jquery', 'underscore', 'template'], function (jQuery, _
                         fields['_method'] = 'PUT';
                         method = 'POST';
                         break;
+                    case 'PATCH' :
+                        fields['_method'] = 'PATCH';
+                        method = 'POST';
+                        break;
                 }
 
                 const virtualForm = jQuery(template.virtualFormTemplate({

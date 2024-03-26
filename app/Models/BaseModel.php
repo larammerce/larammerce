@@ -43,8 +43,8 @@ abstract class BaseModel extends Model
     ];
 
     protected static array $PAGINATION_COUNT = [
-        'list' => 9,
-        'grid' => 16
+        'list' => 25,
+        'grid' => 50
     ];
 
     protected static array $SEARCHABLE_FIELDS = [

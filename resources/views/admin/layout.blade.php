@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/admin_dashboard/vendor/jquery-ui/jquery-ui.css">
     <link rel="stylesheet" href="/admin_dashboard/vendor/persianDatepicker/css/persian-datepicker.min.css">
     <link rel="stylesheet" href="/admin_dashboard/vendor/jquery-toast/jquery.toast.min.css">
-    <link rel="stylesheet" type="text/css" href="/admin_dashboard/css/app-23-07-18r3.css"/>
+    <link rel="stylesheet" type="text/css" href="/admin_dashboard/css/app-23-10-28.css"/>
 
     <link rel="apple-touch-icon" sizes="180x180" href="/admin_dashboard/{{get_identity()["fav"]}}/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/admin_dashboard/{{get_identity()["fav"]}}/favicon-32x32.png">
@@ -34,15 +34,11 @@
         window.site_url = "{{env("APP_URL")}}";
     </script>
 </head>
-<body>
+<body class="nav-app-open explore-tree-open">
 <div class="header-container">
     <nav class="main-nav">
         <div class="right-tools col-md-5 col-sm-4 col-xs-7">
             <div class="profile hidden-xs hidden-md">
-                <div class="user-photo">
-                    <img class="img-responsive"
-                         src="{{\App\Models\User::getEloquentObject(Auth::user())?->systemUser?->getImagePath() ?? "/admin_dashboard/images/No_image.jpg.png"}}"/>
-                </div>
                 <h5 class="name hidden-sm hidden-xs">{{Auth::user()->name.' '.Auth::user()->family}}</h5>
             </div>
             <div class="action-container">
@@ -93,6 +89,12 @@
             @endforeach
         </ul>
     </nav>
+    <div class="nav-toggle-btn">
+        <button class="toggle-btn">
+            <i class="fa fa-chevron-up up-icon"></i>
+            <i class="fa fa-chevron-down down-icon" style="display: none"></i>
+        </button>
+    </div>
 </div>
 <div class="main-content">
     <div class="file-context-menu">
@@ -133,7 +135,12 @@
         </ul>
     </div>
     <div class="explore-map col-md-2 hidden-sm hidden-xs">
-        @include('admin.templates.explore.map')
+        <div class="explore-map-scroll-container">
+            @include('admin.templates.explore.map')
+        </div>
+        <div class="version-container">
+            نسخه: {{lm_get_current_version()}}
+        </div>
     </div>
     <div class="explore-view-container col-md-10 col-sm-12 col-xs-12">
         @yield('main_content')
@@ -141,6 +148,12 @@
             <ul>
                 @yield('bread_crumb')
             </ul>
+        </div>
+        <div class="tree-toggle-btn">
+            <button class="toggle-btn">
+                <i class="fa fa-chevron-left open-icon" style="display: none"></i>
+                <i class="fa fa-chevron-right close-icon"></i>
+            </button>
         </div>
     </div>
 </div>
@@ -164,16 +177,16 @@
     </div>
 </div>
 
-<script data-main="/admin_dashboard/js/all-23-07-18r3" src="/admin_dashboard/vendor/requirejs/require.js"></script>
 
 @yield('extra_javascript')
 
 @include('admin.templates.underscore_needle')
 @include('admin.templates.modals.confirm_modal')
 @if(isset(request()->related_model) || isset($related_model))
-    @include('admin.templates.modals.classic_search_modal')
-    @include('admin.templates.modals.excel_export_modal')
+@include('admin.templates.modals.classic_search_modal')
+@include('admin.templates.modals.excel_export_modal')
 @endif
+<script data-main="/admin_dashboard/js/all-23-10-28" src="/admin_dashboard/vendor/requirejs/require.js"></script>
 @yield('outer_content')
 
 
