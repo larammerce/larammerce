@@ -1306,7 +1306,13 @@ if (!function_exists('h_view')) {
             if (\Illuminate\Support\Facades\View::exists($locale_template))
                 $template = $locale_template;
         }
-        return view($template, $data);
+
+        if(\Illuminate\Support\Facades\View::exists($template)){
+            return view($template, $data);
+        }else{
+            abort(404);
+        }
+
     }
 }
 
