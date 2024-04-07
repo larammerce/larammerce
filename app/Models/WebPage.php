@@ -117,7 +117,6 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract 
         if (!isset($this->attributes["blade_name"]))
             return null;
         $locale = $this->locale();
-        echo "###### In model the locale is $locale\n";
         $blade_name = $this->attributes["blade_name"];
         $default_template_path = TemplateService::getViewPath($blade_name);
         $raw_template_path = TemplateService::getBladePath($blade_name);
