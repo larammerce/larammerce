@@ -9,7 +9,9 @@
 namespace App\Utils\CMS\Template;
 
 use App\Models\WebPage;
+use App\Utils\CMS\Setting\Language\LanguageSettingService;
 use Exception;
+use Illuminate\Support\Collection;
 
 class TemplateService {
     private static $TEMPLATE_VIEWS_DIR = "hc-template";
@@ -84,11 +86,20 @@ class TemplateService {
             $template->savePublic(static::getViewPath($blade_name));
         }
 
+        /** @var array<WebPage>|Collection $webPages */
         $webPages = WebPage::whereBladeName($blade_name)->get();
         foreach ($webPages as $webPage) {
             echo "│      └── rebuilding web page with id : " . $webPage->id .
                 "<br/>" . PHP_EOL;
-            $webPage->update(["data" => []]);
+
+            foreach (LanguageSettingService::getAll() as $locale_id => $locale) {
+                if ($locale->is_default) {
+                    $webPage->update(["data" => []]);
+                } else if ($locale->is_enabled) {
+                    $webPage->setDefaultLocale($locale_id);
+                    $webPage->update(["data" => []]);
+                }
+            }
         }
     }
 

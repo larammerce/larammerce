@@ -53,6 +53,9 @@ class LanguageSettingService extends BaseCMSConfigManager
         return self::$CACHED_DATA[$lang_id];
     }
 
+    /**
+     * @return array<LanguageItemModel>
+     */
     public static function getAll(): array
     {
         $result = [];
