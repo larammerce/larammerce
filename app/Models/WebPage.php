@@ -68,27 +68,34 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract 
     protected static string $TRANSLATION_EDIT_FORM = "admin.pages.web-page.translate";
 
     public function __construct(array $attributes = []) {
-        $this->cached_attributes["contents"] = [];
+        $this->cached_attributes = [];
         parent::__construct($attributes);
     }
 
-    private function loadContents() {
-        if (count(is_countable($this->cached_attributes["contents"]) ? $this->cached_attributes["contents"] : []) == 0) {
+    private function loadContents(string $locale): void {
+        if (!array_key_exists($locale, $this->cached_attributes))
+            $this->cached_attributes[$locale] = [];
+
+        if (!array_key_exists("contents", $this->cached_attributes[$locale]))
+            $this->cached_attributes[$locale]["contents"] = [];
+
+        if (count(is_countable($this->cached_attributes[$locale]["contents"]) ? $this->cached_attributes[$locale]["contents"] : []) == 0) {
             if ($this->data != null and strlen($this->data) > 0) {
                 try {
-                    $this->cached_attributes["contents"] = unserialize($this->data);
+                    $this->cached_attributes[$locale]["contents"] = unserialize($this->data);
                 } catch (Exception $e) {
-                    $this->cached_attributes["contents"] = [];
+                    $this->cached_attributes[$locale]["contents"] = [];
                 }
             } else {
-                $this->cached_attributes["contents"] = [];
+                $this->cached_attributes[$locale]["contents"] = [];
             }
         }
     }
 
     public function getContentsAttribute(): array {
-        $this->loadContents();
-        return $this->cached_attributes["contents"];
+        $locale = $this->locale();
+        $this->loadContents($locale);
+        return $this->cached_attributes[$locale]["contents"];
     }
 
     public function getCustomBladeNameAttribute(): string {
@@ -96,18 +103,21 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract 
     }
 
     public function putContent($key, $value) {
-        $this->loadContents();
-        $this->cached_attributes["contents"][$key] = $value;
+        $locale = $this->locale();
+        $this->loadContents($locale);
+        $this->cached_attributes[$locale]["contents"][$key] = $value;
     }
 
     public function setContentsAttribute($contents): void {
-        $this->cached_attributes["contents"] = $contents;
+        $locale = $this->locale();
+        $this->cached_attributes[$locale]["contents"] = $contents;
     }
 
     public function getBladeNameAttribute() {
         if (!isset($this->attributes["blade_name"]))
             return null;
         $locale = $this->locale();
+        echo "###### In model the locale is $locale\n";
         $blade_name = $this->attributes["blade_name"];
         $default_template_path = TemplateService::getViewPath($blade_name);
         $raw_template_path = TemplateService::getBladePath($blade_name);
