@@ -94,6 +94,7 @@ class TemplateService {
 
             foreach (LanguageSettingService::getAll() as $locale_id => $locale) {
                 if ($locale->is_default) {
+                    $webPage->setDefaultLocale($locale_id);
                     $webPage->update(["data" => []]);
                 } else if ($locale->is_enabled) {
                     $webPage->setDefaultLocale($locale_id);

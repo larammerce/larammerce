@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Interfaces\ImageOwnerInterface;
 use App\Interfaces\SeoSubjectInterface as SeoableContract;
 use App\Traits\Seoable;
+use App\Utils\CMS\Setting\Language\LanguageSettingService;
 use App\Utils\CMS\Template\Contents\Audio;
 use App\Utils\CMS\Template\Contents\File;
 use App\Utils\CMS\Template\Contents\Image;
@@ -19,6 +20,7 @@ use App\Utils\CMS\Template\TemplateService;
 use App\Utils\Common\ImageService;
 use App\Utils\Common\RequestService;
 use App\Utils\Translation\Traits\Translatable;
+use App\Utils\Translation\TranslationService;
 use DateTime;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -73,8 +75,13 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract 
     }
 
     private function loadContents(string $locale): void {
-        if (!array_key_exists($locale, $this->cached_attributes))
+        if (strlen($locale) == 0) {
+            $locale = "default";
+        }
+
+        if (!array_key_exists($locale, $this->cached_attributes)) {
             $this->cached_attributes[$locale] = [];
+        }
 
         if (!array_key_exists("contents", $this->cached_attributes[$locale]))
             $this->cached_attributes[$locale]["contents"] = [];
@@ -137,7 +144,12 @@ class WebPage extends BaseModel implements ImageOwnerInterface, SeoableContract 
     }
 
     public function setDataAttribute($data): void {
-        $this->attributes["data"] = $this->fillData($data);
+        $fallback_locale = LanguageSettingService::getDefaultLocale();
+        if ($this->locale() == $fallback_locale) {
+            $this->attributes["data"] = $this->fillData($data);
+        } else {
+            $this->translateOrNew($this->locale())->data = $this->fillData($data);
+        }
     }
 
     public function directory(): BelongsTo {
