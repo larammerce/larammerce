@@ -14,7 +14,7 @@ return [
     ],
 
     "config" => [
-        "is_enabled"=> "فعالسازی",
-        "is_default" => "زبان پیشفرض",
+        "is_enabled"=> "Activation",
+        "is_default" => "Default language",
     ]
 ];

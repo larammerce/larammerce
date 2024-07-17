@@ -1,19 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mamareza
- * Date: 22/9/17
- * Time: 16:50 PM
- */
 
 return [
     'product' => [
-        'filter' => 'فیلتر محصولات',
-        'show' => 'نمایش محصولات',
-        'other_models' => 'انواع دیگر این محصول'
+        'filter' => 'Product filters',
+        'show' => 'Show products',
+        'other_models' => 'Other models'
     ],
     'user' => [
-        'address' => 'آدرس',
-        'zipCode' => ' کد پستی ',
+        'address' => 'Address',
+        'zipCode' => ' Zip code',
     ]
 ];

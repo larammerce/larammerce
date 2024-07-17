@@ -2,19 +2,19 @@
 
 return [
     "config" => [
-        "token" => "",
-        "utype" => "نام سازمان",
-        "host" => "هاست (دامنه سرور)",
-        "port" => "پورت",
-        "ssl" => "آیا اتصال امن برقرار است",
-        "is_enabled" => "آیا این درایور فعال است",
-        "username" => "نام کاربری",
-        "password" => "رمز عبور",
-        "token_created_at" => "",
-        "session_id" => "",
-        "token_expiration_minutes" => "مدت زمان اعتبار توکن (دقیقه)",
+        "token" => "Token",
+        "utype" => "Name of organization",
+        "host" => "Host (server domain)",
+        "port" => "Port",
+        "ssl" => "Is the connection secure",
+        "is_enabled" => "Is this driver active",
+        "username" => "User name",
+        "password" => "Password",
+        "token_created_at" => "Token creation date time",
+        "session_id" => "Session ID",
+        "token_expiration_minutes" => "Token validity period (minutes)",
     ],
     "drivers" => [
-        "sarv" => "سرو سی آر ام"
+        "sarv" => "CRM server"
     ]
 ];
