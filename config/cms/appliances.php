@@ -80,7 +80,15 @@ return [
                     "icon" => "icon-product-watermark",
                     "route" => "admin.setting.product-watermark.edit"
                 ]
-            ]
+            ],
+            [
+                "properties" => [
+                    "id" => "queue-management",
+                    "name" => "general.setting.queue",
+                    "icon" => "icon-queue",
+                    "route" => "admin.setting.queue.index"
+                ]
+            ],
         ],
         "explore_appliances" => []
     ],
