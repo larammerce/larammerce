@@ -3,8 +3,12 @@
 namespace App\Providers;
 
 use App\Interfaces\FileHandlerInterface;
+use App\Interfaces\Repositories\InvoiceRepositoryInterface;
 use App\Interfaces\Repositories\SettingRepositoryInterface;
+use App\Interfaces\Repositories\SystemLanguageRepositoryInterface;
+use App\Repositories\Eloquent\InvoiceRepositoryEloquent;
 use App\Repositories\Eloquent\SettingRepositoryEloquent;
+use App\Repositories\Eloquent\SystemLanguageRepositoryEloquent;
 use App\Services\Common\EnvFile\EnvFileHandler;
 use App\Services\Invoice\NewInvoiceService;
 use App\Utils\CMS\RobotTxt\RobotTxtService;
@@ -79,5 +83,7 @@ class AppServiceProvider extends ServiceProvider {
 
         //Repositories
         $this->app->bind(SettingRepositoryInterface::class, SettingRepositoryEloquent::class);
+        $this->app->bind(SystemLanguageRepositoryInterface::class, SystemLanguageRepositoryEloquent::class);
+        $this->app->bind(InvoiceRepositoryInterface::class, InvoiceRepositoryEloquent::class);
     }
 }

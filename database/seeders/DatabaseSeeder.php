@@ -17,5 +17,6 @@ class DatabaseSeeder extends Seeder
         $this->call(ColorsTableSeeder::class);
         $this->call(ProvinceCitiesTableSeeder::class);
         $this->call(TehranDistrictsSeeder::class);
+        $this->call(SystemLanguageSeeder::class);
     }
 }

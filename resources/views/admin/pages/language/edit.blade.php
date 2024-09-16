@@ -61,3 +61,13 @@
     <button type="submit" class="btn btn-default btn-sm">ذخیره</button>
     <input type="submit" class="btn btn-warning btn-sm" name="exit" value="ذخیره و خروج">
 @endsection
+
+@section('floating_action_button')
+    <div class="fab-container">
+        <div class="fab green" style="margin:4rem auto 4rem auto;">
+            <button act="link" href="{{route('admin.setting.language.item.create')}}">
+                <i class="fa fa-plus"></i>
+            </button>
+        </div>
+    </div>
+@endsection

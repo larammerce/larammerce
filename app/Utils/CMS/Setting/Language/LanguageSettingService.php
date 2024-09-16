@@ -2,6 +2,7 @@
 
 namespace App\Utils\CMS\Setting\Language;
 
+use App\Models\SystemLanguage;
 use App\Utils\CMS\Enums\DataSourceDriver;
 use App\Utils\CMS\Enums\SettingType;
 use App\Utils\CMS\Exceptions\NotValidSettingRecordException;
@@ -10,9 +11,7 @@ use App\Utils\Reflection\AnnotationBadKeyException;
 use App\Utils\Reflection\AnnotationBadScopeException;
 use App\Utils\Reflection\AnnotationNotFoundException;
 use App\Utils\Reflection\AnnotationSyntaxException;
-use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Str;
-use Lcobucci\JWT\Exception;
 use ReflectionException;
 
 /**
@@ -93,8 +92,11 @@ class LanguageSettingService extends BaseCMSConfigManager
     /**
      * @throws
      */
-    public static function setOne(string $lang_id, bool $is_enabled, bool $is_default): LanguageSettingModel
+    public static function setOne($request): LanguageSettingModel
     {
+        $lang_id = $request->input('language_id');
+        $is_default= $request->has('is_default');
+        $is_enabled = $request->has('is_enabled');
         if(static::checkIfLanguageIsSet($lang_id))
             throw new \Exception('This language is already set!');
 
@@ -130,7 +132,7 @@ class LanguageSettingService extends BaseCMSConfigManager
 
     public static function getAvailableChoices()
     {
-        return Lang::get('language');
+        return SystemLanguage::all()->toArray();
     }
 
     /**

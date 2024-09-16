@@ -136,7 +136,9 @@
     </div>
     <div class="explore-map col-md-2 hidden-sm hidden-xs">
         <div class="explore-map-scroll-container">
-            @include('admin.templates.explore.map')
+            @section('side_bar')
+                @include('admin.templates.explore.map')
+            @show
         </div>
         <div class="version-container">
             نسخه: {{lm_get_current_version()}}

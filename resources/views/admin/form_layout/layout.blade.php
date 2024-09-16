@@ -13,4 +13,5 @@
             @yield('form_window')
         </form>
     </div>
+    @yield('floating_action_button')
 @stop
