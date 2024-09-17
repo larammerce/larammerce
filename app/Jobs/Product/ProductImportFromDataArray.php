@@ -32,4 +32,20 @@ class ProductImportFromDataArray extends Job implements ShouldQueue {
             Log::error("jobs.product.product_import_from_data_array.product_not_found." . json_encode($this->data_array) . "." . json_encode($this->p_structure) . "." . $e->getMessage());
         }
     }
+
+    /**
+     * @return int|null
+     */
+    public function getDispatchType(): ?int
+    {
+        return null;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getQueuePriority(): ?int
+    {
+        return null;
+    }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Jobs\Directory;
 
+use App\Enums\Queue\QueueDispatchType;
+use App\Enums\Queue\QueuePriority;
 use App\Exceptions\Directory\DirectoryNotFoundException;
 use App\Exceptions\Product\ProductNotFoundException;
 use App\Jobs\Job;
@@ -21,10 +23,26 @@ class SyncDirectories extends Job implements ShouldQueue {
 
     public function __construct(Directory $directory) {
         $this->directory = $directory;
-        $this->queue = config('queue.names.admin');
+        $this->queue = config('queue.names.admin_automatic_default');
     }
 
     public function handle() {
         DirectoryService::syncWithUpstream($this->directory);
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getDispatchType(): ?int
+    {
+        return QueueDispatchType::AUTOMATIC;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getQueuePriority(): ?int
+    {
+        return QueuePriority::DEFAULT;
     }
 }

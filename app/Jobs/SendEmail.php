@@ -62,4 +62,20 @@ class SendEmail extends Job implements ShouldQueue
             }
         }
     }
+
+    /**
+     * @return int|null
+     */
+    public function getDispatchType(): ?int
+    {
+        return null;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getQueuePriority(): ?int
+    {
+        return null;
+    }
 }
